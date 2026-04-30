@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package user;
+
+option csharp_namespace = "SmartMusic.User.Grpc";
+
+import "google/protobuf/timestamp.proto";
+
+// UserService exposes the GetUserProfile RPC used exclusively by the Auth Service.
+// This is one of only two gRPC calls in the system (Auth hot path).
+// Timeout budget: 50ms (Auth → User leg of the 100ms total budget).
+//
+// gRPC Status Codes:
+//   OK          — user found; response fields are fully populated
+//   NOT_FOUND   — no user with the given user_id exists in the User Service DB
+//   UNAVAILABLE — the User Service database (PostgreSQL) is unreachable;
+//                 caller (Auth Service) should fall back to returning minimal
+//                 profile data from JWT claims only (user_id + role)
+service UserService {
+  // GetUserProfile fetches enriched profile data for a validated user.
+  // Called by Auth Service after successful token validation to enrich the
+  // auth context forwarded to the API Gateway.
+  rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse);
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+// Role is intentionally redefined here (not imported from auth.proto) to keep
+// the two proto packages independently deployable and versionable.
+// Values MUST stay numerically aligned with auth.Role for the foreseeable future.
+// If the sets diverge, introduce a mapping layer in the Auth Service.
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  LISTENER         = 1;
+  CREATOR          = 2;
+  ADMIN            = 3;
+}
+
+// ---------------------------------------------------------------------------
+// Messages
+// ---------------------------------------------------------------------------
+
+// GetUserProfileRequest identifies the user whose profile is being requested.
+message GetUserProfileRequest {
+  // user_id is the UUID that identifies the user in the User Service.
+  // It is sourced from the validated JWT's sub claim.
+  // Required. Must be a valid UUID v4 string.
+  string user_id = 1;
+}
+
+// GetUserProfileResponse is returned on a successful OK status.
+// On NOT_FOUND or UNAVAILABLE the response message is empty; consult the
+// gRPC Status for details.
+message GetUserProfileResponse {
+  // user_id echoes the requested UUID for correlation on the caller side.
+  string user_id = 1;
+
+  // display_name is the user-facing name shown in the UI.
+  // May be empty for users who have not completed onboarding.
+  string display_name = 2;
+
+  // email is the primary email address associated with the account.
+  // Populated regardless of onboarding status.
+  string email = 3;
+
+  // role is the RBAC role stored in the User Service, which is the
+  // authoritative source of truth (the JWT claim is derived from this).
+  Role role = 4;
+
+  // is_active indicates whether the account is enabled.
+  // Suspended or soft-deleted accounts have is_active = false.
+  // API Gateway MUST reject requests from inactive users even when the JWT
+  // is technically valid.
+  bool is_active = 5;
+
+  // onboarding_completed indicates whether the user has finished the
+  // initial onboarding flow (chosen genres, display name, etc.).
+  // Used by the Gateway to redirect incomplete-onboarding users appropriately.
+  bool onboarding_completed = 6;
+
+  // created_at is the UTC timestamp when the account was first registered.
+  google.protobuf.Timestamp created_at = 7;
+}
