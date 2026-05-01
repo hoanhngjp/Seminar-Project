@@ -179,6 +179,9 @@ Tất cả API theo chuẩn thống nhất từ `API_DESIGN_V2.md`:
 | `proto/auth.proto` | Protobuf definition cho AuthService.ValidateToken | Generate C# gRPC code |
 | `proto/user.proto` | Protobuf definition cho UserService.GetUserProfile | Generate C# gRPC code |
 | `REDIS_KEY_DESIGN.md` | Toàn bộ Redis key conventions cho mọi service — naming, type, TTL | Mỗi khi đọc/ghi Redis |
+| `CODING_CONVENTIONS.md` | C# + Python coding conventions: folder structure, naming, error handling, logging, Kafka pattern | Trước khi bắt đầu viết code bất kỳ service nào |
+| `GIT_WORKFLOW.md` | Branch strategy (GitHub Flow), commit convention, PR template, merge strategy | Onboarding thành viên mới, mỗi khi tạo branch/commit/PR |
+| `SECRETS_MANAGEMENT.md` | Danh sách toàn bộ secrets, quy ước .env, không hardcode, xử lý khi lộ secret | Setup môi trường, thêm service mới |
 | `docker-compose.yml` | Local dev infrastructure — tất cả services và infra | `docker-compose up` để chạy local |
 | `.env.example` | Template biến môi trường — copy thành `.env` | Setup lần đầu |
 | `DOCKER_README.md` | Hướng dẫn chạy local: first-time setup, migrations, troubleshooting | Onboarding thành viên mới |
