@@ -108,6 +108,9 @@ Nền tảng nghe nhạc trực tuyến kiến trúc Microservices, xây dựng 
 ### Testing
 - `docs/testing/TEST_PLAN.md` — Strategy, unit/integration/load/chaos, AC coverage matrix (46 ACs)
 
+### Task Starters
+- `.claude/TASK_STARTERS.md` — Prompt templates cho 10 loại task phổ biến (files cần đính kèm + prompt starter sẵn sàng paste)
+
 ### Skills (.claude/skills/)
 - `.claude/skills/aspnet-service/SKILL.md` — Conventions và patterns cho C# / ASP.NET Core services
 - `.claude/skills/fastapi-service/SKILL.md` — Conventions và patterns cho Python / FastAPI (Recommendation)
