@@ -72,7 +72,8 @@ Nền tảng nghe nhạc trực tuyến kiến trúc Microservices, xây dựng 
 | Viết tests | `docs/testing/TEST_PLAN.md`, `.claude/rules/testing-required/RULE.md` | — |
 | Dùng Redis | `.github/REDIS_KEY_DESIGN.md` | — |
 | Dùng Kafka | `docs/contracts/KAFKA_EVENT_CONTRACTS.md`, `docs/contracts/kafka-schemas/` | — |
-| Setup local dev | `infra/DOCKER_README.md`, `infra/.env.example` | — |
+| Setup local dev | `infra/DOCKER_README.md`, `infra/.env.example` | `infra/verify-infra.sh` |
+| Verify infrastructure healthy | `infra/verify-infra.sh` | `infra/DOCKER_README.md` |
 | Viết bất kỳ code nào | `.claude/rules/security-non-negotiable/RULE.md` | — |
 | Tạo branch / commit / PR | `conventions/GIT_WORKFLOW.md` | — |
 
@@ -176,6 +177,7 @@ services/<service-name>/
 
 ### Setup & CI
 - `setup-repo.ps1` — One-command scaffold: tạo solution, services, Python venv, React frontend (chạy một lần sau khi clone)
+- `infra/verify-infra.sh` — Kiểm tra toàn bộ infrastructure local healthy: Redis, PostgreSQL (7 DBs), MongoDB, Elasticsearch, Kafka (5 topics), InfluxDB, MinIO. Output ✅/❌ kèm lệnh fix.
 - `.github/workflows/ci.yml` — GitHub Actions CI: dotnet build+test, pytest, frontend build
 
 ### Task Starters

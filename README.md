@@ -48,16 +48,19 @@ cd Seminar-Project
 
 # 3. Sua secrets - bat buoc truoc khi chay docker-compose
 #    Mo .env, thay moi gia tri changeme_local
-notepad .env
+notepad infra/.env
 
 # 4. Khoi dong toan bo infrastructure + services
 docker-compose -f infra/docker-compose.yml up -d
 
-# 5. Tao MinIO bucket (chay mot lan sau khi docker-compose up lan dau)
+# 5. Kiem tra infrastructure healthy (doi ~30s de services start)
+bash infra/verify-infra.sh
+
+# 6. Tao MinIO bucket (chay mot lan sau khi docker-compose up lan dau)
 docker exec smartmusic-minio mc alias set local http://localhost:9000 minioadmin minioadmin
 docker exec smartmusic-minio mc mb local/smartmusic-audio
 
-# 6. Chay EF Core migrations
+# 7. Chay EF Core migrations
 dotnet ef database update --project services/auth-service/src/AuthService.Api
 dotnet ef database update --project services/user-service/src/UserService.Api
 dotnet ef database update --project services/music-service/src/MusicService.Api
@@ -179,6 +182,7 @@ services/<service-name>/
 | gRPC contracts                   | `docs/contracts/GRPC_CONTRACTS.md`                 |
 | Test plan                        | `docs/testing/TEST_PLAN.md`                        |
 | Docker guide                     | `infra/DOCKER_README.md`                           |
+| Infrastructure health check      | `infra/verify-infra.sh`                            |
 | Coding conventions               | `conventions/CODING_CONVENTIONS.md`                |
 | Git workflow                     | `conventions/GIT_WORKFLOW.md`                      |
 | Task starters (prompt templates) | `.claude/TASK_STARTERS.md`                         |
