@@ -78,6 +78,72 @@ Nền tảng nghe nhạc trực tuyến kiến trúc Microservices, xây dựng 
 
 ---
 
+## Repo Structure
+
+```
+Seminar-Project/
+├── SmartMusic.sln                          # C# solution (9 services)
+├── setup-repo.ps1                          # One-command scaffold (Windows)
+├── services/
+│   ├── api-gateway/                        # C# — YARP reverse proxy
+│   ├── auth-service/                       # C# — JWT + Identity
+│   ├── user-service/                       # C# — profiles + preferences
+│   ├── music-service/                      # C# — upload + metadata
+│   ├── streaming-service/                  # C# — pre-signed URL + CDN
+│   ├── listening-party-service/            # C# — SignalR rooms
+│   ├── analytics-service/                  # C# — InfluxDB write + read
+│   ├── notification-service/               # C# — MongoDB fan-out
+│   ├── search-service/                     # C# — Elasticsearch
+│   ├── recommendation-service/             # Python — FastAPI + Rule Engine
+│   │   ├── src/recommendation_service/
+│   │   ├── tests/
+│   │   ├── requirements.txt
+│   │   ├── requirements-test.txt
+│   │   └── .venv/                          # Python virtual env (local only)
+│   └── frontend/                           # TypeScript — React + Vite
+│       └── src/
+│           ├── api/                        # axios clients
+│           ├── components/
+│           ├── hooks/
+│           ├── pages/
+│           ├── store/                      # zustand
+│           └── types/
+├── proto/                                  # Protobuf: auth.proto, user.proto
+├── infra/
+│   ├── docker-compose.yml
+│   ├── .env.example                        # Template — copy to .env
+│   └── DOCKER_README.md
+├── database/DATABASE_SCHEMA.md
+├── docs/
+│   ├── originals/                          # PRD V5, Backlog V7, API Design V2, Use Cases V1
+│   ├── architecture/                       # Mermaid diagrams + PNG exports
+│   ├── contracts/                          # gRPC, Kafka, JSON schemas
+│   └── testing/TEST_PLAN.md
+├── conventions/                            # Coding, Git, Secrets
+├── tests/
+│   ├── load/                               # k6 scripts
+│   └── chaos/                             # Chaos test scripts
+└── .github/
+    ├── workflows/ci.yml                    # GitHub Actions CI
+    └── REDIS_KEY_DESIGN.md
+```
+
+Mỗi C# service theo **Clean Architecture**:
+```
+services/<service-name>/
+├── src/
+│   ├── <Name>.Api/            # Controllers, Middleware, Program.cs
+│   ├── <Name>.Application/    # Services, DTOs, Interfaces, Exceptions
+│   ├── <Name>.Infrastructure/ # Repositories, Kafka, Redis, Data/Migrations
+│   └── <Name>.Domain/         # Pure domain models
+├── tests/
+│   ├── <Name>.UnitTests/      # xUnit + Moq + FluentAssertions
+│   └── <Name>.IntegrationTests/ # WebApplicationFactory + Testcontainers
+└── Dockerfile
+```
+
+---
+
 ## File Index
 
 ### Original Documents (chỉ đọc)
@@ -107,6 +173,10 @@ Nền tảng nghe nhạc trực tuyến kiến trúc Microservices, xây dựng 
 
 ### Testing
 - `docs/testing/TEST_PLAN.md` — Strategy, unit/integration/load/chaos, AC coverage matrix (46 ACs)
+
+### Setup & CI
+- `setup-repo.ps1` — One-command scaffold: tạo solution, services, Python venv, React frontend (chạy một lần sau khi clone)
+- `.github/workflows/ci.yml` — GitHub Actions CI: dotnet build+test, pytest, frontend build
 
 ### Task Starters
 - `.claude/TASK_STARTERS.md` — Prompt templates cho 10 loại task phổ biến (files cần đính kèm + prompt starter sẵn sàng paste)
