@@ -1,0 +1,67 @@
+﻿# Secrets
+.env
+*.env
+!.env.example
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# C# / .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.DotSettings.user
+TestResults/
+*.trx
+*.coverage
+coverage/
+*.nupkg
+*.snupkg
+.packages/
+project.lock.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+*.cover
+.hypothesis/
+
+# Node / React
+node_modules/
+dist/
+build/
+.next/
+.cache/
+*.local
+npm-debug.log*
+yarn-error.log*
+
+# Docker
+docker-compose.override.yml
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+*.swp
+*~
