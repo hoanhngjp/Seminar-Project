@@ -102,7 +102,7 @@ Mỗi service có database riêng — không được truy cập DB của servic
 
 ## API Conventions
 
-Tất cả API theo chuẩn thống nhất từ `API_DESIGN_V2.md`:
+Tất cả API theo chuẩn thống nhất từ `docs/originals/API_DESIGN_V2.md`:
 
 ```json
 {
@@ -159,44 +159,110 @@ Tất cả API theo chuẩn thống nhất từ `API_DESIGN_V2.md`:
 
 ---
 
+## Cấu trúc thư mục
+
+```
+smart-music-platform/
+│
+├── CLAUDE.md                              ← thư mục gốc
+├── README.md
+│
+├── docs/
+│   ├── originals/                         ← tài liệu gốc từ stakeholder, chỉ đọc
+│   │   ├── PRD_Smart_Music_V5.docx
+│   │   ├── PRD_Smart_Music_V5.md
+│   │   ├── API_DESIGN_V2.xlsx
+│   │   ├── API_DESIGN_V2.md
+│   │   ├── Backlog_V7.docx
+│   │   ├── Backlog_V7.md
+│   │   ├── Use_Case_Document_V1.docx
+│   │   └── Use_Case_Document_V1.md
+│   │
+│   ├── architecture/                      ← diagrams và tài liệu kiến trúc
+│   │   ├── system_architecture_mermaid.md
+│   │   ├── use_case_diagram_mermaid.md
+│   │   ├── sequence_diagrams_mermaid.md
+│   │   └── diagrams/                      ← PNG exports
+│   │
+│   ├── contracts/                         ← API contracts, event schemas
+│   │   ├── GRPC_CONTRACTS.md
+│   │   ├── KAFKA_EVENT_CONTRACTS.md
+│   │   └── kafka-schemas/
+│   │       ├── song_played.v1.json
+│   │       ├── song_skipped.v1.json
+│   │       ├── new_release.v1.json
+│   │       ├── user_preferences_updated.v1.json
+│   │       └── notification_sent.v1.json
+│   │
+│   └── testing/
+│       └── TEST_PLAN.md
+│
+├── infra/                                 ← chạy hệ thống local
+│   ├── docker-compose.yml
+│   ├── .env.example
+│   ├── DOCKER_README.md
+│   └── k8s/
+│
+├── proto/                                 ← root level, tất cả C# services reference
+│   ├── auth.proto
+│   └── user.proto
+│
+├── database/
+│   └── DATABASE_SCHEMA.md
+│
+├── .github/
+│   ├── REDIS_KEY_DESIGN.md
+│   └── pull_request_template.md           ← tạo khi setup CI
+│
+└── conventions/                           ← team conventions
+    ├── CODING_CONVENTIONS.md
+    ├── GIT_WORKFLOW.md
+    └── SECRETS_MANAGEMENT.md
+```
+
+---
+
 ## Tài liệu tham chiếu
 
 ### Tài liệu gốc (không sửa trực tiếp)
 
 | File | Vị trí | Mô tả |
 |---|---|---|
-| PRD V5 | `Docs/PRD_Smart_Music_V5.docx` | Product Requirements, Personas, Metrics, Scope |
-| Backlog V7 | `Docs/Backlog_V7.docx` | User Stories, Acceptance Criteria, Epic breakdown |
-| API Design V2 | `Docs/API_DESIGN_V2.xlsx` | Tất cả API endpoints, request/response, errors, latency budget |
-| Use Case V1 | `Docs/Use_Case_Document_V1.docx` | 24 Use Cases chi tiết |
+| PRD V5 | `docs/originals/PRD_Smart_Music_V5.docx` | Product Requirements, Personas, Metrics, Scope |
+| Backlog V7 | `docs/originals/Backlog_V7.docx` | User Stories, Acceptance Criteria, Epic breakdown |
+| API Design V2 | `docs/originals/API_DESIGN_V2.xlsx` | Tất cả API endpoints, request/response, errors, latency budget |
+| Use Case V1 | `docs/originals/Use_Case_Document_V1.docx` | 24 Use Cases chi tiết |
 
 ### Tài liệu thiết kế kỹ thuật (source of truth khi implement)
 
 | File | Mô tả | Khi nào dùng |
 |---|---|---|
-| `DATABASE_SCHEMA.md` | Schema đầy đủ: PostgreSQL (Auth/User/Music), MongoDB (Notification), InfluxDB (Analytics) | Trước khi viết migration, EF Core model, repository |
-| `GRPC_CONTRACTS.md` | Spec 2 gRPC calls: ValidateToken + GetUserProfile, timeout, fallback | Khi implement Auth Service, User Service, API Gateway |
+| `database/DATABASE_SCHEMA.md` | Schema đầy đủ: PostgreSQL (Auth/User/Music), MongoDB (Notification), InfluxDB (Analytics) | Trước khi viết migration, EF Core model, repository |
+| `docs/contracts/GRPC_CONTRACTS.md` | Spec 2 gRPC calls: ValidateToken + GetUserProfile, timeout, fallback | Khi implement Auth Service, User Service, API Gateway |
 | `proto/auth.proto` | Protobuf definition cho AuthService.ValidateToken | Generate C# gRPC code |
 | `proto/user.proto` | Protobuf definition cho UserService.GetUserProfile | Generate C# gRPC code |
-| `REDIS_KEY_DESIGN.md` | Toàn bộ Redis key conventions cho mọi service — naming, type, TTL | Mỗi khi đọc/ghi Redis |
-| `CODING_CONVENTIONS.md` | C# + Python coding conventions: folder structure, naming, error handling, logging, Kafka pattern | Trước khi bắt đầu viết code bất kỳ service nào |
-| `GIT_WORKFLOW.md` | Branch strategy (GitHub Flow), commit convention, PR template, merge strategy | Onboarding thành viên mới, mỗi khi tạo branch/commit/PR |
-| `SECRETS_MANAGEMENT.md` | Danh sách toàn bộ secrets, quy ước .env, không hardcode, xử lý khi lộ secret | Setup môi trường, thêm service mới |
-| `docker-compose.yml` | Local dev infrastructure — tất cả services và infra | `docker-compose up` để chạy local |
-| `.env.example` | Template biến môi trường — copy thành `.env` | Setup lần đầu |
-| `DOCKER_README.md` | Hướng dẫn chạy local: first-time setup, migrations, troubleshooting | Onboarding thành viên mới |
+| `.github/REDIS_KEY_DESIGN.md` | Toàn bộ Redis key conventions cho mọi service — naming, type, TTL | Mỗi khi đọc/ghi Redis |
+| `docs/contracts/KAFKA_EVENT_CONTRACTS.md` | Contract chính thức 5 Kafka events: fields, producer/consumer contract, idempotency, DLQ, backward compat | Trước khi implement Kafka producer/consumer bất kỳ |
+| `docs/contracts/kafka-schemas/*.v1.json` | JSON Schema (draft-07) cho từng event — validate payload trước khi publish | Khi viết Kafka producer hoặc consumer |
+| `docs/testing/TEST_PLAN.md` | Test strategy, unit/integration/load/chaos tests, AC coverage matrix 46 ACs | Khi viết tests cho bất kỳ service nào |
+| `conventions/CODING_CONVENTIONS.md` | C# + Python coding conventions: folder structure, naming, error handling, logging, Kafka pattern | Trước khi bắt đầu viết code bất kỳ service nào |
+| `conventions/GIT_WORKFLOW.md` | Branch strategy (GitHub Flow), commit convention, PR template, merge strategy | Onboarding thành viên mới, mỗi khi tạo branch/commit/PR |
+| `conventions/SECRETS_MANAGEMENT.md` | Danh sách toàn bộ secrets, quy ước .env, không hardcode, xử lý khi lộ secret | Setup môi trường, thêm service mới |
+| `infra/docker-compose.yml` | Local dev infrastructure — tất cả services và infra | `docker-compose up` để chạy local |
+| `infra/.env.example` | Template biến môi trường — copy thành `.env` | Setup lần đầu |
+| `infra/DOCKER_README.md` | Hướng dẫn chạy local: first-time setup, migrations, troubleshooting | Onboarding thành viên mới |
 
 ### Tài liệu Markdown (convert từ Docs, đọc nhanh)
 
 | File | Mô tả |
 |---|---|
-| `Markdowns/PRD_Smart_Music_V5.md` | PRD dạng Markdown |
-| `Markdowns/Backlog_V7.md` | Backlog dạng Markdown |
-| `Markdowns/API_DESIGN_V2.md` | API Design dạng Markdown |
-| `Markdowns/Use_Case_Document_V1.md` | Use Cases dạng Markdown |
-| `Markdowns/system_architecture_mermaid.md` | 4 Architecture Diagrams (Mermaid) |
-| `Markdowns/use_case_diagram_mermaid.md` | Use Case Diagram (Mermaid) |
-| `Markdowns/sequence_diagrams_mermaid.md` | 8 Sequence Diagrams SD-01 → SD-08 (Mermaid) |
+| `docs/originals/PRD_Smart_Music_V5.md` | PRD dạng Markdown |
+| `docs/originals/Backlog_V7.md` | Backlog dạng Markdown |
+| `docs/originals/API_DESIGN_V2.md` | API Design dạng Markdown |
+| `docs/originals/Use_Case_Document_V1.md` | Use Cases dạng Markdown |
+| `docs/architecture/system_architecture_mermaid.md` | 4 Architecture Diagrams (Mermaid) |
+| `docs/architecture/use_case_diagram_mermaid.md` | Use Case Diagram (Mermaid) |
+| `docs/architecture/sequence_diagrams_mermaid.md` | 8 Sequence Diagrams SD-01 → SD-08 (Mermaid) |
 
 ---
 
@@ -236,10 +302,10 @@ Tất cả API theo chuẩn thống nhất từ `API_DESIGN_V2.md`:
 
 ## Ghi chú cho Claude
 
-- **API**: Khi implement bất kỳ endpoint nào, đối chiếu `Markdowns/API_DESIGN_V2.md` lấy đúng path, method, error codes, latency budget.
-- **Database**: Trước khi tạo model/migration, đọc `DATABASE_SCHEMA.md` — đặc biệt chú ý indexes và constraints.
-- **Redis**: Mọi key Redis phải theo đúng pattern trong `REDIS_KEY_DESIGN.md`. Không tự đặt key ngoài quy ước.
-- **gRPC**: Chỉ 2 calls dùng gRPC (ValidateToken + GetUserProfile). Xem `GRPC_CONTRACTS.md` cho timeout, fallback behavior.
+- **API**: Khi implement bất kỳ endpoint nào, đối chiếu `docs/originals/API_DESIGN_V2.md` lấy đúng path, method, error codes, latency budget.
+- **Database**: Trước khi tạo model/migration, đọc `database/DATABASE_SCHEMA.md` — đặc biệt chú ý indexes và constraints.
+- **Redis**: Mọi key Redis phải theo đúng pattern trong `.github/REDIS_KEY_DESIGN.md`. Không tự đặt key ngoài quy ước.
+- **gRPC**: Chỉ 2 calls dùng gRPC (ValidateToken + GetUserProfile). Xem `docs/contracts/GRPC_CONTRACTS.md` cho timeout, fallback behavior.
 - **Recommendation**: Không dùng ML — chỉ Rule Engine + Redis weights. Không dùng Vector DB, PyTorch.
 - **gRPC scope**: Chỉ Auth → User dùng gRPC; tất cả internal calls khác dùng REST.
 - **Kafka idempotency**: Mọi consumer phải check Redis SET dedup (TTL 24h) trước khi xử lý event. DLQ sau 3 retries.

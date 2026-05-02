@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smartmusic.internal/schemas/kafka/song_skipped.v1.json",
+  "title": "SongSkippedEvent",
+  "description": "Published by Streaming Service when a user skips a song. Consumed by Analytics and Recommendation services.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "version",
+    "timestamp",
+    "correlation_id",
+    "user_id",
+    "song_id",
+    "artist_id",
+    "genre_id",
+    "skip_at_sec",
+    "duration_sec",
+    "duration_percent",
+    "platform"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier (UUID v4). Used as idempotency key. Redis key: analytics:idempotency:{event_id} or rec:idempotency:{event_id}, TTL 24h."
+    },
+    "version": {
+      "type": "string",
+      "const": "v1",
+      "description": "Schema version. Always 'v1' for this schema."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO8601 UTC timestamp of when the skip event was generated (e.g. 2026-04-15T14:37:22.891Z)."
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Distributed tracing ID propagated from the originating HTTP request."
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Anonymized user identifier (UUID v4). MUST NOT contain PII (no email, name, phone)."
+    },
+    "song_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID of the song that was skipped."
+    },
+    "artist_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID of the song's primary artist."
+    },
+    "genre_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID of the song's primary genre. Used for weight penalty in Recommendation Service."
+    },
+    "skip_at_sec": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The second (playback position) at which the skip was triggered."
+    },
+    "duration_sec": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Total song duration in seconds."
+    },
+    "duration_percent": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "How far the user got through the song (skip_at_sec / duration_sec * 100). < 30 triggers weight penalty (-0.2) in Recommendation Service."
+    },
+    "skip_trigger": {
+      "type": "string",
+      "enum": ["manual_skip", "next_button", "auto_skip"],
+      "description": "How the skip was triggered. Optional — 'auto_skip' is reserved for future use."
+    },
+    "context": {
+      "type": "string",
+      "enum": ["morning", "afternoon", "evening", "night", "none"],
+      "description": "Time-of-day context when recommendation was served. Optional."
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["web"],
+      "description": "Client platform. Currently only 'web' is supported in Phase 1."
+    }
+  },
+  "examples": [
+    {
+      "event_id": "9e8d7c6b-5a4f-3e2d-1c0b-9a8f7e6d5c4b",
+      "version": "v1",
+      "timestamp": "2026-04-15T14:37:22.891Z",
+      "correlation_id": "f1e2d3c4-b5a6-9780-fedc-ba9876543210",
+      "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "song_id": "e5f6a7b8-c9d0-1234-efab-567890123456",
+      "artist_id": "f6a7b8c9-d0e1-2345-fabc-678901234567",
+      "genre_id": "a7b8c9d0-e1f2-3456-abcd-789012345678",
+      "skip_at_sec": 18,
+      "duration_sec": 198,
+      "duration_percent": 9.1,
+      "skip_trigger": "manual_skip",
+      "context": "afternoon",
+      "platform": "web"
+    }
+  ]
+}

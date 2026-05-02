@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smartmusic.internal/schemas/kafka/user_preferences_updated.v1.json",
+  "title": "UserPreferencesUpdatedEvent",
+  "description": "Published by User Service after a user successfully submits or updates their music preferences (onboarding or settings update). Consumed by Recommendation Service to seed/reset genre weights in Redis.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "version",
+    "timestamp",
+    "correlation_id",
+    "user_id",
+    "preferred_genres",
+    "preferred_artist_ids",
+    "is_onboarding",
+    "idempotency_key"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier (UUID v4). Used as idempotency key. Redis key: rec:idempotency:{event_id}, TTL 24h."
+    },
+    "version": {
+      "type": "string",
+      "const": "v1",
+      "description": "Schema version. Always 'v1' for this schema."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO8601 UTC timestamp of when the preference update was committed (e.g. 2026-04-15T09:00:30.123Z)."
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Distributed tracing ID propagated from the originating HTTP request."
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Anonymized user identifier (UUID v4). MUST NOT contain PII."
+    },
+    "preferred_genres": {
+      "type": "array",
+      "minItems": 3,
+      "description": "List of preferred genres selected by the user. Minimum 3 required (onboarding constraint). Each genre becomes a key in rec:weights:{user_id} with initial weight 1.0.",
+      "items": {
+        "type": "object",
+        "required": ["genre_id", "genre_name"],
+        "additionalProperties": true,
+        "properties": {
+          "genre_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the genre. Used as hash field in rec:weights:{user_id}."
+          },
+          "genre_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Human-readable genre name (e.g. 'Indie Pop'). Stored for display purposes in rec:onboarding:{user_id}."
+          }
+        }
+      }
+    },
+    "preferred_artist_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "List of artist UUIDs the user explicitly follows/prefers. Stored in rec:onboarding:{user_id} for initial recommendation seeding."
+    },
+    "is_onboarding": {
+      "type": "boolean",
+      "description": "True if this is the user's first-time preference submission (onboarding flow). False for subsequent preference updates. Recommendation Service uses this to decide whether to reset or merge weights."
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "The Idempotency-Key header value from the original HTTP POST /api/v1/users/me/preferences request. Prevents duplicate processing if the HTTP request was retried."
+    }
+  },
+  "examples": [
+    {
+      "event_id": "3c4d5e6f-7a8b-9012-3456-789abcdef012",
+      "version": "v1",
+      "timestamp": "2026-04-15T09:00:30.123Z",
+      "correlation_id": "c2d3e4f5-a6b7-8901-cdef-0123456789ab",
+      "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "preferred_genres": [
+        { "genre_id": "d4e5f6a7-b8c9-0123-defa-234567890123", "genre_name": "Indie Pop" },
+        { "genre_id": "e5f6a7b8-c9d0-1234-efab-567890123456", "genre_name": "Acoustic" },
+        { "genre_id": "f6a7b8c9-d0e1-2345-fabc-678901234567", "genre_name": "Lo-fi" }
+      ],
+      "preferred_artist_ids": [
+        "11223344-5566-7788-99aa-bbccddeeff00",
+        "22334455-6677-8899-aabb-ccddeeff0011"
+      ],
+      "is_onboarding": true,
+      "idempotency_key": "onboarding-a1b2c3d4-20260415"
+    }
+  ]
+}

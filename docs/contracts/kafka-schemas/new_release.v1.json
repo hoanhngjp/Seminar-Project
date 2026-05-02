@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smartmusic.internal/schemas/kafka/new_release.v1.json",
+  "title": "NewReleaseEvent",
+  "description": "Published by Music Service after a creator successfully uploads and publishes a new song (S3 confirmed + DB committed). Consumed by Notification Service for fan-out to followers.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "version",
+    "timestamp",
+    "correlation_id",
+    "artist_id",
+    "artist_name",
+    "song_id",
+    "song_title",
+    "genre_ids",
+    "thumbnail_url",
+    "s3_storage_key",
+    "duration_sec",
+    "explicit"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier (UUID v4). Used as idempotency key."
+    },
+    "version": {
+      "type": "string",
+      "const": "v1",
+      "description": "Schema version. Always 'v1' for this schema."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO8601 UTC timestamp of when the event was generated (e.g. 2026-04-15T10:05:00.000Z)."
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Distributed tracing ID propagated from the originating HTTP request (creator's upload request)."
+    },
+    "artist_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID of the creator (artist) who uploaded the song."
+    },
+    "artist_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Display name of the artist. Used in notification message body (e.g. 'Son Tung M-TP released a new song')."
+    },
+    "song_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID of the newly published song."
+    },
+    "song_title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "Title of the song. Used in notification message body."
+    },
+    "album_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "UUID of the album this song belongs to. Null if the song is a standalone single."
+    },
+    "genre_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "description": "List of genre UUIDs for this song. Used by Notification Service to target genre-interested followers."
+    },
+    "mood_tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 50
+      },
+      "description": "Optional mood/vibe tags (e.g. ['energetic', 'focus']). Reserved for future recommendation context."
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "CDN URL for the song/album thumbnail image. Used directly in notification payload."
+    },
+    "s3_storage_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Internal S3 object key for the audio file (e.g. 'audio/2026/04/{song_id}.mp3'). Consumers MUST NOT expose this value externally."
+    },
+    "duration_sec": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Total duration of the song in seconds."
+    },
+    "explicit": {
+      "type": "boolean",
+      "description": "Whether the song contains explicit content. Used for content filtering in notification targeting."
+    }
+  },
+  "examples": [
+    {
+      "event_id": "2a3b4c5d-6e7f-8901-2345-6789abcdef01",
+      "version": "v1",
+      "timestamp": "2026-04-15T10:05:00.000Z",
+      "correlation_id": "b1c2d3e4-f5a6-7890-bcde-f09876543210",
+      "artist_id": "11223344-5566-7788-99aa-bbccddeeff00",
+      "artist_name": "Son Tung M-TP",
+      "song_id": "aabbccdd-eeff-0011-2233-445566778899",
+      "song_title": "Chung Ta Cua Hien Tai",
+      "album_id": null,
+      "genre_ids": ["d4e5f6a7-b8c9-0123-defa-234567890123"],
+      "mood_tags": ["melancholic", "emotional"],
+      "thumbnail_url": "https://cdn.smartmusic.example.com/thumbnails/aabbccdd.jpg",
+      "s3_storage_key": "audio/2026/04/aabbccdd-eeff-0011-2233-445566778899.mp3",
+      "duration_sec": 287,
+      "explicit": false
+    }
+  ]
+}

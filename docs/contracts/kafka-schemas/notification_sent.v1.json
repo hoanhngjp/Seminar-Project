@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smartmusic.internal/schemas/kafka/notification_sent.v1.json",
+  "title": "NotificationSentEvent",
+  "description": "Published by Notification Service after each fan-out attempt to a follower. Consumed by Analytics Service to record notification delivery metrics. Delivery guarantee: best-effort (no idempotency dedup required on consumer side).",
+  "type": "object",
+  "required": [
+    "event_id",
+    "version",
+    "timestamp",
+    "correlation_id",
+    "notification_id",
+    "recipient_user_id",
+    "notification_type",
+    "delivery_status",
+    "retry_count",
+    "channel"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier (UUID v4). Note: this topic is best-effort — no idempotency dedup is enforced on the Analytics consumer for this event."
+    },
+    "version": {
+      "type": "string",
+      "const": "v1",
+      "description": "Schema version. Always 'v1' for this schema."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO8601 UTC timestamp of when the notification fan-out attempt was made (e.g. 2026-04-15T10:05:03.551Z)."
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Distributed tracing ID — same correlation_id as the originating NewReleaseEvent that triggered this fan-out."
+    },
+    "notification_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "MongoDB ObjectId (_id) of the notification document inserted into the notifications collection. Used by Analytics to reference the source document."
+    },
+    "recipient_user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID of the user who received (or failed to receive) the notification. Anonymized — no PII."
+    },
+    "notification_type": {
+      "type": "string",
+      "enum": ["NEW_RELEASE", "SYSTEM"],
+      "description": "Type of notification. 'NEW_RELEASE' for artist upload fan-out. 'SYSTEM' for platform announcements (reserved for future use)."
+    },
+    "artist_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "UUID of the artist who triggered the notification. Populated for NEW_RELEASE type. Null for SYSTEM type."
+    },
+    "song_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "UUID of the song associated with the notification. Populated for NEW_RELEASE type. Null for SYSTEM type."
+    },
+    "delivery_status": {
+      "type": "string",
+      "enum": ["DELIVERED", "FAILED", "PENDING"],
+      "description": "Result of this fan-out attempt. 'DELIVERED' = notification document inserted successfully. 'FAILED' = all 3 retries exhausted, moved to DLQ. 'PENDING' = intermediate state during retry (should not appear in final event)."
+    },
+    "retry_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "description": "Number of retry attempts made before this event was published. 0 = first attempt succeeded. 3 = all retries exhausted (typically accompanies FAILED status)."
+    },
+    "channel": {
+      "type": "string",
+      "enum": ["IN_APP"],
+      "description": "Delivery channel used. Phase 1 only supports 'IN_APP'. Push/email channels are out of scope."
+    }
+  },
+  "examples": [
+    {
+      "event_id": "4d5e6f7a-8b9c-0123-4567-89abcdef0123",
+      "version": "v1",
+      "timestamp": "2026-04-15T10:05:03.551Z",
+      "correlation_id": "b1c2d3e4-f5a6-7890-bcde-f09876543210",
+      "notification_id": "507f1f77bcf86cd799439011",
+      "recipient_user_id": "f7a8b9c0-d1e2-3456-fabc-def012345678",
+      "notification_type": "NEW_RELEASE",
+      "artist_id": "11223344-5566-7788-99aa-bbccddeeff00",
+      "song_id": "aabbccdd-eeff-0011-2233-445566778899",
+      "delivery_status": "DELIVERED",
+      "retry_count": 0,
+      "channel": "IN_APP"
+    }
+  ]
+}
