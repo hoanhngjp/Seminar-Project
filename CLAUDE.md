@@ -199,3 +199,30 @@ services/<service-name>/
 - `conventions/CODING_CONVENTIONS.md` — C# + Python coding style, folder structure, naming, logging
 - `conventions/GIT_WORKFLOW.md` — Branch strategy, commit convention, PR template
 - `conventions/SECRETS_MANAGEMENT.md` — Secrets list, .env rules, xử lý khi lộ secret
+
+---
+
+## How to Start a Session
+
+Mỗi conversation mới với Claude, thực hiện theo thứ tự:
+
+1. Đọc `.claude/CURRENT_STATE.md` để biết context
+2. Tra `.claude/TASK_STARTERS.md` để lấy đúng template
+3. Đính kèm files theo danh sách trong template
+4. Paste session opener vào đầu chat:
+   `"Đọc [files đính kèm]. Tóm tắt task, chưa viết code."`
+5. Sau khi xong: cập nhật `CURRENT_STATE.md` và commit
+
+## Session Opener Template
+
+```
+Đọc các files đính kèm theo thứ tự:
+1. CLAUDE.md
+2. .claude/CURRENT_STATE.md
+3. .claude/plan/[plan file hôm nay]
+4. [skill files]
+5. [rule files]
+
+Sau khi đọc: tóm tắt task, constraints cần lưu ý,
+câu hỏi cần clarify. Chưa viết code.
+```
