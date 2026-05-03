@@ -1,7 +1,7 @@
-version: "3.9"
+﻿version: "3.9"
 
 # ============================================================
-# Smart Music Streaming Platform — Local Development
+# Smart Music Streaming Platform â€” Local Development
 # ============================================================
 
 networks:
@@ -33,7 +33,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./infra/postgres/init:/docker-entrypoint-initdb.d
+      - ./postgres/init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
@@ -219,18 +219,19 @@ services:
     restart: unless-stopped
 
   # ===========================================================
-  # APPLICATION SERVICES — C# ASP.NET Core
+  # APPLICATION SERVICES â€” C# ASP.NET Core
   # ===========================================================
 
   api-gateway:
     build:
-      context: ./services/api-gateway
+      context: ../services/api-gateway
       dockerfile: Dockerfile
     container_name: smartmusic-api-gateway
     ports:
       - "5000:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Jwt__SecretKey=${JWT_SECRET}
       - Services__AuthService=${AUTH_SERVICE_URL}
@@ -245,21 +246,20 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    volumes:
-      - ./services/api-gateway:/app
     networks:
       - smartmusic-network
     restart: unless-stopped
 
   auth-service:
     build:
-      context: ./services/auth-service
+      context: ../services/auth-service
       dockerfile: Dockerfile
     container_name: smartmusic-auth-service
     ports:
       - "5001:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__PostgreSQL=${AUTH_DB_CONNECTION}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Jwt__SecretKey=${JWT_SECRET}
@@ -273,21 +273,20 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    volumes:
-      - ./services/auth-service:/app
     networks:
       - smartmusic-network
     restart: unless-stopped
 
   user-service:
     build:
-      context: ./services/user-service
+      context: ../services/user-service
       dockerfile: Dockerfile
     container_name: smartmusic-user-service
     ports:
       - "5002:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__PostgreSQL=${USER_DB_CONNECTION}
       - ConnectionStrings__MongoDB=${MONGO_URI}
       - Redis__ConnectionString=${REDIS_CONNECTION}
@@ -305,21 +304,20 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    volumes:
-      - ./services/user-service:/app
     networks:
       - smartmusic-network
     restart: unless-stopped
 
   music-service:
     build:
-      context: ./services/music-service
+      context: ../services/music-service
       dockerfile: Dockerfile
     container_name: smartmusic-music-service
     ports:
       - "5003:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__PostgreSQL=${MUSIC_DB_CONNECTION}
       - ConnectionStrings__MongoDB=${MONGO_URI}
       - Redis__ConnectionString=${REDIS_CONNECTION}
@@ -340,21 +338,20 @@ services:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
-    volumes:
-      - ./services/music-service:/app
     networks:
       - smartmusic-network
     restart: unless-stopped
 
   streaming-service:
     build:
-      context: ./services/streaming-service
+      context: ../services/streaming-service
       dockerfile: Dockerfile
     container_name: smartmusic-streaming-service
     ports:
       - "5004:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__PostgreSQL=${STREAMING_DB_CONNECTION}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
@@ -369,21 +366,20 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    volumes:
-      - ./services/streaming-service:/app
     networks:
       - smartmusic-network
     restart: unless-stopped
 
   listening-party-service:
     build:
-      context: ./services/listening-party-service
+      context: ../services/listening-party-service
       dockerfile: Dockerfile
     container_name: smartmusic-listening-party-service
     ports:
       - "5005:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__PostgreSQL=${LISTENING_PARTY_DB_CONNECTION}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
@@ -394,21 +390,20 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    volumes:
-      - ./services/listening-party-service:/app
     networks:
       - smartmusic-network
     restart: unless-stopped
 
   analytics-service:
     build:
-      context: ./services/analytics-service
+      context: ../services/analytics-service
       dockerfile: Dockerfile
     container_name: smartmusic-analytics-service
     ports:
       - "5006:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__PostgreSQL=${ANALYTICS_DB_CONNECTION}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
       - InfluxDB__Url=http://influxdb:8086
@@ -422,21 +417,20 @@ services:
         condition: service_healthy
       influxdb:
         condition: service_started
-    volumes:
-      - ./services/analytics-service:/app
     networks:
       - smartmusic-network
     restart: unless-stopped
 
   notification-service:
     build:
-      context: ./services/notification-service
+      context: ../services/notification-service
       dockerfile: Dockerfile
     container_name: smartmusic-notification-service
     ports:
       - "5007:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__PostgreSQL=${NOTIFICATION_DB_CONNECTION}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
@@ -447,21 +441,20 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    volumes:
-      - ./services/notification-service:/app
     networks:
       - smartmusic-network
     restart: unless-stopped
 
   search-service:
     build:
-      context: ./services/search-service
+      context: ../services/search-service
       dockerfile: Dockerfile
     container_name: smartmusic-search-service
     ports:
       - "5008:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
       - Elasticsearch__Url=${ELASTICSEARCH_URL}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
       - Redis__ConnectionString=${REDIS_CONNECTION}
@@ -472,19 +465,17 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ./services/search-service:/app
     networks:
       - smartmusic-network
     restart: unless-stopped
 
   # ===========================================================
-  # APPLICATION SERVICES — Python FastAPI
+  # APPLICATION SERVICES â€” Python FastAPI
   # ===========================================================
 
   recommendation-service:
     build:
-      context: ./services/recommendation-service
+      context: ../services/recommendation-service
       dockerfile: Dockerfile
     container_name: smartmusic-recommendation-service
     ports:
@@ -494,14 +485,12 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
       - MUSIC_SERVICE_URL=http://music-service:80
       - USER_SERVICE_URL=http://user-service:80
+      - PYTHONPATH=/app/src
     depends_on:
       redis:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    volumes:
-      - ./services/recommendation-service:/app
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     networks:
       - smartmusic-network
     restart: unless-stopped
@@ -512,7 +501,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ../services/frontend
       dockerfile: Dockerfile
     container_name: smartmusic-frontend
     ports:
@@ -520,10 +509,7 @@ services:
     environment:
       - VITE_API_BASE_URL=http://localhost:5000
       - VITE_WS_URL=ws://localhost:5005
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: npm run dev -- --host
     networks:
       - smartmusic-network
     restart: unless-stopped
+

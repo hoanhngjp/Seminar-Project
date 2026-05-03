@@ -26,18 +26,18 @@
 - [x] CURRENT_STATE.md, CLAUDE.md cập nhật
 
 ### Day 5 — Boilerplate
-- [ ] api-gateway boilerplate — GET /health → 200
-- [ ] auth-service boilerplate — GET /health → 200
-- [ ] user-service boilerplate — GET /health → 200
-- [ ] music-service boilerplate — GET /health → 200
-- [ ] streaming-service boilerplate — GET /health → 200
-- [ ] listening-party-service boilerplate — GET /health → 200
-- [ ] analytics-service boilerplate — GET /health → 200
-- [ ] notification-service boilerplate — GET /health → 200
-- [ ] search-service boilerplate — GET /health → 200
-- [ ] recommendation-service boilerplate — GET /health → 200
-- [ ] React SPA boilerplate — npm run dev hiển thị "Smart Music Platform"
-- [ ] docker-compose up --build — không có container exit
+- [x] api-gateway boilerplate — GET /health → 200
+- [x] auth-service boilerplate — GET /health → 200
+- [x] user-service boilerplate — GET /health → 200
+- [x] music-service boilerplate — GET /health → 200
+- [x] streaming-service boilerplate — GET /health → 200
+- [x] listening-party-service boilerplate — GET /health → 200
+- [x] analytics-service boilerplate — GET /health → 200
+- [x] notification-service boilerplate — GET /health → 200
+- [x] search-service boilerplate — GET /health → 200
+- [x] recommendation-service boilerplate — GET /health → 200
+- [x] React SPA boilerplate — npm run dev hiển thị "Smart Music Platform"
+- [x] docker-compose up --build — không có container exit
 
 ### Week 2 — Auth + User + Gateway
 - [ ] Bước 0: generate C# từ proto/auth.proto và proto/user.proto
@@ -123,10 +123,19 @@
 
 ## Đang làm
 
-- **Service/Task:** Chưa bắt đầu — chuẩn bị Day 5
-- **File plan đang theo:** `.claude/plan/day5_boilerplate.md`
-- **Checkpoint gần nhất đã pass:** Infrastructure local healthy (verify-infra.sh)
+- **Service/Task:** Day 5 boilerplate HOÀN TẤT ✅
+- **File plan đang theo:** `.claude/plan/day5_boilerplate.md` → DONE, tiếp theo Week 2
+- **Checkpoint gần nhất đã pass:** `docker-compose up --build` — 21 containers Up, 0 exited, tất cả 10 services GET /health → 200
 - **Blocked bởi:** —
+
+### Decisions ghi nhận từ Day 5
+- EF Core `Version="*"` trong scaffold resolves 10.x — phải pin `Version="8.0.*"` cho tất cả services (net8.0)
+- `Microsoft.AspNetCore.Mvc.Testing Version="*"` cũng resolves 10.x — pin `Version="8.0.*"`
+- `FluentAssertions Version="*"` và `Moq Version="*"` trong test projects cũng phải pin cụ thể
+- YARP cần placeholder `ReverseProxy: { Routes: {}, Clusters: {} }` trong appsettings để start được
+- `UseHttpsRedirection` bị bỏ khỏi pipeline (không cần trong container, chỉ HTTP)
+- .NET 8 SDK default port đổi từ 80 → 8080 — phải thêm `ASPNETCORE_HTTP_PORTS=80` trong docker-compose cho tất cả C# services
+- docker-compose build contexts phải dùng `../services/X` (relative từ `infra/`), không phải `./services/X`
 
 ---
 
