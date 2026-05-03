@@ -347,6 +347,27 @@ git checkout main && git pull origin main
 git branch -d feature/{scope}/{description}
 ```
 
+### Wrap-up sau mỗi task (bắt buộc trước khi close branch)
+
+```
+1. Ghi .claude/DEVLOG.md
+   → Bug mất > 30 phút, quyết định kỹ thuật quan trọng, workaround đáng nhớ
+
+2. Cập nhật .claude/CURRENT_STATE.md
+   → Đánh dấu task vừa xong [x], điền "Làm tiếp theo" = task tiếp theo
+
+3. Cập nhật CHANGELOG.md
+   → Nếu hoàn thành toàn bộ milestone: chuyển items từ [Unreleased] xuống section milestone
+   → Nếu chỉ xong 1 task lẻ: thêm vào [Unreleased] để gom về sau
+
+4. Commit cả 3 file cùng lúc
+```
+
+```bash
+git add .claude/DEVLOG.md .claude/CURRENT_STATE.md CHANGELOG.md
+git commit -m "docs: wrap-up {scope}/{task} — update devlog, state, changelog"
+```
+
 ### Commit Type Cheatsheet
 
 | Type | Dùng khi |

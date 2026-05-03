@@ -2,6 +2,12 @@
 
 Paste prompt starter vào conversation mới, điền các placeholder `[BRACKET]`, đính kèm files theo danh sách.
 
+**Wrap-up bắt buộc sau mỗi task** (trước khi close branch):
+1. Ghi `.claude/DEVLOG.md` — bug > 30 phút, quyết định kỹ thuật, workaround
+2. Cập nhật `.claude/CURRENT_STATE.md` — tick [x] task xong, điền task tiếp theo
+3. Cập nhật `CHANGELOG.md` — thêm vào `[Unreleased]` hoặc chuyển xuống milestone nếu xong hẳn
+4. Commit 3 file cùng lúc: `git add .claude/DEVLOG.md .claude/CURRENT_STATE.md CHANGELOG.md`
+
 ---
 
 ### 1. Implement new C# endpoint
