@@ -34,6 +34,24 @@
 
 ---
 
+[2026-05-03] [USER SERVICE / EF CORE / INTEGRATION TESTS] [BUG]
+
+**Problem:** `dotnet test` throws `System.InvalidOperationException : Relational-specific methods can only be used when the context is using a relational database provider` in `DbInitializer.SeedAsync`.
+**Root cause:** The test `TestWebApplicationFactory` overrides `DbContext` to use `InMemoryDatabase`. But `DbInitializer` blindly calls `await db.Database.MigrateAsync();` which requires a relational provider.
+**Fix / Decision:** Added `if (db.Database.IsRelational())` check before calling `MigrateAsync()`. Fallback to `EnsureCreatedAsync()` for InMemory tests.
+**Lesson / Warning:** Luôn check `IsRelational()` trong seed data nếu project có dùng InMemory database cho integration tests.
+
+---
+
+[2026-05-03] [USER SERVICE / EF CORE / MIGRATION] [BUG]
+
+**Problem:** `dotnet ef database update` fails with `password authentication failed for user "smartmusic"` despite `.env` configuration.
+**Root cause:** The native Windows Postgres service on port 5432 was intercepting the connection instead of the Docker container. The user explicitly stated the Windows native postgres has username `postgres` and password `4L27hN04@`.
+**Fix / Decision:** Updated `appsettings.json` connection string to `Host=localhost;Port=5432;Database=user_db;Username=postgres;Password=4L27hN04@` to connect directly to the native postgres on Windows.
+**Lesson / Warning:** Cẩn thận port collision giữa Docker services và Windows native services.
+
+---
+
 [2026-05-03] [ALL C# SERVICES] [BUG]
 
 **Problem:** `dotnet build` thất bại sau khi scaffold — EF Core, MVC Testing, FluentAssertions, Moq

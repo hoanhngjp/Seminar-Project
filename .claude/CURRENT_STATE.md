@@ -42,11 +42,11 @@
 ### Week 2 — Auth + User + Gateway
 - [ ] Bước 0: generate C# từ proto/auth.proto và proto/user.proto
 - [ ] Bước 0: grpcurl test gRPC connection pass
-- [ ] User Service: EF Core migration InitialCreate (user_db)
-- [ ] User Service: GET /api/v1/users/me
-- [ ] User Service: POST /api/v1/users/me/preferences
-- [ ] User Service: gRPC server GetUserProfile
-- [ ] User Service: Internal GET /internal/users/{id}/preferences
+- [x] User Service: EF Core migration InitialCreate (user_db)
+- [x] User Service: GET /api/v1/users/me
+- [x] User Service: POST /api/v1/users/me/preferences
+- [x] User Service: gRPC server GetUserProfile
+- [x] User Service: Internal GET /internal/users/{id}/preferences
 - [ ] Auth Service: EF Core migration InitialCreate (auth_db)
 - [ ] Auth Service: POST /api/v1/auth/login
 - [ ] Auth Service: POST /api/v1/auth/refresh
