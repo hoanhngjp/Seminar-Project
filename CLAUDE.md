@@ -195,6 +195,10 @@ services/<service-name>/
 - `.claude/rules/security-non-negotiable/RULE.md` — JWT, secrets, RBAC, S3, rate limit, PII — không có ngoại lệ
 - `.claude/rules/testing-required/RULE.md` — Unit + integration test bắt buộc, AC coverage, mock rules
 
+### Project Logs
+- `CHANGELOG.md` — lịch sử thay đổi theo milestone, formal (dành cho thầy/hội đồng)
+- `.claude/DEVLOG.md` — nhật ký bug/decision/blocker hàng ngày (dành cho nhóm và Claude)
+
 ### Conventions
 - `conventions/CODING_CONVENTIONS.md` — C# + Python coding style, folder structure, naming, logging
 - `conventions/GIT_WORKFLOW.md` — Branch strategy, commit convention, PR template
