@@ -21,6 +21,10 @@ service UserService {
   // Called by Auth Service after successful token validation to enrich the
   // auth context forwarded to the API Gateway.
   rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse);
+
+  // VerifyCredentials verifies a user's plaintext password against the hash
+  // stored in the User Service. Called by the Auth Service during login.
+  rpc VerifyCredentials(VerifyCredentialsRequest) returns (VerifyCredentialsResponse);
 }
 
 // ---------------------------------------------------------------------------
@@ -82,4 +86,24 @@ message GetUserProfileResponse {
 
   // created_at is the UTC timestamp when the account was first registered.
   google.protobuf.Timestamp created_at = 7;
+}
+
+// VerifyCredentialsRequest carries the user's login credentials.
+message VerifyCredentialsRequest {
+  // username is either the username or email address of the user.
+  string username = 1;
+
+  // password is the plaintext password provided by the user.
+  string password = 2;
+}
+
+// VerifyCredentialsResponse is returned on a successful OK status.
+// On NOT_FOUND or INVALID_ARGUMENT (invalid credentials) the response message is empty;
+// consult the gRPC Status for details.
+message VerifyCredentialsResponse {
+  // user_id is the UUID that identifies the user in the User Service.
+  string user_id = 1;
+
+  // role is the RBAC role stored in the User Service.
+  Role role = 2;
 }

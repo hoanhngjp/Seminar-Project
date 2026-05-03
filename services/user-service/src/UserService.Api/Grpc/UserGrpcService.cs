@@ -51,4 +51,54 @@ public class UserGrpcService(
             CreatedAt = Timestamp.FromDateTime(DateTime.SpecifyKind(user.CreatedAt, DateTimeKind.Utc))
         };
     }
+
+    public override async Task<VerifyCredentialsResponse> VerifyCredentials(
+        VerifyCredentialsRequest request, ServerCallContext context)
+    {
+        logger.LogInformation("gRPC VerifyCredentials called for username/email: {Username}", request.Username);
+
+        User? user;
+        try
+        {
+            user = await userRepo.GetByUsernameOrEmailAsync(request.Username, context.CancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not RpcException)
+        {
+            logger.LogError(ex, "DB unavailable during VerifyCredentials.");
+            throw new RpcException(new Status(StatusCode.Unavailable, "User Service database is unreachable."));
+        }
+
+        if (user is null || !user.IsActive)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid credentials or inactive account."));
+        }
+
+        bool isPasswordValid = false;
+        try
+        {
+            isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Password hash verification failed format error.");
+        }
+
+        if (!isPasswordValid)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid credentials."));
+        }
+
+        var role = user.Role switch
+        {
+            "Creator" => Role.Creator,
+            "Admin" => Role.Admin,
+            _ => Role.Listener
+        };
+
+        return new VerifyCredentialsResponse
+        {
+            UserId = user.Id.ToString(),
+            Role = role
+        };
+    }
 }

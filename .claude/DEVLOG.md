@@ -179,3 +179,26 @@ sau `docker-compose up` — xem `infra/DOCKER_README.md`.
 chạy seed script trước khi test Recommendation Service.
 
 ---
+
+[2026-05-04] [AUTH SERVICE / USER SERVICE / GRPC] [DECISION]
+
+**Problem:** Auth Service nhận `POST /api/v1/auth/login` (cần username, password) nhưng theo `DATABASE_SCHEMA.md` thì `password_hash` và thông tin `users` lại nằm ở `user_db` (thuộc User Service). Auth Service không được phép connect trực tiếp vào `user_db` để verify password.
+**Root cause:** Lỗ hổng trong thiết kế giao tiếp ban đầu. `user.proto` hiện tại chỉ có `GetUserProfile(user_id)` và không có cơ chế nào để Auth Service kiểm tra mật khẩu.
+**Fix / Decision:** Thêm mới RPC `VerifyCredentials(username, password)` vào `user.proto`. Auth Service sẽ truyền username và plaintext password qua gRPC sang User Service. User Service sẽ tra cứu user, verify bằng bcrypt, nếu hợp lệ sẽ trả về `user_id` và `role`. Sau đó Auth Service mới cấp JWT.
+**Lesson / Warning:** Quyết định này giúp giữ nguyên Data Boundary (User Service vẫn làm chủ Identity/Credentials, Auth Service chuyên lo Token Lifecycle) và không làm hỏng migration `user_db` đã hoàn tất ở Day 5. Bắt buộc gọi qua gRPC nội bộ để đảm bảo an toàn.
+
+---
+
+[2026-05-03] [AUTH SERVICE] [FEATURE]
+
+**Problem:** Implement logic cho Auth Service để cấp và xoay vòng Refresh Token an toàn, tích hợp với Redis.
+**Root cause:** Yêu cầu bảo mật cao của Smart Music Platform đòi hỏi Refresh Token Rotation (RTR) và track số lần thử đăng nhập.
+**Fix / Decision:** 
+- Đã thiết lập `AuthDbContext` để kết nối vào `auth_db`. Lưu trữ refresh token mapping với IP sang `inet` bằng value converter.
+- Implement các repositories `RefreshTokenRepository` và `TokenBlacklistRepository`.
+- Track brute-force login trong Redis: lock account sau 5 lần thất bại.
+- Xử lý reuse detection: nếu phát hiện token bị dùng lại, revoke toàn bộ session của user (cập nhật DB + Redis).
+- Unit Tests và Integration Tests sử dụng Testcontainers đã hoàn tất và xanh.
+**Lesson / Warning:** Tương tác với HTTP-only Cookie cần chú ý khi test: tên cookie có thể khác in hoa/thường tùy vào client/server ("refreshToken", "Secure", "HttpOnly" -> "secure", "httponly"). Testcontainers chạy khá tốt để test end-to-end với PostgreSQL và Redis thực.
+
+---

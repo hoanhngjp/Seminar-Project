@@ -4,6 +4,7 @@
 Tài liệu này dành cho: thầy hướng dẫn, hội đồng bảo vệ, và thành viên nhóm.
 
 **Cách cập nhật:**
+
 1. Mỗi khi hoàn thành một feature/fix/task đáng kể, thêm entry vào section `[Unreleased]`.
 2. Khi kết thúc một milestone (Week 2, Week 3-4, ...), chuyển nội dung từ `[Unreleased]`
    xuống section milestone tương ứng và ghi ngày hoàn thành.
@@ -35,6 +36,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 > Checkpoint: 21 containers Up, 0 exited; tất cả 10 services `GET /health` → 200.
 
 ### Added
+
 - Boilerplate cho 9 C# services theo Clean Architecture (Api / Application / Infrastructure / Domain):
   api-gateway, auth-service, user-service, music-service, streaming-service,
   listening-party-service, analytics-service, notification-service, search-service
@@ -45,6 +47,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `docker-compose up --build` — 21 containers healthy, 0 exited
 
 ### Fixed
+
 - Pin `Microsoft.EntityFrameworkCore Version="8.0.*"` — mặc định `Version="*"` resolve 10.x không tương thích net8.0
 - Pin `Microsoft.AspNetCore.Mvc.Testing Version="8.0.*"` — cùng lý do
 - Pin `FluentAssertions` và `Moq` về version cụ thể trong tất cả test projects
@@ -53,6 +56,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Xóa `UseHttpsRedirection` khỏi pipeline — không cần trong container, chỉ HTTP
 
 ### Changed
+
 - YARP config yêu cầu placeholder `ReverseProxy: { Routes: {}, Clusters: {} }` trong `appsettings.json` để service start được
 
 ---
@@ -64,13 +68,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
-- [ ] gRPC codegen từ `proto/auth.proto` + `proto/user.proto`
-- [ ] User Service: profile CRUD, PostgreSQL (`user_db`)
-- [ ] Auth Service: JWT login/refresh/logout, brute-force lock, Refresh Token rotation
+- [x] gRPC codegen từ `proto/auth.proto` + `proto/user.proto`
+- [x] User Service: profile CRUD, PostgreSQL (`user_db`)
+- [x] Auth Service: JWT login/refresh/logout, brute-force lock, Refresh Token rotation
 - [ ] API Gateway: YARP routing, JWT validation middleware, rate limiting (Redis)
-- [ ] `POST /api/v1/auth/login` → accessToken + HTTP-only refresh cookie
-- [ ] `POST /api/v1/auth/refresh` → token rotation
-- [ ] `POST /api/v1/auth/logout` → blacklist token in Redis
+- [x] `POST /api/v1/auth/login` → accessToken + HTTP-only refresh cookie
+- [x] `POST /api/v1/auth/refresh` → token rotation
+- [x] `POST /api/v1/auth/logout` → blacklist token in Redis
 - [ ] `GET /api/v1/users/me` → profile từ Redis cache (TTL 15 min)
 - [ ] `POST /api/v1/users/me/preferences` → lưu genre/artist weights vào Redis Hash
 
@@ -149,6 +153,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Added
 
 **Frontend (React SPA):**
+
 - [ ] Login page + JWT in-memory storage (không localStorage)
 - [ ] Audio Player component — HTTP Range streaming
 - [ ] Home page: recommendations + search
@@ -157,6 +162,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - [ ] Listening Party UI: tạo room, join, sync player
 
 **Listening Party Service:**
+
 - [ ] `POST /api/v1/parties` — tạo room, sinh joinCode
 - [ ] `POST /api/v1/parties/{joinCode}/join`
 - [ ] SignalR hub: `PLAYER_ACTION`, `SYNC_STATE`, `MEMBER_JOIN`, `MEMBER_LEAVE`

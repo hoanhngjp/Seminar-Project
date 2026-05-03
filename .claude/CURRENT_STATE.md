@@ -16,41 +16,44 @@
 ## Đã hoàn thành
 
 ### Pre-Day 5 — Setup
-- [x] Documentation: PRD V5, Backlog V7, API Design V2, Use Cases V1
-- [x] Repo structure: SmartMusic.sln, folder scaffold, .gitignore
-- [x] Infrastructure local: docker-compose.yml, .env.example, verify-infra.sh
-- [x] Architecture docs: system diagrams, sequence diagrams, use case diagrams
-- [x] Contracts: GRPC_CONTRACTS.md, KAFKA_EVENT_CONTRACTS.md, kafka-schemas/
-- [x] Database schema: DATABASE_SCHEMA.md
-- [x] Execution plans: .claude/plan/ (7 files)
-- [x] CURRENT_STATE.md, CLAUDE.md cập nhật
+
+- [X] Documentation: PRD V5, Backlog V7, API Design V2, Use Cases V1
+- [X] Repo structure: SmartMusic.sln, folder scaffold, .gitignore
+- [X] Infrastructure local: docker-compose.yml, .env.example, verify-infra.sh
+- [X] Architecture docs: system diagrams, sequence diagrams, use case diagrams
+- [X] Contracts: GRPC_CONTRACTS.md, KAFKA_EVENT_CONTRACTS.md, kafka-schemas/
+- [X] Database schema: DATABASE_SCHEMA.md
+- [X] Execution plans: .claude/plan/ (7 files)
+- [X] CURRENT_STATE.md, CLAUDE.md cập nhật
 
 ### Day 5 — Boilerplate
-- [x] api-gateway boilerplate — GET /health → 200
-- [x] auth-service boilerplate — GET /health → 200
-- [x] user-service boilerplate — GET /health → 200
-- [x] music-service boilerplate — GET /health → 200
-- [x] streaming-service boilerplate — GET /health → 200
-- [x] listening-party-service boilerplate — GET /health → 200
-- [x] analytics-service boilerplate — GET /health → 200
-- [x] notification-service boilerplate — GET /health → 200
-- [x] search-service boilerplate — GET /health → 200
-- [x] recommendation-service boilerplate — GET /health → 200
-- [x] React SPA boilerplate — npm run dev hiển thị "Smart Music Platform"
-- [x] docker-compose up --build — không có container exit
+
+- [X] api-gateway boilerplate — GET /health → 200
+- [X] auth-service boilerplate — GET /health → 200
+- [X] user-service boilerplate — GET /health → 200
+- [X] music-service boilerplate — GET /health → 200
+- [X] streaming-service boilerplate — GET /health → 200
+- [X] listening-party-service boilerplate — GET /health → 200
+- [X] analytics-service boilerplate — GET /health → 200
+- [X] notification-service boilerplate — GET /health → 200
+- [X] search-service boilerplate — GET /health → 200
+- [X] recommendation-service boilerplate — GET /health → 200
+- [X] React SPA boilerplate — npm run dev hiển thị "Smart Music Platform"
+- [X] docker-compose up --build — không có container exit
 
 ### Week 2 — Auth + User + Gateway
-- [ ] Bước 0: generate C# từ proto/auth.proto và proto/user.proto
-- [ ] Bước 0: grpcurl test gRPC connection pass
-- [x] User Service: EF Core migration InitialCreate (user_db)
-- [x] User Service: GET /api/v1/users/me
-- [x] User Service: POST /api/v1/users/me/preferences
-- [x] User Service: gRPC server GetUserProfile
-- [x] User Service: Internal GET /internal/users/{id}/preferences
-- [ ] Auth Service: EF Core migration InitialCreate (auth_db)
-- [ ] Auth Service: POST /api/v1/auth/login
-- [ ] Auth Service: POST /api/v1/auth/refresh
-- [ ] Auth Service: POST /api/v1/auth/logout
+
+- [X] Bước 0: generate C# từ proto/auth.proto và proto/user.proto
+- [X] Bước 0: grpcurl test gRPC connection pass
+- [X] User Service: EF Core migration InitialCreate (user_db)
+- [X] User Service: GET /api/v1/users/me
+- [X] User Service: POST /api/v1/users/me/preferences
+- [X] User Service: gRPC server GetUserProfile
+- [X] User Service: Internal GET /internal/users/{id}/preferences
+- [X] Auth Service: EF Core migration InitialCreate (auth_db)
+- [X] Auth Service: POST /api/v1/auth/login
+- [X] Auth Service: POST /api/v1/auth/refresh
+- [X] Auth Service: POST /api/v1/auth/logout
 - [ ] API Gateway: YARP routing 9 routes
 - [ ] API Gateway: JWT Validation Middleware
 - [ ] API Gateway: Rate Limiting Middleware (Redis)
@@ -58,6 +61,7 @@
 - [ ] Checkpoint W2: login flow end-to-end pass
 
 ### Week 3–4 — Music + Streaming + Recommendation
+
 - [ ] LocalStack S3 thêm vào docker-compose.yml
 - [ ] Seed script: infra/seed/s3_seed.sh
 - [ ] Seed script: infra/seed/redis_seed.sh (50 trending songs)
@@ -77,6 +81,7 @@
 - [ ] Checkpoint W4: play 1 bài nhạc end-to-end pass
 
 ### Week 5–6 — Search + Analytics + Notification
+
 - [ ] Elasticsearch index mapping songs tạo xong
 - [ ] Seed script: infra/seed/elasticsearch_seed.sh (10 songs)
 - [ ] Search Service: GET /api/v1/search
@@ -94,6 +99,7 @@
 - [ ] Checkpoint W6: Creator thấy heatmap sau play/skip events
 
 ### Week 7–9 — Frontend + Listening Party
+
 - [ ] Track A W7: LoginPage
 - [ ] Track A W7: AudioPlayer component
 - [ ] Track B W7: POST /api/v1/parties
@@ -109,6 +115,7 @@
 - [ ] Checkpoint W9: 2-tab test — Host Play → Member sync < 500ms
 
 ### Week 10–12 — Polish + Demo
+
 - [ ] Prometheus metrics expose trên tất cả services
 - [ ] Grafana dashboard: 4 panels (latency, streaming, kafka lag, CTR)
 - [ ] k6 load test: tests/load/streaming_url.js — p95 < 150ms
@@ -129,6 +136,7 @@
 - **Blocked bởi:** —
 
 ### Decisions ghi nhận từ Day 5
+
 - EF Core `Version="*"` trong scaffold resolves 10.x — phải pin `Version="8.0.*"` cho tất cả services (net8.0)
 - `Microsoft.AspNetCore.Mvc.Testing Version="*"` cũng resolves 10.x — pin `Version="8.0.*"`
 - `FluentAssertions Version="*"` và `Moq Version="*"` trong test projects cũng phải pin cụ thể

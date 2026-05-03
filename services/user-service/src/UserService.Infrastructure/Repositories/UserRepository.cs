@@ -14,6 +14,14 @@ public class UserRepository(UserDbContext db) : IUserRepository
         => await db.Users.AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email.ToLowerInvariant(), ct).ConfigureAwait(false);
 
+    public async Task<User?> GetByUsernameOrEmailAsync(string usernameOrEmail, CancellationToken ct)
+    {
+        var lower = usernameOrEmail.ToLowerInvariant();
+        return await db.Users.AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Email == lower || u.Username == lower, ct)
+            .ConfigureAwait(false);
+    }
+
     public async Task UpdateLastLoginAsync(Guid userId, CancellationToken ct)
     {
         await db.Users.Where(u => u.Id == userId)
