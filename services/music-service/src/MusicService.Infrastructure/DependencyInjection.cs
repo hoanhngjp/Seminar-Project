@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MusicService.Application.Interfaces;
 using MusicService.Infrastructure.Data;
+using MusicService.Infrastructure.Repositories;
 using MusicService.Infrastructure.Services;
 
 namespace MusicService.Infrastructure;
@@ -31,6 +32,7 @@ public static class DependencyInjection
 
         services.AddScoped<IStorageService, S3StorageService>();
         services.AddSingleton<IEventPublisher, KafkaEventPublisher>();
+        services.AddScoped<IMusicRepository, MusicRepository>();
 
         return services;
     }

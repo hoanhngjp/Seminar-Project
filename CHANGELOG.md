@@ -27,6 +27,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Music Service: Domain Models (`Artist`, `Genre`, `Album`, `Song`, `SongGenre`) và `MusicDbContext` (Music Service)
 - Music Service: EF Core migration `InitialCreate` tạo 5 bảng vào `music_db` (Music Service)
 - Music Service: Infrastructure layer với S3StorageService (AWS SDK S3) và KafkaEventPublisher (Confluent.Kafka) để bắn event New_Release.
+- Music Service: Application Layer (`SongService`) với logic S3-first Atomicity và Exponential Backoff Retry cho luồng Upload (Music Service)
 
 ### Changed
 

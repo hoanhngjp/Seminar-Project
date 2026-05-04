@@ -131,9 +131,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 3 — Music Service: Infrastructure layer hoàn tất ✅ (2026-05-05)
+- **Service/Task:** Week 3 — Music Service: Application Layer (Upload Use Case) hoàn tất ✅ (2026-05-05)
 - **File plan đang theo:** `.claude/plan/week3_4_music_streaming_recommendation.md`
-- **Checkpoint gần nhất đã pass:** Implement S3StorageService và KafkaEventPublisher.
+- **Checkpoint gần nhất đã pass:** Implement `SongService` với S3-first atomicity và Exponential Backoff.
 - **Blocked bởi:** —
 
 ### Decisions ghi nhận từ Week 2
