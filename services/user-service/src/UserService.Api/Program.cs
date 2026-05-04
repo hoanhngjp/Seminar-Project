@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Formatting.Compact;
-using System.Text;
+using UserService.Api.Auth;
 using UserService.Api.Grpc;
 using UserService.Api.Middleware;
 using UserService.Infrastructure;
@@ -24,27 +23,15 @@ builder.Host.UseSerilog();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(80, o => o.Protocols = HttpProtocols.Http1AndHttp2);
+    // Port 80: HTTP/1.1 for REST (API Gateway + health checks)
+    options.ListenAnyIP(80, o => o.Protocols = HttpProtocols.Http1);
+    // Port 5300: HTTP/2 cleartext (h2c) for gRPC — internal only
+    options.ListenAnyIP(5300, o => o.Protocols = HttpProtocols.Http2);
 });
 
-var jwtSecret = builder.Configuration["JWT_SECRET"]
-    ?? builder.Configuration["Jwt:Secret"]
-    ?? "fallback-secret-for-development-and-testing-only";
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero,
-            ValidAlgorithms = ["HS256"]
-        };
-    });
+// Trust X-User-Id / X-User-Role headers set by the API Gateway — no JWT re-validation
+builder.Services.AddAuthentication(GatewayAuthHandler.SchemeName)
+    .AddScheme<AuthenticationSchemeOptions, GatewayAuthHandler>(GatewayAuthHandler.SchemeName, _ => { });
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();

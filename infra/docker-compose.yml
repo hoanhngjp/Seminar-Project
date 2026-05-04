@@ -252,8 +252,8 @@ services:
 
   auth-service:
     build:
-      context: ../services/auth-service
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: services/auth-service/Dockerfile
     container_name: smartmusic-auth-service
     ports:
       - "5001:80"
@@ -266,6 +266,7 @@ services:
       - Jwt__AccessTokenExpiry=${JWT_ACCESS_TOKEN_EXPIRY}
       - Jwt__RefreshTokenExpiry=${JWT_REFRESH_TOKEN_EXPIRY}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
+      - Grpc__UserService=http://user-service:5300
     depends_on:
       postgres:
         condition: service_healthy
@@ -279,11 +280,12 @@ services:
 
   user-service:
     build:
-      context: ../services/user-service
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: services/user-service/Dockerfile
     container_name: smartmusic-user-service
     ports:
       - "5002:80"
+      - "5300:5300"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=80

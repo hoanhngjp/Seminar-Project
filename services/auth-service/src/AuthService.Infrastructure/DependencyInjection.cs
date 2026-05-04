@@ -16,20 +16,32 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AuthDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("AuthDb")));
-            
+        // PostgreSQL — docker sets ConnectionStrings__PostgreSQL, local fallback to AuthDb
+        var pgConn = configuration["ConnectionStrings:PostgreSQL"]
+            ?? configuration.GetConnectionString("AuthDb")
+            ?? throw new InvalidOperationException("PostgreSQL connection string is required.");
+        services.AddDbContext<AuthDbContext>(options => options.UseNpgsql(pgConn));
+
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<ITokenBlacklistRepository, TokenBlacklistRepository>();
         services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
-        
-        var redisConfig = configuration.GetConnectionString("Redis") ?? "localhost:6379";
+
+        // Redis — docker sets Redis__ConnectionString
+        var redisConfig = configuration["Redis:ConnectionString"]
+            ?? configuration.GetConnectionString("Redis")
+            ?? "localhost:6379";
         services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConfig));
         services.AddSingleton<ICacheService, RedisCacheService>();
 
+        // gRPC client to User Service over plain HTTP/2 (h2c) — docker sets Grpc__UserService
+        var userServiceUrl = configuration["Grpc:UserService"] ?? "http://localhost:5002";
         services.AddGrpcClient<UserService.UserServiceClient>(o =>
         {
-            o.Address = new Uri(configuration["Grpc:UserService"] ?? "http://localhost:5433");
+            o.Address = new Uri(userServiceUrl);
+        }).ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+        {
+            // Required for gRPC over plain HTTP without TLS
+            EnableMultipleHttp2Connections = true
         });
         services.AddScoped<IUserGrpcClient, UserGrpcClient>();
 

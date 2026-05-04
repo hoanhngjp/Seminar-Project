@@ -189,6 +189,78 @@ chạy seed script trước khi test Recommendation Service.
 
 ---
 
+[2026-05-05] [USER SERVICE / MIGRATIONS] [BUG]
+
+**Problem:** User service migrations không tồn tại trong repo — Docker build không có migration C# files, `MigrateAsync()` chạy nhưng không có gì để apply, bảng `users` không được tạo.
+**Root cause:** Migration files chưa bao giờ được `git add` và commit. `dotnet ef migrations add` tạo files nhưng chúng nằm trong working directory mà không được stage.
+**Fix / Decision:** Chạy lại `dotnet ef migrations add InitialCreate` với appsettings.Development.json point đến native postgres. Files mới tạo ở `UserService.Infrastructure/Migrations/` (không phải `Data/Migrations/`). Apply migration lên native postgres với `dotnet ef database update`.
+**Lesson / Warning:** Sau mỗi lần tạo migration, PHẢI `git add services/*/src/*/Migrations/` và commit ngay. Migration files là code, không phải artifacts.
+
+---
+
+[2026-05-05] [ALL SERVICES / POSTGRESQL] [DECISION]
+
+**Problem:** Docker postgres (smartmusic-postgres) không có schema, native Windows postgres (localhost:5432, postgres/4L27hN04@) đã có migrations applied. Hai postgres chạy song song gây nhầm lẫn.
+**Root cause:** Migrations trong DEVLOG được chạy trên native postgres, nhưng docker-compose services kết nối đến Docker postgres với user/pass khác.
+**Fix / Decision:** Đổi `.env` để auth-service và user-service kết nối native postgres qua `host.docker.internal:5432` với `postgres/4L27hN04@`. Docker postgres vẫn chạy cho các service chưa implement (music, streaming, v.v.).
+**Lesson / Warning:** Khi chạy `dotnet ef database update`, PHẢI rõ đang apply lên postgres nào. Kiểm tra `AUTH_DB_CONNECTION` và `USER_DB_CONNECTION` trong `.env` trước khi `docker compose up`.
+
+---
+
+[2026-05-05] [USER SERVICE / AUTH] [DECISION]
+
+**Problem:** User service có `[Authorize]` với JWT Bearer, nhưng API Gateway đã remove Authorization header trước khi forward. User service validate JWT với fallback secret → 401.
+**Root cause:** Thiết kế ban đầu dự định user-service validate JWT riêng. Nhưng trong API Gateway pattern, chỉ gateway mới validate JWT — downstream trust headers.
+**Fix / Decision:** Thay `AddJwtBearer` bằng custom `GatewayAuthHandler` đọc `X-User-Id` và `X-User-Role` headers từ gateway. Không cần JWT_SECRET trong user-service.
+**Lesson / Warning:** Internal services (user, music, streaming, v.v.) KHÔNG cần JWT Bearer auth. Dùng `GatewayAuthHandler` pattern này cho tất cả downstream services khi implement.
+
+---
+
+[2026-05-05] [USER SERVICE / GRPC] [BUG]
+
+**Problem:** gRPC call từ auth-service đến user-service fail với `HTTP_1_1_REQUIRED` — server từ chối HTTP/2 cleartext.
+**Root cause:** Kestrel `HttpProtocols.Http1AndHttp2` không support h2c (HTTP/2 cleartext prior knowledge) trong .NET 8. Chỉ support HTTP/2 qua TLS (ALPN). Warning misleading: "HTTP/2 is not enabled" thực chất nghĩa là ALPN không work, không phải h2c.
+**Fix / Decision:** Tách port: port 80 dùng `Http1` (REST), port 5300 dùng `Http2` (gRPC h2c). docker-compose expose cả hai ports. Auth-service gRPC client gọi `http://user-service:5300`.
+**Lesson / Warning:** Áp dụng pattern này cho MỌI service có gRPC server: REST port 80, gRPC port 5300. Kestrel PHẢI dùng `Http2` (không phải `Http1AndHttp2`) cho port gRPC cleartext.
+
+---
+
+[2026-05-05] [USER SERVICE / EF CORE] [BUG]
+
+**Problem:** Docker build fail với `FileNotFoundException: Microsoft.EntityFrameworkCore.Relational, Version=8.0.26.0` — runtime cần 8.0.26 nhưng publish chỉ có 8.0.11.
+**Root cause:** `UserService.Api.csproj` pin `Microsoft.EntityFrameworkCore.Design Version="8.0.0"` (exact) trong khi Infrastructure dùng `8.0.*` resolve 8.0.26. Version mismatch giữa Design và runtime Relational DLL.
+**Fix / Decision:** Đổi thành `Version="8.0.*"` để cả hai projects resolve cùng version.
+**Lesson / Warning:** KHÔNG pin exact version `8.0.0` cho EF Core packages. Dùng `8.0.*` cho tất cả. Khi build warning nói "conflict between X and Y", đó là dấu hiệu sẽ fail runtime.
+
+---
+
+[2026-05-05] [API GATEWAY / JWT] [DECISION]
+
+**Problem:** Plan ghi Redis blacklist key là `rt:blacklist:{jti}`, nhưng Auth Service thực tế viết key `token:blacklist:{jti}` (trong `RedisCacheService.RevokeTokenInCacheAsync`).
+**Root cause:** Spec trong plan không đồng bộ với implementation của Auth Service.
+**Fix / Decision:** Gateway đọc `token:blacklist:{jti}` — theo code thực tế của Auth Service, không phải plan. Ưu tiên code thực tế vì Auth Service đã được test và commit.
+**Lesson / Warning:** Khi implement service mới cần đọc key từ Redis của service khác, LUÔN kiểm tra code thực tế (grep `StringSetAsync`, `KeyExpireAsync`) thay vì chỉ đọc plan/spec.
+
+---
+
+[2026-05-05] [API GATEWAY / CIRCUIT BREAKER] [DECISION]
+
+**Problem:** Cần chọn giữa Polly và custom implementation cho circuit breaker 2000ms → 503.
+**Root cause:** Plan nói "Polly hoặc YARP built-in health checks" nhưng không chỉ định rõ.
+**Fix / Decision:** Dùng custom `CircuitBreakerMiddleware` với `Task.WaitAsync(CancellationTokenSource(2000ms))`. Không thêm Polly dependency. Lý do: (1) đủ yêu cầu của project; (2) dễ unit test hơn Polly pipeline; (3) ít dependency hơn.
+**Lesson / Warning:** Nếu sau này cần retry/circuit state (half-open, open), lúc đó mới dùng Polly. Hiện tại simple timeout là đủ.
+
+---
+
+[2026-05-05] [API GATEWAY / CIRCUIT BREAKER] [BUG]
+
+**Problem:** Test `InvokeAsync_ClientDisconnects_DoesNotReturn503` fail với `TaskCanceledException` — middleware throw exception khi client disconnect thay vì swallow.
+**Root cause:** `catch (OperationCanceledException) when (cts.IsCancellationRequested && !originalAborted.IsCancellationRequested)` — khi client disconnect, cả hai token đều cancelled nên condition là false, exception không được catch.
+**Fix / Decision:** Thêm một catch block riêng: `catch (OperationCanceledException) when (originalAborted.IsCancellationRequested)` để swallow client disconnect gracefully. Circuit breaker catch phải đứng SAU.
+**Lesson / Warning:** Thứ tự `catch when` rất quan trọng khi dùng linked CancellationTokenSource. Catch client-disconnect trước, circuit breaker sau.
+
+---
+
 [2026-05-03] [AUTH SERVICE] [FEATURE]
 
 **Problem:** Implement logic cho Auth Service để cấp và xoay vòng Refresh Token an toàn, tích hợp với Redis.

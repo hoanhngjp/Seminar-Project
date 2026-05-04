@@ -14,8 +14,10 @@ public class JwtTokenGenerator(IConfiguration configuration) : ITokenGenerator
 
     public string GenerateAccessToken(Guid userId, string role, int expiresInMinutes)
     {
-        var secret = configuration["JWT_SECRET"] 
-            ?? throw new InvalidOperationException("JWT_SECRET environment variable is required.");
+        // Docker sets Jwt__SecretKey; local dev may use JWT_SECRET env var
+        var secret = configuration["Jwt:SecretKey"]
+            ?? configuration["JWT_SECRET"]
+            ?? throw new InvalidOperationException("JWT secret is required (Jwt:SecretKey or JWT_SECRET).");
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -23,8 +23,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ApiGateway.Api\ApiGateway.Api.csproj" />
     <ProjectReference Include="..\..\src\ApiGateway.Application\ApiGateway.Application.csproj" />
     <ProjectReference Include="..\..\src\ApiGateway.Domain\ApiGateway.Domain.csproj" />
+    <ProjectReference Include="..\..\src\ApiGateway.Infrastructure\ApiGateway.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

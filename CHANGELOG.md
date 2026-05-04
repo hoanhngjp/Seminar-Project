@@ -30,6 +30,36 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ---
 
+## [Week 2] — 2026-05-05
+
+> **Milestone:** Auth + User + API Gateway — login flow end-to-end hoạt động.
+> Auth Service cấp JWT, User Service quản lý identity + preferences, API Gateway route + validate.
+
+### Added
+
+- Auth Service: `POST /api/v1/auth/login` — JWT access token + HTTP-only refresh cookie, brute-force lock sau 5 lần fail (Auth Service)
+- Auth Service: `POST /api/v1/auth/refresh` — Refresh Token Rotation với reuse detection, revoke all sessions khi phát hiện tái sử dụng (Auth Service)
+- Auth Service: `POST /api/v1/auth/logout` — revoke refresh token + blacklist access token JTI trong Redis (Auth Service)
+- Auth Service: EF Core migration `InitialCreate` — tables `refresh_tokens`, `token_blacklist` (auth_db PostgreSQL) (Auth Service)
+- User Service: `GET /api/v1/users/me` — trả profile từ PostgreSQL, Redis cache TTL 15m (User Service)
+- User Service: `POST /api/v1/users/me/preferences` — lưu preferences + publish Kafka `User_Preferences_Updated` (User Service)
+- User Service: gRPC server `GetUserProfile` + `VerifyCredentials` (User Service)
+- User Service: Internal `GET /internal/users/{id}/preferences` cho Recommendation Service (User Service)
+- User Service: EF Core migration `InitialCreate` — tables `users`, `user_preferences` (user_db PostgreSQL) (User Service)
+- API Gateway: YARP routing 9 routes → 9 downstream services (API Gateway)
+- API Gateway: `JwtValidationMiddleware` — validate HS256, check Redis blacklist `token:blacklist:{jti}`, skip login/refresh/health (API Gateway)
+- API Gateway: `RateLimitingMiddleware` — Redis Sliding Window, login 10/min IP+SHA256(username), general 100/min IP (API Gateway)
+- API Gateway: `CircuitBreakerMiddleware` — downstream timeout 2000ms → 503, swallow client disconnect gracefully (API Gateway)
+- API Gateway: `CorrelationIdMiddleware` — generate/propagate X-Correlation-Id (API Gateway)
+
+### Fixed
+
+- User Service `DbInitializer`: thêm `if (db.Database.IsRelational())` trước `MigrateAsync()` — fix lỗi InMemory provider trong integration tests
+- Auth Service `user.proto`: thêm RPC `VerifyCredentials(username, password)` — Auth Service không được connect trực tiếp vào `user_db`
+- Redis blacklist key: Gateway đọc `token:blacklist:{jti}` (khớp với key Auth Service writes) thay vì `rt:blacklist:{jti}` theo plan
+
+---
+
 ## [Day 5] — 2026-05-03
 
 > **Milestone:** Project scaffold — tất cả services build thành công, `GET /health` → 200.

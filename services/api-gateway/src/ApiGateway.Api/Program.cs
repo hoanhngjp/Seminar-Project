@@ -7,9 +7,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 
-// YARP reverse proxy — routes configured in appsettings (Week 2)
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
@@ -21,10 +20,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Middleware order matters:
+// 1. CorrelationId — attach before anything logs
+// 2. CircuitBreaker — wrap downstream timeout
+// 3. RateLimiting — reject before JWT parsing
+// 4. JwtValidation — authenticate
 app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<CircuitBreakerMiddleware>();
+app.UseMiddleware<RateLimitingMiddleware>();
+app.UseMiddleware<JwtValidationMiddleware>();
+
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
 app.MapReverseProxy();
 
 app.Run();
+
+public partial class Program { }

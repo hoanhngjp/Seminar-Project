@@ -54,11 +54,11 @@
 - [X] Auth Service: POST /api/v1/auth/login
 - [X] Auth Service: POST /api/v1/auth/refresh
 - [X] Auth Service: POST /api/v1/auth/logout
-- [ ] API Gateway: YARP routing 9 routes
-- [ ] API Gateway: JWT Validation Middleware
-- [ ] API Gateway: Rate Limiting Middleware (Redis)
-- [ ] API Gateway: Circuit Breaker (2000ms → 503)
-- [ ] Checkpoint W2: login flow end-to-end pass
+- [X] API Gateway: YARP routing 9 routes
+- [X] API Gateway: JWT Validation Middleware
+- [X] API Gateway: Rate Limiting Middleware (Redis)
+- [X] API Gateway: Circuit Breaker (2000ms → 503)
+- [X] Checkpoint W2: login flow end-to-end pass
 
 ### Week 3–4 — Music + Streaming + Recommendation
 
@@ -130,20 +130,17 @@
 
 ## Đang làm
 
-- **Service/Task:** Day 5 boilerplate HOÀN TẤT ✅
-- **File plan đang theo:** `.claude/plan/day5_boilerplate.md` → DONE, tiếp theo Week 2
-- **Checkpoint gần nhất đã pass:** `docker-compose up --build` — 21 containers Up, 0 exited, tất cả 10 services GET /health → 200
+- **Service/Task:** Week 2 HOÀN TẤT ✅ — Checkpoint W2 pass (2026-05-05)
+- **File plan đang theo:** `.claude/plan/week2_auth_user_gateway.md`
+- **Checkpoint gần nhất đã pass:** API Gateway unit tests 28/28 xanh
 - **Blocked bởi:** —
 
-### Decisions ghi nhận từ Day 5
+### Decisions ghi nhận từ Week 2
 
-- EF Core `Version="*"` trong scaffold resolves 10.x — phải pin `Version="8.0.*"` cho tất cả services (net8.0)
-- `Microsoft.AspNetCore.Mvc.Testing Version="*"` cũng resolves 10.x — pin `Version="8.0.*"`
-- `FluentAssertions Version="*"` và `Moq Version="*"` trong test projects cũng phải pin cụ thể
-- YARP cần placeholder `ReverseProxy: { Routes: {}, Clusters: {} }` trong appsettings để start được
-- `UseHttpsRedirection` bị bỏ khỏi pipeline (không cần trong container, chỉ HTTP)
-- .NET 8 SDK default port đổi từ 80 → 8080 — phải thêm `ASPNETCORE_HTTP_PORTS=80` trong docker-compose cho tất cả C# services
-- docker-compose build contexts phải dùng `../services/X` (relative từ `infra/`), không phải `./services/X`
+- Redis blacklist key Gateway đọc là `token:blacklist:{jti}` (không phải `rt:blacklist:{jti}` trong plan) — theo code thực tế Auth Service
+- Circuit breaker dùng custom `Task.WaitAsync(CancellationToken)` thay vì Polly — đủ yêu cầu, ít dependency
+- `catch` client-disconnect `OperationCanceledException` phải đứng TRƯỚC catch circuit-breaker khi dùng linked CTS
+- Thêm `VerifyCredentials` RPC vào `user.proto` — Auth Service không được connect trực tiếp `user_db`
 
 ---
 
