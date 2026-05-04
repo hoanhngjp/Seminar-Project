@@ -261,6 +261,15 @@ chạy seed script trước khi test Recommendation Service.
 
 ---
 
+[2026-05-05] [INFRA / MINIO / SEED] [DECISION]
+
+**Problem:** Plan W3-4 mô tả dùng LocalStack S3, nhưng docker-compose đã có MinIO (port 9000) là S3-compatible storage. Seed script ban đầu dùng AWS CLI (không có trên Windows).
+**Root cause:** Plan được viết trước khi docker-compose được scaffold; MinIO đã được chọn thay LocalStack trong Day 5.
+**Fix / Decision:** Không thêm LocalStack — dùng MinIO đã có. Seed script dùng `mc` (MinIO Client) qua `docker exec` thay AWS CLI. Upload file dùng `mc pipe` (stdin) thay `docker cp` vì Git Bash trên Windows convert path `/tmp/` → Windows temp path gây lỗi.
+**Lesson / Warning:** Trên Windows Git Bash, `docker cp host:/tmp/file` và `docker exec container cmd /tmp/file` đều bị MSYS convert path. Workaround: dùng `MSYS_NO_PATHCONV=1` hoặc pipe stdin (`cat file | docker exec -i container cmd`).
+
+---
+
 [2026-05-03] [AUTH SERVICE] [FEATURE]
 
 **Problem:** Implement logic cho Auth Service để cấp và xoay vòng Refresh Token an toàn, tích hợp với Redis.

@@ -22,6 +22,9 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+- Seed script `infra/seed/s3_seed.sh` — tạo bucket `smartmusic-audio` + upload `test-song-001/audio.mp3` lên MinIO qua `mc pipe` (Infrastructure)
+- Seed script `infra/seed/redis_seed.sh` — populate `rec:trending:global` Sorted Set với 50 songs, TTL 1h (Infrastructure)
+
 ### Changed
 
 ### Fixed

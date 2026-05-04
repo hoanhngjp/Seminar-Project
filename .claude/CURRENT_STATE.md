@@ -62,9 +62,9 @@
 
 ### Week 3–4 — Music + Streaming + Recommendation
 
-- [ ] LocalStack S3 thêm vào docker-compose.yml
-- [ ] Seed script: infra/seed/s3_seed.sh
-- [ ] Seed script: infra/seed/redis_seed.sh (50 trending songs)
+- [X] LocalStack S3 — không cần (MinIO đã có trong docker-compose)
+- [X] Seed script: infra/seed/s3_seed.sh — bucket smartmusic-audio + test-song-001 upload
+- [X] Seed script: infra/seed/redis_seed.sh — 50 trending songs trong rec:trending:global
 - [ ] Music Service: EF Core migration InitialCreate (music_db)
 - [ ] Music Service: POST /api/v1/music/songs
 - [ ] Music Service: GET /api/v1/music/songs/{songId}
@@ -130,9 +130,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 2 HOÀN TẤT ✅ — Checkpoint W2 pass (2026-05-05)
-- **File plan đang theo:** `.claude/plan/week2_auth_user_gateway.md`
-- **Checkpoint gần nhất đã pass:** API Gateway unit tests 28/28 xanh
+- **Service/Task:** Week 3 — Bước 0 HOÀN TẤT ✅ — Seed scripts verified (2026-05-05)
+- **File plan đang theo:** `.claude/plan/week3_4_music_streaming_recommendation.md`
+- **Checkpoint gần nhất đã pass:** S3 seed (MinIO) + Redis seed (50 trending songs)
 - **Blocked bởi:** —
 
 ### Decisions ghi nhận từ Week 2
