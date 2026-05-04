@@ -1,7 +1,10 @@
+using Amazon.S3;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MusicService.Application.Interfaces;
 using MusicService.Infrastructure.Data;
+using MusicService.Infrastructure.Services;
 
 namespace MusicService.Infrastructure;
 
@@ -12,7 +15,23 @@ public static class DependencyInjection
         services.AddDbContext<MusicDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
             
-        // Additional infrastructure registrations added in later weeks (S3, Kafka)
+        // S3 / MinIO Configuration
+        services.AddSingleton<IAmazonS3>(sp =>
+        {
+            var s3Config = new AmazonS3Config
+            {
+                ServiceURL = configuration["S3:ServiceURL"],
+                ForcePathStyle = true // Required for MinIO
+            };
+            var credentials = new Amazon.Runtime.BasicAWSCredentials(
+                configuration["S3:AccessKey"], 
+                configuration["S3:SecretKey"]);
+            return new AmazonS3Client(credentials, s3Config);
+        });
+
+        services.AddScoped<IStorageService, S3StorageService>();
+        services.AddSingleton<IEventPublisher, KafkaEventPublisher>();
+
         return services;
     }
 }

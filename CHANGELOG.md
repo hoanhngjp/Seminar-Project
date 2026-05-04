@@ -26,6 +26,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Seed script `infra/seed/redis_seed.sh` — populate `rec:trending:global` Sorted Set với 50 songs, TTL 1h (Infrastructure)
 - Music Service: Domain Models (`Artist`, `Genre`, `Album`, `Song`, `SongGenre`) và `MusicDbContext` (Music Service)
 - Music Service: EF Core migration `InitialCreate` tạo 5 bảng vào `music_db` (Music Service)
+- Music Service: Infrastructure layer với S3StorageService (AWS SDK S3) và KafkaEventPublisher (Confluent.Kafka) để bắn event New_Release.
 
 ### Changed
 
@@ -131,7 +132,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Added
 
 - [x] LocalStack S3 setup + seed bucket trong `docker-compose.yml` (Dùng MinIO)
-- [ ] Music Service: upload metadata, lưu storage key, publish `New_Release` Kafka event (Domain & DB done)
+- [x] Music Service: upload metadata, lưu storage key, publish `New_Release` Kafka event (Domain, DB, Infra done)
 - [ ] `POST /api/v1/music/songs` — upload audio (validate MIME, max 50 MB, S3-first atomicity)
 - [ ] `GET /api/v1/music/songs/{songId}` — Redis cache TTL 30 min
 - [ ] Streaming Service: generate pre-signed URL (expiry 900s), HTTP Range support

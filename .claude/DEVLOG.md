@@ -292,3 +292,10 @@ chạy seed script trước khi test Recommendation Service.
 **Lesson / Warning:** Luôn đối chiếu kỹ `API_DESIGN_V2.md` và tạo Checklist 8 điểm. Nếu thấy thiếu sót (đặc biệt là 503 cho external dependencies), hãy cập nhật tài liệu trước.
 
 ---
+
+[2026-05-05] [MUSIC SERVICE / INFRASTRUCTURE] [DECISION]
+
+**Problem:** MinIO chạy cục bộ không support Virtual Hosted-style URLs tốt nếu không setup DNS chuẩn (gây lỗi khi AWS SDK S3 gọi `bucket.localhost:9000`).
+**Fix / Decision:** Cấu hình `AmazonS3Config.ForcePathStyle = true` khi register `IAmazonS3` trong DI container để SDK gọi S3 theo kiểu Path-style (`localhost:9000/bucket`).
+
+---
