@@ -24,8 +24,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 - Seed script `infra/seed/s3_seed.sh` — tạo bucket `smartmusic-audio` + upload `test-song-001/audio.mp3` lên MinIO qua `mc pipe` (Infrastructure)
 - Seed script `infra/seed/redis_seed.sh` — populate `rec:trending:global` Sorted Set với 50 songs, TTL 1h (Infrastructure)
+- Music Service: Domain Models (`Artist`, `Genre`, `Album`, `Song`, `SongGenre`) và `MusicDbContext` (Music Service)
+- Music Service: EF Core migration `InitialCreate` tạo 5 bảng vào `music_db` (Music Service)
 
 ### Changed
+
+- API Design V2: Cập nhật chi tiết các endpoints của Music Service (thêm mã lỗi 503, chuẩn hóa response) (Documentation)
 
 ### Fixed
 
@@ -126,8 +130,8 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
-- [ ] LocalStack S3 setup + seed bucket trong `docker-compose.yml`
-- [ ] Music Service: upload metadata, lưu storage key, publish `New_Release` Kafka event
+- [x] LocalStack S3 setup + seed bucket trong `docker-compose.yml` (Dùng MinIO)
+- [ ] Music Service: upload metadata, lưu storage key, publish `New_Release` Kafka event (Domain & DB done)
 - [ ] `POST /api/v1/music/songs` — upload audio (validate MIME, max 50 MB, S3-first atomicity)
 - [ ] `GET /api/v1/music/songs/{songId}` — Redis cache TTL 30 min
 - [ ] Streaming Service: generate pre-signed URL (expiry 900s), HTTP Range support

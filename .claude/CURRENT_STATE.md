@@ -65,7 +65,7 @@
 - [X] LocalStack S3 — không cần (MinIO đã có trong docker-compose)
 - [X] Seed script: infra/seed/s3_seed.sh — bucket smartmusic-audio + test-song-001 upload
 - [X] Seed script: infra/seed/redis_seed.sh — 50 trending songs trong rec:trending:global
-- [ ] Music Service: EF Core migration InitialCreate (music_db)
+- [X] Music Service: EF Core migration InitialCreate (music_db)
 - [ ] Music Service: POST /api/v1/music/songs
 - [ ] Music Service: GET /api/v1/music/songs/{songId}
 - [ ] Music Service: Internal GET /internal/songs/{songId}/storage-key
@@ -130,9 +130,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 3 — Bước 0 HOÀN TẤT ✅ — Seed scripts verified (2026-05-05)
+- **Service/Task:** Week 3 — Music Service: Domain Models & Migration hoàn tất ✅ (2026-05-05)
 - **File plan đang theo:** `.claude/plan/week3_4_music_streaming_recommendation.md`
-- **Checkpoint gần nhất đã pass:** S3 seed (MinIO) + Redis seed (50 trending songs)
+- **Checkpoint gần nhất đã pass:** EF Core InitialCreate cho music_db trên Native Postgres.
 - **Blocked bởi:** —
 
 ### Decisions ghi nhận từ Week 2

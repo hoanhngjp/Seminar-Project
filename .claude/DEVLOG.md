@@ -283,3 +283,12 @@ chạy seed script trước khi test Recommendation Service.
 **Lesson / Warning:** Tương tác với HTTP-only Cookie cần chú ý khi test: tên cookie có thể khác in hoa/thường tùy vào client/server ("refreshToken", "Secure", "HttpOnly" -> "secure", "httponly"). Testcontainers chạy khá tốt để test end-to-end với PostgreSQL và Redis thực.
 
 ---
+
+[2026-05-05] [MUSIC SERVICE / API CONTRACT] [DECISION]
+
+**Problem:** Khi chuẩn bị implement Music Service, phát hiện một số endpoint trong `API_DESIGN_V2.md` chưa hoàn toàn khớp với checklist chi tiết (thiếu mã lỗi 503 cho S3, response format batch API chưa chuẩn).
+**Root cause:** Tài liệu design tổng quan đôi khi bị thiếu sót edge cases.
+**Fix / Decision:** Chủ động cập nhật `API_DESIGN_V2.md` trước khi viết code để đảm bảo Single Source of Truth luôn chính xác và Code tuân thủ đúng rule `api-contract-first`.
+**Lesson / Warning:** Luôn đối chiếu kỹ `API_DESIGN_V2.md` và tạo Checklist 8 điểm. Nếu thấy thiếu sót (đặc biệt là 503 cho external dependencies), hãy cập nhật tài liệu trước.
+
+---

@@ -129,29 +129,30 @@ Cache: Redis TTL 1h (Key: stats:{songId}:{timeRange})
 Data updated daily via Kafka event pipeline | InfluxDB Client / MongoDB Driver | Integration | High | 500 |
 | **── Music Service (Creator Upload) ──** | | | | | | | | | | | | |
 | Music | /api/v1/music/songs | POST | As a Creator, I want to upload an audio file and song metadata so my music is available on the platform. | multipart/form-data:
-- file: audio (MP3/WAV, max 50MB)
+- file: audio (MP3/WAV/OGG, max 50MB)
 - title: string
-- genre: string
+- genreIds: string
 - mood: string
-- artistId: string | {"success":true,"data":{"songId":"s1","title":"My Song","status":"PROCESSING"},"meta":{...},"error":null} | Auth (JWT)
+- language: string
+- isExplicit: boolean | {"success":true,"data":{"songId":"s1","title":"My Song","storageKey":"songs/s1/audio.mp3","status":"processing"},"meta":{...},"error":null} | Auth (JWT)
 RBAC (Creator only)
 Idempotency-Key (Header)
-Validation (file type, size) | 400 VALIDATION_ERROR (wrong format / >50MB)
+Validation (magic bytes) | 400 VALIDATION_ERROR
 401 UNAUTHORIZED
 403 FORBIDDEN
 409 IDEMPOTENCY_CONFLICT
 413 PAYLOAD_TOO_LARGE
-500 INTERNAL_ERROR | Budget: 5000ms (file upload — different SLO)
-S3 upload with retry (max 3x Exponential Backoff)
-Do NOT commit to DB if S3 upload fails (atomicity)
-After success: publish New_Release (v1) to Kafka → Notification Service
-Idempotency TTL: 24h | AWS SDK S3, Confluent.Kafka | Integration, Chaos | High | 5000 |
-| Music | /api/v1/music/songs/{songId} | GET | As a Listener or Creator, I want to get song metadata (title, artist, genre, mood, duration). | null (path param: songId) | {"success":true,"data":{"songId":"s1","title":"My Song","artist":"Artist A","genre":"Pop","mood":"Energetic","durationSec":210},"meta":{...,"cache":"HIT"},"error":null} | Auth (JWT)
+500 INTERNAL_ERROR
+503 SERVICE_UNAVAILABLE | Budget: 5000ms
+Safe to retry: YES
+S3 upload retry (3x Exp. Backoff)
+Atomicity: S3 success before DB commit
+After success: Kafka New_Release (v1) | AWS SDK S3, Confluent.Kafka | Integration, Chaos | High | 5000 |
+| Music | /api/v1/music/songs/{songId} | GET | As a Listener or Creator, I want to get song metadata. | null (path param: songId) | {"success":true,"data":{"id":"s1","title":"My Song","artist":"Artist A","album":"Album 1","duration":210,"coverUrl":"...","isExplicit":false},"meta":{...,"cache":"HIT"},"error":null} | Auth (JWT)
 Rate Limit (Token 200/min) | 401 UNAUTHORIZED
 404 SONG_NOT_FOUND
 500 INTERNAL_ERROR | Budget: 200ms | Safe to retry: YES
-Cache: Redis TTL 30m (Key: song:meta:{songId})
-Route to Read-Replica DB | Npgsql / MongoDB Driver | Integration | Medium | 200 |
+Cache: Redis TTL 30m (Key: song:meta:{songId}) | Npgsql | Integration | Medium | 200 |
 | **── EPIC 5: Search ──** | | | | | | | | | | | | |
 | Search | /api/v1/search | GET | As a Listener, I want to fuzzy search songs and artists with typo tolerance. | ?q=son+tug&type=all&limit=10&cursor=idx1 | {"success":true,"data":[{"id":"a1","name":"Sơn Tùng M-TP","type":"artist","score":0.98}],"meta":{...,"pagination":{"nextCursor":"idx2","hasMore":false},"cache":"HIT"},"error":null} | Auth (JWT)
 Rate Limit (Token 60/min) | 400 VALIDATION_ERROR
@@ -236,8 +237,8 @@ Fan-out partial fail: async retry per follower | Medium |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | gRPC | API Gateway | Auth Service | ValidateToken(token: string) | Gateway calls Auth Service to verify JWT on every protected request. Hot path — must be fastest call in system. | {"token":"Bearer jwt..."} | {"valid":true,"userId":"u1","role":"Listener","expiresAt":1714000000} | 100ms | Fallback: if Auth Service down, Gateway uses cached public keys (RSA) to verify JWT locally. Circuit Breaker triggers after 3 consecutive failures. |
 | gRPC | Auth Service | User Service | GetUserProfile(userId: string) | Auth Service fetches full user profile and role from User Service after token validation. | {"userId":"u1"} | {"userId":"u1","name":"Nghiep","email":"...","role":"Listener","createdAt":"ISO8601"} | 100ms | Route to Read-Replica DB. Fallback: return cached profile from Redis (TTL 15m). Circuit Breaker on consecutive failures. |
-| REST | Music Service | Streaming Service | GET /internal/songs/{songId}/storage-key | Music Service provides S3 storage key to Streaming Service for generating Pre-signed URLs. | Path param: songId | {"storageKey":"songs/s1/audio.mp3","mimeType":"audio/mpeg","durationSec":210} | 150ms | Internal network only — not exposed via API Gateway. Cache result in Streaming Service for 30m. 404 if song not found or not published yet. |
-| REST | Recommendation Service | Music Service | GET /internal/songs/batch?ids=s1,s2,s3 | Recommendation Service fetches song metadata (title, artist, genre) to enrich recommendation response. | Query param: ids (comma-separated songIds, max 50) | [{"songId":"s1","title":"Song 1","artist":"Artist A","genre":"Pop","thumbnail":"url"},...] | 200ms | Batch request to minimize network calls. Cache in Recommendation Service Redis (TTL 30m). If Music Service unavailable: return recommendations without metadata enrichment (degrade gracefully). |
+| REST | Music Service | Streaming Service | GET /internal/songs/{songId}/storage-key | Music Service provides S3 storage key to Streaming Service for generating Pre-signed URLs. | Path param: songId | {"storageKey":"songs/s1/audio.mp3","bucket":"smart-music-dev"} | 150ms | Internal network only — not exposed via API Gateway. Cache result in Streaming Service for 30m. 404 if song not found or not published yet. |
+| REST | Recommendation Service | Music Service | GET /internal/songs/batch?ids=s1,s2,s3 | Recommendation Service fetches song metadata to enrich recommendation response. | Query param: ids (comma-separated songIds) | {"songs":[{"id":"s1","title":"Song 1","artist":"Artist A","genreId":"g1","moodTags":["chill"]}]} | 200ms | Batch request to minimize network calls. Cache in Recommendation Service Redis (TTL 30m). If Music Service unavailable: return recommendations without metadata enrichment (degrade gracefully). |
 | Kafka | Streaming Service | Recommendation Service | Song_Played / Song_Skipped events (v1) | Async: Streaming Service publishes events → Recommendation Service updates Redis weight scores. | See Kafka Events sheet for full payload schema | 202 Accepted (async — no direct response) | at-least-once delivery. Idempotency via Redis SET. DLQ after 3 retries. Weight update: PLAY (+weight), SKIP (-weight) per genre, TTL 7 days. |  |
 | Kafka | Music Service | Notification Service | New_Release event (v1) | Async: Music Service publishes new release → Notification Service fans out to all followers. | See Kafka Events sheet for full payload schema | 202 Accepted (async — no direct response) | at-least-once delivery. Fan-out: Notification Service reads follower list from User Service. Partial fan-out failures retried independently per user. |  |
 | WebSocket | Listening Party Service | All Party Members | /ws/v1/parties/{roomId} | Bidirectional realtime channel. Host sends PLAYER_ACTION → server broadcasts SYNC_STATE to all members. | Client → Server:
