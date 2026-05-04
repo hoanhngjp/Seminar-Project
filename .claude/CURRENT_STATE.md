@@ -67,7 +67,7 @@
 - [X] Seed script: infra/seed/redis_seed.sh — 50 trending songs trong rec:trending:global
 - [X] Music Service: EF Core migration InitialCreate (music_db)
 - [X] Music Service: S3StorageService (MinIO AWS SDK) & KafkaEventPublisher (Confluent.Kafka)
-- [ ] Music Service: POST /api/v1/music/songs
+- [X] Music Service: POST /api/v1/music/songs
 - [ ] Music Service: GET /api/v1/music/songs/{songId}
 - [ ] Music Service: Internal GET /internal/songs/{songId}/storage-key
 - [ ] Music Service: Internal GET /internal/songs/batch
@@ -131,9 +131,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 3 — Music Service: Application Layer (Upload Use Case) hoàn tất ✅ (2026-05-05)
+- **Service/Task:** Week 3 — Music Service: API Controller (Upload Endpoint) hoàn tất ✅ (2026-05-05)
 - **File plan đang theo:** `.claude/plan/week3_4_music_streaming_recommendation.md`
-- **Checkpoint gần nhất đã pass:** Implement `SongService` với S3-first atomicity và Exponential Backoff.
+- **Checkpoint gần nhất đã pass:** Implement `SongsController` xử lý Multipart form-data, Rate Limit 10/min, Idempotency Redis.
 - **Blocked bởi:** —
 
 ### Decisions ghi nhận từ Week 2

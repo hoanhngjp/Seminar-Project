@@ -28,6 +28,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Music Service: EF Core migration `InitialCreate` tạo 5 bảng vào `music_db` (Music Service)
 - Music Service: Infrastructure layer với S3StorageService (AWS SDK S3) và KafkaEventPublisher (Confluent.Kafka) để bắn event New_Release.
 - Music Service: Application Layer (`SongService`) với logic S3-first Atomicity và Exponential Backoff Retry cho luồng Upload (Music Service)
+- Music Service: Expose endpoint `POST /api/v1/music/songs` cấu hình rate limiting (10 req/min), file size limits (50MB) và Redis Idempotency.
 
 ### Changed
 
@@ -134,7 +135,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 - [x] LocalStack S3 setup + seed bucket trong `docker-compose.yml` (Dùng MinIO)
 - [x] Music Service: upload metadata, lưu storage key, publish `New_Release` Kafka event (Domain, DB, Infra done)
-- [ ] `POST /api/v1/music/songs` — upload audio (validate MIME, max 50 MB, S3-first atomicity)
+- [x] `POST /api/v1/music/songs` — upload audio (validate MIME, max 50 MB, S3-first atomicity)
 - [ ] `GET /api/v1/music/songs/{songId}` — Redis cache TTL 30 min
 - [ ] Streaming Service: generate pre-signed URL (expiry 900s), HTTP Range support
 - [ ] `GET /api/v1/streaming/{songId}/url` → pre-signed URL

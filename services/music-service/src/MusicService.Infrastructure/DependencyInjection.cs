@@ -34,6 +34,13 @@ public static class DependencyInjection
         services.AddSingleton<IEventPublisher, KafkaEventPublisher>();
         services.AddScoped<IMusicRepository, MusicRepository>();
 
+        // Redis Configuration
+        services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp =>
+        {
+            var redisConnectionString = configuration.GetConnectionString("Redis") ?? "localhost:6379";
+            return StackExchange.Redis.ConnectionMultiplexer.Connect(redisConnectionString);
+        });
+
         return services;
     }
 }

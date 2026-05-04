@@ -306,3 +306,13 @@ chạy seed script trước khi test Recommendation Service.
 **Fix / Decision:** Implement loop retry th? c�ng v?i Exponential Backoff (2s, 4s) cho S3 upload trong SongService. S3 upload ph?i th�nh c�ng m?i insert DB. N?u DB commit fail, th?c hi?n compensation b?ng c�ch x�a S3 object v?a t?o (s? d?ng CancellationToken.None d? kh�ng b? ?nh hu?ng n?u request HTTP b? cancel gi?a ch?ng). Event Kafka du?c b?n sau c�ng d?ng Best-Effort.
 
 ---
+
+[2026-05-05] [MUSIC SERVICE / API] [DECISION]
+
+**Problem:** Chống spam upload, duplicate request, và tránh DoS do payload quá lớn.
+**Fix / Decision:**
+- Dùng Microsoft.AspNetCore.RateLimiting (FixedWindow) 10 req/min/IP (hoặc global).
+- Dùng Attribute [RequestSizeLimit(52428800)] và [RequestFormLimits] để block stream size ở level HTTP pipeline trước khi parse model, giảm tải CPU/RAM.
+- Custom IdempotencyFilterAttribute tích hợp StackExchange.Redis SetNx để block duplicate request qua header Idempotency-Key với TTL 24h.
+
+---
