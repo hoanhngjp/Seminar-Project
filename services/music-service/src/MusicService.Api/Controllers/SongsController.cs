@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -5,15 +10,12 @@ using MusicService.Api.Filters;
 using MusicService.Api.Models;
 using MusicService.Application.DTOs;
 using MusicService.Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MusicService.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/music/[controller]")]
+[Authorize]
 public class SongsController : ControllerBase
 {
     private readonly ISongService _songService;
@@ -23,35 +25,50 @@ public class SongsController : ControllerBase
         _songService = songService;
     }
 
+    // ----------------------------------------------------------------
+    // Contract-First Checklist — POST /api/v1/music/songs
+    // [1] POST /api/v1/music/songs
+    // [2] multipart/form-data: file + title + genreIds + mood + language + isExplicit
+    // [3] 201: { success, data: { songId, title, storageKey, status }, meta }
+    // [4] 400 VALIDATION_ERROR, 403 FORBIDDEN, 409 IDEMPOTENCY_CONFLICT,
+    //     413 PAYLOAD_TOO_LARGE, 429 RATE_LIMIT_EXCEEDED, 503 SERVICE_UNAVAILABLE
+    // [5] Auth (GatewayAuth), Idempotency-Key, Rate Limit 10/min
+    // [6] 5000ms
+    // [7] YES (idempotent via Idempotency-Key)
+    // [8] S3 first then DB; Kafka New_Release after commit; Creator role required
+    // ----------------------------------------------------------------
+
     [HttpPost]
     [IdempotencyFilter]
-    // [Authorize] // Temporarily commented until auth is fully integrated across the API gateway
-    [RequestSizeLimit(52428800)] // 50MB
-    [RequestFormLimits(MultipartBodyLengthLimit = 52428800)]
+    [RequestSizeLimit(52_428_800)]
+    [RequestFormLimits(MultipartBodyLengthLimit = 52_428_800)]
     public async Task<IActionResult> UploadSong([FromForm] UploadSongRequest request)
     {
+        var requestId = HttpContext.Items["X-Correlation-Id"]?.ToString() ?? Guid.NewGuid().ToString();
+
         if (request.File == null || request.File.Length == 0)
-            return BadRequest(ApiResponse<object>.Fail("File is required."));
+            return BadRequest(ApiResponse<object>.Fail("VALIDATION_ERROR", "Audio file is required.", requestId));
 
-        // Extract UserId from Claims or use a dummy one for testing
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-        
-        // For development/testing: 
-        // We will fallback to a seed user id if the token is missing.
-        Guid userId = string.IsNullOrEmpty(userIdClaim) 
-            ? Guid.Parse("11111111-1111-1111-1111-111111111111") // Default artist for testing
-            : Guid.Parse(userIdClaim);
+        if (request.File.Length > 50 * 1024 * 1024)
+            return StatusCode(413, ApiResponse<object>.Fail("PAYLOAD_TOO_LARGE", "File exceeds 50MB limit.", requestId));
 
-        var genreIdsList = new List<string>();
-        if (!string.IsNullOrEmpty(request.GenreIds))
-        {
-            genreIdsList = request.GenreIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(g => g.Trim()).ToList();
-        }
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var role = User.FindFirstValue(ClaimTypes.Role);
+
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized(ApiResponse<object>.Fail("UNAUTHORIZED", "Authentication required.", requestId));
+
+        if (role != "Creator" && role != "Admin")
+            return StatusCode(403, ApiResponse<object>.Fail("FORBIDDEN", "Only Creators can upload songs.", requestId));
+
+        var genreIds = string.IsNullOrEmpty(request.GenreIds)
+            ? new List<string>()
+            : request.GenreIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(g => g.Trim()).ToList();
 
         var dto = new UploadSongDto
         {
             Title = request.Title ?? "Untitled",
-            GenreIds = genreIdsList,
+            GenreIds = genreIds,
             Mood = request.Mood,
             Language = request.Language,
             IsExplicit = request.IsExplicit,
@@ -64,30 +81,61 @@ public class SongsController : ControllerBase
         try
         {
             var song = await _songService.UploadSongAsync(userId, dto, HttpContext.RequestAborted);
-            
-            return Ok(ApiResponse<object>.Ok(new
+            return StatusCode(201, ApiResponse<object>.Ok(new
             {
                 songId = song.Id,
                 title = song.Title,
                 storageKey = song.S3AudioKey,
                 status = "processing"
-            }));
+            }, requestId));
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("Creator profile not found"))
         {
-            return StatusCode(403, ApiResponse<object>.Fail("FORBIDDEN: Creator profile not found."));
+            return StatusCode(403, ApiResponse<object>.Fail("FORBIDDEN", "Creator profile not found.", requestId));
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(ApiResponse<object>.Fail($"VALIDATION_ERROR: {ex.Message}"));
+            return BadRequest(ApiResponse<object>.Fail("VALIDATION_ERROR", ex.Message, requestId));
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex) when (ex.Message.Contains("storage service"))
         {
-            if (ex.Message.Contains("storage service"))
-            {
-                return StatusCode(503, ApiResponse<object>.Fail("SERVICE_UNAVAILABLE: Storage service is currently down."));
-            }
-            return StatusCode(500, ApiResponse<object>.Fail("INTERNAL_ERROR"));
+            return StatusCode(503, ApiResponse<object>.Fail("SERVICE_UNAVAILABLE", "Storage service is currently unavailable.", requestId));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, ApiResponse<object>.Fail("INTERNAL_ERROR", "An unexpected error occurred.", requestId));
+        }
+    }
+
+    // ----------------------------------------------------------------
+    // Contract-First Checklist — GET /api/v1/music/songs/{songId}
+    // [1] GET /api/v1/music/songs/{songId}
+    // [2] Path: songId (UUID)
+    // [3] 200: { success, data: { id, title, artist, album, duration, coverUrl, isExplicit }, meta: { cache: HIT|MISS } }
+    // [4] 401 UNAUTHORIZED, 404 SONG_NOT_FOUND
+    // [5] Auth (GatewayAuth)
+    // [6] 200ms
+    // [7] YES
+    // [8] Redis cache key: song:meta:{songId} TTL 30m
+    // ----------------------------------------------------------------
+
+    [HttpGet("{songId:guid}")]
+    public async Task<IActionResult> GetSong(Guid songId)
+    {
+        var requestId = HttpContext.Items["X-Correlation-Id"]?.ToString() ?? Guid.NewGuid().ToString();
+
+        try
+        {
+            var (song, cacheHit) = await _songService.GetSongAsync(songId, HttpContext.RequestAborted);
+            return Ok(ApiResponse<SongResponseDto>.Ok(song, requestId, cacheHit ? "HIT" : "MISS"));
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(ApiResponse<object>.Fail("SONG_NOT_FOUND", $"Song {songId} not found.", requestId));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, ApiResponse<object>.Fail("INTERNAL_ERROR", "An unexpected error occurred.", requestId));
         }
     }
 }

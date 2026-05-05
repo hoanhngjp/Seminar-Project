@@ -68,9 +68,9 @@
 - [X] Music Service: EF Core migration InitialCreate (music_db)
 - [X] Music Service: S3StorageService (MinIO AWS SDK) & KafkaEventPublisher (Confluent.Kafka)
 - [X] Music Service: POST /api/v1/music/songs
-- [ ] Music Service: GET /api/v1/music/songs/{songId}
-- [ ] Music Service: Internal GET /internal/songs/{songId}/storage-key
-- [ ] Music Service: Internal GET /internal/songs/batch
+- [X] Music Service: GET /api/v1/music/songs/{songId} — Redis cache TTL 30m, GatewayAuth
+- [X] Music Service: Internal GET /internal/songs/{songId}/storage-key
+- [X] Music Service: Internal GET /internal/songs/batch
 - [ ] Streaming Service: GET /api/v1/streaming/{songId}/url
 - [ ] Streaming Service: GET /api/v1/streaming/{songId}/chunk
 - [ ] Recommendation Service: Rule Engine scoring logic
@@ -131,9 +131,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 3 — Music Service: API Controller (Upload Endpoint) hoàn tất ✅ (2026-05-05)
+- **Service/Task:** Week 3 — Music Service: tất cả endpoints + tests hoàn tất ✅ (2026-05-05)
 - **File plan đang theo:** `.claude/plan/week3_4_music_streaming_recommendation.md`
-- **Checkpoint gần nhất đã pass:** Implement `SongsController` xử lý Multipart form-data, Rate Limit 10/min, Idempotency Redis.
+- **Checkpoint gần nhất đã pass:** 7 unit + 8 integration tests xanh (15/15)
 - **Blocked bởi:** —
 
 ### Decisions ghi nhận từ Week 2

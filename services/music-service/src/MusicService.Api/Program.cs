@@ -1,9 +1,11 @@
+using System;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.RateLimiting;
+using MusicService.Api.Auth;
 using MusicService.Api.Middleware;
 using MusicService.Application;
 using MusicService.Infrastructure;
-using System.Threading.RateLimiting;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +16,12 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
-// Rate Limiting
+// Auth: trust X-User-Id / X-User-Role headers set by API Gateway
+builder.Services.AddAuthentication(GatewayAuthHandler.SchemeName)
+    .AddScheme<AuthenticationSchemeOptions, GatewayAuthHandler>(GatewayAuthHandler.SchemeName, _ => { });
+builder.Services.AddAuthorization();
+
+// Rate Limiting — POST /music/songs: 10 req/min per IP
 builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter("UploadLimit", opt =>
@@ -22,7 +29,7 @@ builder.Services.AddRateLimiter(options =>
         opt.Window = TimeSpan.FromMinutes(1);
         opt.PermitLimit = 10;
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-        opt.QueueLimit = 2;
+        opt.QueueLimit = 0;
     });
     options.RejectionStatusCode = 429;
 });
@@ -37,8 +44,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseRouting();
-app.UseRateLimiter();
+app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers().RequireRateLimiting("UploadLimit");
+app.UseRateLimiter();
+
+// Apply rate limit only to upload endpoint
+app.MapControllers();
+app.MapControllerRoute(
+    name: "upload",
+    pattern: "api/v1/music/songs",
+    defaults: new { controller = "Songs", action = "UploadSong" })
+   .RequireRateLimiting("UploadLimit");
 
 app.Run();
+
+// Needed for WebApplicationFactory in integration tests
+public partial class Program { }

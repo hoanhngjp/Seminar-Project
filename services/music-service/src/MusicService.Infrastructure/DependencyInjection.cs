@@ -6,6 +6,7 @@ using MusicService.Application.Interfaces;
 using MusicService.Infrastructure.Data;
 using MusicService.Infrastructure.Repositories;
 using MusicService.Infrastructure.Services;
+using StackExchange.Redis;
 
 namespace MusicService.Infrastructure;
 
@@ -33,6 +34,7 @@ public static class DependencyInjection
         services.AddScoped<IStorageService, S3StorageService>();
         services.AddSingleton<IEventPublisher, KafkaEventPublisher>();
         services.AddScoped<IMusicRepository, MusicRepository>();
+        services.AddSingleton<ISongCache, RedisSongCache>();
 
         // Redis Configuration
         services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp =>

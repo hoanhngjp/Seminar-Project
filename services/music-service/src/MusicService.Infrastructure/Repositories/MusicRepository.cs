@@ -20,22 +20,28 @@ public class MusicRepository : IMusicRepository
     }
 
     public async Task<Artist?> GetArtistByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
-    {
-        return await _context.Artists.FirstOrDefaultAsync(a => a.UserId == userId, cancellationToken);
-    }
+        => await _context.Artists.FirstOrDefaultAsync(a => a.UserId == userId, cancellationToken);
 
     public async Task<List<Genre>> GetGenresByIdsAsync(IEnumerable<Guid> genreIds, CancellationToken cancellationToken = default)
-    {
-        return await _context.Genres.Where(g => genreIds.Contains(g.Id)).ToListAsync(cancellationToken);
-    }
+        => await _context.Genres.Where(g => genreIds.Contains(g.Id)).ToListAsync(cancellationToken);
 
     public async Task AddSongAsync(Song song, CancellationToken cancellationToken = default)
-    {
-        await _context.Songs.AddAsync(song, cancellationToken);
-    }
+        => await _context.Songs.AddAsync(song, cancellationToken);
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        await _context.SaveChangesAsync(cancellationToken);
-    }
+        => await _context.SaveChangesAsync(cancellationToken);
+
+    public async Task<Song?> GetSongByIdAsync(Guid songId, CancellationToken cancellationToken = default)
+        => await _context.Songs
+            .Include(s => s.Artist)
+            .Include(s => s.Album)
+            .Include(s => s.SongGenres)
+            .FirstOrDefaultAsync(s => s.Id == songId, cancellationToken);
+
+    public async Task<List<Song>> GetSongsByIdsAsync(IEnumerable<Guid> songIds, CancellationToken cancellationToken = default)
+        => await _context.Songs
+            .Include(s => s.Artist)
+            .Include(s => s.SongGenres)
+            .Where(s => songIds.Contains(s.Id))
+            .ToListAsync(cancellationToken);
 }

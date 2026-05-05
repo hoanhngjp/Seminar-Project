@@ -261,6 +261,33 @@ chạy seed script trước khi test Recommendation Service.
 
 ---
 
+[2026-05-05] [MUSIC SERVICE / INTEGRATION TESTS] [BUG]
+
+**Problem:** Integration tests connect to `localhost:5432` expecting native postgres (`postgres/4L27hN04@`) but Docker postgres (port 5432 mapped) uses `smartmusic/changeme_local`. Schema isolation via `SearchPath=` + `EnsureCreatedAsync` failed because EF Core's `EnsureCreated` skips table creation when the database already exists (even if the schema is new).
+**Root cause:** Two issues: (1) Docker postgres on port 5432 intercepted .NET connections from Windows host (pg_hba.conf: trust for 127.0.0.1 didn't match due to Docker NAT); (2) `EnsureCreatedAsync` is a no-op when the database exists, regardless of schema state.
+**Fix / Decision:** Integration tests use native postgres (`postgres/4L27hN04@`, confirmed `music_db` exists). Dropped schema isolation — each test seeds its own data and cleans up in `DisposeAsync`. `IClassFixture<MusicWebApplicationFactory>` shares factory across test methods (performance). `Pooling=false` added to prevent stale connection caching.
+**Lesson / Warning:** Don't use `EnsureCreatedAsync` for schema isolation in integration tests with a pre-existing database. Use cleanup-based isolation instead. For FUTURE services: create `music_db` (and all `*_db` databases) on native postgres before running tests.
+
+---
+
+[2026-05-05] [MUSIC SERVICE / API RESPONSE] [DECISION]
+
+**Problem:** `ApiResponse<T>` was using `Error: string?` and missing proper `meta` fields (`apiVersion`, `requestId`, `timestamp`). `POST /music/songs` was returning 200 instead of 201.
+**Root cause:** Initial implementation was placeholder-quality.
+**Fix / Decision:** Rewrote `ApiResponse<T>` with `ApiError(Code, Message)` record and `ApiMeta` class. POST upload now returns 201. `cache` field in meta only appears for endpoints with caching (per api-contract-first RULE.md).
+**Lesson / Warning:** Always check the ApiResponse shape against api-contract-first/RULE.md before writing any controller. The Error field must be `{ code, message }` not a raw string.
+
+---
+
+[2026-05-05] [MUSIC SERVICE / CLEAN ARCHITECTURE] [DECISION]
+
+**Problem:** `SongService` (Application layer) was importing `StackExchange.Redis` and `IConfiguration` — infrastructure concerns leaking into Application layer.
+**Root cause:** Redis cache was implemented directly in SongService.
+**Fix / Decision:** Created `ISongCache` abstraction in Application layer, implemented as `RedisSongCache` in Infrastructure. `IStorageService` got `BucketName` property so Application layer doesn't need `IConfiguration` to look up bucket name.
+**Lesson / Warning:** Application layer MUST NOT reference Infrastructure packages. If a service needs config or external clients, add a typed abstraction to Application/Interfaces.
+
+---
+
 [2026-05-05] [INFRA / MINIO / SEED] [DECISION]
 
 **Problem:** Plan W3-4 mô tả dùng LocalStack S3, nhưng docker-compose đã có MinIO (port 9000) là S3-compatible storage. Seed script ban đầu dùng AWS CLI (không có trên Windows).
@@ -302,8 +329,8 @@ chạy seed script trước khi test Recommendation Service.
 
 [2026-05-05] [MUSIC SERVICE / APPLICATION] [DECISION]
 
-**Problem:** �?m b?o S3-first atomicity v� retry cho vi?c upload audio.
-**Fix / Decision:** Implement loop retry th? c�ng v?i Exponential Backoff (2s, 4s) cho S3 upload trong SongService. S3 upload ph?i th�nh c�ng m?i insert DB. N?u DB commit fail, th?c hi?n compensation b?ng c�ch x�a S3 object v?a t?o (s? d?ng CancellationToken.None d? kh�ng b? ?nh hu?ng n?u request HTTP b? cancel gi?a ch?ng). Event Kafka du?c b?n sau c�ng d?ng Best-Effort.
+**Problem:** �?m b?o S3-first atomicity v� retry cho vi?c upload audio.
+**Fix / Decision:** Implement loop retry th? c�ng v?i Exponential Backoff (2s, 4s) cho S3 upload trong SongService. S3 upload ph?i th�nh c�ng m?i insert DB. N?u DB commit fail, th?c hi?n compensation b?ng c�ch x�a S3 object v?a t?o (s? d?ng CancellationToken.None d? kh�ng b? ?nh hu?ng n?u request HTTP b? cancel gi?a ch?ng). Event Kafka du?c b?n sau c�ng d?ng Best-Effort.
 
 ---
 

@@ -12,4 +12,7 @@ public interface IMusicRepository
     Task<List<Genre>> GetGenresByIdsAsync(IEnumerable<Guid> genreIds, CancellationToken cancellationToken = default);
     Task AddSongAsync(Song song, CancellationToken cancellationToken = default);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    Task<Song?> GetSongByIdAsync(Guid songId, CancellationToken cancellationToken = default);
+    Task<List<Song>> GetSongsByIdsAsync(IEnumerable<Guid> songIds, CancellationToken cancellationToken = default);
 }

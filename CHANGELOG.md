@@ -24,6 +24,17 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 - Seed script `infra/seed/s3_seed.sh` — tạo bucket `smartmusic-audio` + upload `test-song-001/audio.mp3` lên MinIO qua `mc pipe` (Infrastructure)
 - Seed script `infra/seed/redis_seed.sh` — populate `rec:trending:global` Sorted Set với 50 songs, TTL 1h (Infrastructure)
+- Music Service: `GET /api/v1/music/songs/{songId}` — metadata lookup với Redis cache TTL 30m, key `song:meta:{songId}`, GatewayAuth (Music Service)
+- Music Service: `GET /internal/songs/{songId}/storage-key` — internal endpoint cho Streaming Service (Music Service)
+- Music Service: `GET /internal/songs/batch?ids=...` — batch metadata fetch cho Recommendation Service (Music Service)
+- Music Service: `GatewayAuthHandler` — downstream auth pattern (trust X-User-Id/X-User-Role từ Gateway) (Music Service)
+- Music Service: `ISongCache` + `RedisSongCache` — cache abstraction tách biệt Infrastructure khỏi Application layer (Music Service)
+
+### Fixed
+
+- Music Service: `ApiResponse<T>` — fix error shape thành `{ code, message }`, thêm `meta.apiVersion`, `meta.requestId`, `meta.timestamp` đúng contract (Music Service)
+- Music Service: `POST /music/songs` — fix trả 201 thay vì 200 (Music Service)
+- Music Service: `IStorageService.BucketName` property — Application layer không cần inject `IConfiguration` để lấy bucket name (Music Service)
 - Music Service: Domain Models (`Artist`, `Genre`, `Album`, `Song`, `SongGenre`) và `MusicDbContext` (Music Service)
 - Music Service: EF Core migration `InitialCreate` tạo 5 bảng vào `music_db` (Music Service)
 - Music Service: Infrastructure layer với S3StorageService (AWS SDK S3) và KafkaEventPublisher (Confluent.Kafka) để bắn event New_Release.

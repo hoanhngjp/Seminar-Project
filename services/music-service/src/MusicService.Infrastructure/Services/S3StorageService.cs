@@ -13,22 +13,23 @@ namespace MusicService.Infrastructure.Services;
 public class S3StorageService : IStorageService
 {
     private readonly IAmazonS3 _s3Client;
-    private readonly string _bucketName;
     private readonly ILogger<S3StorageService> _logger;
+
+    public string BucketName { get; }
 
     public S3StorageService(IAmazonS3 s3Client, IConfiguration configuration, ILogger<S3StorageService> logger)
     {
         _s3Client = s3Client;
-        _bucketName = configuration["S3:BucketName"] ?? throw new ArgumentNullException("S3:BucketName is missing");
+        BucketName = configuration["S3:BucketName"] ?? throw new InvalidOperationException("S3:BucketName is required.");
         _logger = logger;
     }
 
     public async Task<string> UploadFileAsync(string key, Stream content, string contentType, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Uploading file {Key} to bucket {BucketName}", key, _bucketName);
+        _logger.LogInformation("Uploading file {Key} to bucket {BucketName}", key, BucketName);
         var request = new PutObjectRequest
         {
-            BucketName = _bucketName,
+            BucketName = BucketName,
             Key = key,
             InputStream = content,
             ContentType = contentType
@@ -46,10 +47,10 @@ public class S3StorageService : IStorageService
 
     public async Task<bool> DeleteFileAsync(string key, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Deleting file {Key} from bucket {BucketName}", key, _bucketName);
+        _logger.LogInformation("Deleting file {Key} from bucket {BucketName}", key, BucketName);
         var request = new DeleteObjectRequest
         {
-            BucketName = _bucketName,
+            BucketName = BucketName,
             Key = key
         };
 
