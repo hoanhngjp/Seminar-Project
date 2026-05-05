@@ -73,12 +73,12 @@
 - [X] Music Service: Internal GET /internal/songs/batch
 - [X] Streaming Service: GET /api/v1/streaming/{songId}/url
 - [X] Streaming Service: GET /api/v1/streaming/{songId}/chunk
-- [ ] Recommendation Service: Rule Engine scoring logic
-- [ ] Recommendation Service: GET /api/v1/recommendations
-- [ ] Recommendation Service: POST /api/v1/recommendations/feedback
-- [ ] Recommendation Service: Kafka consumer Song_Played
-- [ ] Recommendation Service: Kafka consumer Song_Skipped
-- [ ] Recommendation Service: Kafka consumer User_Preferences_Updated
+- [X] Recommendation Service: Rule Engine scoring logic
+- [X] Recommendation Service: GET /api/v1/recommendations
+- [X] Recommendation Service: POST /api/v1/recommendations/feedback
+- [X] Recommendation Service: Kafka consumer Song_Played
+- [X] Recommendation Service: Kafka consumer Song_Skipped
+- [X] Recommendation Service: Kafka consumer User_Preferences_Updated
 - [ ] Checkpoint W4: play 1 bài nhạc end-to-end pass
 
 ### Week 5–6 — Search + Analytics + Notification
@@ -131,9 +131,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 3 — Streaming Service: GET /url + GET /chunk hoàn tất ✅ (2026-05-05)
+- **Service/Task:** Week 4 — Recommendation Service: Rule Engine + 2 endpoints + 3 Kafka consumers + 42 tests ✅ (2026-05-05)
 - **File plan đang theo:** `.claude/plan/week3_4_music_streaming_recommendation.md`
-- **Checkpoint gần nhất đã pass:** 7 unit + 8 integration tests xanh (15/15) — Streaming Service
+- **Checkpoint gần nhất đã pass:** 42/42 tests xanh — Recommendation Service
 - **Blocked bởi:** —
 
 ### Decisions ghi nhận từ Week 2

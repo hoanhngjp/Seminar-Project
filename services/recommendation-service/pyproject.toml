@@ -1,6 +1,6 @@
-﻿[build-system]
+[build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "recommendation-service"
@@ -29,3 +29,7 @@ dev = [
     "ruff>=0.4.0",
     "mypy>=1.10.0",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

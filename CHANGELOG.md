@@ -22,6 +22,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+- Recommendation Service: `GET /api/v1/recommendations` — Rule Engine scoring với fallback chain: cache HIT → Rule Engine (300ms timeout) → Top 50 Trending (AC2.1.1, AC2.1.4, AC2.1.5), GatewayAuth (Recommendation Service)
+- Recommendation Service: `POST /api/v1/recommendations/feedback` — async 202, fire-and-forget weight update via `asyncio.create_task` (Recommendation Service)
+- Recommendation Service: Rule Engine — pure Python, formula: `base + context_bonus + preference_bonus - skip_penalty`, CONTEXT_GENRE_MAP 4 contexts (Recommendation Service)
+- Recommendation Service: `RedisRepository` — genre weights Hash, recommendation cache, trending Sorted Set, idempotency SET NX, onboarding prefs (Recommendation Service)
+- Recommendation Service: Kafka consumer — `Song_Played` → +0.3 weight khi >= 80% (AC2.2.1), `Song_Skipped` → -0.2 weight khi < 30% (AC2.2.2), `User_Preferences_Updated` → seed onboarding (Recommendation Service)
+- Recommendation Service: idempotency `SET NX` trước mỗi Kafka event, DLQ sau 3 retries Exp Backoff 1s→2s→4s (AC2.2.3) (Recommendation Service)
+- Recommendation Service: Tests — 15 unit rule engine + 9 handler + 7 service + 11 integration = **42/42 xanh**, 0 warnings (Recommendation Service)
 - Streaming Service: `GET /api/v1/streaming/{songId}/url` — gọi Music Service internal để lấy `storageKey`, generate pre-signed URL (expiry chính xác 900s = AC3.1.3), GatewayAuth (Streaming Service)
 - Streaming Service: `GET /api/v1/streaming/{songId}/chunk` — HTTP Range Request, 206 Partial Content, S3 proxy via `ByteRange` (AC3.1.2), GatewayAuth (Streaming Service)
 - Streaming Service: `GatewayAuthHandler` — downstream auth pattern (Streaming Service)

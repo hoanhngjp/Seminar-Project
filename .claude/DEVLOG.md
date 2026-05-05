@@ -370,3 +370,30 @@ chạy seed script trước khi test Recommendation Service.
 **Lesson / Warning:** Proxy approach đơn giản hơn cho local dev nhưng tốn bandwidth ở service layer. Nếu sau này cần scale, thêm CDN redirect ở `GET /url` endpoint, giữ `/chunk` như backup.
 
 ---
+
+[2026-05-05] [RECOMMENDATION SERVICE / PYPROJECT] [BUG]
+
+**Problem:** `pytest` fails with `Invalid statement (at line 1, column 1)` khi đọc `pyproject.toml`.
+**Root cause:** File `pyproject.toml` (và `pytest.ini`) được tạo với UTF-8 BOM (`\xef\xbb\xbf`). TOML parser không chấp nhận BOM.
+**Fix / Decision:** Dùng Write tool để overwrite file — Write tool ghi UTF-8 không có BOM. Xóa `pytest.ini` cũ và chuyển config sang `[tool.pytest.ini_options]` trong `pyproject.toml`.
+**Lesson / Warning:** Mọi file config text (`.toml`, `.ini`, `.cfg`) trong repo này đều có nguy cơ BOM nếu được tạo bởi Windows tools. Khi gặp parse error lạ ở dòng 1 column 1, kiểm tra BOM trước bằng: `python -c "open('f','rb').read(4)"`.
+
+---
+
+[2026-05-05] [RECOMMENDATION SERVICE / SETUPTOOLS] [BUG]
+
+**Problem:** `pip install -e .` fails với `BackendUnavailable: Cannot import 'setuptools.backends.legacy'`.
+**Root cause:** `setuptools.backends.legacy:build` là backend mới từ setuptools 69+. Venv dùng setuptools version cũ hơn không có module này.
+**Fix / Decision:** Đổi `build-backend` sang `"setuptools.build_meta"` — backend chuẩn, tương thích rộng hơn.
+**Lesson / Warning:** Dùng `"setuptools.build_meta"` cho tất cả C# services. `setuptools.backends.legacy` chỉ dùng khi chắc chắn setuptools >= 69.
+
+---
+
+[2026-05-05] [RECOMMENDATION SERVICE] [DECISION]
+
+**Problem:** IDE (VS Code Pylance) liên tục báo `Cannot find module 'fastapi'`, `Cannot find module 'redis.asyncio'` trên tất cả Python files.
+**Root cause:** IDE đang dùng global Python interpreter (`E:\Python311`) thay vì `.venv` trong project. Packages chỉ được install vào `.venv`.
+**Fix / Decision:** Không sửa code — đây là vấn đề IDE config, không phải code. Tests chạy đúng bằng `.venv/Scripts/python -m pytest`. Nếu muốn fix IDE: chọn interpreter `.venv/Scripts/python.exe` trong VS Code Python extension.
+**Lesson / Warning:** Khi thấy "Cannot find module X" trong IDE nhưng tests pass → interpreter mismatch, không phải code bug. Không commit workaround chỉ để làm IDE happy.
+
+---
