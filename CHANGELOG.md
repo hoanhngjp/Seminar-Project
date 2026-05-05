@@ -4,15 +4,9 @@
 Tài liệu này dành cho: thầy hướng dẫn, hội đồng bảo vệ, và thành viên nhóm.
 
 **Cách cập nhật:**
-
-1. Mỗi khi hoàn thành một feature/fix/task đáng kể, thêm entry vào section `[Unreleased]`.
-2. Khi kết thúc một milestone (Week 2, Week 3-4, ...), chuyển nội dung từ `[Unreleased]`
-   xuống section milestone tương ứng và ghi ngày hoàn thành.
-3. Dùng 4 sub-sections: **Added** (tính năng mới), **Changed** (thay đổi existing),
-   **Fixed** (sửa lỗi), **Removed** (xóa/loại bỏ).
-4. Viết bằng tiếng Anh hoặc tiếng Việt — nhất quán trong một entry.
-5. Mỗi dòng: mô tả ngắn gọn + service liên quan trong ngoặc, ví dụ:
-   `- JWT refresh token rotation with reuse detection (Auth Service)`
+1. Mỗi khi hoàn thành feature/fix/task đáng kể, thêm vào `[Unreleased]`.
+2. Khi kết thúc milestone, chuyển nội dung xuống section tương ứng và ghi ngày.
+3. Sub-sections: **Added**, **Changed**, **Fixed**, **Removed**.
 
 Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
@@ -20,47 +14,61 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+_(Không có thay đổi pending — tất cả đã được đưa vào milestone tương ứng.)_
+
+---
+
+## [Week 3–4] — 2026-05-05
+
+> **Milestone:** Music + Streaming + Recommendation — Listener có thể nghe nhạc end-to-end.
+> Creator upload → Music Service → Streaming Service cấp pre-signed URL → Listener nghe.
+> Checkpoint W4: chờ verify end-to-end.
+
 ### Added
 
-- Recommendation Service: `GET /api/v1/recommendations` — Rule Engine scoring với fallback chain: cache HIT → Rule Engine (300ms timeout) → Top 50 Trending (AC2.1.1, AC2.1.4, AC2.1.5), GatewayAuth (Recommendation Service)
-- Recommendation Service: `POST /api/v1/recommendations/feedback` — async 202, fire-and-forget weight update via `asyncio.create_task` (Recommendation Service)
-- Recommendation Service: Rule Engine — pure Python, formula: `base + context_bonus + preference_bonus - skip_penalty`, CONTEXT_GENRE_MAP 4 contexts (Recommendation Service)
-- Recommendation Service: `RedisRepository` — genre weights Hash, recommendation cache, trending Sorted Set, idempotency SET NX, onboarding prefs (Recommendation Service)
-- Recommendation Service: Kafka consumer — `Song_Played` → +0.3 weight khi >= 80% (AC2.2.1), `Song_Skipped` → -0.2 weight khi < 30% (AC2.2.2), `User_Preferences_Updated` → seed onboarding (Recommendation Service)
-- Recommendation Service: idempotency `SET NX` trước mỗi Kafka event, DLQ sau 3 retries Exp Backoff 1s→2s→4s (AC2.2.3) (Recommendation Service)
-- Recommendation Service: Tests — 15 unit rule engine + 9 handler + 7 service + 11 integration = **42/42 xanh**, 0 warnings (Recommendation Service)
-- Streaming Service: `GET /api/v1/streaming/{songId}/url` — gọi Music Service internal để lấy `storageKey`, generate pre-signed URL (expiry chính xác 900s = AC3.1.3), GatewayAuth (Streaming Service)
-- Streaming Service: `GET /api/v1/streaming/{songId}/chunk` — HTTP Range Request, 206 Partial Content, S3 proxy via `ByteRange` (AC3.1.2), GatewayAuth (Streaming Service)
-- Streaming Service: `GatewayAuthHandler` — downstream auth pattern (Streaming Service)
-- Streaming Service: `S3StoragePresigner` — pre-sign URL + byte-range fetch từ MinIO/S3 (Streaming Service)
-- Streaming Service: `MusicServiceClient` — HTTP client gọi `GET /internal/songs/{songId}/storage-key`, timeout 150ms (Streaming Service)
-- Streaming Service: Tests — 7 unit tests (mock-based) + 8 integration tests (WebApplicationFactory + mock DI) = 15/15 xanh (Streaming Service)
-- Seed script `infra/seed/s3_seed.sh` — tạo bucket `smartmusic-audio` + upload `test-song-001/audio.mp3` lên MinIO qua `mc pipe` (Infrastructure)
-- Seed script `infra/seed/redis_seed.sh` — populate `rec:trending:global` Sorted Set với 50 songs, TTL 1h (Infrastructure)
-- Music Service: `GET /api/v1/music/songs/{songId}` — metadata lookup với Redis cache TTL 30m, key `song:meta:{songId}`, GatewayAuth (Music Service)
-- Music Service: `GET /internal/songs/{songId}/storage-key` — internal endpoint cho Streaming Service (Music Service)
-- Music Service: `GET /internal/songs/batch?ids=...` — batch metadata fetch cho Recommendation Service (Music Service)
-- Music Service: `GatewayAuthHandler` — downstream auth pattern (trust X-User-Id/X-User-Role từ Gateway) (Music Service)
-- Music Service: `ISongCache` + `RedisSongCache` — cache abstraction tách biệt Infrastructure khỏi Application layer (Music Service)
+**Music Service**
+- `POST /api/v1/music/songs` — upload audio (validate MIME magic bytes, max 50MB, S3-first atomicity, Exponential Backoff retry 3x, Kafka `New_Release` event sau khi commit DB) (Music Service)
+- `GET /api/v1/music/songs/{songId}` — metadata lookup, Redis cache TTL 30m, key `song:meta:{songId}`, GatewayAuth (Music Service)
+- `GET /internal/songs/{songId}/storage-key` — internal endpoint cho Streaming Service (Music Service)
+- `GET /internal/songs/batch?ids=...` — batch metadata fetch cho Recommendation Service (Music Service)
+- `GatewayAuthHandler` — trust `X-User-Id`/`X-User-Role` headers từ API Gateway (Music Service)
+- `ISongCache` + `RedisSongCache` — cache abstraction tách Application khỏi Infrastructure (Music Service)
+- EF Core migration `InitialCreate` — 5 tables: `artists`, `genres`, `albums`, `songs`, `song_genres` (music_db) (Music Service)
+- `IdempotencyFilterAttribute` — Redis SET NX, TTL 24h, block duplicate upload (Music Service)
+- Tests: 7 unit (mock S3/Kafka/DB) + 8 integration (native postgres music_db) = **15/15 xanh** (Music Service)
+
+**Streaming Service**
+- `GET /api/v1/streaming/{songId}/url` — gọi Music Service internal (timeout 150ms), generate pre-signed URL expiry chính xác 900s (AC3.1.3), GatewayAuth (Streaming Service)
+- `GET /api/v1/streaming/{songId}/chunk` — HTTP Range Request, 206 Partial Content, S3 proxy via `ByteRange` (AC3.1.2), GatewayAuth (Streaming Service)
+- `S3StoragePresigner` — pre-sign URL + byte-range fetch từ MinIO/S3 (Streaming Service)
+- `MusicServiceClient` — typed HttpClient gọi `/internal/songs/{songId}/storage-key` (Streaming Service)
+- Tests: 7 unit (mock-based) + 8 integration (WebApplicationFactory + mock DI) = **15/15 xanh** (Streaming Service)
+
+**Recommendation Service**
+- `GET /api/v1/recommendations` — fallback chain: cache HIT → Rule Engine (300ms timeout) → Top 50 Trending (AC2.1.1, AC2.1.4, AC2.1.5), GatewayAuth (Recommendation Service)
+- `POST /api/v1/recommendations/feedback` — async 202, fire-and-forget weight update (Recommendation Service)
+- Rule Engine — pure Python, formula: `base + context_bonus(+0.4) + preference_bonus - skip_penalty`, CONTEXT_GENRE_MAP 4 contexts, `TIMEOUT_MS=300` (Recommendation Service)
+- `RedisRepository` — genre weights Hash, recommendation cache (TTL 1h), trending Sorted Set (read-only), idempotency SET NX (TTL 24h), onboarding prefs (Recommendation Service)
+- Kafka consumer `Song_Played` — duration >= 80% → +0.3 genre weight, cache invalidate (AC2.2.1) (Recommendation Service)
+- Kafka consumer `Song_Skipped` — duration < 30% → -0.2 genre weight, cache invalidate (AC2.2.2) (Recommendation Service)
+- Kafka consumer `User_Preferences_Updated` — seed onboarding genre prefs (Recommendation Service)
+- Idempotency SET NX trước mỗi Kafka event, DLQ sau 3 retries Exp Backoff 1s→2s→4s (AC2.2.3) (Recommendation Service)
+- Tests: 15 unit rule engine + 9 handlers + 7 service + 11 integration = **42/42 xanh**, 0 warnings (Recommendation Service)
+
+**Infrastructure**
+- Seed script `infra/seed/s3_seed.sh` — bucket `smartmusic-audio` + upload test MP3 lên MinIO (Infrastructure)
+- Seed script `infra/seed/redis_seed.sh` — 50 trending songs trong `rec:trending:global` Sorted Set, TTL 1h (Infrastructure)
 
 ### Fixed
 
-- Music Service: `ApiResponse<T>` — fix error shape thành `{ code, message }`, thêm `meta.apiVersion`, `meta.requestId`, `meta.timestamp` đúng contract (Music Service)
+- Music Service: `ApiResponse<T>` — fix error shape thành `{ code, message }`, thêm `meta.apiVersion/requestId/timestamp` đúng contract (Music Service)
 - Music Service: `POST /music/songs` — fix trả 201 thay vì 200 (Music Service)
-- Music Service: `IStorageService.BucketName` property — Application layer không cần inject `IConfiguration` để lấy bucket name (Music Service)
-- Music Service: Domain Models (`Artist`, `Genre`, `Album`, `Song`, `SongGenre`) và `MusicDbContext` (Music Service)
-- Music Service: EF Core migration `InitialCreate` tạo 5 bảng vào `music_db` (Music Service)
-- Music Service: Infrastructure layer với S3StorageService (AWS SDK S3) và KafkaEventPublisher (Confluent.Kafka) để bắn event New_Release.
-- Music Service: Application Layer (`SongService`) với logic S3-first Atomicity và Exponential Backoff Retry cho luồng Upload (Music Service)
-- Music Service: Expose endpoint `POST /api/v1/music/songs` cấu hình rate limiting (10 req/min), file size limits (50MB) và Redis Idempotency.
+- Music Service: `IStorageService.BucketName` property — Application layer không inject `IConfiguration` (Music Service)
+- Recommendation Service: xóa UTF-8 BOM khỏi `pyproject.toml`; đổi `build-backend` sang `setuptools.build_meta` (Recommendation Service)
 
 ### Changed
 
-- API Design V2: Cập nhật chi tiết các endpoints của Music Service (thêm mã lỗi 503, chuẩn hóa response) (Documentation)
-
-### Fixed
-
-### Removed
+- API Design V2: cập nhật mã lỗi 503 cho S3, chuẩn hóa response batch endpoint (Documentation)
 
 ---
 
@@ -75,7 +83,7 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Auth Service: `POST /api/v1/auth/refresh` — Refresh Token Rotation với reuse detection, revoke all sessions khi phát hiện tái sử dụng (Auth Service)
 - Auth Service: `POST /api/v1/auth/logout` — revoke refresh token + blacklist access token JTI trong Redis (Auth Service)
 - Auth Service: EF Core migration `InitialCreate` — tables `refresh_tokens`, `token_blacklist` (auth_db PostgreSQL) (Auth Service)
-- User Service: `GET /api/v1/users/me` — trả profile từ PostgreSQL, Redis cache TTL 15m (User Service)
+- User Service: `GET /api/v1/users/me` — profile từ PostgreSQL, Redis cache TTL 15m (User Service)
 - User Service: `POST /api/v1/users/me/preferences` — lưu preferences + publish Kafka `User_Preferences_Updated` (User Service)
 - User Service: gRPC server `GetUserProfile` + `VerifyCredentials` (User Service)
 - User Service: Internal `GET /internal/users/{id}/preferences` cho Recommendation Service (User Service)
@@ -84,26 +92,24 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - API Gateway: `JwtValidationMiddleware` — validate HS256, check Redis blacklist `token:blacklist:{jti}`, skip login/refresh/health (API Gateway)
 - API Gateway: `RateLimitingMiddleware` — Redis Sliding Window, login 10/min IP+SHA256(username), general 100/min IP (API Gateway)
 - API Gateway: `CircuitBreakerMiddleware` — downstream timeout 2000ms → 503, swallow client disconnect gracefully (API Gateway)
-- API Gateway: `CorrelationIdMiddleware` — generate/propagate X-Correlation-Id (API Gateway)
+- API Gateway: `CorrelationIdMiddleware` — generate/propagate `X-Correlation-Id` (API Gateway)
 
 ### Fixed
 
-- User Service `DbInitializer`: thêm `if (db.Database.IsRelational())` trước `MigrateAsync()` — fix lỗi InMemory provider trong integration tests
-- Auth Service `user.proto`: thêm RPC `VerifyCredentials(username, password)` — Auth Service không được connect trực tiếp vào `user_db`
-- Redis blacklist key: Gateway đọc `token:blacklist:{jti}` (khớp với key Auth Service writes) thay vì `rt:blacklist:{jti}` theo plan
+- User Service `DbInitializer`: thêm `if (db.Database.IsRelational())` trước `MigrateAsync()` — fix lỗi InMemory provider trong integration tests (User Service)
+- Auth Service `user.proto`: thêm RPC `VerifyCredentials(username, password)` — Auth Service không connect trực tiếp vào `user_db` (Auth Service)
+- API Gateway: Redis blacklist key đổi thành `token:blacklist:{jti}` (khớp với key Auth Service writes) (API Gateway)
 
 ---
 
 ## [Day 5] — 2026-05-03
 
 > **Milestone:** Project scaffold — tất cả services build thành công, `GET /health` → 200.
-> Checkpoint: 21 containers Up, 0 exited; tất cả 10 services `GET /health` → 200.
+> Checkpoint: 21 containers Up, 0 exited; 10 services `GET /health` → 200.
 
 ### Added
 
-- Boilerplate cho 9 C# services theo Clean Architecture (Api / Application / Infrastructure / Domain):
-  api-gateway, auth-service, user-service, music-service, streaming-service,
-  listening-party-service, analytics-service, notification-service, search-service
+- Boilerplate 9 C# services theo Clean Architecture (Api/Application/Infrastructure/Domain): api-gateway, auth-service, user-service, music-service, streaming-service, listening-party-service, analytics-service, notification-service, search-service
 - `GET /health` → 200 cho toàn bộ 9 C# services và Recommendation Service
 - `CorrelationIdMiddleware` cài sẵn trên mọi C# service
 - Boilerplate Recommendation Service (Python FastAPI) — `uvicorn` chạy được
@@ -115,150 +121,10 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Pin `Microsoft.EntityFrameworkCore Version="8.0.*"` — mặc định `Version="*"` resolve 10.x không tương thích net8.0
 - Pin `Microsoft.AspNetCore.Mvc.Testing Version="8.0.*"` — cùng lý do
 - Pin `FluentAssertions` và `Moq` về version cụ thể trong tất cả test projects
-- Thêm `ASPNETCORE_HTTP_PORTS=80` vào docker-compose cho tất cả C# services — .NET 8 đổi default port từ 80 → 8080
+- Thêm `ASPNETCORE_HTTP_PORTS=80` vào docker-compose — .NET 8 đổi default port từ 80 → 8080
 - Sửa build context từ `./services/X` → `../services/X` trong docker-compose (relative từ `infra/`)
-- Xóa `UseHttpsRedirection` khỏi pipeline — không cần trong container, chỉ HTTP
+- Xóa `UseHttpsRedirection` khỏi pipeline — không cần trong container
 
 ### Changed
 
-- YARP config yêu cầu placeholder `ReverseProxy: { Routes: {}, Clusters: {} }` trong `appsettings.json` để service start được
-
----
-
-## [Week 2] — _(chưa hoàn thành)_
-
-> **Milestone:** Login flow end-to-end — React SPA → API Gateway → Auth Service → JWT về browser.
-> Chi tiết: `.claude/plan/week2_auth_user_gateway.md`
-
-### Added
-
-- [x] gRPC codegen từ `proto/auth.proto` + `proto/user.proto`
-- [x] User Service: profile CRUD, PostgreSQL (`user_db`)
-- [x] Auth Service: JWT login/refresh/logout, brute-force lock, Refresh Token rotation
-- [ ] API Gateway: YARP routing, JWT validation middleware, rate limiting (Redis)
-- [x] `POST /api/v1/auth/login` → accessToken + HTTP-only refresh cookie
-- [x] `POST /api/v1/auth/refresh` → token rotation
-- [x] `POST /api/v1/auth/logout` → blacklist token in Redis
-- [ ] `GET /api/v1/users/me` → profile từ Redis cache (TTL 15 min)
-- [ ] `POST /api/v1/users/me/preferences` → lưu genre/artist weights vào Redis Hash
-
-### Changed
-
-### Fixed
-
-### Removed
-
----
-
-## [Week 3-4] — _(chưa hoàn thành)_
-
-> **Milestone:** Listener nghe nhạc end-to-end — Creator upload → pre-signed URL → play audio.
-> Chi tiết: `.claude/plan/week3_4_music_streaming_recommendation.md`
-
-### Added
-
-- [x] LocalStack S3 setup + seed bucket trong `docker-compose.yml` (Dùng MinIO)
-- [x] Music Service: upload metadata, lưu storage key, publish `New_Release` Kafka event (Domain, DB, Infra done)
-- [x] `POST /api/v1/music/songs` — upload audio (validate MIME, max 50 MB, S3-first atomicity)
-- [ ] `GET /api/v1/music/songs/{songId}` — Redis cache TTL 30 min
-- [ ] Streaming Service: generate pre-signed URL (expiry 900s), HTTP Range support
-- [ ] `GET /api/v1/streaming/{songId}/url` → pre-signed URL
-- [ ] `GET /api/v1/streaming/{songId}/chunk` → CDN redirect
-- [ ] Recommendation Service (Python FastAPI): Rule Engine scoring
-  - `final_score = base_score + context_bonus + preference_bonus − skip_penalty`
-  - Kafka consumers: `Song_Played`, `Song_Skipped`, `User_Preferences_Updated`
-  - Fallback: Top 50 Trending từ Redis Sorted Set
-- [ ] `GET /api/v1/recommendations` — context-aware, fallback on timeout (300 ms)
-- [ ] `POST /api/v1/recommendations/feedback` — async 202
-- [ ] Internal API: `GET /internal/songs/batch?ids=...` (Music Service → Recommendation)
-
-### Changed
-
-### Fixed
-
-### Removed
-
----
-
-## [Week 5-6] — _(chưa hoàn thành)_
-
-> **Milestone:** Creator thấy heatmap skip-rate; search fuzzy hoạt động; notification fan-out.
-> Chi tiết: `.claude/plan/week5_6_search_analytics_notification.md`
-
-### Added
-
-- [ ] Elasticsearch index setup + seed 10 songs
-- [ ] Search Service: fuzzy search, `GET /api/v1/search` (fallback: `[]` không throw)
-- [ ] Analytics Service: Kafka consumers (`Song_Played`, `Song_Skipped`, `Notification_Sent`)
-  - InfluxDB write — chỉ lưu `userId` UUID, không PII
-  - Idempotency dedup via Redis SET (TTL 24 h)
-- [ ] `POST /api/v1/analytics/events/play` — async 202, local disk queue fallback
-- [ ] `GET /api/v1/analytics/creator/heatmap/{songId}` — ownership check
-- [ ] `GET /api/v1/analytics/creator/stats/{songId}` — ownership check
-- [ ] Notification Service: MongoDB fan-out, Kafka consumer `New_Release`
-- [ ] `GET /api/v1/notifications/unread`
-- [ ] `PATCH /api/v1/notifications/{id}/read`
-- [ ] `PATCH /api/v1/notifications/read-all` — background async
-- [ ] Kafka wiring verify: tất cả 5 consumer groups hoạt động
-
-### Changed
-
-### Fixed
-
-### Removed
-
----
-
-## [Week 7-9] — _(chưa hoàn thành)_
-
-> **Milestone:** Login → Play nhạc → Tạo party → Bạn join → sync realtime.
-> Chi tiết: `.claude/plan/week7_9_frontend_listening_party.md`
-
-### Added
-
-**Frontend (React SPA):**
-
-- [ ] Login page + JWT in-memory storage (không localStorage)
-- [ ] Audio Player component — HTTP Range streaming
-- [ ] Home page: recommendations + search
-- [ ] Creator Dashboard: heatmap + stats
-- [ ] Notification bell (polling / SSE)
-- [ ] Listening Party UI: tạo room, join, sync player
-
-**Listening Party Service:**
-
-- [ ] `POST /api/v1/parties` — tạo room, sinh joinCode
-- [ ] `POST /api/v1/parties/{joinCode}/join`
-- [ ] SignalR hub: `PLAYER_ACTION`, `SYNC_STATE`, `MEMBER_JOIN`, `MEMBER_LEAVE`
-- [ ] Reconnect với Exponential Backoff
-- [ ] TypeScript interfaces export: `services/frontend/src/types/listening-party.ts`
-
-### Changed
-
-### Fixed
-
-### Removed
-
----
-
-## [Week 10-12] — _(chưa hoàn thành)_
-
-> **Milestone:** Polish, observability, load testing, demo preparation.
-> Chi tiết: `.claude/plan/week10_12_polish_demo.md`
-
-### Added
-
-- [ ] Prometheus metrics: `api_request_duration_seconds`, `kafka_consumer_lag`,
-  `recommendation_ctr`, `http_requests_total` trên mọi service
-- [ ] Grafana dashboard: latency p95, Kafka lag, CTR
-- [ ] k6 load tests: Gateway, Streaming, Search, Recommendation, Analytics Heatmap
-- [ ] Chaos tests: Kafka down → local disk queue; Redis down → Trending fallback;
-  CDN fail → secondary CDN; Auth down → 503 sau 60 s
-- [ ] AC Coverage Matrix hoàn chỉnh (46 ACs)
-- [ ] Demo script + seed data đầy đủ
-
-### Changed
-
-### Fixed
-
-### Removed
+- YARP config yêu cầu placeholder `ReverseProxy: { Routes: {}, Clusters: {} }` trong `appsettings.json`

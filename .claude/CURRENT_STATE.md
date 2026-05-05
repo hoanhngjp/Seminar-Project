@@ -7,9 +7,9 @@
 
 ## Trạng thái hiện tại
 
-- **Phase:** Day 5 — Boilerplate
-- **Tuần:** 1
-- **Ngày làm việc gần nhất:** 2026-05-03
+- **Phase:** Week 3–4 — Music + Streaming + Recommendation (hoàn thành)
+- **Tuần tiếp theo:** Week 5–6 — Search + Analytics + Notification
+- **Ngày làm việc gần nhất:** 2026-05-05
 
 ---
 
@@ -24,7 +24,6 @@
 - [X] Contracts: GRPC_CONTRACTS.md, KAFKA_EVENT_CONTRACTS.md, kafka-schemas/
 - [X] Database schema: DATABASE_SCHEMA.md
 - [X] Execution plans: .claude/plan/ (7 files)
-- [X] CURRENT_STATE.md, CLAUDE.md cập nhật
 
 ### Day 5 — Boilerplate
 
@@ -48,7 +47,7 @@
 - [X] User Service: EF Core migration InitialCreate (user_db)
 - [X] User Service: GET /api/v1/users/me
 - [X] User Service: POST /api/v1/users/me/preferences
-- [X] User Service: gRPC server GetUserProfile
+- [X] User Service: gRPC server GetUserProfile + VerifyCredentials
 - [X] User Service: Internal GET /internal/users/{id}/preferences
 - [X] Auth Service: EF Core migration InitialCreate (auth_db)
 - [X] Auth Service: POST /api/v1/auth/login
@@ -62,24 +61,26 @@
 
 ### Week 3–4 — Music + Streaming + Recommendation
 
-- [X] LocalStack S3 — không cần (MinIO đã có trong docker-compose)
-- [X] Seed script: infra/seed/s3_seed.sh — bucket smartmusic-audio + test-song-001 upload
+- [X] Seed script: infra/seed/s3_seed.sh — bucket smartmusic-audio + test-song-001 upload (MinIO)
 - [X] Seed script: infra/seed/redis_seed.sh — 50 trending songs trong rec:trending:global
-- [X] Music Service: EF Core migration InitialCreate (music_db)
-- [X] Music Service: S3StorageService (MinIO AWS SDK) & KafkaEventPublisher (Confluent.Kafka)
-- [X] Music Service: POST /api/v1/music/songs
+- [X] Music Service: EF Core migration InitialCreate (music_db — 5 tables)
+- [X] Music Service: S3StorageService (MinIO AWS SDK) + KafkaEventPublisher (Confluent.Kafka)
+- [X] Music Service: POST /api/v1/music/songs (Creator only, S3-first atomicity, Exp Backoff)
 - [X] Music Service: GET /api/v1/music/songs/{songId} — Redis cache TTL 30m, GatewayAuth
 - [X] Music Service: Internal GET /internal/songs/{songId}/storage-key
 - [X] Music Service: Internal GET /internal/songs/batch
-- [X] Streaming Service: GET /api/v1/streaming/{songId}/url
-- [X] Streaming Service: GET /api/v1/streaming/{songId}/chunk
-- [X] Recommendation Service: Rule Engine scoring logic
-- [X] Recommendation Service: GET /api/v1/recommendations
-- [X] Recommendation Service: POST /api/v1/recommendations/feedback
-- [X] Recommendation Service: Kafka consumer Song_Played
-- [X] Recommendation Service: Kafka consumer Song_Skipped
+- [X] Music Service: Tests 15/15 xanh
+- [X] Streaming Service: GET /api/v1/streaming/{songId}/url (pre-signed URL 900s, AC3.1.3)
+- [X] Streaming Service: GET /api/v1/streaming/{songId}/chunk (206 Partial Content, AC3.1.2)
+- [X] Streaming Service: Tests 15/15 xanh
+- [X] Recommendation Service: Rule Engine scoring (pure Python, AC2.1.1, AC2.1.4, AC2.1.5)
+- [X] Recommendation Service: GET /api/v1/recommendations (fallback chain + cache)
+- [X] Recommendation Service: POST /api/v1/recommendations/feedback (async 202)
+- [X] Recommendation Service: Kafka consumer Song_Played (AC2.2.1)
+- [X] Recommendation Service: Kafka consumer Song_Skipped (AC2.2.2)
 - [X] Recommendation Service: Kafka consumer User_Preferences_Updated
-- [ ] Checkpoint W4: play 1 bài nhạc end-to-end pass
+- [X] Recommendation Service: Tests 42/42 xanh
+- [ ] Checkpoint W4: play 1 bài nhạc end-to-end pass _(chờ verify)_
 
 ### Week 5–6 — Search + Analytics + Notification
 
@@ -96,7 +97,7 @@
 - [ ] Notification Service: PATCH /api/v1/notifications/{id}/read
 - [ ] Notification Service: PATCH /api/v1/notifications/read-all
 - [ ] Notification Service: Kafka consumer New_Release → fan-out
-- [ ] Kafka wiring: 3 consumer groups hoạt động, DLQ topics tồn tại
+- [ ] Kafka wiring: consumer groups hoạt động, DLQ topics tồn tại
 - [ ] Checkpoint W6: Creator thấy heatmap sau play/skip events
 
 ### Week 7–9 — Frontend + Listening Party
@@ -131,41 +132,38 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 4 — Recommendation Service: Rule Engine + 2 endpoints + 3 Kafka consumers + 42 tests ✅ (2026-05-05)
-- **File plan đang theo:** `.claude/plan/week3_4_music_streaming_recommendation.md`
-- **Checkpoint gần nhất đã pass:** 42/42 tests xanh — Recommendation Service
+- **Service/Task:** Week 5–6 — Search + Analytics + Notification (chưa bắt đầu)
+- **File plan cần đọc:** `.claude/plan/week5_6_search_analytics_notification.md`
+- **Checkpoint gần nhất đã pass:** Recommendation Service 42/42 tests xanh (2026-05-05)
 - **Blocked bởi:** —
 
-### Decisions ghi nhận từ Week 2
-
-- Redis blacklist key Gateway đọc là `token:blacklist:{jti}` (không phải `rt:blacklist:{jti}` trong plan) — theo code thực tế Auth Service
-- Circuit breaker dùng custom `Task.WaitAsync(CancellationToken)` thay vì Polly — đủ yêu cầu, ít dependency
-- `catch` client-disconnect `OperationCanceledException` phải đứng TRƯỚC catch circuit-breaker khi dùng linked CTS
-- Thêm `VerifyCredentials` RPC vào `user.proto` — Auth Service không được connect trực tiếp `user_db`
-
 ---
 
-## Làm tiếp theo
+## Decisions quan trọng đã ghi nhận
 
-- **Task tiếp theo:** Tạo boilerplate tất cả 9 C# services + Python recommendation-service + React SPA
-- **File plan cần đọc:** `.claude/plan/day5_boilerplate.md`
-- **Files cần đính kèm vào conversation:** `CLAUDE.md`, `.claude/skills/aspnet-service/SKILL.md`, `.claude/rules/security-non-negotiable/RULE.md`, `.claude/plan/day5_boilerplate.md`
-
----
-
-## Decisions đã làm
-
-_(Ghi lại các quyết định kỹ thuật quan trọng khác với tài liệu gốc — format: [date] [service]: [quyết định] — lý do: [...])_
+| Date | Service | Quyết định |
+|---|---|---|
+| 2026-05-05 | API Gateway | Redis blacklist key là `token:blacklist:{jti}` (không phải `rt:blacklist:{jti}` trong plan) |
+| 2026-05-05 | API Gateway | Circuit breaker dùng custom `Task.WaitAsync` thay vì Polly |
+| 2026-05-05 | API Gateway | `catch` client-disconnect `OperationCanceledException` phải đứng TRƯỚC catch circuit-breaker |
+| 2026-05-05 | Auth/User | Thêm `VerifyCredentials` RPC vào `user.proto` — Auth Service không connect trực tiếp `user_db` |
+| 2026-05-05 | All downstream | GatewayAuth pattern: trust `X-User-Id`/`X-User-Role` headers, không re-validate JWT |
+| 2026-05-05 | Streaming | Chunk endpoint dùng S3 proxy (ByteRange) thay vì CDN redirect — phù hợp local MinIO |
+| 2026-05-05 | Music/Infra | Dùng MinIO (đã có trong docker-compose) thay vì LocalStack S3 |
+| 2026-05-05 | Postgres | Services connect native postgres `localhost:5432` (`postgres/4L27hN04@`), không qua Docker postgres |
 
 ---
 
 ## Known Issues
 
-_(Format: [service]: [vấn đề] — workaround: [...])_
+_(Format: [service]: vấn đề — workaround: ...)_
+
+- Recommendation Service: IDE VS Code Pylance báo "Cannot find module" — do IDE dùng global Python, không phải `.venv`. Tests chạy đúng với `.venv/Scripts/python -m pytest`.
 
 ---
 
 ## Tham khảo nhanh
 
-- Đã fix gì trước đây: `.claude/DEVLOG.md`
+- Bug history & decisions: `.claude/DEVLOG.md`
 - Lịch sử milestone: `CHANGELOG.md`
+- Plan chi tiết tuần này: `.claude/plan/week5_6_search_analytics_notification.md`
