@@ -84,9 +84,9 @@
 
 ### Week 5–6 — Search + Analytics + Notification
 
-- [ ] Elasticsearch index mapping songs tạo xong
-- [ ] Seed script: infra/seed/elasticsearch_seed.sh (10 songs)
-- [ ] Search Service: GET /api/v1/search
+- [X] Elasticsearch index mapping songs tạo xong
+- [X] Seed script: infra/seed/elasticsearch_seed.sh (10 songs — Sơn Tùng, Chillies, Ngọt, Vũ.)
+- [X] Search Service: GET /api/v1/search — 20/20 tests xanh
 - [ ] Analytics Service: POST /api/v1/analytics/events/play
 - [ ] Analytics Service: GET /api/v1/analytics/creator/heatmap/{songId}
 - [ ] Analytics Service: GET /api/v1/analytics/creator/stats/{songId}
@@ -132,9 +132,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 5–6 — Search + Analytics + Notification (chưa bắt đầu)
+- **Service/Task:** Week 5–6 — Analytics + Notification (Search đã xong)
 - **File plan cần đọc:** `.claude/plan/week5_6_search_analytics_notification.md`
-- **Checkpoint gần nhất đã pass:** Recommendation Service 42/42 tests xanh (2026-05-05)
+- **Checkpoint gần nhất đã pass:** Search Service 20/20 tests xanh (2026-05-05)
 - **Blocked bởi:** —
 
 ---

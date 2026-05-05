@@ -18,6 +18,22 @@ _(Không có thay đổi pending — tất cả đã được đưa vào milesto
 
 ---
 
+## [Week 5–6] — 2026-05-05 (in progress)
+
+> **Milestone:** Search + Analytics + Notification — Creator thấy heatmap sau play/skip events.
+
+### Added
+
+**Search Service**
+- `GET /api/v1/search` — Elasticsearch 8 fuzzy search (fuzziness AUTO, fields title^3/artist^2/album), cursor pagination (base64 offset), Redis cache TTL 10m (`search:cache:{sha256}`), fallback `[]` on timeout/ES error (Search Service)
+- `GatewayAuthHandler` — trust `X-User-Id`/`X-User-Role` từ API Gateway (Search Service)
+- `ElasticsearchSearchRepository` — `Elastic.Clients.Elasticsearch` v8 client, MultiMatch query, offset-based pagination (Search Service)
+- `RedisSearchCache` — TTL 600s, `StackExchange.Redis`, non-fatal on Redis failure (Search Service)
+- `infra/seed/elasticsearch_seed.sh` — tạo index mapping + bulk-index 10 songs (Sơn Tùng M-TP x2, Chillies x2, Ngọt x4, Vũ. x2) (Infrastructure)
+- Tests: 9 unit SearchService + 11 unit SearchController = **20/20 xanh** (Search Service)
+
+---
+
 ## [Week 3–4] — 2026-05-05
 
 > **Milestone:** Music + Streaming + Recommendation — Listener có thể nghe nhạc end-to-end.

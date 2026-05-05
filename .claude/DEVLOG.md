@@ -26,6 +26,24 @@
 
 ---
 
+[2026-05-05] [SEARCH SERVICE / APPLICATION] [BUG]
+
+**Problem:** `SearchService.SearchAsync` không catch exception khi `ISearchCache.GetAsync` throw — Redis failure làm crash request thay vì fallback.
+**Root cause:** Try/catch chỉ bao `repository.SearchAsync`, không bao `cache.GetAsync`. Redis exception propagate ra ngoài.
+**Fix / Decision:** Wrap `cache.GetAsync` trong try/catch riêng — Redis failure → log warning + treat as cache miss, không throw.
+**Lesson / Warning:** Tất cả I/O operations (Redis, Elasticsearch, HTTP) phải có try/catch riêng. Fallback chain phải bền vững với mọi dependency failure.
+
+---
+
+[2026-05-05] [SEARCH SERVICE / CSPROJ] [BUG]
+
+**Problem:** `SearchService.Application` không build được — `ILogger<>` not found dù dùng `Microsoft.Extensions.Logging`.
+**Root cause:** Application project chưa có `Microsoft.Extensions.Logging.Abstractions` package reference. `ILogger<>` không phải transitive dependency của ASP.NET Core.
+**Fix / Decision:** Thêm `Microsoft.Extensions.Logging.Abstractions 8.0.*` vào `SearchService.Application.csproj`.
+**Lesson / Warning:** Khi Application layer inject `ILogger<T>`, phải explicit add `Microsoft.Extensions.Logging.Abstractions`. Không tự resolve từ web SDK project.
+
+---
+
 [2026-05-03] [USER SERVICE / EF CORE / INTEGRATION TESTS] [BUG]
 
 **Problem:** `dotnet test` throws `InvalidOperationException: Relational-specific methods can only be used when the context is using a relational database provider` trong `DbInitializer.SeedAsync`.

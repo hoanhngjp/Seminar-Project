@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\SearchService.Api\SearchService.Api.csproj" />
     <ProjectReference Include="..\..\src\SearchService.Application\SearchService.Application.csproj" />
     <ProjectReference Include="..\..\src\SearchService.Domain\SearchService.Domain.csproj" />
   </ItemGroup>
