@@ -71,8 +71,8 @@
 - [X] Music Service: GET /api/v1/music/songs/{songId} — Redis cache TTL 30m, GatewayAuth
 - [X] Music Service: Internal GET /internal/songs/{songId}/storage-key
 - [X] Music Service: Internal GET /internal/songs/batch
-- [ ] Streaming Service: GET /api/v1/streaming/{songId}/url
-- [ ] Streaming Service: GET /api/v1/streaming/{songId}/chunk
+- [X] Streaming Service: GET /api/v1/streaming/{songId}/url
+- [X] Streaming Service: GET /api/v1/streaming/{songId}/chunk
 - [ ] Recommendation Service: Rule Engine scoring logic
 - [ ] Recommendation Service: GET /api/v1/recommendations
 - [ ] Recommendation Service: POST /api/v1/recommendations/feedback
@@ -131,9 +131,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 3 — Music Service: tất cả endpoints + tests hoàn tất ✅ (2026-05-05)
+- **Service/Task:** Week 3 — Streaming Service: GET /url + GET /chunk hoàn tất ✅ (2026-05-05)
 - **File plan đang theo:** `.claude/plan/week3_4_music_streaming_recommendation.md`
-- **Checkpoint gần nhất đã pass:** 7 unit + 8 integration tests xanh (15/15)
+- **Checkpoint gần nhất đã pass:** 7 unit + 8 integration tests xanh (15/15) — Streaming Service
 - **Blocked bởi:** —
 
 ### Decisions ghi nhận từ Week 2

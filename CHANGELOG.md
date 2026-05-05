@@ -22,6 +22,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+- Streaming Service: `GET /api/v1/streaming/{songId}/url` — gọi Music Service internal để lấy `storageKey`, generate pre-signed URL (expiry chính xác 900s = AC3.1.3), GatewayAuth (Streaming Service)
+- Streaming Service: `GET /api/v1/streaming/{songId}/chunk` — HTTP Range Request, 206 Partial Content, S3 proxy via `ByteRange` (AC3.1.2), GatewayAuth (Streaming Service)
+- Streaming Service: `GatewayAuthHandler` — downstream auth pattern (Streaming Service)
+- Streaming Service: `S3StoragePresigner` — pre-sign URL + byte-range fetch từ MinIO/S3 (Streaming Service)
+- Streaming Service: `MusicServiceClient` — HTTP client gọi `GET /internal/songs/{songId}/storage-key`, timeout 150ms (Streaming Service)
+- Streaming Service: Tests — 7 unit tests (mock-based) + 8 integration tests (WebApplicationFactory + mock DI) = 15/15 xanh (Streaming Service)
 - Seed script `infra/seed/s3_seed.sh` — tạo bucket `smartmusic-audio` + upload `test-song-001/audio.mp3` lên MinIO qua `mc pipe` (Infrastructure)
 - Seed script `infra/seed/redis_seed.sh` — populate `rec:trending:global` Sorted Set với 50 songs, TTL 1h (Infrastructure)
 - Music Service: `GET /api/v1/music/songs/{songId}` — metadata lookup với Redis cache TTL 30m, key `song:meta:{songId}`, GatewayAuth (Music Service)

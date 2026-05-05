@@ -343,3 +343,30 @@ chạy seed script trước khi test Recommendation Service.
 - Custom IdempotencyFilterAttribute tích hợp StackExchange.Redis SetNx để block duplicate request qua header Idempotency-Key với TTL 24h.
 
 ---
+
+[2026-05-05] [STREAMING SERVICE / INTEGRATION TESTS] [BUG]
+
+**Problem:** Integration test `GetChunk_WithRangeHeader_Returns206PartialContent` fails — `Content-Range` not found in `response.Headers`.
+**Root cause:** `Content-Range` là content header theo HTTP spec (RFC 7233). .NET `HttpClient` phân loại nó vào `response.Content.Headers`, không phải `response.Headers`.
+**Fix / Decision:** Đổi assertion sang `response.Content.Headers.Should().ContainKey("Content-Range")`.
+**Lesson / Warning:** Luôn check `response.Content.Headers` cho các content headers (Content-Range, Content-Type, Content-Length). Chỉ dùng `response.Headers` cho response headers (X-Correlation-Id, Set-Cookie, Location, v.v.).
+
+---
+
+[2026-05-05] [STREAMING SERVICE / INTEGRATION TESTS] [BUG]
+
+**Problem:** Integration test `GetChunk_WithInvalidRangeHeader_Returns416` throws `HttpHeaderParser.ParseValue` exception khi thêm `Range: invalid-range` vào request.
+**Root cause:** `HttpRequestMessage.Headers.Add("Range", ...)` validates Range header format theo RFC. String `"invalid-range"` không hợp lệ → exception ở client side trước khi gửi request.
+**Fix / Decision:** Dùng `request.Headers.TryAddWithoutValidation("Range", "invalid-range")` để bypass validation.
+**Lesson / Warning:** Khi test edge case với invalid headers (Range, Authorization, Content-Type), dùng `TryAddWithoutValidation` thay vì `Add`.
+
+---
+
+[2026-05-05] [STREAMING SERVICE] [DECISION]
+
+**Problem:** Chunk endpoint cần strategy: proxy S3 bytes trực tiếp vs redirect về CDN URL.
+**Root cause:** Local dev không có CDN thật, MinIO dùng path-style URL không hỗ trợ HTTPS sẵn.
+**Fix / Decision:** Dùng **S3 proxy** — Streaming Service fetch bytes từ S3 bằng `GetObjectRequest` với `ByteRange`, stream trực tiếp về client qua `Response.Body`. Không cần CDN cho dev/test.
+**Lesson / Warning:** Proxy approach đơn giản hơn cho local dev nhưng tốn bandwidth ở service layer. Nếu sau này cần scale, thêm CDN redirect ở `GET /url` endpoint, giữ `/chunk` như backup.
+
+---

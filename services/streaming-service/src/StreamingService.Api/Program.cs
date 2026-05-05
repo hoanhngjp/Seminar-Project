@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using StreamingService.Api.Auth;
 using StreamingService.Api.Middleware;
 using StreamingService.Infrastructure;
 
@@ -7,7 +9,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddInfrastructure();
+
+builder.Services.AddAuthentication(GatewayAuthHandler.SchemeName)
+    .AddScheme<AuthenticationSchemeOptions, GatewayAuthHandler>(GatewayAuthHandler.SchemeName, _ => { });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
@@ -19,7 +27,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Required for WebApplicationFactory in integration tests
+public partial class Program { }
