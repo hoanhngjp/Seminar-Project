@@ -24,6 +24,19 @@ _(Không có thay đổi pending — tất cả đã được đưa vào milesto
 
 ### Added
 
+**Analytics Service**
+- `POST /api/v1/analytics/events/play` — 202 async: idempotency Redis SETNX `analytics:idem:{key}` TTL 24h, background Kafka publish + InfluxDB write, DLQ fallback `/tmp/analytics-dlq.jsonl` (Analytics Service)
+- `GET /api/v1/analytics/creator/heatmap/{songId}?timeRange=7d|30d` — Creator ownership check via Music Service internal, Redis cache TTL 6h `heatmap:{songId}:{timeRange}`, Admin bypass (Analytics Service)
+- `GET /api/v1/analytics/creator/stats/{songId}` — totalPlays, totalSkips, uniqueListeners, avgListenPercent; Redis cache TTL 6h `stats:{songId}` (Analytics Service)
+- Kafka consumer `Song_Played` → InfluxDB `song_played` measurement, idempotency dedup `dedup:analytics:Song_Played:{eventId}` (Analytics Service)
+- Kafka consumer `Song_Skipped` → InfluxDB `song_skipped` measurement (Analytics Service)
+- Kafka consumer `Notification_Sent` → InfluxDB `notification_sent` counter (Analytics Service)
+- `KafkaConsumerBackgroundService` — generic background service, manual commit, scope per message (Analytics Service)
+- `GatewayAuthHandler`, `RedisIdempotencyRepository`, `RedisAnalyticsCache`, `KafkaEventPublisher`, `MusicServiceClient` (Analytics Service)
+- `GET /internal/songs/{songId}` — trả `{ id, artistId, title }` cho Analytics Service ownership check (Music Service)
+- Tests: 15 AnalyticsService unit + 13 AnalyticsController unit + 5 KafkaHandler unit = **32/32 xanh** (Analytics Service)
+- ACs covered: AC4.1.1, AC4.1.2, AC4.1.3, AC4.1.4, AC4.2.1, AC4.2.2, AC4.2.3, AC4.2.4
+
 **Search Service**
 - `GET /api/v1/search` — Elasticsearch 8 fuzzy search (fuzziness AUTO, fields title^3/artist^2/album), cursor pagination (base64 offset), Redis cache TTL 10m (`search:cache:{sha256}`), fallback `[]` on timeout/ES error (Search Service)
 - `GatewayAuthHandler` — trust `X-User-Id`/`X-User-Role` từ API Gateway (Search Service)

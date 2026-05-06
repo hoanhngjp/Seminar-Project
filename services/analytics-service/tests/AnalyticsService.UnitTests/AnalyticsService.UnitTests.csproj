@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\AnalyticsService.Api\AnalyticsService.Api.csproj" />
     <ProjectReference Include="..\..\src\AnalyticsService.Application\AnalyticsService.Application.csproj" />
     <ProjectReference Include="..\..\src\AnalyticsService.Domain\AnalyticsService.Domain.csproj" />
   </ItemGroup>

@@ -87,12 +87,12 @@
 - [X] Elasticsearch index mapping songs tạo xong
 - [X] Seed script: infra/seed/elasticsearch_seed.sh (10 songs — Sơn Tùng, Chillies, Ngọt, Vũ.)
 - [X] Search Service: GET /api/v1/search — 20/20 tests xanh
-- [ ] Analytics Service: POST /api/v1/analytics/events/play
-- [ ] Analytics Service: GET /api/v1/analytics/creator/heatmap/{songId}
-- [ ] Analytics Service: GET /api/v1/analytics/creator/stats/{songId}
-- [ ] Analytics Service: Kafka consumer Song_Played → InfluxDB
-- [ ] Analytics Service: Kafka consumer Song_Skipped → InfluxDB
-- [ ] Analytics Service: Kafka consumer Notification_Sent → counter
+- [X] Analytics Service: POST /api/v1/analytics/events/play — 202 async, idempotency 24h
+- [X] Analytics Service: GET /api/v1/analytics/creator/heatmap/{songId} — ownership check, Redis cache 6h
+- [X] Analytics Service: GET /api/v1/analytics/creator/stats/{songId} — Redis cache 6h
+- [X] Analytics Service: Kafka consumer Song_Played → InfluxDB (idempotency dedup)
+- [X] Analytics Service: Kafka consumer Song_Skipped → InfluxDB
+- [X] Analytics Service: Kafka consumer Notification_Sent → counter
 - [ ] Notification Service: GET /api/v1/notifications/unread
 - [ ] Notification Service: PATCH /api/v1/notifications/{id}/read
 - [ ] Notification Service: PATCH /api/v1/notifications/read-all
@@ -132,9 +132,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 5–6 — Analytics + Notification (Search đã xong)
+- **Service/Task:** Week 5–6 — Notification Service (Search + Analytics đã xong)
 - **File plan cần đọc:** `.claude/plan/week5_6_search_analytics_notification.md`
-- **Checkpoint gần nhất đã pass:** Search Service 20/20 tests xanh (2026-05-05)
+- **Checkpoint gần nhất đã pass:** Analytics Service 32/32 tests xanh (2026-05-06)
 - **Blocked bởi:** —
 
 ---

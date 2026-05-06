@@ -26,6 +26,35 @@
 
 ---
 
+[2026-05-06] [ANALYTICS SERVICE / INFLUXDB] [BUG]
+
+**Problem:** `using var writeApi = client.GetWriteApiAsync()` — compiler error CS1674: `WriteApiAsync` does not implement `IDisposable`.
+**Root cause:** InfluxDB.Client v4.x `WriteApiAsync` là plain class, không implement `IDisposable`. Không cần dispose thủ công.
+**Fix / Decision:** Bỏ `using` — gọi thẳng `var writeApi = client.GetWriteApiAsync()`.
+**Lesson / Warning:** Trong InfluxDB.Client v4.x, chỉ `WriteApi` (synchronous) mới `IDisposable`. `WriteApiAsync` thì không.
+
+---
+
+[2026-05-06] [ANALYTICS SERVICE / INFLUXDB] [BUG]
+
+**Problem:** `File` ambiguous giữa `InfluxDB.Client.Api.Domain.File` và `System.IO.File` trong `InfluxAnalyticsRepository.cs`.
+**Root cause:** InfluxDB.Client package expose một type tên `File` trong namespace được auto-import.
+**Fix / Decision:** Dùng fully-qualified `System.IO.File.AppendAllTextAsync(...)`.
+**Lesson / Warning:** Khi dùng InfluxDB.Client, tránh dùng tên `File` bare — luôn qualify `System.IO.File`.
+
+---
+
+[2026-05-06] [ANALYTICS SERVICE / FLUX] [BUG]
+
+**Problem:** Flux query với record literal `{count: 0}` bên trong `$"""` raw string → CS9006 interpolated raw string literal error.
+**Root cause:** `$"""` với `{{` interpret double-braces là escaped `{`, nhưng Flux dùng `{` bare cho record syntax — conflict.
+**Fix / Decision:** Đổi sang `$$"""` (double-dollar) — cho phép `{{expr}}` làm interpolation holes, còn `{` bare là literal.
+**Lesson / Warning:** Khi Flux query có record literals `{key: val}`, dùng `$$"""` thay vì `$"""` để tránh brace conflict.
+
+---
+
+---
+
 [2026-05-05] [SEARCH SERVICE / APPLICATION] [BUG]
 
 **Problem:** `SearchService.SearchAsync` không catch exception khi `ISearchCache.GetAsync` throw — Redis failure làm crash request thay vì fallback.

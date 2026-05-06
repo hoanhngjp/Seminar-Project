@@ -49,6 +49,31 @@ public class InternalSongsController : ControllerBase
     }
 
     // ----------------------------------------------------------------
+    // GET /internal/songs/{songId}
+    // Caller: Analytics Service (ownership check: song.artistId == currentUserId)
+    // Returns: { id, artistId, title } — minimal shape for auth checks
+    // Timeout caller must enforce: 150ms
+    // ----------------------------------------------------------------
+
+    [HttpGet("{songId:guid}")]
+    public async Task<IActionResult> GetSongMeta(Guid songId)
+    {
+        try
+        {
+            var (song, _) = await _songService.GetSongAsync(songId, HttpContext.RequestAborted);
+            return Ok(new { id = song.Id, artistId = song.Artist.Id, title = song.Title });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { error = "SONG_NOT_FOUND" });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { error = "INTERNAL_ERROR" });
+        }
+    }
+
+    // ----------------------------------------------------------------
     // GET /internal/songs/batch?ids=id1,id2,...
     // Caller: Recommendation Service
     // Returns: { songs: [{ id, title, artistName, genreId, moodTags }] }
