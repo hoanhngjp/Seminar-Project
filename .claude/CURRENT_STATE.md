@@ -7,8 +7,8 @@
 
 ## Trạng thái hiện tại
 
-- **Phase:** Week 5–6 — Search + Analytics + Notification (hoàn thành)
-- **Tuần tiếp theo:** Week 7–9 — Frontend + Listening Party
+- **Phase:** Week 7–9 — Frontend + Listening Party (đang thực hiện — Tuần 7 xong)
+- **Tuần tiếp theo:** Tuần 8 — HomePage + SearchPage + SignalR PartyHub
 - **Ngày làm việc gần nhất:** 2026-05-06
 
 ---
@@ -103,11 +103,11 @@
 
 ### Week 7–9 — Frontend + Listening Party
 
-- [ ] Track A W7: LoginPage
-- [ ] Track A W7: AudioPlayer component
-- [ ] Track B W7: POST /api/v1/parties
-- [ ] Track B W7: POST /api/v1/parties/{joinCode}/join
-- [ ] SYNC POINT W7: services/frontend/src/types/listening-party.ts tạo xong
+- [X] Track A W7: LoginPage
+- [X] Track A W7: AudioPlayer component
+- [X] Track B W7: POST /api/v1/parties
+- [X] Track B W7: POST /api/v1/parties/{joinCode}/join
+- [X] SYNC POINT W7: services/frontend/src/types/listening-party.ts tạo xong
 - [ ] Track A W8: HomePage (recommendations list)
 - [ ] Track A W8: SearchPage
 - [ ] Track B W8: SignalR PartyHub (PLAYER_ACTION, SYNC_STATE)
@@ -133,9 +133,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 7–9 — Frontend + Listening Party (bắt đầu tiếp theo)
+- **Service/Task:** Week 7–9 Tuần 8 — HomePage + SearchPage (Track A) + SignalR PartyHub (Track B)
 - **File plan cần đọc:** `.claude/plan/week7_9_frontend_listening_party.md`
-- **Checkpoint gần nhất đã pass:** Notification Service 31/31 tests xanh (2026-05-06)
+- **Checkpoint gần nhất đã pass:** Listening Party REST 15/15 tests xanh + Frontend Tuần 7 xong (2026-05-06)
 - **Blocked bởi:** —
 
 ---
@@ -155,6 +155,8 @@
 | 2026-05-06 | Notification Service | Fan-out batch size = 500 — tránh hold >500 Notification objects trong memory |
 | 2026-05-06 | Notification Service | `Notification_Sent` publish là best-effort — failure không làm crash fan-out |
 | 2026-05-06 | User Service | `follows` table added to DbContext — cần migration `AddFollowsTable` nếu chạy thật |
+| 2026-05-06 | Listening Party Service | Lazy factory pattern cho `IConnectionMultiplexer` — PHẢI dùng `_ => ConnectionMultiplexer.Connect(str)` không gọi inline |
+| 2026-05-06 | Frontend | `types/listening-party.ts` overwrite với shared_contracts.md Section 6 — nội dung cũ sai hoàn toàn |
 
 ---
 

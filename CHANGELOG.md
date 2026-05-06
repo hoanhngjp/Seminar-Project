@@ -18,6 +18,31 @@ _(Không có thay đổi pending — tất cả đã được đưa vào milesto
 
 ---
 
+## [Week 7 — Tuần 7] — 2026-05-06
+
+> **Milestone:** Frontend Tuần 7 (LoginPage + AudioPlayer) + Listening Party REST + SYNC POINT.
+
+### Added
+
+**Frontend (React SPA)**
+- `LoginPage.tsx` — form login, POST `/api/v1/auth/login`, lưu token in-memory (Zustand), redirect theo role (Creator → `/dashboard`, Listener → `/`)
+- `AudioPlayer.tsx` — HTML5 `<audio>`, fetch pre-signed URL, play/pause/seek/volume, proactive URL re-fetch 60s trước expiry, best-effort analytics event
+- `client.ts` — 401 `TOKEN_EXPIRED` interceptor: auto refresh via `/api/v1/auth/refresh`, queue concurrent requests, redirect `/login` nếu refresh fail
+- `types/listening-party.ts` — SYNC POINT: TypeScript interfaces đúng contract (`PlayerAction`, `SyncState`, `MemberJoin`, `MemberLeave`, `HostChanged`, `RoomClosed`)
+
+**Listening Party Service**
+- `POST /api/v1/parties` — tạo room: roomId (UUID) + joinCode (6 ký tự alphanumeric), lưu Redis Hash TTL 24h, add host vào members Set — AC7.1.1
+- `POST /api/v1/parties/{joinCode}/join` — lookup joinCode → roomId → HGETALL room state, add member — AC7.1.2, AC7.1.3
+- `GatewayAuthHandler` — trust `X-User-Id`/`X-User-Role` headers (không re-validate JWT)
+- `GlobalExceptionMiddleware` — map `RoomNotFoundException` → 404 `ROOM_NOT_FOUND`
+- `RedisPartyRepository` — lazy factory pattern (fix WebApplicationFactory test isolation)
+- Tests: 8 unit + 7 integration = **15/15 xanh**; ACs covered: AC7.1.1, AC7.1.2, AC7.1.3
+
+### Fixed
+- `types/listening-party.ts` — overwrite nội dung sai từ scaffold, replace với contract đúng từ `shared_contracts.md` Section 6
+
+---
+
 ## [Week 5–6] — 2026-05-06
 
 > **Milestone:** Search + Analytics + Notification — Creator thấy heatmap sau play/skip events.

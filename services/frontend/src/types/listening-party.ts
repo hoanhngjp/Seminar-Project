@@ -1,41 +1,59 @@
-export type PlayerAction = 'PLAY' | 'PAUSE' | 'SEEK' | 'CHANGE_SONG';
+// Listening Party WebSocket Event Contracts
+// Generated from API_DESIGN_V2.md — DO NOT modify without updating backend
 
-export interface PartyMember {
+export type PartyEventType =
+  | 'PLAYER_ACTION'
+  | 'SYNC_STATE'
+  | 'MEMBER_JOIN'
+  | 'MEMBER_LEAVE'
+  | 'HOST_CHANGED'
+  | 'ROOM_CLOSED';
+
+// Client → Server (chỉ Host được gửi PLAYER_ACTION)
+export interface PlayerAction {
+  type: 'PLAYER_ACTION';
+  eventId: string;           // UUID v4 — dedup
+  action: 'PLAY' | 'PAUSE' | 'SEEK';
+  songId?: string;           // required khi action = PLAY
+  positionSec?: number;      // required khi action = SEEK
+  timestamp: string;         // ISO 8601
+}
+
+// Server → All Clients (broadcast khi Host thay đổi state)
+export interface SyncState {
+  type: 'SYNC_STATE';
+  songId: string;
+  isPlaying: boolean;
+  positionSec: number;
+  hostId: string;
+  timestamp: string;         // ISO 8601 — dùng để tính drift
+}
+
+// Server → All Clients (khi có người join)
+export interface MemberJoin {
+  type: 'MEMBER_JOIN';
   userId: string;
   displayName: string;
-  isHost: boolean;
-  joinedAt: string;
+  avatarUrl?: string;
+  joinedAt: string;          // ISO 8601
 }
 
-export interface PlayerState {
-  songId: string;
-  positionMs: number;
-  isPlaying: boolean;
-  updatedAt: string;
+// Server → All Clients (khi có người leave hoặc disconnect)
+export interface MemberLeave {
+  type: 'MEMBER_LEAVE';
+  userId: string;
+  reason: 'voluntary' | 'timeout' | 'error';
 }
 
-export interface PartyRoom {
-  roomId: string;
-  joinCode: string;
-  hostUserId: string;
-  currentSongId: string | null;
-  playerState: PlayerState | null;
-  members: PartyMember[];
-  createdAt: string;
+// Server → All Clients (khi Host disconnect và có member mới lên Host — Phase 2)
+export interface HostChanged {
+  type: 'HOST_CHANGED';
+  newHostId: string;
+  newHostDisplayName: string;
 }
 
-// WebSocket message types (SignalR — Week 7)
-export interface PlayerActionMessage {
-  type: 'PLAYER_ACTION';
-  action: PlayerAction;
-  songId?: string;
-  positionMs?: number;
+// Server → All Clients (khi room đóng)
+export interface RoomClosed {
+  type: 'ROOM_CLOSED';
+  reason: 'host_disconnected' | 'manual';
 }
-
-export interface SyncStateMessage {
-  type: 'SYNC_STATE';
-  playerState: PlayerState;
-  members: PartyMember[];
-}
-
-export type PartyMessage = PlayerActionMessage | SyncStateMessage;

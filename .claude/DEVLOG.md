@@ -26,6 +26,33 @@
 
 ---
 
+[2026-05-06] [FRONTEND / TYPES] [BUG]
+
+**Problem:** `services/frontend/src/types/listening-party.ts` có nội dung sai — dùng các interface khác với contract trong `shared_contracts.md` Section 6 (ví dụ `PlayerAction` là union type thay vì interface, thiếu `SyncState`, `MemberLeave`, etc.).
+**Root cause:** File được tạo từ scaffold với type definitions tạm, chưa sync với contract thật.
+**Fix / Decision:** Overwrite hoàn toàn với nội dung từ `shared_contracts.md` Section 6.
+**Lesson / Warning:** Trước khi implement Track A (frontend hooks), kiểm tra `types/listening-party.ts` có match `shared_contracts.md` Section 6 không.
+
+---
+
+[2026-05-06] [LISTENING PARTY SERVICE / INTEGRATION TESTS] [BUG]
+
+**Problem:** Integration tests fail với `RedisConnectionException: NOAUTH` — `ConnectionMultiplexer.Connect()` được gọi synchronously ngay trong `AddInfrastructure()` khi `WebApplicationFactory` khởi tạo app. `ConfigureWebHost.ConfigureServices` chạy sau nên không kịp replace trước khi connection thực sự được tạo.
+**Root cause:** `services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(str))` — gọi `Connect()` inline trong lambda argument (eager evaluation), không phải lazy factory.
+**Fix / Decision:** Đổi sang lazy factory: `services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(str))`. Với factory pattern, connection chỉ tạo khi `IConnectionMultiplexer` được resolve lần đầu (tức khi request thật đến), không phải khi DI setup. `WebApplicationFactory` có thể `RemoveAll<IConnectionMultiplexer>()` và thay mock trước khi request đầu tiên.
+**Lesson / Warning:** Khi đăng ký `IConnectionMultiplexer` (Redis), `IMongoClient`, hoặc bất kỳ connection singleton nào — LUÔN dùng factory lambda `_ => new ...()`, không gọi constructor/Connect inline. Pattern này áp dụng cho mọi service có connection singleton cần test với WebApplicationFactory.
+
+---
+
+**Problem:** Integration tests fail với `RedisConnectionException: NOAUTH` — `ConnectionMultiplexer.Connect()` được gọi synchronously ngay trong `AddInfrastructure()` khi `WebApplicationFactory` khởi tạo app. `ConfigureWebHost.ConfigureServices` chạy sau nên không kịp replace trước khi connection thực sự được tạo.
+**Root cause:** `services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(str))` — gọi `Connect()` inline trong lambda argument (eager evaluation), không phải lazy factory.
+**Fix / Decision:** Đổi sang lazy factory: `services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(str))`. Với factory pattern, connection chỉ tạo khi `IConnectionMultiplexer` được resolve lần đầu (tức khi request thật đến), không phải khi DI setup. `WebApplicationFactory` có thể `RemoveAll<IConnectionMultiplexer>()` và thay mock trước khi request đầu tiên.
+**Lesson / Warning:** Khi đăng ký `IConnectionMultiplexer` (Redis), `IMongoClient`, hoặc bất kỳ connection singleton nào — LUÔN dùng factory lambda `_ => new ...()`, không gọi constructor/Connect inline. Pattern này áp dụng cho mọi service có connection singleton cần test với WebApplicationFactory.
+
+---
+
+---
+
 [2026-05-06] [NOTIFICATION SERVICE / INTEGRATION TESTS] [BUG]
 
 **Problem:** Integration test factory sử dụng `builder.UseEnvironment("Testing")` nhưng `IWebHostBuilder` không có extension này mà không có `using Microsoft.AspNetCore.Hosting`.
