@@ -49,6 +49,37 @@ public class PartyService(IPartyRepository repository, ILogger<PartyService> log
         return new JoinPartyResponse(roomId, room.HostId, room.SongId, room.PositionSec);
     }
 
+    public Task<Room?> GetRoomAsync(string roomId, CancellationToken ct = default)
+        => repository.GetRoomAsync(roomId, ct);
+
+    public async Task<Room> UpdateRoomStateAsync(string roomId, bool isPlaying, int positionSec, CancellationToken ct = default)
+    {
+        await repository.UpdateRoomStateAsync(roomId, isPlaying, positionSec, ct);
+        var room = await repository.GetRoomAsync(roomId, ct);
+        if (room is null) throw new RoomNotFoundException(roomId);
+
+        logger.LogDebug("Room {RoomId} state updated: isPlaying={IsPlaying} positionSec={Pos}",
+            roomId, isPlaying, positionSec);
+        return room;
+    }
+
+    public async Task<bool> HandleMemberDisconnectAsync(string roomId, string userId, CancellationToken ct = default)
+    {
+        await repository.RemoveMemberAsync(roomId, userId, ct);
+
+        var room = await repository.GetRoomAsync(roomId, ct);
+        if (room is null) return false; // room already cleaned up
+
+        bool isHost = room.HostId == userId;
+        if (isHost)
+        {
+            await repository.DeleteRoomAsync(roomId, ct);
+            logger.LogInformation("Room {RoomId} deleted after host {UserId} disconnected", roomId, userId);
+        }
+
+        return isHost;
+    }
+
     private static string GenerateJoinCode()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

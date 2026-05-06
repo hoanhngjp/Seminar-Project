@@ -190,4 +190,139 @@ public class PartyServiceTests
 
         capturedMemberId.Should().Be(userId);
     }
+
+    // ─── GetRoomAsync ────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task GetRoomAsync_ExistingRoom_ReturnsRoom()
+    {
+        var roomId = Guid.NewGuid().ToString();
+        var room = new Room { RoomId = roomId, HostId = "host-1", SongId = "song-1" };
+        _repoMock.Setup(r => r.GetRoomAsync(roomId, It.IsAny<CancellationToken>())).ReturnsAsync(room);
+
+        var result = await _sut.GetRoomAsync(roomId);
+
+        result.Should().NotBeNull();
+        result!.RoomId.Should().Be(roomId);
+    }
+
+    [Fact]
+    public async Task GetRoomAsync_NonExistentRoom_ReturnsNull()
+    {
+        _repoMock.Setup(r => r.GetRoomAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Room?)null);
+
+        var result = await _sut.GetRoomAsync("no-such-room");
+
+        result.Should().BeNull();
+    }
+
+    // ─── UpdateRoomStateAsync ─────────────────────────────────────────────────
+
+    [Fact]
+    public async Task UpdateRoomStateAsync_PlayAction_SetsIsPlayingTrue()
+    {
+        var roomId = Guid.NewGuid().ToString();
+        var room = new Room { RoomId = roomId, HostId = "h1", SongId = "song-1", IsPlaying = false, PositionSec = 0 };
+
+        _repoMock.Setup(r => r.UpdateRoomStateAsync(roomId, true, 0, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _repoMock.Setup(r => r.GetRoomAsync(roomId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Room { RoomId = roomId, HostId = "h1", SongId = "song-1", IsPlaying = true, PositionSec = 0 });
+
+        var result = await _sut.UpdateRoomStateAsync(roomId, isPlaying: true, positionSec: 0);
+
+        result.IsPlaying.Should().BeTrue();
+        _repoMock.Verify(r => r.UpdateRoomStateAsync(roomId, true, 0, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateRoomStateAsync_PauseAction_SetsIsPlayingFalse()
+    {
+        var roomId = Guid.NewGuid().ToString();
+        var room = new Room { RoomId = roomId, HostId = "h1", SongId = "song-1", IsPlaying = true, PositionSec = 45 };
+
+        _repoMock.Setup(r => r.UpdateRoomStateAsync(roomId, false, 45, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _repoMock.Setup(r => r.GetRoomAsync(roomId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Room { RoomId = roomId, HostId = "h1", SongId = "song-1", IsPlaying = false, PositionSec = 45 });
+
+        var result = await _sut.UpdateRoomStateAsync(roomId, isPlaying: false, positionSec: 45);
+
+        result.IsPlaying.Should().BeFalse();
+        result.PositionSec.Should().Be(45);
+    }
+
+    [Fact]
+    public async Task UpdateRoomStateAsync_RoomExpiredAfterUpdate_ThrowsRoomNotFoundException()
+    {
+        var roomId = Guid.NewGuid().ToString();
+        _repoMock.Setup(r => r.UpdateRoomStateAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _repoMock.Setup(r => r.GetRoomAsync(roomId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Room?)null);
+
+        var act = () => _sut.UpdateRoomStateAsync(roomId, true, 0);
+
+        await act.Should().ThrowAsync<RoomNotFoundException>();
+    }
+
+    // ─── HandleMemberDisconnectAsync ──────────────────────────────────────────
+
+    [Fact]
+    public async Task HandleMemberDisconnectAsync_MemberDisconnects_RemovesMemberReturnsFalse()
+    {
+        var roomId = Guid.NewGuid().ToString();
+        var hostId = Guid.NewGuid().ToString();
+        var memberId = Guid.NewGuid().ToString();
+        var room = new Room { RoomId = roomId, HostId = hostId, SongId = "s1" };
+
+        _repoMock.Setup(r => r.RemoveMemberAsync(roomId, memberId, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _repoMock.Setup(r => r.GetRoomAsync(roomId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(room);
+
+        var isHost = await _sut.HandleMemberDisconnectAsync(roomId, memberId);
+
+        isHost.Should().BeFalse("member disconnect should not terminate the room");
+        _repoMock.Verify(r => r.DeleteRoomAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task HandleMemberDisconnectAsync_HostDisconnects_DeletesRoomAndReturnsTrue()
+    {
+        var roomId = Guid.NewGuid().ToString();
+        var hostId = Guid.NewGuid().ToString();
+        var room = new Room { RoomId = roomId, HostId = hostId, SongId = "s1" };
+
+        _repoMock.Setup(r => r.RemoveMemberAsync(roomId, hostId, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _repoMock.Setup(r => r.GetRoomAsync(roomId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(room);
+        _repoMock.Setup(r => r.DeleteRoomAsync(roomId, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        var isHost = await _sut.HandleMemberDisconnectAsync(roomId, hostId);
+
+        isHost.Should().BeTrue("host disconnect must terminate the room");
+        _repoMock.Verify(r => r.DeleteRoomAsync(roomId, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task HandleMemberDisconnectAsync_RoomAlreadyGone_ReturnsFalse()
+    {
+        // Race condition: room TTL expired between disconnect and GetRoom
+        var roomId = Guid.NewGuid().ToString();
+        var userId = Guid.NewGuid().ToString();
+
+        _repoMock.Setup(r => r.RemoveMemberAsync(roomId, userId, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _repoMock.Setup(r => r.GetRoomAsync(roomId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Room?)null);
+
+        var isHost = await _sut.HandleMemberDisconnectAsync(roomId, userId);
+
+        isHost.Should().BeFalse("if room already gone, treat as non-host disconnect");
+        _repoMock.Verify(r => r.DeleteRoomAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
 }

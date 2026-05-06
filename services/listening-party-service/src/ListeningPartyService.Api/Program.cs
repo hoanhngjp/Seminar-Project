@@ -1,4 +1,5 @@
 using ListeningPartyService.Api.Extensions;
+using ListeningPartyService.Api.Hubs;
 using ListeningPartyService.Api.Middleware;
 using ListeningPartyService.Infrastructure;
 
@@ -8,7 +9,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    // Built-in keepalive: server pings every 30s, disconnects if no pong within 40s
+    options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(40);
+});
 builder.Services.AddGatewayAuth();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -26,6 +32,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<PartyHub>("/hubs/party");
 
 app.Run();
 

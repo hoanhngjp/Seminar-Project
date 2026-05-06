@@ -57,4 +57,37 @@ public class RedisPartyRepository(IDatabase db, ILogger<RedisPartyRepository> lo
     {
         await db.SetAddAsync($"party:members:{roomId}", userId);
     }
+
+    public async Task UpdateRoomStateAsync(string roomId, bool isPlaying, int positionSec, CancellationToken ct = default)
+    {
+        var key = $"party:room:{roomId}";
+        await db.HashSetAsync(key, new HashEntry[]
+        {
+            new("isPlaying", isPlaying.ToString().ToLower()),
+            new("positionSec", positionSec),
+        });
+        logger.LogDebug("Room state updated: key={Key} isPlaying={IsPlaying} positionSec={Pos}",
+            key, isPlaying, positionSec);
+    }
+
+    public async Task RemoveMemberAsync(string roomId, string userId, CancellationToken ct = default)
+    {
+        await db.SetRemoveAsync($"party:members:{roomId}", userId);
+    }
+
+    public async Task<ISet<string>> GetMembersAsync(string roomId, CancellationToken ct = default)
+    {
+        var members = await db.SetMembersAsync($"party:members:{roomId}");
+        return members.Select(m => m.ToString()).ToHashSet();
+    }
+
+    public async Task DeleteRoomAsync(string roomId, CancellationToken ct = default)
+    {
+        await db.KeyDeleteAsync(new RedisKey[]
+        {
+            $"party:room:{roomId}",
+            $"party:members:{roomId}",
+        });
+        logger.LogDebug("Room deleted from Redis: roomId={RoomId}", roomId);
+    }
 }

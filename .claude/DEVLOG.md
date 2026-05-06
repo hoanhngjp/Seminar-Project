@@ -26,6 +26,24 @@
 
 ---
 
+[2026-05-07] [LISTENING PARTY SERVICE / SIGNALR] [DECISION]
+
+**Problem:** Hub cần `GetRoomId()` và `GetUserId()` từ HttpContext/ClaimsPrincipal — khó mock trong unit tests nếu đọc trực tiếp từ `Context.GetHttpContext().Request.Query` và `Context.UserIdentifier`.
+**Root cause:** `Context.GetHttpContext()` là extension method trên `HubCallerContext`; không thể setup trực tiếp trên mock vì nó đọc từ `IFeatureCollection`. Mock toàn bộ HttpContext + Request + QueryString rất verbose và brittle.
+**Fix / Decision:** Tách thành 2 `protected virtual` methods: `GetRoomId()` và `GetUserId()`. Unit tests dùng `TestablePartyHub` kế thừa Hub và override 2 methods này → inject roomId/userId trực tiếp mà không cần HttpContext.
+**Lesson / Warning:** Mọi lần Hub cần đọc context data (query string, header, claim) — tách ra virtual method ngay từ đầu. Áp dụng cho tất cả Hub implementations về sau.
+
+---
+
+[2026-05-07] [LISTENING PARTY SERVICE / SIGNALR] [BUG]
+
+**Problem:** Unit test `Mock<IClientProxy>` cho `Clients.Caller` bị lỗi `CS1503: cannot convert from IClientProxy to ISingleClientProxy`.
+**Root cause:** Trong ASP.NET Core SignalR 8+, `IHubCallerClients.Caller` trả về `ISingleClientProxy` (không phải `IClientProxy`). `ISingleClientProxy` là interface con của `IClientProxy` nhưng không tương thích assignment ngược.
+**Fix / Decision:** Mock `Clients.Caller` bằng `Mock<ISingleClientProxy>`; mock `Clients.Group(...)` và `Clients.OthersInGroup(...)` bằng `Mock<IClientProxy>` (vẫn trả `IClientProxy`).
+**Lesson / Warning:** Khi mock `IHubCallerClients` trong SignalR 8+ — luôn dùng `Mock<ISingleClientProxy>` cho `.Caller`, `Mock<IClientProxy>` cho `.Group()`, `.All`, `.OthersInGroup()`.
+
+---
+
 [2026-05-07] [FRONTEND / TESTING] [BUG]
 
 **Problem:** Test "shows loading skeleton while fetching" không catch được transient `loading=true` state khi dùng MSW + fake timers. Dù `vi.advanceTimersByTime(350)` kích hoạt debounce, MSW resolve fetch ngay trong cùng một `act()` microtask flush — không có window nào để assert `loading=true`.

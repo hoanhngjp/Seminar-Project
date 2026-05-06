@@ -9,7 +9,7 @@
 
 - **Phase:** Week 7–9 — Frontend + Listening Party (đang thực hiện — Tuần 7 xong)
 - **Tuần tiếp theo:** Tuần 8 — HomePage + SearchPage + SignalR PartyHub
-- **Ngày làm việc gần nhất:** 2026-05-07
+- **Ngày làm việc gần nhất:** 2026-05-07 (Tuần 8 hoàn thành)
 
 ---
 
@@ -110,7 +110,7 @@
 - [X] SYNC POINT W7: services/frontend/src/types/listening-party.ts tạo xong
 - [X] Track A W8: HomePage (recommendations list) — 19/19 tests xanh
 - [X] Track A W8: SearchPage — 23/23 tests xanh
-- [ ] Track B W8: SignalR PartyHub (PLAYER_ACTION, SYNC_STATE)
+- [X] Track B W8: SignalR PartyHub (PLAYER_ACTION, SYNC_STATE) — 38/38 tests xanh
 - [ ] Track A W9: CreatorDashboardPage
 - [ ] Track A W9: NotificationBell component
 - [ ] Track B W9: Reconnect + resync logic
@@ -133,9 +133,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 7–9 Tuần 8 — SignalR PartyHub (Track B)
+- **Service/Task:** Week 7–9 Tuần 9 — CreatorDashboard + NotificationBell (Track A) + Reconnect Logic (Track B)
 - **File plan cần đọc:** `.claude/plan/week7_9_frontend_listening_party.md`
-- **Checkpoint gần nhất đã pass:** SearchPage 23/23 tests xanh — Track A Tuần 8 hoàn thành (2026-05-07)
+- **Checkpoint gần nhất đã pass:** SignalR PartyHub 38/38 tests xanh — Tuần 8 hoàn thành (2026-05-07)
 - **Blocked bởi:** —
 
 ---

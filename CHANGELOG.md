@@ -16,6 +16,22 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Listening Party Service — Tuần 8 Track B: SignalR PartyHub**
+- `PartyHub.cs` — SignalR Hub tại `/hubs/party?roomId=xxx`
+  - `OnConnectedAsync`: verify room, add to SignalR group, send SYNC_STATE to caller, broadcast MEMBER_JOIN to others (AC7.3.1)
+  - `OnDisconnectedAsync`: remove member, broadcast MEMBER_LEAVE; nếu Host → broadcast ROOM_CLOSED + delete room (Phase 1 — no re-election)
+  - `PlayerAction(msg)`: validate hostId == Context.UserIdentifier → update Redis → broadcast SYNC_STATE to group (AC7.2.1); Member gửi → silently ignore + log (AC7.2.2)
+  - `GetRoomId()` / `GetUserId()` virtual — testable không cần HttpContext mock
+- `HubDtos.cs` — `PlayerActionMessage`, `SyncStateMessage`, `MemberJoinMessage`, `MemberLeaveMessage`, `RoomClosedMessage`
+- `Program.cs` — `MapHub<PartyHub>("/hubs/party")` + SignalR KeepAlive 30s / ClientTimeout 40s
+- `IPartyRepository` + `RedisPartyRepository` — 4 methods mới: `UpdateRoomStateAsync`, `RemoveMemberAsync`, `GetMembersAsync`, `DeleteRoomAsync`
+- `IPartyService` + `PartyService` — 3 methods mới: `GetRoomAsync`, `UpdateRoomStateAsync`, `HandleMemberDisconnectAsync` (returns isHost)
+- IntegrationTests.csproj — thêm `Microsoft.AspNetCore.SignalR.Client`
+- Tests: 16 unit + 22 integration = **38/38 xanh**
+  - Unit (service): GetRoom, UpdateRoomState (Play/Pause/Seek), HandleMemberDisconnect (member/host/race condition)
+  - Hub unit (TestablePartyHub): PlayerAction auth AC7.2.1/7.2.2, action→isPlaying mapping, SEEK preserves state, OnConnected/Disconnected flows
+  - Integration (SignalR TestServer): OnConnect→SYNC_STATE (AC7.3.1), Host PLAY→member SYNC_STATE <500ms (AC7.2.1), Member PlayerAction ignored (AC7.2.2), Host disconnect→ROOM_CLOSED, MEMBER_JOIN broadcast
+
 **Frontend (React SPA) — Tuần 8 Track A: HomePage + SearchPage**
 - `HomePage.tsx` — recommendations list: fetch theo time-of-day context (morning/evening/none), loading skeleton, song grid, `explainText` badge, click bài → mount AudioPlayer bar, error state + retry, empty state
 - `recommendationApi.ts` — service layer: `fetchRecommendations(context, limit)`, `getTimeContext()` (pure function, dễ test)
