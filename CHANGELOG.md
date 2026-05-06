@@ -14,7 +14,14 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
-_(Không có thay đổi pending — tất cả đã được đưa vào milestone tương ứng.)_
+### Added
+
+**Frontend (React SPA) — Tuần 8 Track A: HomePage**
+- `HomePage.tsx` — recommendations list: fetch theo time-of-day context (morning/evening/none), loading skeleton, song grid, `explainText` badge, click bài → mount AudioPlayer bar, error state + retry, empty state
+- `recommendationApi.ts` — service layer: `fetchRecommendations(context, limit)`, `getTimeContext()` (pure function, dễ test)
+- Test infrastructure: vitest + @testing-library/react + msw + jsdom (lần đầu thiết lập cho frontend)
+- `vitest.config.ts`, `src/tests/setup.ts` — cấu hình test environment
+- 19/19 tests xanh: auth redirect, loading state, render list, artist names, explainText badge, click→AudioPlayer, close player, error state (500), retry button, empty state, + 8 unit tests cho `getTimeContext`
 
 ---
 

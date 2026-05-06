@@ -26,6 +26,26 @@
 
 ---
 
+[2026-05-07] [FRONTEND / TESTING] [DECISION]
+
+**Problem:** Package.json ban đầu không có test dependencies — cần thiết lập toàn bộ test stack lần đầu.
+**Root cause:** Scaffold tuần trước chỉ có Vite + React, chưa cấu hình vitest/testing-library/msw.
+**Fix / Decision:** Cài vitest + @testing-library/react + msw + jsdom. Dùng `jsdom` thay vì `happy-dom` (SKILL.md đề xuất happy-dom nhưng jsdom tương thích tốt hơn với React 19 + @testing-library). MSW v2 dùng `http`/`HttpResponse` API (không phải `rest` từ v1). Test script: `vitest run` (CI) + `vitest` (watch).
+**Lesson / Warning:** Khi viết test cho component dùng Zustand store, PHẢI reset store giữa các test: `useAuthStore.setState({...})` trong `afterEach`. Không reset → state leak giữa tests → flaky results.
+
+---
+
+[2026-05-07] [FRONTEND / TESTING] [BUG]
+
+**Problem:** Test "does NOT render explainText badge" dùng `document.querySelectorAll('[style*="1db95422"]')` → trả về 0 phần tử trong jsdom, dù component render đúng.
+**Root cause:** jsdom xử lý inline style khác với browser — shorthand hex màu có thể được normalize hoặc không match substring. Query bằng style string literal không reliable trong test environment.
+**Fix / Decision:** Thêm `data-testid="explain-badge"` vào span badge trong component, dùng `screen.getAllByTestId('explain-badge')` trong test.
+**Lesson / Warning:** Không query DOM bằng style string (`[style*="..."]`) trong tests — dùng `data-testid`, `aria-label`, hoặc text content thay thế.
+
+---
+
+---
+
 [2026-05-06] [FRONTEND / TYPES] [BUG]
 
 **Problem:** `services/frontend/src/types/listening-party.ts` có nội dung sai — dùng các interface khác với contract trong `shared_contracts.md` Section 6 (ví dụ `PlayerAction` là union type thay vì interface, thiếu `SyncState`, `MemberLeave`, etc.).
