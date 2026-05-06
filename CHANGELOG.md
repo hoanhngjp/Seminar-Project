@@ -16,12 +16,15 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
-**Frontend (React SPA) — Tuần 8 Track A: HomePage**
+**Frontend (React SPA) — Tuần 8 Track A: HomePage + SearchPage**
 - `HomePage.tsx` — recommendations list: fetch theo time-of-day context (morning/evening/none), loading skeleton, song grid, `explainText` badge, click bài → mount AudioPlayer bar, error state + retry, empty state
 - `recommendationApi.ts` — service layer: `fetchRecommendations(context, limit)`, `getTimeContext()` (pure function, dễ test)
-- Test infrastructure: vitest + @testing-library/react + msw + jsdom (lần đầu thiết lập cho frontend)
+- `SearchPage.tsx` — search input debounce 300ms, `GET /api/v1/search?q=...&type=song&limit=10`, cursor pagination (Load more), empty state, clear button, click → AudioPlayer bar
+- `searchApi.ts` — service layer: `searchSongs(query, limit, cursor?)`
+- `App.tsx` — wired `/search` route tới `SearchPage` (thay placeholder)
+- Test infrastructure: vitest + @testing-library/react + msw v2 + jsdom (lần đầu thiết lập cho frontend)
 - `vitest.config.ts`, `src/tests/setup.ts` — cấu hình test environment
-- 19/19 tests xanh: auth redirect, loading state, render list, artist names, explainText badge, click→AudioPlayer, close player, error state (500), retry button, empty state, + 8 unit tests cho `getTimeContext`
+- 42/42 tests xanh: 19 (HomePage) + 23 (SearchPage — auth redirect, debounce, render results, artist/album, empty state, clear button, load more + cursor pagination, click→AudioPlayer, API error fallback, new query resets results, searchApi params)
 
 ---
 

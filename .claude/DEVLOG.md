@@ -26,6 +26,15 @@
 
 ---
 
+[2026-05-07] [FRONTEND / TESTING] [BUG]
+
+**Problem:** Test "shows loading skeleton while fetching" không catch được transient `loading=true` state khi dùng MSW + fake timers. Dù `vi.advanceTimersByTime(350)` kích hoạt debounce, MSW resolve fetch ngay trong cùng một `act()` microtask flush — không có window nào để assert `loading=true`.
+**Root cause:** MSW xử lý request synchronously trong `act()` scope, nên state đi qua `loading=true → false` mà không flush DOM giữa chừng. Không có cách intercept transient state mà không dùng manual Promise resolution.
+**Fix / Decision:** Đổi test để verify behavior thực tế: kết quả KHÔNG xuất hiện trước khi debounce fire (trước 300ms), rồi xuất hiện sau khi fire. Đây là hành vi người dùng quan tâm, không phải loading flag nội bộ.
+**Lesson / Warning:** Không cố test transient loading states với MSW trong vitest — quá brittle. Test behavior: "trước → sau", không test "đang trong quá trình". Áp dụng cho mọi component có debounce + async fetch.
+
+---
+
 [2026-05-07] [FRONTEND / TESTING] [DECISION]
 
 **Problem:** Package.json ban đầu không có test dependencies — cần thiết lập toàn bộ test stack lần đầu.
