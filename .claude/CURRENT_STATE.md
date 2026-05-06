@@ -9,7 +9,7 @@
 
 - **Phase:** Week 7–9 — Frontend + Listening Party (đang thực hiện — Tuần 7 xong)
 - **Tuần tiếp theo:** Tuần 8 — HomePage + SearchPage + SignalR PartyHub
-- **Ngày làm việc gần nhất:** 2026-05-07 (Tuần 8 hoàn thành)
+- **Ngày làm việc gần nhất:** 2026-05-07 (Tuần 9 hoàn thành)
 
 ---
 
@@ -111,10 +111,10 @@
 - [X] Track A W8: HomePage (recommendations list) — 19/19 tests xanh
 - [X] Track A W8: SearchPage — 23/23 tests xanh
 - [X] Track B W8: SignalR PartyHub (PLAYER_ACTION, SYNC_STATE) — 38/38 tests xanh
-- [ ] Track A W9: CreatorDashboardPage
-- [ ] Track A W9: NotificationBell component
-- [ ] Track B W9: Reconnect + resync logic
-- [ ] Track A+B W9: integrate SignalR thật (replace mock)
+- [X] Track A W9: CreatorDashboardPage — 10/10 tests xanh
+- [X] Track A W9: NotificationBell component — 13/13 tests xanh
+- [X] Track B W9: Reconnect + resync logic (đã có từ Tuần 8 — OnConnected/OnDisconnected)
+- [X] Track A+B W9: usePartyWebSocket hook (SignalR thật, @microsoft/signalr) — 14/14 tests xanh
 - [ ] Checkpoint W9: 2-tab test — Host Play → Member sync < 500ms
 
 ### Week 10–12 — Polish + Demo
@@ -133,10 +133,10 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 7–9 Tuần 9 — CreatorDashboard + NotificationBell (Track A) + Reconnect Logic (Track B)
-- **File plan cần đọc:** `.claude/plan/week7_9_frontend_listening_party.md`
-- **Checkpoint gần nhất đã pass:** SignalR PartyHub 38/38 tests xanh — Tuần 8 hoàn thành (2026-05-07)
-- **Blocked bởi:** —
+- **Service/Task:** Week 10–12 — Polish + Demo (tiếp theo)
+- **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
+- **Checkpoint gần nhất đã pass:** Tuần 9 hoàn thành — 79/79 frontend tests xanh (2026-05-07)
+- **Blocked bởi:** Checkpoint W9 (2-tab test) cần verify thủ công với browser + infra local
 
 ---
 
@@ -157,6 +157,8 @@
 | 2026-05-06 | User Service | `follows` table added to DbContext — cần migration `AddFollowsTable` nếu chạy thật |
 | 2026-05-06 | Listening Party Service | Lazy factory pattern cho `IConnectionMultiplexer` — PHẢI dùng `_ => ConnectionMultiplexer.Connect(str)` không gọi inline |
 | 2026-05-06 | Frontend | `types/listening-party.ts` overwrite với shared_contracts.md Section 6 — nội dung cũ sai hoàn toàn |
+| 2026-05-07 | Frontend | `GET /api/v1/music/songs` (list) không có trong API Design V2 — CreatorDashboard dùng Song ID input thay vì list |
+| 2026-05-07 | Frontend | `@microsoft/signalr` mock trong vitest: phải dùng `function` constructor (không phải arrow), tất cả builder methods phải return cùng 1 object |
 
 ---
 

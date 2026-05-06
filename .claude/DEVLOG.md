@@ -396,3 +396,21 @@
 **Lesson / Warning:** Khi thấy "Cannot find module X" trong IDE nhưng tests pass → interpreter mismatch, không phải code bug. Không commit workaround chỉ để làm IDE happy.
 
 ---
+
+[2026-05-07] [FRONTEND / TESTING] [BUG]
+
+**Problem:** Vitest mock của `@microsoft/signalr.HubConnectionBuilder` với `vi.fn().mockImplementation(() => ({...}))` throw `is not a constructor` — hook dùng `new HubConnectionBuilder()`.
+**Root cause:** Arrow function không thể làm constructor. `vi.fn().mockImplementation(() => obj)` dùng arrow function nên `new` keyword throw TypeError.
+**Fix / Decision:** Dùng `function MockHubConnectionBuilder() { return mockBuilder; }` (regular function). Builder object là 1 shared object, tất cả chained methods (`withUrl`, `withAutomaticReconnect`, `configureLogging`) return chính object đó — không phải `mockReturnThis()` (trả về mock function, không phải builder).
+**Lesson / Warning:** Khi mock class dùng `new` trong vitest: (1) dùng `function` keyword, không phải arrow; (2) builder pattern cần tất cả chained methods return cùng 1 object — khai báo object trước, rồi `method.mockReturnValue(thatObject)`.
+
+---
+
+[2026-05-07] [FRONTEND / ARCHITECTURE] [DECISION]
+
+**Problem:** Plan W9 nói CreatorDashboardPage "gọi GET /api/v1/music/songs — dùng artist filter" nhưng endpoint này không tồn tại trong API Design V2.
+**Root cause:** Plan được viết trước API Design V2 được finalize. Chỉ có `POST /music/songs` (upload) và `GET /music/songs/{songId}` (by ID).
+**Fix / Decision:** CreatorDashboardPage dùng Song ID input — Creator nhập songId để xem analytics. Đây là đủ cho MVP demo flow. Không implement endpoint ngoài contract.
+**Lesson / Warning:** Trước khi implement bất kỳ API call nào từ plan, kiểm tra API_DESIGN_V2.md để confirm endpoint tồn tại. Plan file có thể out-of-date so với contract.
+
+---

@@ -42,6 +42,20 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `vitest.config.ts`, `src/tests/setup.ts` — cấu hình test environment
 - 42/42 tests xanh: 19 (HomePage) + 23 (SearchPage — auth redirect, debounce, render results, artist/album, empty state, clear button, load more + cursor pagination, click→AudioPlayer, API error fallback, new query resets results, searchApi params)
 
+**Frontend (React SPA) — Tuần 9: CreatorDashboard + NotificationBell + usePartyWebSocket**
+- `CreatorDashboardPage.tsx` — RBAC redirect nếu không phải Creator/Admin; Song ID input để xem analytics; heatmap visualization (đỏ = skipRate > 30%); 4 stats cards (totalPlays, totalSkips, uniqueListeners, avgListenPercent); time range selector 7d/30d; error state
+- `analyticsApi.ts` — service layer: `fetchHeatmap(songId, timeRange)`, `fetchSongStats(songId, timeRange)`
+- `NotificationBell.tsx` — bell icon + unread badge (cap 99+); dropdown listbox; poll mỗi 30s; optimistic mark-as-read (PATCH với `Idempotency-Key: crypto.randomUUID()`); restore on API failure; "Xem tất cả" khi hasMore; outside-click close
+- `notificationApi.ts` — service layer: `fetchUnreadNotifications(limit)`, `markNotificationRead(id, idempotencyKey)`
+- `usePartyWebSocket.ts` — SignalR hook thật (`@microsoft/signalr`); Exponential Backoff reconnect [1s,2s,4s,8s,16s,30s] (AC7.3.2); handles SYNC_STATE, MEMBER_JOIN, MEMBER_LEAVE, ROOM_CLOSED (→ navigate `/`); `sendPlayerAction` chỉ cho Host; `status` state tracking (connecting/connected/reconnecting/disconnected)
+- `App.tsx` — wired `/dashboard` route tới `CreatorDashboardPage` (thay placeholder)
+- Tests: **37 tests mới** — 10 (CreatorDashboard) + 13 (NotificationBell) + 14 (usePartyWebSocket)
+- **Tổng frontend: 79/79 xanh**
+
+### Notes
+- `GET /api/v1/music/songs` (list by artist) không có trong API Design V2 — CreatorDashboard dùng Song ID input thay vì artist song list. Endpoint mới sẽ cần propose cho team nếu cần trong demo.
+- `@microsoft/signalr` đã được install (`npm install @microsoft/signalr`).
+
 ---
 
 ## [Week 7 — Tuần 7] — 2026-05-06
