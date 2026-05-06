@@ -22,6 +22,27 @@ public class InternalUsersController(IUserService userService) : ControllerBase
         return Ok(prefs);
     }
 
+    // GET /internal/artists/{artistId}/followers — for Notification Service fan-out
+    [HttpGet("/internal/artists/{artistId:guid}/followers")]
+    public async Task<IActionResult> GetArtistFollowers(
+        Guid artistId,
+        [FromQuery] int limit = 1000,
+        [FromQuery] string? cursor = null,
+        CancellationToken ct = default)
+    {
+        if (limit is < 1 or > 1000)
+            return BadRequest(new { error = "limit must be between 1 and 1000" });
+
+        var (followerIds, nextCursor) = await userService.GetArtistFollowersAsync(artistId, limit, cursor, ct);
+
+        return Ok(new
+        {
+            FollowerIds = followerIds,
+            NextCursor = nextCursor,
+            HasMore = nextCursor is not null
+        });
+    }
+
     // POST /internal/users/verify-credentials — for Auth Service login flow
     [HttpPost("verify-credentials")]
     public async Task<IActionResult> VerifyCredentials(

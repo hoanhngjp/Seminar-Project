@@ -18,7 +18,7 @@ _(Không có thay đổi pending — tất cả đã được đưa vào milesto
 
 ---
 
-## [Week 5–6] — 2026-05-05 (in progress)
+## [Week 5–6] — 2026-05-06
 
 > **Milestone:** Search + Analytics + Notification — Creator thấy heatmap sau play/skip events.
 
@@ -36,6 +36,21 @@ _(Không có thay đổi pending — tất cả đã được đưa vào milesto
 - `GET /internal/songs/{songId}` — trả `{ id, artistId, title }` cho Analytics Service ownership check (Music Service)
 - Tests: 15 AnalyticsService unit + 13 AnalyticsController unit + 5 KafkaHandler unit = **32/32 xanh** (Analytics Service)
 - ACs covered: AC4.1.1, AC4.1.2, AC4.1.3, AC4.1.4, AC4.2.1, AC4.2.2, AC4.2.3, AC4.2.4
+
+**Notification Service**
+- `GET /api/v1/notifications/unread` — cursor pagination (ObjectId-based), filter `status IN [Pending, Delivered]`, budget 150ms (Notification Service)
+- `PATCH /api/v1/notifications/{id}/read` — idempotent via `Idempotency-Key`, Redis SETNX `notification:idem:{key}` TTL 24h, ownership check (Notification Service)
+- `PATCH /api/v1/notifications/read-all` — 202 async, bulk MongoDB UpdateMany background, budget 200ms (Notification Service)
+- Kafka consumer `New_Release` → full cursor-loop fan-out tới tất cả followers (batch 500), insert MongoDB, publish `Notification_Sent` best-effort, retry 3x Exponential Backoff (Notification Service)
+- `MongoNotificationRepository` — MongoDB.Driver 2.28, ObjectId cursor pagination, bulk InsertMany (Notification Service)
+- `RedisIdempotencyRepository` — `SETNX` TTL 24h (Notification Service)
+- `UserServiceClient` — `IAsyncEnumerable<Guid>` cursor loop, full pagination via `/internal/artists/{artistId}/followers` (Notification Service)
+- `KafkaEventPublisher` — Confluent.Kafka, idempotent producer, local file fallback (Notification Service)
+- `GatewayAuthHandler` — trust `X-User-Id`/`X-User-Role` headers (Notification Service)
+- `GET /internal/artists/{artistId}/followers` — cursor pagination `follows` table (User Service)
+- `Follow` domain model + EF Core mapping + `GetFollowerIdsAsync` (User Service)
+- Tests: 18 unit (NotificationService 15 + NewReleaseHandler 3) + 13 integration = **31/31 xanh** (Notification Service)
+- ACs covered: AC6.1.1, AC6.1.2, AC6.1.3
 
 **Search Service**
 - `GET /api/v1/search` — Elasticsearch 8 fuzzy search (fuzziness AUTO, fields title^3/artist^2/album), cursor pagination (base64 offset), Redis cache TTL 10m (`search:cache:{sha256}`), fallback `[]` on timeout/ES error (Search Service)

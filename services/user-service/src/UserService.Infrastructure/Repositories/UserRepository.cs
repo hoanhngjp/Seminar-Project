@@ -30,4 +30,32 @@ public class UserRepository(UserDbContext db) : IUserRepository
                 .SetProperty(u => u.UpdatedAt, DateTime.UtcNow), ct)
             .ConfigureAwait(false);
     }
+
+    public async Task<(IReadOnlyList<Guid> FollowerIds, string? NextCursor)> GetFollowerIdsAsync(
+        Guid artistId, int limit, string? cursor, CancellationToken ct)
+    {
+        IQueryable<Domain.Models.Follow> query = db.Follows
+            .AsNoTracking()
+            .Where(f => f.FolloweeId == artistId)
+            .OrderBy(f => f.Id);
+
+        if (cursor is not null && Guid.TryParse(cursor, out var cursorId))
+            query = query.Where(f => f.Id.CompareTo(cursorId) > 0);
+
+        // Fetch (Id, FollowerId) so we can use Follow.Id as next cursor
+        var rows = await query
+            .Select(f => new { f.Id, f.FollowerId })
+            .Take(limit + 1)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        string? nextCursor = null;
+        if (rows.Count > limit)
+        {
+            rows.RemoveAt(rows.Count - 1);
+            nextCursor = rows[^1].Id.ToString();
+        }
+
+        return (rows.Select(r => r.FollowerId).ToList(), nextCursor);
+    }
 }

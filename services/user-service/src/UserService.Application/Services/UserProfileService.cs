@@ -108,6 +108,10 @@ public class UserProfileService(
         return new VerifyCredentialsResult(user.Id, user.Role, user.IsActive, user.DisplayName);
     }
 
+    public Task<(IReadOnlyList<Guid> FollowerIds, string? NextCursor)> GetArtistFollowersAsync(
+        Guid artistId, int limit, string? cursor, CancellationToken ct)
+        => userRepo.GetFollowerIdsAsync(artistId, limit, cursor, ct);
+
     private static UserProfileDto MapToDto(User u) => new(
         u.Id, u.Email, u.Username, u.DisplayName, u.Role, u.AvatarUrl, u.Bio, u.CreatedAt);
 }

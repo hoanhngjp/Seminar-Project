@@ -7,6 +7,7 @@ public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<UserPreferences> UserPreferences => Set<UserPreferences>();
+    public DbSet<Follow> Follows => Set<Follow>();
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
@@ -53,6 +54,18 @@ public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(
             e.HasOne(p => p.User).WithOne(u => u.Preferences)
                 .HasForeignKey<UserPreferences>(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        mb.Entity<Follow>(e =>
+        {
+            e.ToTable("follows");
+            e.HasKey(f => f.Id);
+            e.Property(f => f.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(f => f.FollowerId).HasColumnName("follower_id").IsRequired();
+            e.Property(f => f.FolloweeId).HasColumnName("followee_id").IsRequired();
+            e.Property(f => f.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
+            e.HasIndex(f => f.FollowerId).HasDatabaseName("idx_follows_follower_id");
+            e.HasIndex(f => f.FolloweeId).HasDatabaseName("idx_follows_followee_id");
         });
     }
 }

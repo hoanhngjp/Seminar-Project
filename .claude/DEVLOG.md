@@ -26,6 +26,26 @@
 
 ---
 
+[2026-05-06] [NOTIFICATION SERVICE / INTEGRATION TESTS] [BUG]
+
+**Problem:** Integration test factory sử dụng `builder.UseEnvironment("Testing")` nhưng `IWebHostBuilder` không có extension này mà không có `using Microsoft.AspNetCore.Hosting`.
+**Root cause:** `UseEnvironment` là extension method nằm trong `Microsoft.AspNetCore.Hosting` namespace — không được auto-imported bởi `ImplicitUsings` của test project.
+**Fix / Decision:** Thêm `using Microsoft.AspNetCore.Hosting;` vào integration test file.
+**Lesson / Warning:** Khi dùng `WebApplicationFactory.ConfigureWebHost`, luôn add `using Microsoft.AspNetCore.Hosting` nếu gọi bất kỳ method nào trên `IWebHostBuilder`.
+
+---
+
+[2026-05-06] [USER SERVICE / DOMAIN] [DECISION]
+
+**Problem:** `follows` table tồn tại trong PostgreSQL schema (DATABASE_SCHEMA.md) nhưng chưa có EF Core mapping. Notification Service cần query followers qua User Service internal API.
+**Root cause:** User Service chỉ map `users` và `user_preferences`. `follows` được dự kiến query bởi Notification Service nhưng chưa implement.
+**Fix / Decision:** Thêm `Follow` domain model + `Follows` DbSet + EF Core mapping. Cần tạo migration `AddFollowsTable` trước khi deploy: `dotnet ef migrations add AddFollowsTable` từ UserService.Api project.
+**Lesson / Warning:** Khi thêm DbSet mới vào DbContext đã có migration, PHẢI chạy `dotnet ef migrations add` ngay sau khi code. Migration files là code — commit cùng với source.
+
+---
+
+---
+
 [2026-05-06] [ANALYTICS SERVICE / INFLUXDB] [BUG]
 
 **Problem:** `using var writeApi = client.GetWriteApiAsync()` — compiler error CS1674: `WriteApiAsync` does not implement `IDisposable`.

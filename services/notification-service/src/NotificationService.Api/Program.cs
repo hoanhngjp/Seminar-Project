@@ -1,3 +1,4 @@
+using NotificationService.Api.Extensions;
 using NotificationService.Api.Middleware;
 using NotificationService.Infrastructure;
 
@@ -7,7 +8,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddInfrastructure();
+
+builder.Services.AddGatewayAuth();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
@@ -18,8 +21,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<CorrelationIdMiddleware>();
-app.UseRouting();
+app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "notification-service" }));
 
 app.Run();
+
+// Expose Program for integration tests
+public partial class Program { }

@@ -7,9 +7,9 @@
 
 ## Trạng thái hiện tại
 
-- **Phase:** Week 3–4 — Music + Streaming + Recommendation (hoàn thành)
-- **Tuần tiếp theo:** Week 5–6 — Search + Analytics + Notification
-- **Ngày làm việc gần nhất:** 2026-05-05
+- **Phase:** Week 5–6 — Search + Analytics + Notification (hoàn thành)
+- **Tuần tiếp theo:** Week 7–9 — Frontend + Listening Party
+- **Ngày làm việc gần nhất:** 2026-05-06
 
 ---
 
@@ -93,10 +93,11 @@
 - [X] Analytics Service: Kafka consumer Song_Played → InfluxDB (idempotency dedup)
 - [X] Analytics Service: Kafka consumer Song_Skipped → InfluxDB
 - [X] Analytics Service: Kafka consumer Notification_Sent → counter
-- [ ] Notification Service: GET /api/v1/notifications/unread
-- [ ] Notification Service: PATCH /api/v1/notifications/{id}/read
-- [ ] Notification Service: PATCH /api/v1/notifications/read-all
-- [ ] Notification Service: Kafka consumer New_Release → fan-out
+- [X] Notification Service: GET /api/v1/notifications/unread
+- [X] Notification Service: PATCH /api/v1/notifications/{id}/read
+- [X] Notification Service: PATCH /api/v1/notifications/read-all
+- [X] Notification Service: Kafka consumer New_Release → fan-out (full cursor loop, batch 500)
+- [X] User Service: GET /internal/artists/{artistId}/followers (cursor pagination)
 - [ ] Kafka wiring: consumer groups hoạt động, DLQ topics tồn tại
 - [ ] Checkpoint W6: Creator thấy heatmap sau play/skip events
 
@@ -132,9 +133,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 5–6 — Notification Service (Search + Analytics đã xong)
-- **File plan cần đọc:** `.claude/plan/week5_6_search_analytics_notification.md`
-- **Checkpoint gần nhất đã pass:** Analytics Service 32/32 tests xanh (2026-05-06)
+- **Service/Task:** Week 7–9 — Frontend + Listening Party (bắt đầu tiếp theo)
+- **File plan cần đọc:** `.claude/plan/week7_9_frontend_listening_party.md`
+- **Checkpoint gần nhất đã pass:** Notification Service 31/31 tests xanh (2026-05-06)
 - **Blocked bởi:** —
 
 ---
@@ -151,6 +152,9 @@
 | 2026-05-05 | Streaming | Chunk endpoint dùng S3 proxy (ByteRange) thay vì CDN redirect — phù hợp local MinIO |
 | 2026-05-05 | Music/Infra | Dùng MinIO (đã có trong docker-compose) thay vì LocalStack S3 |
 | 2026-05-05 | Postgres | Services connect native postgres `localhost:5432` (`postgres/4L27hN04@`), không qua Docker postgres |
+| 2026-05-06 | Notification Service | Fan-out batch size = 500 — tránh hold >500 Notification objects trong memory |
+| 2026-05-06 | Notification Service | `Notification_Sent` publish là best-effort — failure không làm crash fan-out |
+| 2026-05-06 | User Service | `follows` table added to DbContext — cần migration `AddFollowsTable` nếu chạy thật |
 
 ---
 
