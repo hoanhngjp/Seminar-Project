@@ -6,6 +6,7 @@ using MusicService.Api.Auth;
 using MusicService.Api.Middleware;
 using MusicService.Application;
 using MusicService.Infrastructure;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 

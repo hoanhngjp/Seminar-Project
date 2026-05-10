@@ -66,4 +66,126 @@ public class AuthIntegrationTests : IClassFixture<CustomWebApplicationFactory>
         body!.Success.Should().BeFalse();
         body.Error!.Code.Should().Be("AUTH_INVALID_CREDENTIALS");
     }
+
+    [Fact]
+    public async Task Register_WithValidData_Returns201AndUserId()
+    {
+        // Arrange
+        var request = new RegisterRequest
+        {
+            Email = "newuser@example.com",
+            Password = "Password1",
+            DisplayName = "New User",
+            Role = "Listener"
+        };
+        var expectedResponse = new RegisterResponse
+        {
+            UserId = Guid.NewGuid().ToString(),
+            Email = request.Email,
+            DisplayName = request.DisplayName,
+            Role = "Listener"
+        };
+
+        _factory.UserGrpcClientMock
+            .Setup(u => u.CreateUserAsync(It.IsAny<RegisterRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/v1/auth/register", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var body = await response.Content.ReadFromJsonAsync<ApiResponse<RegisterResponse>>();
+        body!.Success.Should().BeTrue();
+        body.Data!.Email.Should().Be(request.Email);
+        body.Data.Role.Should().Be("Listener");
+        body.Error.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Register_WithMissingEmail_Returns400ValidationError()
+    {
+        // Arrange
+        var request = new RegisterRequest { Email = "", Password = "Password1", DisplayName = "Name" };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/v1/auth/register", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var body = await response.Content.ReadFromJsonAsync<ApiResponse<object>>();
+        body!.Success.Should().BeFalse();
+        body.Error!.Code.Should().Be("VALIDATION_ERROR");
+    }
+
+    [Fact]
+    public async Task Register_WithWeakPassword_Returns400ValidationError()
+    {
+        // Arrange — password < 8 chars
+        var request = new RegisterRequest { Email = "e@e.com", Password = "short", DisplayName = "Name" };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/v1/auth/register", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var body = await response.Content.ReadFromJsonAsync<ApiResponse<object>>();
+        body!.Error!.Code.Should().Be("VALIDATION_ERROR");
+    }
+
+    [Fact]
+    public async Task Register_WithDuplicateEmail_Returns400ValidationError()
+    {
+        // Arrange — gRPC client maps AlreadyExists → ValidationException
+        var request = new RegisterRequest
+        {
+            Email = "taken@example.com",
+            Password = "Password1",
+            DisplayName = "Someone"
+        };
+
+        _factory.UserGrpcClientMock
+            .Setup(u => u.CreateUserAsync(It.IsAny<RegisterRequest>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Domain.Exceptions.ValidationException("Email is already registered."));
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/v1/auth/register", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var body = await response.Content.ReadFromJsonAsync<ApiResponse<object>>();
+        body!.Error!.Code.Should().Be("VALIDATION_ERROR");
+    }
+
+    [Fact]
+    public async Task Register_WithCreatorRole_Returns201WithCreatorRole()
+    {
+        // Arrange
+        var request = new RegisterRequest
+        {
+            Email = "creator@example.com",
+            Password = "Demo1234!",
+            DisplayName = "Demo Creator",
+            Role = "Creator"
+        };
+        var expectedResponse = new RegisterResponse
+        {
+            UserId = Guid.NewGuid().ToString(),
+            Email = request.Email,
+            DisplayName = request.DisplayName,
+            Role = "Creator"
+        };
+
+        _factory.UserGrpcClientMock
+            .Setup(u => u.CreateUserAsync(It.IsAny<RegisterRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/v1/auth/register", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var body = await response.Content.ReadFromJsonAsync<ApiResponse<RegisterResponse>>();
+        body!.Data!.Role.Should().Be("Creator");
+    }
 }

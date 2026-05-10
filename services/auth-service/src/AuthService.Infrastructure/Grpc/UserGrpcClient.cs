@@ -1,3 +1,4 @@
+using AuthService.Application.DTOs;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.Exceptions;
 using Grpc.Core;
@@ -27,6 +28,47 @@ public class UserGrpcClient(UserService.UserServiceClient client) : IUserGrpcCli
         catch (RpcException ex)
         {
             throw new Exception($"gRPC call failed: {ex.Status.Detail}", ex);
+        }
+    }
+
+    public async Task<RegisterResponse> CreateUserAsync(RegisterRequest request, CancellationToken ct)
+    {
+        var grpcRole = request.Role switch
+        {
+            "Creator" => Role.Creator,
+            _         => Role.Listener
+        };
+
+        try
+        {
+            var response = await client.CreateUserAsync(new CreateUserRequest
+            {
+                Email       = request.Email,
+                Password    = request.Password,
+                DisplayName = request.DisplayName,
+                Role        = grpcRole
+            }, cancellationToken: ct);
+
+            return new RegisterResponse
+            {
+                UserId      = response.UserId,
+                Email       = response.Email,
+                DisplayName = response.DisplayName,
+                Role        = response.Role == Role.Creator ? "Creator" : "Listener"
+            };
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.AlreadyExists)
+        {
+            // TODO: propose USER_ALREADY_EXISTS error code to team
+            throw new ValidationException("Email is already registered.");
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.InvalidArgument)
+        {
+            throw new ValidationException(ex.Status.Detail);
+        }
+        catch (RpcException ex)
+        {
+            throw new Exception($"gRPC CreateUser failed: {ex.Status.Detail}", ex);
         }
     }
 }

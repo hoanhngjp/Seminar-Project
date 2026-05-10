@@ -16,6 +16,21 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Week 11 — Verification + Register Endpoint (2026-05-10)**
+- `POST /api/v1/auth/register` — endpoint mới, không có trong API Design V2 (thêm cho demo)
+  - Auth Service nhận request, validate, gọi User Service gRPC `CreateUser`
+  - User Service hash BCrypt + tạo user trong PostgreSQL
+  - Response 201: `{ userId, email, displayName, role }`
+  - Hỗ trợ role `Listener` (default) và `Creator`; Admin không tạo được qua API
+- `proto/user.proto` — thêm `CreateUser` RPC + `CreateUserRequest/Response` messages
+- `UserGrpcService.cs` — implement `CreateUser` handler với validation + BCrypt hash
+- `IUserRepository` + `UserRepository` — thêm `CreateAsync` + `ExistsByEmailAsync`
+- Auth Service: `RegisterRequest/Response` DTO, `IAuthService.RegisterAsync`, `AuthService.RegisterAsync`, `UserGrpcClient.CreateUserAsync`
+- Tests: 10 unit tests + 7 integration tests xanh (thêm 6 tests register mới)
+- `infra/seed/demo_accounts.sh` — tạo 3 demo accounts qua API (listener, creator, listener2)
+- `infra/verify_ac.sh` — script tự động verify 33 ACs bằng curl, output PASS/FAIL/SKIP có màu
+- Fix: thêm `using Prometheus;` vào tất cả 9 Program.cs (extension method không nằm trong implicit usings)
+
 **Week 10 — Observability (2026-05-10)**
 - `infra/docker-compose.yml` — thêm Prometheus (port 9090) và Grafana (port 3001) services
 - `infra/prometheus.yml` — scrape config cho 10 services (9 C# + 1 Python), interval 15s

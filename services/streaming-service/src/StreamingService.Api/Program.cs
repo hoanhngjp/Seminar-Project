@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using Prometheus;
 using StreamingService.Api.Auth;
 using StreamingService.Api.Middleware;
 using StreamingService.Infrastructure;

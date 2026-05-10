@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using SmartMusic.User.Grpc;
 using UserService.Application.Interfaces;
 using UserService.Domain.Models;
+using BC = BCrypt.Net.BCrypt;
 
 namespace UserService.Api.Grpc;
 
@@ -99,6 +100,76 @@ public class UserGrpcService(
         {
             UserId = user.Id.ToString(),
             Role = role
+        };
+    }
+
+    public override async Task<CreateUserResponse> CreateUser(
+        CreateUserRequest request, ServerCallContext context)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) ||
+            string.IsNullOrWhiteSpace(request.Password) ||
+            string.IsNullOrWhiteSpace(request.DisplayName))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "email, password, and display_name are required."));
+        }
+
+        if (request.Password.Length < 8)
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "Password must be at least 8 characters."));
+
+        bool exists;
+        try
+        {
+            exists = await userRepo.ExistsByEmailAsync(request.Email, context.CancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not RpcException)
+        {
+            logger.LogError(ex, "DB unavailable during CreateUser.");
+            throw new RpcException(new Status(StatusCode.Unavailable, "User Service database is unreachable."));
+        }
+
+        if (exists)
+            throw new RpcException(new Status(StatusCode.AlreadyExists, "Email already registered."));
+
+        var roleStr = request.Role switch
+        {
+            Role.Creator => "Creator",
+            Role.Admin   => "Listener", // Admin cannot be created via register
+            _            => "Listener"
+        };
+
+        var user = new User
+        {
+            Id          = Guid.NewGuid(),
+            Email       = request.Email,
+            Username    = request.Email,
+            DisplayName = request.DisplayName,
+            PasswordHash = BC.HashPassword(request.Password),
+            Role        = roleStr,
+            IsActive    = true,
+            CreatedAt   = DateTime.UtcNow,
+            UpdatedAt   = DateTime.UtcNow
+        };
+
+        try
+        {
+            await userRepo.CreateAsync(user, context.CancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not RpcException)
+        {
+            logger.LogError(ex, "DB error during CreateUser for email: {Email}", user.Email);
+            throw new RpcException(new Status(StatusCode.Unavailable, "Failed to create user."));
+        }
+
+        var grpcRole = roleStr == "Creator" ? Role.Creator : Role.Listener;
+
+        logger.LogInformation("User created via gRPC. UserId={UserId} Role={Role}", user.Id, roleStr);
+
+        return new CreateUserResponse
+        {
+            UserId      = user.Id.ToString(),
+            Email       = user.Email,
+            DisplayName = user.DisplayName,
+            Role        = grpcRole
         };
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using Prometheus;
 using SearchService.Api.Auth;
 using SearchService.Api.Middleware;
 using SearchService.Infrastructure;

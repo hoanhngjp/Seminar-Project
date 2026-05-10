@@ -2,6 +2,7 @@ using ListeningPartyService.Api.Extensions;
 using ListeningPartyService.Api.Hubs;
 using ListeningPartyService.Api.Middleware;
 using ListeningPartyService.Infrastructure;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 

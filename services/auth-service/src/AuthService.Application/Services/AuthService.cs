@@ -137,4 +137,20 @@ public class AuthService(
         await blacklistRepo.AddAsync(blacklist, ct);
         await cache.RevokeTokenInCacheAsync(jti.ToString(), token.ExpiresAt - DateTime.UtcNow);
     }
+
+    public async Task<RegisterResponse> RegisterAsync(RegisterRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) ||
+            string.IsNullOrWhiteSpace(request.Password) ||
+            string.IsNullOrWhiteSpace(request.DisplayName))
+        {
+            throw new ValidationException("email, password, and displayName are required.");
+        }
+
+        if (request.Password.Length < 8)
+            throw new ValidationException("Password must be at least 8 characters.");
+
+        // Delegate user creation + password hashing to User Service via gRPC
+        return await userClient.CreateUserAsync(request, ct);
+    }
 }

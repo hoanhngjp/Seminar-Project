@@ -22,6 +22,19 @@ public class UserRepository(UserDbContext db) : IUserRepository
             .ConfigureAwait(false);
     }
 
+    public async Task<bool> ExistsByEmailAsync(string email, CancellationToken ct)
+        => await db.Users.AsNoTracking()
+            .AnyAsync(u => u.Email == email.ToLowerInvariant(), ct).ConfigureAwait(false);
+
+    public async Task<User> CreateAsync(User user, CancellationToken ct)
+    {
+        user.Email = user.Email.ToLowerInvariant();
+        user.Username = user.Username.ToLowerInvariant();
+        await db.Users.AddAsync(user, ct).ConfigureAwait(false);
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        return user;
+    }
+
     public async Task UpdateLastLoginAsync(Guid userId, CancellationToken ct)
     {
         await db.Users.Where(u => u.Id == userId)

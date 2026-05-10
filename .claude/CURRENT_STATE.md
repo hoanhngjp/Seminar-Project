@@ -124,9 +124,11 @@
 - [X] k6 load test: tests/load/streaming_url.js — p95 < 150ms
 - [X] k6 load test: tests/load/search.js — p95 < 200ms
 - [X] k6 load test: tests/load/recommendation.js — p95 < 300ms
-- [ ] AC checklist W11: tất cả 33 ACs verify pass
+- [X] POST /api/v1/auth/register endpoint — Auth Service + User Service gRPC CreateUser
+- [X] infra/seed/demo_accounts.sh — tạo listener@ + creator@ qua API
+- [X] infra/verify_ac.sh — 33 ACs automated curl verification (PASS/FAIL/SKIP)
+- [ ] AC checklist W11: chạy verify_ac.sh, fix FAILs, verify thủ công SKIPs còn lại
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
-- [ ] Backup accounts tạo xong: listener@, creator@
 - [ ] Pre-upload demo songs cho Creator account
 
 ---
@@ -137,7 +139,7 @@
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
 - **Checkpoint gần nhất đã pass:** Tuần 9 hoàn thành — 79/79 frontend tests xanh (2026-05-07)
 - **Ngày làm việc gần nhất:** 2026-05-10
-- **Tiếp theo:** Tuần 11 — AC Verification Checklist (33 ACs) + buffer
+- **Tiếp theo:** Tuần 12 — Demo prep: chạy verify_ac.sh, fix FAILs, rehearsal demo script
 
 ---
 
@@ -161,6 +163,8 @@
 | 2026-05-07 | Frontend | `GET /api/v1/music/songs` (list) không có trong API Design V2 — CreatorDashboard dùng Song ID input thay vì list |
 | 2026-05-07 | Frontend | `@microsoft/signalr` mock trong vitest: phải dùng `function` constructor (không phải arrow), tất cả builder methods phải return cùng 1 object |
 | 2026-05-10 | All Services | Prometheus `/metrics` expose trên cùng HTTP port (80) dùng `MapMetrics()` — không cần port riêng 9091 |
+| 2026-05-10 | Auth Service | `POST /api/v1/auth/register` không có trong API Design V2 — thêm cho demo. `USER_ALREADY_EXISTS` chưa có trong error catalogue, dùng `VALIDATION_ERROR` tạm (TODO) |
+| 2026-05-10 | All Services | `using Prometheus;` phải thêm explicit vào Program.cs — không nằm trong implicit usings |
 
 ---
 

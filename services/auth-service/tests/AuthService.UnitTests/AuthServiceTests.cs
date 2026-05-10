@@ -107,6 +107,87 @@ public class AuthServiceTests
     }
 
     [Fact]
+    public async Task RegisterAsync_ValidRequest_DelegatesAndReturnsResponse()
+    {
+        // Arrange
+        var request = new RegisterRequest
+        {
+            Email = "new@example.com",
+            Password = "Password1",
+            DisplayName = "New User",
+            Role = "Listener"
+        };
+        var expected = new RegisterResponse
+        {
+            UserId = Guid.NewGuid().ToString(),
+            Email = request.Email,
+            DisplayName = request.DisplayName,
+            Role = "Listener"
+        };
+
+        _userClientMock.Setup(u => u.CreateUserAsync(request, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expected);
+
+        // Act
+        var result = await _sut.RegisterAsync(request, CancellationToken.None);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+        _userClientMock.Verify(u => u.CreateUserAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData("", "Password1", "Name")]
+    [InlineData("e@e.com", "", "Name")]
+    [InlineData("e@e.com", "Password1", "")]
+    public async Task RegisterAsync_MissingFields_ThrowsValidationException(string email, string password, string displayName)
+    {
+        var request = new RegisterRequest { Email = email, Password = password, DisplayName = displayName };
+
+        var act = async () => await _sut.RegisterAsync(request, CancellationToken.None);
+
+        await act.Should().ThrowAsync<ValidationException>();
+    }
+
+    [Fact]
+    public async Task RegisterAsync_WeakPassword_ThrowsValidationException()
+    {
+        var request = new RegisterRequest
+        {
+            Email = "e@e.com",
+            Password = "short",
+            DisplayName = "Name"
+        };
+
+        var act = async () => await _sut.RegisterAsync(request, CancellationToken.None);
+
+        await act.Should().ThrowAsync<ValidationException>()
+            .WithMessage("*8 characters*");
+    }
+
+    [Fact]
+    public async Task RegisterAsync_DuplicateEmail_PropagatesValidationException()
+    {
+        // Arrange — gRPC client throws (maps AlreadyExists → ValidationException)
+        var request = new RegisterRequest
+        {
+            Email = "taken@example.com",
+            Password = "Password1",
+            DisplayName = "Someone"
+        };
+
+        _userClientMock.Setup(u => u.CreateUserAsync(request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ValidationException("Email is already registered."));
+
+        // Act
+        var act = async () => await _sut.RegisterAsync(request, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<ValidationException>()
+            .WithMessage("*already registered*");
+    }
+
+    [Fact]
     public async Task RefreshAsync_ReusedToken_RevokesAllAndThrowsForbidden()
     {
         // Arrange

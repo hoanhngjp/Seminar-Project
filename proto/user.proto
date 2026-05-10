@@ -25,6 +25,14 @@ service UserService {
   // VerifyCredentials verifies a user's plaintext password against the hash
   // stored in the User Service. Called by the Auth Service during login.
   rpc VerifyCredentials(VerifyCredentialsRequest) returns (VerifyCredentialsResponse);
+
+  // CreateUser creates a new user account. Called by Auth Service during registration.
+  // gRPC Status Codes:
+  //   OK              — user created successfully
+  //   ALREADY_EXISTS  — email already registered
+  //   INVALID_ARGUMENT — validation error (missing/invalid fields, weak password)
+  //   UNAVAILABLE     — database unreachable
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
 }
 
 // ---------------------------------------------------------------------------
@@ -106,4 +114,34 @@ message VerifyCredentialsResponse {
 
   // role is the RBAC role stored in the User Service.
   Role role = 2;
+}
+
+// CreateUserRequest carries the data needed to register a new user.
+message CreateUserRequest {
+  // email is the primary email address. Must be unique within the User Service.
+  string email = 1;
+
+  // password is the plaintext password. User Service hashes it with BCrypt.
+  string password = 2;
+
+  // display_name is the user-facing name shown in the UI.
+  string display_name = 3;
+
+  // role defaults to LISTENER if not specified or ROLE_UNSPECIFIED.
+  Role role = 4;
+}
+
+// CreateUserResponse is returned on a successful OK status.
+message CreateUserResponse {
+  // user_id is the UUID assigned to the new user.
+  string user_id = 1;
+
+  // email echoes the registered email.
+  string email = 2;
+
+  // display_name echoes the provided display name.
+  string display_name = 3;
+
+  // role is the RBAC role assigned to the new user.
+  Role role = 4;
 }

@@ -1,5 +1,6 @@
 using ApiGateway.Api.Middleware;
 using ApiGateway.Infrastructure;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 

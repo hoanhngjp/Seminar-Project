@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Prometheus;
 using Serilog;
 using Serilog.Formatting.Compact;
 using UserService.Api.Auth;

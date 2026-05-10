@@ -8,6 +8,23 @@ namespace AuthService.Api.Controllers;
 [Route("api/v1/auth")]
 public class AuthController(IAuthService authService) : ControllerBase
 {
+    // Contract-First Checklist — POST /api/v1/auth/register
+    // [1] POST /api/v1/auth/register
+    // [2] Body: { email, password, displayName, role? ("Listener"|"Creator") }
+    // [3] 201: { success, data: { userId, email, displayName, role }, meta, error:null }
+    // [4] 400 VALIDATION_ERROR (missing/invalid fields, email taken)
+    //     500 INTERNAL_ERROR
+    // [5] No auth required
+    // [6] 3000ms budget (bcrypt in User Service)
+    // [7] YES (idempotent on same email → 400 not 201)
+    // [8] Admin role not creatable via API. TODO: propose USER_ALREADY_EXISTS error code.
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken ct)
+    {
+        var result = await authService.RegisterAsync(request, ct);
+        return StatusCode(201, ApiResponse<RegisterResponse>.CreateSuccess(result, HttpContext));
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken ct)
     {

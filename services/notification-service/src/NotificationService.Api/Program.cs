@@ -1,6 +1,7 @@
 using NotificationService.Api.Extensions;
 using NotificationService.Api.Middleware;
 using NotificationService.Infrastructure;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 

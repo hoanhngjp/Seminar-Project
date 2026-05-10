@@ -2,6 +2,7 @@ using AnalyticsService.Api.Auth;
 using AnalyticsService.Api.Middleware;
 using AnalyticsService.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 

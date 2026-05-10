@@ -26,6 +26,24 @@
 
 ---
 
+[2026-05-10] [ALL C# SERVICES / PROMETHEUS] [BUG]
+
+**Problem:** `UseHttpMetrics()` và `MapMetrics()` không được nhận dạng sau khi thêm `prometheus-net.AspNetCore` vào .csproj qua Edit tool.
+**Root cause:** Hai vấn đề song song: (1) Package chưa được restore — `dotnet restore` báo "all up-to-date" nhưng thực ra chưa download. (2) Extension methods nằm trong `Prometheus` namespace nhưng top-level Program.cs không có `using Prometheus;` — implicit usings không tự include.
+**Fix / Decision:** Chạy `dotnet add package prometheus-net.AspNetCore` (force restore) + thêm `using Prometheus;` vào đầu tất cả 9 Program.cs. Sau đó `dotnet restore SmartMusic.sln` để sync toàn bộ solution.
+**Lesson / Warning:** Khi thêm package bằng Edit tool vào .csproj: phải chạy `dotnet restore` hoặc `dotnet add package` để download. Prometheus extension methods LUÔN cần `using Prometheus;` trong file dùng chúng — không nằm trong implicit usings.
+
+---
+
+[2026-05-10] [AUTH SERVICE] [DECISION]
+
+**Problem:** Register endpoint cần tạo user nhưng Auth Service không có database user riêng — user data nằm ở User Service.
+**Root cause:** Architecture đúng: User Service là source of truth cho user data. Auth Service chỉ quản lý tokens.
+**Fix / Decision:** Thêm `CreateUser` RPC vào `user.proto` — Auth Service gọi User Service qua cùng gRPC channel đã có. User Service hash BCrypt, tạo user trong PostgreSQL. Auth Service trả 201 với `{ userId, email, displayName, role }`. Không trả tokens — user phải login riêng.
+**Lesson / Warning:** Register sử dụng gRPC channel Auth→User đã có. `ALREADY_EXISTS` status code từ gRPC được map sang `VALIDATION_ERROR` (400) vì `USER_ALREADY_EXISTS` chưa có trong error catalogue — có TODO comment trong code.
+
+---
+
 [2026-05-10] [OBSERVABILITY / ALL SERVICES] [DECISION]
 
 **Problem:** Prometheus port strategy — expose `/metrics` trên port riêng (9091) hay cùng port với HTTP API?
