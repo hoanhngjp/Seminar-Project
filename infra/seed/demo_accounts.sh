@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # demo_accounts.sh — Tạo demo accounts cho Listener và Creator
 # Chạy sau khi infra và services đã up: docker-compose up -d
-# Yêu cầu: curl, jq
+# Yêu cầu: curl (jq không cần)
 #
 # Usage:
 #   bash infra/seed/demo_accounts.sh
-#   bash infra/seed/demo_accounts.sh http://localhost:5000   # custom base URL
+#   bash infra/seed/demo_accounts.sh http://localhost:5000
 
-set -euo pipefail
+set -uo pipefail
 
 BASE_URL="${1:-http://localhost:5000}"
 REGISTER_URL="$BASE_URL/api/v1/auth/register"
@@ -21,11 +21,19 @@ log()  { echo -e "${GREEN}[OK]${NC}  $*"; }
 warn() { echo -e "${YELLOW}[SKIP]${NC} $*"; }
 fail() { echo -e "${RED}[FAIL]${NC} $*"; }
 
+# Extract a JSON string value without jq — works on Git Bash / WSL / macOS
+json_get() {
+  local key="$1" json="$2"
+  echo "$json" | grep -oP "\"${key}\"\\s*:\\s*\"\\K[^\"]*" | head -1
+}
+
+json_bool() {
+  local key="$1" json="$2"
+  echo "$json" | grep -oP "\"${key}\"\\s*:\\s*\\K(true|false)" | head -1
+}
+
 register_account() {
-  local email="$1"
-  local password="$2"
-  local display_name="$3"
-  local role="$4"
+  local email="$1" password="$2" display_name="$3" role="$4"
 
   echo -n "  Creating $role account: $email ... "
 
@@ -35,20 +43,23 @@ register_account() {
 
   http_code=$(echo "$response" | tail -1)
   body=$(echo "$response" | head -n -1)
-  success=$(echo "$body" | jq -r '.success // false')
+  success=$(json_bool "success" "$body")
 
   if [[ "$http_code" == "201" && "$success" == "true" ]]; then
-    user_id=$(echo "$body" | jq -r '.data.userId')
-    log "Created ($user_id)"
+    user_id=$(json_get "userId" "$body")
+    log "Created (userId: $user_id)"
   elif [[ "$http_code" == "400" ]]; then
-    message=$(echo "$body" | jq -r '.error.message // "unknown error"')
+    message=$(json_get "message" "$body")
     if echo "$message" | grep -qi "already registered\|already exists"; then
       warn "Already exists — skipping"
     else
-      fail "400 $message"
+      fail "400 — $message"
     fi
+  elif [[ "$http_code" == "000" ]]; then
+    fail "Cannot connect to $BASE_URL — is docker-compose up?"
   else
-    fail "HTTP $http_code — $(echo "$body" | jq -r '.error.message // "unknown"')"
+    message=$(json_get "message" "$body")
+    fail "HTTP $http_code — $message"
   fi
 }
 
@@ -62,15 +73,16 @@ echo ""
 # Wait for gateway to be ready
 echo "Checking gateway health..."
 for i in {1..10}; do
-  if curl -s "$BASE_URL/health" | grep -q "healthy\|ok\|OK" 2>/dev/null; then
-    log "Gateway is up"
+  status=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/health" 2>/dev/null || echo "000")
+  if [[ "$status" == "200" ]]; then
+    log "Gateway is up (HTTP 200)"
     break
   fi
   if [[ $i -eq 10 ]]; then
     fail "Gateway not reachable after 10 tries. Is docker-compose up?"
     exit 1
   fi
-  echo "  Waiting... ($i/10)"
+  echo "  Waiting... ($i/10) — HTTP $status"
   sleep 3
 done
 
@@ -82,8 +94,9 @@ register_account "listener2@example.com" "Demo1234!"  "Listener Two"   "Listener
 
 echo ""
 echo "================================================"
-echo "  Demo accounts ready. Login credentials:"
-echo "  Listener: listener@example.com / Demo1234!"
-echo "  Creator:  creator@example.com  / Demo1234!"
+echo "  Done. Login credentials:"
+echo "  Listener : listener@example.com  / Demo1234!"
+echo "  Creator  : creator@example.com   / Demo1234!"
+echo "  Listener2: listener2@example.com / Demo1234!"
 echo "================================================"
 echo ""

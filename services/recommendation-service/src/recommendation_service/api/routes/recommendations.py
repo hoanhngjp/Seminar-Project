@@ -46,7 +46,7 @@ def _get_user_id(request: Request) -> str:
 @router.get("")
 async def get_recommendations(
     request: Request,
-    context: Annotated[str | None, Query(pattern="^(morning|afternoon|evening|night)$")] = None,
+    context: Annotated[str | None, Query(pattern="^(morning|afternoon|evening|night|none)$")] = None,
     limit: Annotated[int, Query(ge=1, le=50)] = 20,
     service: RecommendationService = Depends(get_recommendation_service),
 ) -> JSONResponse:

@@ -30,7 +30,8 @@ class RecommendationService:
         limit: int,
         correlation_id: str,
     ) -> tuple[list[SongItem], str]:
-        resolved_context = context or get_current_context()
+        normalized = None if (context is None or context == "none") else context
+        resolved_context = normalized or get_current_context()
 
         # 1. Cache hit
         cached = await self._repo.get_cached_recommendations(user_id, resolved_context)

@@ -9,6 +9,7 @@ public class JwtValidationMiddleware(RequestDelegate next, IJwtValidationService
     {
         "/api/v1/auth/login",
         "/api/v1/auth/refresh",
+        "/api/v1/auth/register",
         "/health"
     };
 
