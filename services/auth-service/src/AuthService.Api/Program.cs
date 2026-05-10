@@ -25,8 +25,10 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseRouting();
+app.UseHttpMetrics();
 app.UseAuthorization();
 app.MapControllers();
+app.MapMetrics();
 
 app.Run();
 

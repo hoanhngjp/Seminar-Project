@@ -16,6 +16,19 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Week 10 — Observability (2026-05-10)**
+- `infra/docker-compose.yml` — thêm Prometheus (port 9090) và Grafana (port 3001) services
+- `infra/prometheus.yml` — scrape config cho 10 services (9 C# + 1 Python), interval 15s
+- `infra/grafana/provisioning/datasources/prometheus.yml` — auto-provision Prometheus datasource
+- `infra/grafana/provisioning/dashboards/dashboard.yml` — auto-provision dashboard provider
+- `infra/grafana/dashboards/smart-music.json` — 4-panel dashboard: API Latency p95, Streaming Start Time p95, Kafka Consumer Lag, Recommendation CTR
+- `prometheus-net.AspNetCore` (v8.2) thêm vào 9 C# services — expose `/metrics` endpoint trên cùng HTTP port
+- `UseHttpMetrics()` + `MapMetrics()` thêm vào pipeline tất cả 9 C# Program.cs
+- `prometheus-fastapi-instrumentator` (v6.1) thêm vào Recommendation Service — expose `/metrics` tự động
+- `tests/load/streaming_url.js` — k6 load test: 50 VUs × 2 phút, threshold p95 < 150ms
+- `tests/load/search.js` — k6 load test: 30 VUs × 2 phút, threshold p95 < 200ms
+- `tests/load/recommendation.js` — k6 load test: 30 VUs × 2 phút, threshold p95 < 300ms
+
 **Listening Party Service — Tuần 8 Track B: SignalR PartyHub**
 - `PartyHub.cs` — SignalR Hub tại `/hubs/party?roomId=xxx`
   - `OnConnectedAsync`: verify room, add to SignalR group, send SYNC_STATE to caller, broadcast MEMBER_JOIN to others (AC7.3.1)

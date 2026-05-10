@@ -12,6 +12,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.*" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.62.*" />
     <PackageReference Include="Google.Protobuf" Version="3.26.*" />
     <PackageReference Include="Grpc.Tools" Version="2.62.*">

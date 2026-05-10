@@ -44,12 +44,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseRouting();
+app.UseHttpMetrics();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
 
 // Apply rate limit only to upload endpoint
 app.MapControllers();
+app.MapMetrics();
 app.MapControllerRoute(
     name: "upload",
     pattern: "api/v1/music/songs",

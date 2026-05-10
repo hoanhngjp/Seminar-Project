@@ -9,6 +9,20 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        var origins = builder.Configuration
+            .GetSection("Cors:AllowedOrigins")
+            .Get<string[]>() ?? ["http://localhost:3000"];
+        policy.WithOrigins(origins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
@@ -19,6 +33,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("Frontend");
 
 // Middleware order matters:
 // 1. CorrelationId — attach before anything logs
@@ -31,8 +47,10 @@ app.UseMiddleware<RateLimitingMiddleware>();
 app.UseMiddleware<JwtValidationMiddleware>();
 
 app.UseRouting();
+app.UseHttpMetrics();
 app.UseAuthorization();
 app.MapControllers();
+app.MapMetrics();
 app.MapReverseProxy();
 
 app.Run();

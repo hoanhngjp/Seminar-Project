@@ -26,6 +26,24 @@
 
 ---
 
+[2026-05-10] [OBSERVABILITY / ALL SERVICES] [DECISION]
+
+**Problem:** Prometheus port strategy — expose `/metrics` trên port riêng (9091) hay cùng port với HTTP API?
+**Root cause:** Plan nói port 9091 nhưng docker-compose không có port mapping cho 9091 trên bất kỳ service nào.
+**Fix / Decision:** Expose `/metrics` trên cùng HTTP port (port 80 trong container) dùng `app.MapMetrics()` từ `prometheus-net.AspNetCore`. Prometheus scrape `http://service:80/metrics` — không cần port mapping riêng. Đơn giản hơn, không cần config Kestrel thêm.
+**Lesson / Warning:** `UseHttpMetrics()` phải đặt sau `UseRouting()` và trước `UseAuthentication()` — nếu đặt sau auth thì request bị reject trước khi metrics ghi nhận. Đặt trước `MapControllers()` trong pipeline.
+
+---
+
+[2026-05-10] [RECOMMENDATION SERVICE / PYTHON] [NOTE]
+
+**Problem:** IDE Pylance báo lỗi `Cannot find module prometheus_fastapi_instrumentator` ngay sau khi thêm import.
+**Root cause:** Package chưa install trong `.venv` — chỉ mới thêm vào `requirements.txt`.
+**Fix / Decision:** Chạy `.venv/Scripts/pip install prometheus-fastapi-instrumentator>=6.1.0` để cài vào .venv local. Trong Docker build, `pip install -r requirements.txt` sẽ cài tự động.
+**Lesson / Warning:** Pattern giống warning Pylance về các package khác (đã ghi trong CURRENT_STATE Known Issues). Không coi Pylance error là blocker nếu package chỉ chưa install local.
+
+---
+
 [2026-05-07] [LISTENING PARTY SERVICE / SIGNALR] [DECISION]
 
 **Problem:** Hub cần `GetRoomId()` và `GetUserId()` từ HttpContext/ClaimsPrincipal — khó mock trong unit tests nếu đọc trực tiếp từ `Context.GetHttpContext().Request.Query` và `Context.UserIdentifier`.

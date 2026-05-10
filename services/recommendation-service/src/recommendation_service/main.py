@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 import redis.asyncio as aioredis
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from recommendation_service.api.routes import health, recommendations
 from recommendation_service.core.config import settings
@@ -56,6 +57,8 @@ def create_app() -> FastAPI:
 
     app.include_router(health.router)
     app.include_router(recommendations.router)
+
+    Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
     @app.exception_handler(DomainException)
     async def domain_exception_handler(request: Request, exc: DomainException) -> JSONResponse:

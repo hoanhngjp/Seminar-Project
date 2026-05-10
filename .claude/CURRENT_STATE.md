@@ -119,11 +119,11 @@
 
 ### Week 10–12 — Polish + Demo
 
-- [ ] Prometheus metrics expose trên tất cả services
-- [ ] Grafana dashboard: 4 panels (latency, streaming, kafka lag, CTR)
-- [ ] k6 load test: tests/load/streaming_url.js — p95 < 150ms
-- [ ] k6 load test: tests/load/search.js — p95 < 200ms
-- [ ] k6 load test: tests/load/recommendation.js — p95 < 300ms
+- [X] Prometheus metrics expose trên tất cả services (prometheus-net 8.2 + fastapi-instrumentator 6.1)
+- [X] Grafana dashboard: 4 panels (latency, streaming, kafka lag, CTR) — `infra/grafana/dashboards/smart-music.json`
+- [X] k6 load test: tests/load/streaming_url.js — p95 < 150ms
+- [X] k6 load test: tests/load/search.js — p95 < 200ms
+- [X] k6 load test: tests/load/recommendation.js — p95 < 300ms
 - [ ] AC checklist W11: tất cả 33 ACs verify pass
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Backup accounts tạo xong: listener@, creator@
@@ -133,10 +133,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 10–12 — Polish + Demo (tiếp theo)
+- **Service/Task:** Week 10–12 — Polish + Demo (tiếp tục — Tuần 10 Observability xong)
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
 - **Checkpoint gần nhất đã pass:** Tuần 9 hoàn thành — 79/79 frontend tests xanh (2026-05-07)
-- **Blocked bởi:** Checkpoint W9 (2-tab test) cần verify thủ công với browser + infra local
+- **Ngày làm việc gần nhất:** 2026-05-10
+- **Tiếp theo:** Tuần 11 — AC Verification Checklist (33 ACs) + buffer
 
 ---
 
@@ -159,6 +160,7 @@
 | 2026-05-06 | Frontend | `types/listening-party.ts` overwrite với shared_contracts.md Section 6 — nội dung cũ sai hoàn toàn |
 | 2026-05-07 | Frontend | `GET /api/v1/music/songs` (list) không có trong API Design V2 — CreatorDashboard dùng Song ID input thay vì list |
 | 2026-05-07 | Frontend | `@microsoft/signalr` mock trong vitest: phải dùng `function` constructor (không phải arrow), tất cả builder methods phải return cùng 1 object |
+| 2026-05-10 | All Services | Prometheus `/metrics` expose trên cùng HTTP port (80) dùng `MapMetrics()` — không cần port riêng 9091 |
 
 ---
 
