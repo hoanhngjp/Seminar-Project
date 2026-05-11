@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AudioPlayer from '../components/Player/AudioPlayer';
+import AppShell from '../components/layout/AppShell';
+import { usePlayerStore } from '../store/playerStore';
+import { colors, font, fontSize, fontWeight, radius, spacing } from '../styles/tokens';
 import {
   fetchRecommendations,
   getTimeContext,
@@ -20,7 +22,7 @@ export default function HomePage() {
   const [items, setItems] = useState<RecommendationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedSong, setSelectedSong] = useState<RecommendationItem | null>(null);
+  const setSong = usePlayerStore((s) => s.setSong);
   const [context] = useState<ContextType>(() => getTimeContext());
 
   const loadRecommendations = useCallback(async () => {
@@ -43,14 +45,7 @@ export default function HomePage() {
   if (!accessToken) return null;
 
   return (
-    <div style={styles.page}>
-      <header style={styles.header}>
-        <h1 style={styles.logo}>Smart Music</h1>
-        <nav>
-          <a href="/search" style={styles.navLink}>Tìm kiếm</a>
-        </nav>
-      </header>
-
+    <AppShell>
       <main style={styles.main}>
         <h2 style={styles.sectionTitle}>
           Gợi ý cho bạn
@@ -88,7 +83,7 @@ export default function HomePage() {
               <button
                 key={item.songId}
                 style={styles.card}
-                onClick={() => setSelectedSong(item)}
+                onClick={() => setSong({ songId: item.songId, title: item.title, artist: item.artist })}
                 aria-label={`Phát ${item.title} — ${item.artist}`}
               >
                 <div style={styles.coverPlaceholder} aria-hidden="true">🎵</div>
@@ -106,190 +101,121 @@ export default function HomePage() {
           </div>
         )}
       </main>
-
-      {selectedSong && (
-        <div style={styles.playerBar}>
-          <AudioPlayer
-            songId={selectedSong.songId}
-            title={selectedSong.title}
-            artist={selectedSong.artist}
-          />
-          <button
-            onClick={() => setSelectedSong(null)}
-            style={styles.closeBtn}
-            aria-label="Đóng player"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-    </div>
+    </AppShell>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    background: '#0f0f0f',
-    color: '#fff',
-    fontFamily: 'system-ui, sans-serif',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '1rem 2rem',
-    borderBottom: '1px solid #222',
-    position: 'sticky',
-    top: 0,
-    background: '#0f0f0f',
-    zIndex: 10,
-  },
-  logo: {
-    margin: 0,
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    color: '#1db954',
-  },
-  navLink: {
-    color: '#aaa',
-    textDecoration: 'none',
-    fontSize: '0.9rem',
-  },
   main: {
-    flex: 1,
     padding: '2rem',
-    maxWidth: 1200,
-    margin: '0 auto',
     width: '100%',
     boxSizing: 'border-box',
   },
   sectionTitle: {
-    margin: '0 0 1.5rem',
-    fontSize: '1.5rem',
-    fontWeight: 600,
+    margin: `0 0 ${spacing[4]}px`,
+    fontSize: fontSize.section,
+    fontWeight: fontWeight.bold,
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
+    gap: `${spacing[2]}px`,
+    fontFamily: font.title,
+    color: colors.text,
   },
   contextBadge: {
-    fontSize: '0.75rem',
-    fontWeight: 500,
-    background: '#1db95433',
-    color: '#1db954',
-    border: '1px solid #1db95466',
-    borderRadius: 20,
-    padding: '0.2rem 0.65rem',
+    fontSize: fontSize.caption,
+    fontWeight: fontWeight.semibold,
+    background: '#1ed76020',
+    color: colors.accent,
+    borderRadius: radius.subtle,
+    padding: '2px 6px',
     textTransform: 'capitalize',
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-    gap: '1rem',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+    gap: `${spacing[4]}px`,
   },
   skeleton: {
     height: 220,
-    borderRadius: 10,
-    background: 'linear-gradient(90deg, #1a1a1a 25%, #242424 50%, #1a1a1a 75%)',
-    backgroundSize: '200% 100%',
+    borderRadius: radius.card,
+    background: colors.surfaceCard,
     animation: 'shimmer 1.5s infinite',
   },
   card: {
-    background: '#1a1a1a',
-    border: '1px solid #2a2a2a',
-    borderRadius: 10,
-    padding: '1rem',
+    background: colors.surface,
+    border: 'none',
+    borderRadius: radius.card,
+    padding: `${spacing[4]}px`,
     cursor: 'pointer',
     textAlign: 'left',
-    color: '#fff',
-    transition: 'background 0.15s, transform 0.1s',
+    color: colors.text,
+    transition: 'background 0.15s',
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.5rem',
+    gap: `${spacing[2]}px`,
   },
   coverPlaceholder: {
     fontSize: '2.5rem',
     textAlign: 'center',
-    padding: '0.5rem 0',
+    padding: `${spacing[2]}px 0`,
   },
   cardBody: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.25rem',
+    gap: `${spacing[1]}px`,
   },
   cardTitle: {
     margin: 0,
-    fontWeight: 600,
-    fontSize: '0.9rem',
+    fontWeight: fontWeight.bold,
+    fontSize: fontSize.body,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
+    fontFamily: font.title,
   },
   cardArtist: {
     margin: 0,
-    fontSize: '0.8rem',
-    color: '#888',
+    fontSize: fontSize.caption,
+    color: colors.textMuted,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
   explainBadge: {
-    fontSize: '0.7rem',
-    color: '#1db954',
-    background: '#1db95422',
-    borderRadius: 4,
-    padding: '0.15rem 0.4rem',
+    fontSize: fontSize.small,
+    color: colors.accent,
+    background: '#1ed76020',
+    borderRadius: radius.subtle,
+    padding: '2px 6px',
     display: 'inline-block',
-    marginTop: '0.25rem',
+    marginTop: `${spacing[1]}px`,
   },
   errorBox: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: '1rem',
-    padding: '3rem',
+    gap: `${spacing[4]}px`,
+    padding: `${spacing[6]}px`,
     textAlign: 'center',
   },
   errorText: {
     margin: 0,
-    color: '#ff6b6b',
+    color: colors.error,
   },
   retryBtn: {
-    padding: '0.6rem 1.5rem',
-    background: '#1db954',
-    color: '#fff',
+    padding: '10px 24px',
+    background: colors.accent,
+    color: '#000000',
     border: 'none',
-    borderRadius: 8,
+    borderRadius: radius.fullPill,
     cursor: 'pointer',
-    fontWeight: 600,
+    fontWeight: fontWeight.bold,
+    textTransform: 'uppercase',
+    letterSpacing: '1.4px',
   },
   emptyText: {
-    color: '#666',
+    color: colors.textMuted,
     textAlign: 'center',
-    padding: '3rem',
-  },
-  playerBar: {
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    background: '#111',
-    borderTop: '1px solid #222',
-    padding: '0.75rem 1.5rem',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem',
-    zIndex: 100,
-  },
-  closeBtn: {
-    background: 'none',
-    border: 'none',
-    color: '#aaa',
-    fontSize: '1.1rem',
-    cursor: 'pointer',
-    padding: '0.25rem 0.5rem',
-    marginLeft: 'auto',
+    padding: `${spacing[6]}px`,
   },
 };

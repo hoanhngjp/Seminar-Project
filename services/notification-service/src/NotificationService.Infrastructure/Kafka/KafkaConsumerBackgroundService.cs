@@ -24,7 +24,8 @@ public class KafkaConsumerBackgroundService(
             ConsumeResult<string, string>? result = null;
             try
             {
-                result = consumer.Consume(ct);
+                // Task.Run: Consume is a blocking call — must yield to allow host startup
+                result = await Task.Run(() => consumer.Consume(ct), ct);
                 var eventId = result.Message.Key;
 
                 await ProcessWithRetryAsync(result.Message.Value, eventId, ct);
@@ -39,6 +40,8 @@ public class KafkaConsumerBackgroundService(
                 logger.LogError(ex, "Consumer loop fatal error");
                 if (result is not null)
                     LogDlq(result.Message, ex);
+                // Backoff to avoid tight loop when broker/topic is temporarily unavailable
+                await Task.Delay(TimeSpan.FromSeconds(5), ct);
             }
         }
 

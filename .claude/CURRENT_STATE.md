@@ -121,10 +121,12 @@
 
 - [X] Phase 1: Design tokens (`src/styles/tokens.ts`) + Global CSS reset (`index.css`) + playerStore (`src/store/playerStore.ts`)
 - [X] Phase 2: AppShell layout (`src/components/layout/AppShell.tsx`) — sidebar 240px + bottom player bar 90px
-- [ ] Phase 3: Restyle pages (LoginPage, HomePage, SearchPage, CreatorDashboardPage)
+- [X] Phase 3: Restyle pages (LoginPage, HomePage, SearchPage, CreatorDashboardPage) + FontAwesome icons
+- [X] Phase 6: Update tests (playerStore reset in afterEach setup.ts, MSW notification handler)
+- [X] Bugfix: `recommendationApi.ts` — map Python snake_case `song_id` → `songId` (was causing streaming/undefined/url + React key warning)
+- [X] Bugfix: `notification-service` — 4 lỗi xếp chồng (Kafka topics, blocking Consume, MongoDB env, duplicate /health route)
 - [ ] Phase 4: Restyle components (AudioPlayer, NotificationBell)
 - [ ] Phase 5: PartyPage mới
-- [ ] Phase 6: Update tests (playerStore reset, renderWithShell)
 
 ### Week 10–12 — Polish + Demo
 
@@ -144,11 +146,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Frontend Redesign — Spotify Design System (Phase 1 xong)
+- **Service/Task:** Frontend Redesign — Spotify Design System (Phase 3 + 6 + bugfixes xong)
 - **File plan cần đọc:** `.claude/plan/frontend_redesign-spotify_design_system.md`
-- **Checkpoint gần nhất đã pass:** Phase 2 xong — 79/79 frontend tests vẫn xanh, tsc clean (2026-05-12)
+- **Checkpoint gần nhất đã pass:** Phase 3 + 6 + bugfixes — 79/79 tests xanh, notification-service healthy (2026-05-12)
 - **Ngày làm việc gần nhất:** 2026-05-12
-- **Tiếp theo:** Phase 3 — Restyle pages (LoginPage, HomePage, SearchPage, CreatorDashboardPage)
+- **Tiếp theo:** Phase 4 — Restyle components (AudioPlayer bottom bar, NotificationBell dropdown)
 
 ---
 

@@ -5,6 +5,11 @@ using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Kafka consumer may throw on startup if broker is not yet ready.
+// StopHost (default) would kill the HTTP server — use Ignore so HTTP stays up.
+builder.Services.Configure<HostOptions>(o =>
+    o.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore);
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -29,7 +34,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapMetrics();
-app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "notification-service" }));
 
 app.Run();
 

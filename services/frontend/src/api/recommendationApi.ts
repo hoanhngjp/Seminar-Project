@@ -7,6 +7,15 @@ export interface RecommendationItem {
   explainText: string;
 }
 
+// Raw shape from Python FastAPI (snake_case)
+interface RawSongItem {
+  song_id: string;
+  title: string;
+  artist: string;
+  thumbnail: string;
+  reason: { type: string; text: string };
+}
+
 export type ContextType = 'morning' | 'evening' | 'none';
 
 export function getTimeContext(): ContextType {
@@ -22,8 +31,14 @@ export async function fetchRecommendations(
 ): Promise<RecommendationItem[]> {
   const res = await apiClient.get<{
     success: boolean;
-    data: { items: RecommendationItem[] };
+    data: { items: RawSongItem[] };
     error: { code: string; message: string } | null;
   }>('/api/v1/recommendations', { params: { context, limit } });
-  return res.data.data.items;
+
+  return res.data.data.items.map((item) => ({
+    songId: item.song_id,
+    title: item.title,
+    artist: item.artist,
+    explainText: item.reason?.text ?? '',
+  }));
 }

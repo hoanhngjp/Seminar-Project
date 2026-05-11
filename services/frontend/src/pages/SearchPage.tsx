@@ -2,7 +2,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchSongs, type SearchResultItem } from '../api/searchApi';
 import { useAuthStore } from '../store/authStore';
-import AudioPlayer from '../components/Player/AudioPlayer';
+import AppShell from '../components/layout/AppShell';
+import { usePlayerStore } from '../store/playerStore';
+import { colors, font, fontSize, fontWeight, radius, shadows, spacing } from '../styles/tokens';
 
 const DEBOUNCE_MS = 300;
 
@@ -21,7 +23,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [searched, setSearched] = useState(false); // true after first search attempt
-  const [selectedSong, setSelectedSong] = useState<SearchResultItem | null>(null);
+  const setSong = usePlayerStore((s) => s.setSong);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -78,16 +80,12 @@ export default function SearchPage() {
   if (!accessToken) return null;
 
   return (
-    <div style={styles.page}>
-      <header style={styles.header}>
-        <a href="/" style={styles.backLink}>← Smart Music</a>
-      </header>
-
+    <AppShell>
       <main style={styles.main}>
         <h2 style={styles.title}>Tìm kiếm</h2>
 
         <div style={styles.searchBox}>
-          <span style={styles.searchIcon} aria-hidden="true">🔍</span>
+          <i className="fa-solid fa-magnifying-glass" style={styles.searchIcon} aria-hidden="true"></i>
           <input
             type="search"
             value={query}
@@ -103,7 +101,7 @@ export default function SearchPage() {
               style={styles.clearBtn}
               aria-label="Xoá từ khoá"
             >
-              ✕
+              <i className="fa-solid fa-xmark"></i>
             </button>
           )}
         </div>
@@ -137,10 +135,10 @@ export default function SearchPage() {
                 <li key={item.songId} style={styles.listItem} role="listitem">
                   <button
                     style={styles.resultBtn}
-                    onClick={() => setSelectedSong(item)}
+                    onClick={() => setSong({ songId: item.songId, title: item.title, artist: item.artist })}
                     aria-label={`Phát ${item.title} — ${item.artist}`}
                   >
-                    <div style={styles.resultIcon} aria-hidden="true">🎵</div>
+                    <div style={styles.resultIcon} aria-hidden="true"><i className="fa-solid fa-music"></i></div>
                     <div style={styles.resultBody}>
                       <p style={styles.resultTitle}>{item.title}</p>
                       <p style={styles.resultMeta}>
@@ -170,48 +168,12 @@ export default function SearchPage() {
           </div>
         )}
       </main>
-
-      {selectedSong && (
-        <div style={styles.playerBar}>
-          <AudioPlayer
-            songId={selectedSong.songId}
-            title={selectedSong.title}
-            artist={selectedSong.artist}
-          />
-          <button
-            onClick={() => setSelectedSong(null)}
-            style={styles.closeBtn}
-            aria-label="Đóng player"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-    </div>
+    </AppShell>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    background: '#0f0f0f',
-    color: '#fff',
-    fontFamily: 'system-ui, sans-serif',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  header: {
-    padding: '1rem 2rem',
-    borderBottom: '1px solid #222',
-  },
-  backLink: {
-    color: '#1db954',
-    textDecoration: 'none',
-    fontSize: '0.9rem',
-    fontWeight: 500,
-  },
   main: {
-    flex: 1,
     padding: '2rem',
     maxWidth: 720,
     margin: '0 auto',
@@ -220,57 +182,60 @@ const styles: Record<string, React.CSSProperties> = {
     paddingBottom: '6rem',
   },
   title: {
-    margin: '0 0 1.5rem',
-    fontSize: '1.5rem',
-    fontWeight: 600,
+    margin: `0 0 ${spacing[4]}px`,
+    fontSize: fontSize.section,
+    fontWeight: fontWeight.bold,
+    fontFamily: font.title,
   },
   searchBox: {
     display: 'flex',
     alignItems: 'center',
-    background: '#1a1a1a',
-    border: '1px solid #333',
-    borderRadius: 10,
-    padding: '0.6rem 1rem',
-    gap: '0.5rem',
-    marginBottom: '1.5rem',
+    background: colors.surfaceMid,
+    boxShadow: shadows.inset,
+    borderRadius: radius.fullPill,
+    padding: '12px 24px',
+    gap: `${spacing[2]}px`,
+    marginBottom: `${spacing[4]}px`,
   },
   searchIcon: {
-    fontSize: '1rem',
+    fontSize: fontSize.body,
+    color: colors.textMuted,
     flexShrink: 0,
   },
   input: {
     flex: 1,
     background: 'none',
     border: 'none',
-    color: '#fff',
-    fontSize: '1rem',
+    color: colors.text,
+    fontSize: fontSize.body,
     outline: 'none',
   },
   clearBtn: {
     background: 'none',
     border: 'none',
-    color: '#666',
+    color: colors.textMuted,
     cursor: 'pointer',
-    fontSize: '0.85rem',
-    padding: '0 0.25rem',
+    fontSize: fontSize.body,
+    padding: `0 ${spacing[1]}px`,
     flexShrink: 0,
   },
   hintText: {
-    color: '#555',
+    color: colors.textMuted,
     textAlign: 'center',
-    padding: '3rem 0',
+    padding: `${spacing[6]}px 0`,
     margin: 0,
   },
   skeleton: {
     height: 64,
-    borderRadius: 8,
-    background: '#1a1a1a',
-    marginBottom: '0.5rem',
+    borderRadius: radius.card,
+    background: colors.surfaceCard,
+    animation: 'shimmer 1.5s infinite',
+    marginBottom: `${spacing[2]}px`,
   },
   emptyText: {
-    color: '#666',
+    color: colors.textMuted,
     textAlign: 'center',
-    padding: '3rem 0',
+    padding: `${spacing[6]}px 0`,
     margin: 0,
   },
   list: {
@@ -279,7 +244,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: 0,
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.375rem',
+    gap: `${spacing[2]}px`,
   },
   listItem: {
     display: 'flex',
@@ -288,18 +253,19 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1,
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
-    background: '#1a1a1a',
-    border: '1px solid #2a2a2a',
-    borderRadius: 8,
-    padding: '0.75rem 1rem',
-    color: '#fff',
+    gap: `${spacing[3]}px`,
+    background: colors.surface,
+    border: 'none',
+    borderRadius: radius.card,
+    padding: `${spacing[3]}px ${spacing[4]}px`,
+    color: colors.text,
     cursor: 'pointer',
     textAlign: 'left',
     transition: 'background 0.15s',
   },
   resultIcon: {
-    fontSize: '1.4rem',
+    fontSize: fontSize.feature,
+    color: colors.textMuted,
     flexShrink: 0,
   },
   resultBody: {
@@ -308,57 +274,39 @@ const styles: Record<string, React.CSSProperties> = {
   },
   resultTitle: {
     margin: 0,
-    fontWeight: 600,
-    fontSize: '0.9rem',
+    fontWeight: fontWeight.bold,
+    fontSize: fontSize.body,
+    fontFamily: font.title,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
   resultMeta: {
-    margin: '0.15rem 0 0',
-    fontSize: '0.8rem',
-    color: '#888',
+    margin: `${spacing[1]}px 0 0`,
+    fontSize: fontSize.caption,
+    color: colors.textMuted,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
   albumText: {
-    color: '#666',
+    color: colors.textNear,
   },
   loadMoreRow: {
     display: 'flex',
     justifyContent: 'center',
-    marginTop: '1.5rem',
+    marginTop: `${spacing[4]}px`,
   },
   loadMoreBtn: {
-    padding: '0.65rem 2rem',
-    background: '#1a1a1a',
-    border: '1px solid #333',
-    borderRadius: 8,
-    color: '#fff',
+    padding: '8px 24px',
+    background: 'transparent',
+    border: `1px solid ${colors.borderLight}`,
+    borderRadius: radius.fullPill,
+    color: colors.text,
     cursor: 'pointer',
-    fontWeight: 500,
-  },
-  playerBar: {
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    background: '#111',
-    borderTop: '1px solid #222',
-    padding: '0.75rem 1.5rem',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem',
-    zIndex: 100,
-  },
-  closeBtn: {
-    background: 'none',
-    border: 'none',
-    color: '#aaa',
-    fontSize: '1.1rem',
-    cursor: 'pointer',
-    padding: '0.25rem 0.5rem',
-    marginLeft: 'auto',
+    fontWeight: fontWeight.bold,
+    textTransform: 'uppercase',
+    letterSpacing: '1.4px',
+    fontSize: fontSize.caption,
   },
 };

@@ -13,15 +13,51 @@
 ---
 
 ---
-[2026-05-12] [FRONTEND] [DECISION]
+[2026-05-12] [FRONTEND / TESTING] [BUG]
 
-**Problem:** index.css cũ dùng Vite boilerplate (light/dark media query, `#root` width 1126px, purple accent) — không phù hợp với Spotify dark design.
-**Root cause:** Dự án scaffold từ `npm create vite`, chưa bao giờ customize global styles.
-**Fix / Decision:** Rewrite hoàn toàn index.css: dark-only (`color-scheme: dark`), `#root` không có max-width / margin auto / text-align center, background `#121212`. Tất cả thiết kế nằm trong `tokens.ts` + inline styles của components.
-**Lesson / Warning:** Các component hiện tại dùng 100% inline styles nên không bị ảnh hưởng bởi thay đổi global CSS. Shimmer animation `.skeleton-shimmer` class mới thêm vào index.css để dùng chung.
+**Problem:** Tests của `HomePage` và `SearchPage` fail với lỗi `intercepted a request without a matching request handler: GET /api/v1/notifications/unread`.
+**Root cause:** Khi bọc các trang này bằng `<AppShell>`, `<NotificationBell />` bên trong `AppShell` sẽ được render và tự động gọi API fetch notifications. MSW server trong test các trang này chưa mock endpoint đó.
+**Fix / Decision:** Thêm `notificationsHandler` vào `setupServer` trong file test của `HomePage`, `SearchPage`.
+**Lesson / Warning:** Khi wrap components/pages bằng một global layout có chứa side effects (ví dụ fetch API trong header/bell), phải đảm bảo mock luôn các endpoints đó trong unit test của page.
+
+---
+[2026-05-12] [FRONTEND / TESTING] [BUG]
+
+**Problem:** Test `closes AudioPlayer when close button is clicked` fail. Test cố gắng check nút đóng player biến mất nhưng query lại match các state cũ (leaked state) làm test bị timeout hoặc pass lộn xộn.
+**Root cause:** `usePlayerStore` (Zustand) là global state. Nếu test A nhấn play bài hát, `currentSong` được set. Khi chạy sang test B, `currentSong` vẫn còn giữ giá trị cũ khiến `<AppShell>` render `<AudioPlayer>` ngay từ đầu, phá vỡ logic test. Đồng thời, hành động click nút Đóng sẽ clear state nhưng việc render lại DOM có thể cần chờ đợi.
+**Fix / Decision:** Bổ sung `usePlayerStore.getState().clearSong();` vào khối `afterEach` trong file `src/tests/setup.ts` để reset global store cho mọi test. Chuyển assertion thành `await waitFor(() => expect(screen.queryByLabelText('Đóng player')).not.toBeInTheDocument());`.
+**Lesson / Warning:** LUÔN LUÔN reset Zustand stores (`useAuthStore`, `usePlayerStore`) trong `afterEach` để chặn rò rỉ state giữa các test. Khi có các cập nhật trạng thái làm mất DOM elements (như đóng player), nên wrap assertion bằng `waitFor`.
 ---
 
 **Khi nào ghi:**
+---
+[2026-05-12] [FRONTEND / RECOMMENDATION API] [BUG]
+
+**Problem:** `streaming/undefined/url` 404 + React key warning "Each child in a list should have a unique key prop" trong HomePage.
+**Root cause:** Python FastAPI (Recommendation Service) trả `song_id` (snake_case) nhưng TypeScript type `RecommendationItem` expect `songId` (camelCase). `item.songId === undefined` → key là undefined, AudioPlayer gọi `/api/v1/streaming/undefined/url`.
+**Fix / Decision:** Map response tại API boundary trong `recommendationApi.ts`: `song_id → songId`, `reason.text → explainText`. Cập nhật mock data trong `HomePage.test.tsx` sang Python format (`song_id`, `reason: { type, text }`).
+**Lesson / Warning:** Python FastAPI dùng snake_case theo convention. Bất kỳ API nào từ Python service đều cần map sang camelCase ở frontend. Không assume camelCase từ Python endpoints.
+---
+
+---
+[2026-05-12] [NOTIFICATION SERVICE] [BUG]
+
+**Problem:** notification-service liên tục crash, API Gateway trả 502 cho `/api/v1/notifications/unread`.
+**Root cause:** 4 bugs xếp chồng:
+  1. Kafka topics `New_Release` và `Notification_Sent` chưa được tạo → `ConsumeException: Unknown topic or partition`
+  2. Catch block trong `KafkaConsumerBackgroundService` không có delay → tight loop → escalate fatal error
+  3. `consumer.Consume(ct)` là synchronous blocking call, không có `await` trước nó → block toàn bộ host startup → Kestrel không start (dù container "Up")
+  4. `MongoDB__ConnectionString` thiếu trong `docker-compose.yml` + duplicate `/health` route (cả MapGet lẫn HealthController)
+**Fix / Decision:**
+  - Tạo 5 Kafka topics bằng `kafka-topics --create --if-not-exists`
+  - Thêm `await Task.Delay(5s, ct)` trong catch block
+  - Wrap blocking call: `await Task.Run(() => consumer.Consume(ct), ct)`
+  - Thêm `MongoDB__ConnectionString=${MONGO_URI}` + `mongodb: condition: service_healthy` vào docker-compose
+  - Xóa `app.MapGet("/health", ...)` trùng với `HealthController`
+  - Thêm `BackgroundServiceExceptionBehavior.Ignore` trong Program.cs làm safety net
+**Lesson / Warning:** Trong .NET 8, `BackgroundService.ExecuteAsync` nếu throw → host STOP (StopHost default). Bất kỳ blocking I/O nào trong ExecuteAsync PHẢI được wrap bằng `await Task.Run()` để không block startup thread. Confluent.Kafka `Consume()` là blocking — LUÔN dùng `await Task.Run(() => consumer.Consume(ct), ct)`.
+---
+
 - Bug mất > 30 phút mới tìm ra nguyên nhân
 - Quyết định kỹ thuật quan trọng (chọn A thay vì B, và tại sao)
 - Workaround/hack đang dùng tạm — để người khác không "fix" nó thành broken

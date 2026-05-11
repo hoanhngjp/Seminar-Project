@@ -39,12 +39,20 @@ function makeSuccess(
 
 const defaultHandler = http.get(SEARCH_URL, () => makeSuccess(mockItems));
 
-const server = setupServer(defaultHandler);
+const NOTIFICATIONS_URL = 'http://localhost:5000/api/v1/notifications/unread';
+const notificationsHandler = http.get(NOTIFICATIONS_URL, () => HttpResponse.json({
+  success: true,
+  data: { items: [], totalUnread: 0 },
+  error: null,
+}));
+
+const server = setupServer(defaultHandler, notificationsHandler);
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
   server.resetHandlers();
   useAuthStore.setState({ accessToken: null, userId: null, role: null });
+  server.use(notificationsHandler);
   vi.restoreAllMocks();
 });
 afterAll(() => server.close());
@@ -376,7 +384,9 @@ describe('SearchPage', () => {
     expect(screen.getByLabelText('Đóng player')).toBeInTheDocument();
 
     fireEvent.click(screen.getByLabelText('Đóng player'));
-    expect(screen.queryByLabelText('Đóng player')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Đóng player')).not.toBeInTheDocument();
+    });
   });
 
   // ─── API error → empty fallback (per contract) ────────────────────────────

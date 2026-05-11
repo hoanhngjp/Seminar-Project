@@ -14,24 +14,28 @@ import { getTimeContext } from '../../api/recommendationApi';
 const RECOMMENDATIONS_URL = 'http://localhost:5000/api/v1/recommendations';
 const STREAMING_URL = 'http://localhost:5000/api/v1/streaming/:songId/url';
 
+// Mock data matches Python FastAPI response shape (snake_case)
 const mockItems = [
   {
-    songId: 'song-001',
+    song_id: 'song-001',
     title: 'Lạc Trôi',
     artist: 'Sơn Tùng M-TP',
-    explainText: 'Phù hợp buổi sáng',
+    thumbnail: '',
+    reason: { type: 'CONTEXT', text: 'Phù hợp buổi sáng' },
   },
   {
-    songId: 'song-002',
+    song_id: 'song-002',
     title: 'Có Chắc Yêu Là Đây',
     artist: 'Sơn Tùng M-TP',
-    explainText: 'Trending',
+    thumbnail: '',
+    reason: { type: 'TRENDING', text: 'Trending' },
   },
   {
-    songId: 'song-003',
+    song_id: 'song-003',
     title: 'Ngày Mai',
     artist: 'Vũ.',
-    explainText: '',
+    thumbnail: '',
+    reason: { type: 'TRENDING', text: '' },
   },
 ];
 
@@ -56,13 +60,22 @@ const errorHandler = http.get(RECOMMENDATIONS_URL, () =>
   ),
 );
 
-const server = setupServer(successHandler);
+const NOTIFICATIONS_URL = 'http://localhost:5000/api/v1/notifications/unread';
+const notificationsHandler = http.get(NOTIFICATIONS_URL, () => HttpResponse.json({
+  success: true,
+  data: { items: [], totalUnread: 0 },
+  error: null,
+}));
+
+const server = setupServer(successHandler, notificationsHandler);
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
   server.resetHandlers();
   // Reset Zustand store between tests
   useAuthStore.setState({ accessToken: null, userId: null, role: null });
+  // Add fallback for notifications when resetHandlers happens
+  server.use(notificationsHandler);
 });
 afterAll(() => server.close());
 
@@ -202,7 +215,9 @@ describe('HomePage', () => {
     expect(screen.getByLabelText('Đóng player')).toBeInTheDocument();
 
     fireEvent.click(screen.getByLabelText('Đóng player'));
-    expect(screen.queryByLabelText('Đóng player')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Đóng player')).not.toBeInTheDocument();
+    });
   });
 
   // ─── Error state ─────────────────────────────────────────────────────────

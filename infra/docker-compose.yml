@@ -436,12 +436,16 @@ services:
       - ConnectionStrings__PostgreSQL=${NOTIFICATION_DB_CONNECTION}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
+      - MongoDB__ConnectionString=${MONGO_URI}
+      - MongoDB__Database=notification_db
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
       kafka:
+        condition: service_healthy
+      mongodb:
         condition: service_healthy
     networks:
       - smartmusic-network

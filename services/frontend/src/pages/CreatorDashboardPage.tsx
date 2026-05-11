@@ -8,6 +8,8 @@ import {
   type SongStats,
   type TimeRange,
 } from '../api/analyticsApi';
+import AppShell from '../components/layout/AppShell';
+import { colors, font, fontSize, fontWeight, radius, shadows, spacing } from '../styles/tokens';
 
 export default function CreatorDashboardPage() {
   const navigate = useNavigate();
@@ -62,15 +64,7 @@ export default function CreatorDashboardPage() {
   if (role !== 'Creator' && role !== 'Admin') return null;
 
   return (
-    <div style={styles.page}>
-      <header style={styles.header}>
-        <h1 style={styles.logo}>Smart Music</h1>
-        <nav style={styles.nav}>
-          <a href="/" style={styles.navLink}>Trang chủ</a>
-          <span style={styles.navActive}>Dashboard</span>
-        </nav>
-      </header>
-
+    <AppShell>
       <main style={styles.main}>
         <h2 style={styles.pageTitle}>Creator Dashboard</h2>
 
@@ -150,7 +144,7 @@ export default function CreatorDashboardPage() {
                   title={`Giây ${point.second}: skip ${(point.skipRate * 100).toFixed(1)}%`}
                   style={{
                     ...styles.heatmapCell,
-                    background: point.skipRate > 0.3 ? '#e74c3c' : '#1db954',
+                    background: point.skipRate > 0.3 ? colors.error : colors.accent,
                     opacity: 0.3 + point.skipRate * 0.7,
                   }}
                 />
@@ -165,7 +159,7 @@ export default function CreatorDashboardPage() {
           </p>
         )}
       </main>
-    </div>
+    </AppShell>
   );
 }
 
@@ -179,99 +173,78 @@ function StatCard({ label, value }: { label: string; value: string }) {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    background: '#0f0f0f',
-    color: '#fff',
-    fontFamily: 'system-ui, sans-serif',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '1rem 2rem',
-    borderBottom: '1px solid #222',
-    position: 'sticky',
-    top: 0,
-    background: '#0f0f0f',
-    zIndex: 10,
-  },
-  logo: {
-    margin: 0,
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    color: '#1db954',
-  },
-  nav: { display: 'flex', gap: '1.5rem', alignItems: 'center' },
-  navLink: { color: '#aaa', textDecoration: 'none', fontSize: '0.9rem' },
-  navActive: { color: '#fff', fontSize: '0.9rem', fontWeight: 600 },
   main: {
-    flex: 1,
     padding: '2rem',
-    maxWidth: 1200,
-    margin: '0 auto',
     width: '100%',
     boxSizing: 'border-box',
   },
-  pageTitle: { margin: '0 0 1.5rem', fontSize: '1.75rem', fontWeight: 700 },
-  searchRow: { display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' },
+  pageTitle: {
+    margin: `0 0 ${spacing[4]}px`,
+    fontSize: fontSize.section,
+    fontWeight: fontWeight.bold,
+    fontFamily: font.title,
+    color: colors.text,
+  },
+  searchRow: { display: 'flex', gap: `${spacing[2]}px`, marginBottom: `${spacing[4]}px` },
   songInput: {
     flex: 1,
-    padding: '0.6rem 1rem',
-    borderRadius: 8,
-    border: '1px solid #333',
-    background: '#1a1a1a',
-    color: '#fff',
-    fontSize: '0.95rem',
+    padding: '12px 24px',
+    borderRadius: radius.fullPill,
+    border: 'none',
+    boxShadow: shadows.inset,
+    background: colors.surfaceMid,
+    color: colors.text,
+    fontSize: fontSize.body,
+    outline: 'none',
   },
   searchBtn: {
-    padding: '0.6rem 1.25rem',
-    background: '#1db954',
-    color: '#fff',
+    padding: '12px 24px',
+    background: colors.accent,
+    color: '#000000',
     border: 'none',
-    borderRadius: 8,
+    borderRadius: radius.fullPill,
     cursor: 'pointer',
-    fontWeight: 600,
-    fontSize: '0.9rem',
+    fontWeight: fontWeight.bold,
+    textTransform: 'uppercase',
+    letterSpacing: '1.4px',
+    fontSize: fontSize.caption,
   },
-  timeRangeRow: { display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' },
+  timeRangeRow: { display: 'flex', gap: `${spacing[2]}px`, marginBottom: `${spacing[4]}px` },
   rangeBtn: {
-    padding: '0.4rem 1rem',
-    border: '1px solid #333',
-    borderRadius: 6,
-    background: 'transparent',
-    color: '#aaa',
+    padding: '6px 16px',
+    border: 'none',
+    borderRadius: radius.fullPill,
+    background: colors.surfaceMid,
+    color: colors.textMuted,
     cursor: 'pointer',
-    fontSize: '0.85rem',
+    fontSize: fontSize.caption,
+    fontWeight: fontWeight.semibold,
   },
   rangeBtnActive: {
-    border: '1px solid #1db954',
-    color: '#1db954',
-    background: '#1db95422',
+    color: '#000000',
+    background: colors.accent,
   },
-  loadingText: { color: '#aaa', textAlign: 'center', padding: '3rem' },
-  errorText: { color: '#ff6b6b', textAlign: 'center', padding: '2rem' },
-  emptyText: { color: '#555', textAlign: 'center', padding: '4rem', fontSize: '0.95rem' },
+  loadingText: { color: colors.textMuted, textAlign: 'center', padding: `${spacing[6]}px` },
+  errorText: { color: colors.error, textAlign: 'center', padding: `${spacing[6]}px` },
+  emptyText: { color: colors.textMuted, textAlign: 'center', padding: `${spacing[6]}px`, fontSize: fontSize.body },
   statsGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-    gap: '1rem',
-    marginBottom: '2rem',
+    gap: `${spacing[4]}px`,
+    marginBottom: `${spacing[6]}px`,
   },
   statCard: {
-    background: '#1a1a1a',
-    border: '1px solid #2a2a2a',
-    borderRadius: 10,
-    padding: '1.25rem',
+    background: colors.surface,
+    borderRadius: radius.card,
+    boxShadow: shadows.medium,
+    padding: `${spacing[5]}px`,
     textAlign: 'center',
   },
-  statValue: { margin: '0 0 0.4rem', fontSize: '1.75rem', fontWeight: 700, color: '#1db954' },
-  statLabel: { margin: 0, fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' },
-  heatmapSection: { marginTop: '1rem' },
-  sectionTitle: { margin: '0 0 0.5rem', fontSize: '1.1rem', fontWeight: 600 },
-  heatmapHint: { margin: '0 0 0.75rem', fontSize: '0.8rem', color: '#666' },
+  statValue: { margin: `0 0 ${spacing[1]}px`, fontSize: '32px', fontWeight: fontWeight.bold, color: colors.text },
+  statLabel: { margin: 0, fontSize: fontSize.caption, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' },
+  heatmapSection: { marginTop: `${spacing[4]}px` },
+  sectionTitle: { margin: `0 0 ${spacing[2]}px`, fontSize: fontSize.feature, fontWeight: fontWeight.bold, fontFamily: font.title },
+  heatmapHint: { margin: `0 0 ${spacing[3]}px`, fontSize: fontSize.small, color: colors.textMuted },
   heatmapBar: {
     display: 'flex',
     height: 40,

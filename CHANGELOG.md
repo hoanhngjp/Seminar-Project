@@ -16,6 +16,24 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Bugfix — notification-service + recommendationApi (2026-05-12)**
+- `infra/docker-compose.yml` — thêm `MongoDB__ConnectionString` + `mongodb: service_healthy` dependency cho notification-service (env var bị thiếu khiến service không start)
+- `notification-service/KafkaConsumerBackgroundService.cs` — wrap `consumer.Consume(ct)` bằng `await Task.Run()` (blocking call block host startup → Kestrel không start), thêm `await Task.Delay(5s)` trong catch block (tránh tight loop)
+- `notification-service/Program.cs` — thêm `BackgroundServiceExceptionBehavior.Ignore` + xóa `MapGet("/health")` trùng với HealthController
+- `infra/` — tạo 5 Kafka topics (`Song_Played`, `Song_Skipped`, `New_Release`, `User_Preferences_Updated`, `Notification_Sent`) bằng `kafka-topics --create --if-not-exists`
+- `services/frontend/src/api/recommendationApi.ts` — map Python snake_case response (`song_id`, `reason.text`) → camelCase (`songId`, `explainText`); fix `streaming/undefined/url` 404 + React key warning
+- `services/frontend/src/tests/pages/HomePage.test.tsx` — cập nhật MSW mock data sang Python format (`song_id`, `reason: { type, text }`)
+
+**Frontend Redesign Phase 3 & 6 — Restyle Pages & Tests Update (2026-05-12)**
+- `services/frontend/src/pages/LoginPage.tsx` — Áp dụng font family, pill shape inputs, và button design với letter-spacing.
+- `services/frontend/src/pages/HomePage.tsx` — Bọc trong `AppShell`, xóa bỏ `header`/`nav` cứng và `AudioPlayer` cục bộ. Thay thế `setSelectedSong` bằng `usePlayerStore((s) => s.setSong)`. Đưa card thiết kế về màu `colors.surface` với radius chuẩn.
+- `services/frontend/src/pages/SearchPage.tsx` — Bọc trong `AppShell`. Áp dụng `radius.fullPill` cho search input. Tích hợp các font-awesome icons `<i className="fa-solid fa-magnifying-glass" />` thay cho placeholder emoji. Xóa `AudioPlayer` cục bộ và đổi sang gọi trạng thái global.
+- `services/frontend/src/pages/CreatorDashboardPage.tsx` — Bọc trong `AppShell`. Định dạng lại layout với form input hình "pill", các Toggle cho 7 ngày/30 ngày dùng pill shape. Cập nhật Heatmap hiển thị `colors.error` và `colors.accent` từ hệ thống tokens.
+- `services/frontend/index.html` — Đã chèn CDN FontAwesome Kit (`https://kit.fontawesome.com/39b6b90061.js`) để phục vụ bộ icon thống nhất cho ứng dụng.
+- **Testing Updates**:
+  - `services/frontend/src/tests/setup.ts` — Đảm bảo `afterEach` gọi `usePlayerStore.getState().clearSong()` để reset Zustand state giữa các test (ngăn rò rỉ state `currentSong`).
+  - Cập nhật test files (`HomePage.test.tsx`, `SearchPage.test.tsx`, `CreatorDashboardPage.test.tsx`) để mock API Notifications `/api/v1/notifications/unread` vì các trang này giờ đây chứa `AppShell` (kèm `NotificationBell`).
+
 **Frontend Redesign Phase 2 — AppShell Layout (2026-05-12)**
 - `services/frontend/src/components/layout/AppShell.tsx` — Shared layout wrapper
   - Sidebar 240px fixed: logo "Smart Music" (#1ed760), nav links (Home / Search / Dashboard cho Creator+Admin), NotificationBell sticky ở bottom
