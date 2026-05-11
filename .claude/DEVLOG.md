@@ -3,6 +3,16 @@
 **Dành cho:** nhóm dev + Claude (đọc khi debug để tránh lặp lại vấn đề cũ).
 
 **Khi nào ghi:**
+---
+[2026-05-12] [FRONTEND] [DECISION]
+
+**Problem:** index.css cũ dùng Vite boilerplate (light/dark media query, `#root` width 1126px, purple accent) — không phù hợp với Spotify dark design.
+**Root cause:** Dự án scaffold từ `npm create vite`, chưa bao giờ customize global styles.
+**Fix / Decision:** Rewrite hoàn toàn index.css: dark-only (`color-scheme: dark`), `#root` không có max-width / margin auto / text-align center, background `#121212`. Tất cả thiết kế nằm trong `tokens.ts` + inline styles của components.
+**Lesson / Warning:** Các component hiện tại dùng 100% inline styles nên không bị ảnh hưởng bởi thay đổi global CSS. Shimmer animation `.skeleton-shimmer` class mới thêm vào index.css để dùng chung.
+---
+
+**Khi nào ghi:**
 - Bug mất > 30 phút mới tìm ra nguyên nhân
 - Quyết định kỹ thuật quan trọng (chọn A thay vì B, và tại sao)
 - Workaround/hack đang dùng tạm — để người khác không "fix" nó thành broken

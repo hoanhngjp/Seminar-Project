@@ -117,6 +117,15 @@
 - [X] Track A+B W9: usePartyWebSocket hook (SignalR thật, @microsoft/signalr) — 14/14 tests xanh
 - [ ] Checkpoint W9: 2-tab test — Host Play → Member sync < 500ms
 
+### Frontend Redesign — Spotify Design System
+
+- [X] Phase 1: Design tokens (`src/styles/tokens.ts`) + Global CSS reset (`index.css`) + playerStore (`src/store/playerStore.ts`)
+- [ ] Phase 2: AppShell layout (sidebar + bottom player bar)
+- [ ] Phase 3: Restyle pages (LoginPage, HomePage, SearchPage, CreatorDashboardPage)
+- [ ] Phase 4: Restyle components (AudioPlayer, NotificationBell)
+- [ ] Phase 5: PartyPage mới
+- [ ] Phase 6: Update tests (playerStore reset, renderWithShell)
+
 ### Week 10–12 — Polish + Demo
 
 - [X] Prometheus metrics expose trên tất cả services (prometheus-net 8.2 + fastapi-instrumentator 6.1)
@@ -135,11 +144,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Week 10–12 — Polish + Demo (tiếp tục — Tuần 10 Observability xong)
-- **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** Tuần 9 hoàn thành — 79/79 frontend tests xanh (2026-05-07)
-- **Ngày làm việc gần nhất:** 2026-05-10
-- **Tiếp theo:** Tuần 12 — Demo prep: chạy verify_ac.sh, fix FAILs, rehearsal demo script
+- **Service/Task:** Frontend Redesign — Spotify Design System (Phase 1 xong)
+- **File plan cần đọc:** `.claude/plan/frontend_redesign-spotify_design_system.md`
+- **Checkpoint gần nhất đã pass:** Phase 1 xong — 79/79 frontend tests vẫn xanh (2026-05-12)
+- **Ngày làm việc gần nhất:** 2026-05-12
+- **Tiếp theo:** Phase 2 — AppShell layout (sidebar 240px + bottom player bar 90px)
 
 ---
 

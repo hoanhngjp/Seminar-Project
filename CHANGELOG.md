@@ -16,6 +16,16 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend Redesign Phase 1 — Design System Foundation (2026-05-12)**
+- `services/frontend/src/styles/tokens.ts` — Design tokens theo DESIGN.md: colors, shadows, radius, font stacks, spacing, layout constants
+- `services/frontend/src/store/playerStore.ts` — Zustand store cho shared player state (`currentSong`, `setSong`, `clearSong`) — chuẩn bị cho AppShell bottom player bar
+- `services/frontend/src/index.css` — Rewrite toàn bộ global CSS: dark theme `#121212`, CSS custom properties, font-family fallback stack (SpotifyMixUI → Helvetica Neue → system), reset margins/paddings, shimmer keyframe animation, dark scrollbar
+
+### Changed
+
+**Frontend Redesign Phase 1 — Design System Foundation (2026-05-12)**
+- `src/index.css`: xóa Vite boilerplate (light/dark media query, purple accent, `#root` width 1126px), thay bằng Spotify-inspired dark theme
+
 **Week 11 — Verification + Register Endpoint (2026-05-10)**
 - `POST /api/v1/auth/register` — endpoint mới, không có trong API Design V2 (thêm cho demo)
   - Auth Service nhận request, validate, gọi User Service gRPC `CreateUser`
