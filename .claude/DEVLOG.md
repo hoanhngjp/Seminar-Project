@@ -6,6 +6,15 @@
 ---
 [2026-05-12] [FRONTEND] [DECISION]
 
+**Problem:** AppShell cần render `<AudioPlayer>` trong bottom bar, nhưng tests hiện tại tìm `aria-label="Đóng player"` ở trong pages (HomePage, SearchPage). Nếu chuyển close button sang AppShell, tests vẫn cần tìm được nó.
+**Root cause:** Tests render `<HomePage />` wrapped với `MemoryRouter` — AppShell được render bên trong page, nên toàn bộ DOM của AppShell (bao gồm bottom bar + close button) vẫn nằm trong render tree của test.
+**Fix / Decision:** Close button giữ nguyên `aria-label="Đóng player"` trong AppShell — tests vẫn tìm được vì AppShell render cùng cây với page. Không cần thay đổi test structure cho Phase 2.
+**Lesson / Warning:** Khi pages dùng AppShell wrapper, test queries (getByLabelText, getByRole) sẽ tìm trong toàn bộ DOM bao gồm AppShell — đây là behavior mong muốn.
+---
+
+---
+[2026-05-12] [FRONTEND] [DECISION]
+
 **Problem:** index.css cũ dùng Vite boilerplate (light/dark media query, `#root` width 1126px, purple accent) — không phù hợp với Spotify dark design.
 **Root cause:** Dự án scaffold từ `npm create vite`, chưa bao giờ customize global styles.
 **Fix / Decision:** Rewrite hoàn toàn index.css: dark-only (`color-scheme: dark`), `#root` không có max-width / margin auto / text-align center, background `#121212`. Tất cả thiết kế nằm trong `tokens.ts` + inline styles của components.

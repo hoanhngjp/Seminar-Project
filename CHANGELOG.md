@@ -16,6 +16,14 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend Redesign Phase 2 — AppShell Layout (2026-05-12)**
+- `services/frontend/src/components/layout/AppShell.tsx` — Shared layout wrapper
+  - Sidebar 240px fixed: logo "Smart Music" (#1ed760), nav links (Home / Search / Dashboard cho Creator+Admin), NotificationBell sticky ở bottom
+  - Active link detection qua `useLocation()` — active: weight 700 + white + surface background; inactive: weight 400 + #b3b3b3
+  - Main content area: `marginLeft: 240px`, `marginBottom: 90px`
+  - Bottom player bar 90px fixed: AudioPlayer + close button nếu `playerStore.currentSong` có giá trị; placeholder text nếu không
+  - Close button giữ `aria-label="Đóng player"` để tests không bị break
+
 **Frontend Redesign Phase 1 — Design System Foundation (2026-05-12)**
 - `services/frontend/src/styles/tokens.ts` — Design tokens theo DESIGN.md: colors, shadows, radius, font stacks, spacing, layout constants
 - `services/frontend/src/store/playerStore.ts` — Zustand store cho shared player state (`currentSong`, `setSong`, `clearSong`) — chuẩn bị cho AppShell bottom player bar
