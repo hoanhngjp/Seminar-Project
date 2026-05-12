@@ -42,6 +42,16 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `services/frontend/src/api/recommendationApi.ts` — map Python snake_case response (`song_id`, `reason.text`) → camelCase (`songId`, `explainText`); fix `streaming/undefined/url` 404 + React key warning
 - `services/frontend/src/tests/pages/HomePage.test.tsx` — cập nhật MSW mock data sang Python format (`song_id`, `reason: { type, text }`)
 
+**Frontend Redesign Phase 2 — Auth Screens (2026-05-12)**
+- `services/frontend/src/features/auth/hooks/useAuth.ts` — extracted Auth logic
+- `services/frontend/src/features/auth/hooks/useProtectedRoute.ts` — extracted Route protection logic
+- `services/frontend/src/services/authService.ts` — extracted API logic
+- `services/frontend/src/features/auth/components/LoginForm.tsx` — Login component using new tokens and locked state
+- `services/frontend/src/features/auth/components/RegisterForm.tsx` — Register component using new tokens and mock logic
+- `services/frontend/src/features/auth/components/PasswordStrengthBar.tsx` — New password strength component
+- `services/frontend/src/pages/LoginPage.tsx` — Refactored to utilize LoginForm
+- `services/frontend/src/pages/RegisterPage.tsx` — Created the RegisterPage and added route `/register` to `App.tsx`
+
 **Frontend Redesign Phase 3 & 6 — Restyle Pages & Tests Update (2026-05-12)**
 - `services/frontend/src/pages/LoginPage.tsx` — Áp dụng font family, pill shape inputs, và button design với letter-spacing.
 - `services/frontend/src/pages/HomePage.tsx` — Bọc trong `AppShell`, xóa bỏ `header`/`nav` cứng và `AudioPlayer` cục bộ. Thay thế `setSelectedSong` bằng `usePlayerStore((s) => s.setSong)`. Đưa card thiết kế về màu `colors.surface` với radius chuẩn.

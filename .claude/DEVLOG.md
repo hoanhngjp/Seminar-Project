@@ -4,6 +4,14 @@
 
 **Khi nào ghi:**
 ---
+[2026-05-12] [FRONTEND] [DECISION]
+
+**Problem:** Chuyển đổi Auth Screens sang thiết kế mới nhưng giữ nguyên tính độc lập với backend cho màn hình đăng ký.
+**Root cause:** Phase 2 yêu cầu áp dụng Tailwind tokens mới và thêm chức năng Đăng ký, nhưng endpoint `/api/v1/auth/register` chỉ có tạm cho demo, không ở document chính thức.
+**Fix / Decision:** Tách riêng `authService.ts`, `useAuth`, `LoginForm`, `RegisterForm`. Endpoint register được mock timeout 1s cho an toàn tại `authService.register`. Giữ các constraints token.
+**Lesson / Warning:** Tách API service, React hook và component UI giúp mock API dễ dàng hơn mà không ảnh hưởng luồng render.
+
+---
 [2026-05-12] [FRONTEND] [BUG]
 
 **Problem:** `notificationService.fetchUnreadNotifications` trả sai items — `res.data.data` là `{ items: [...], hasMore: bool }` nhưng code cũ gán `items: res.data.data ?? []` (treat cả object làm array).

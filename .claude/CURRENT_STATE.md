@@ -131,7 +131,7 @@
 - [X] Phase 0: Migrate tất cả imports từ `api/*` → `services/*` + `types/domain`
 - [X] Phase 0: Build pass 0 errors, 0 warnings (2026-05-12)
 - [X] Phase 1: Shared UI Components (Button, Input, Modal, Toast, Spinner, SkeletonRow, AppShell, Sidebar, BottomPlayerBar) — 55/55 tests xanh (2026-05-12)
-- [ ] Phase 2: Auth Screens (Login + Register + error states)
+- [X] Phase 2: Auth Screens (Login + Register + error states)
 - [ ] Phase 3: Onboarding Flow (3-step wizard)
 - [ ] Phase 4: App Shell + Home Page
 - [ ] Phase 5: Player + Search
@@ -161,7 +161,7 @@
 - **File plan cần đọc:** `.claude/plan/t-t-b-y-gi-m-nh-curried-platypus.md`
 - **Checkpoint gần nhất đã pass:** Phase 1 hoàn thành — 55/55 UI component tests xanh (2026-05-12)
 - **Ngày làm việc gần nhất:** 2026-05-12
-- **Tiếp theo:** Phase 2 — Auth Screens (LoginPage Tailwind refactor + RegisterPage mới)
+- **Tiếp theo:** Phase 3 — Onboarding Flow (3-step wizard)
 - **Known pre-existing failures (chưa fix):** SearchPage 14/23, CreatorDashboardPage 3/10 — lỗi service response shape từ Phase 0
 
 ---
