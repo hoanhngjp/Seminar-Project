@@ -1,4 +1,4 @@
-import { apiClient } from './api';
+import { apiClient, setAccessToken } from './api';
 
 export type Role = 'Listener' | 'Creator' | 'Admin';
 
@@ -17,6 +17,9 @@ export interface MeData {
 export const authService = {
   login: async (credentials: Record<string, string>) => {
     const loginRes = await apiClient.post<{ success: boolean; data: LoginData }>('/api/v1/auth/login', credentials);
+    const token = loginRes.data.data.accessToken;
+    setAccessToken(token); // Set the token in memory so the next request uses it
+    
     const meRes = await apiClient.get<{ success: boolean; data: MeData }>('/api/v1/users/me');
     
     return {
@@ -27,7 +30,7 @@ export const authService = {
     };
   },
   
-  register: async (data: any) => {
+  register: async (_data: any) => {
     // Mock the register endpoint for now
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return { success: true };

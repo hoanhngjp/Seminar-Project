@@ -12,6 +12,34 @@
 **Lesson / Warning:** Khi Frontend UI/UX thay đổi, nếu API không khớp, cần chủ động update DTO/Entities phía Backend để keep mọi thứ in-sync thay vì dùng workaround trên FE.
 
 ---
+---
+[2026-05-12] [FRONTEND / TAILWIND] [BUG]
+
+**Problem:** Giao diện Onboarding bị ép hẹp ngang nghiêm trọng ở các class như max-w-sm, max-w-lg trong quá trình hoàn thiện Step 1 và Step 3 (vỡ tương tự như màn hình Account Locked). Ngoài ra, Step 1 và Step 2 cần 2 thiết kế Stepper và Bottom bar khác biệt nhau nhưng đang bị gộp chung.
+**Root cause:** 
+1. Tương tự lỗi Account Locked, khi Tailwind v4 ánh xạ max-w-[size] sang scale spacing, các custom tokens như sm: 8px, lg: 24px trong 	ailwind.config.ts làm hỏng hoàn toàn độ rộng tối đa chuẩn. max-w-sm thành 8px thay vì 384px.
+2. Code cũ gộp chung render layout cho Step 1 và 2, bỏ qua khác biệt nhỏ lẻ trong bản thiết kế HTML gốc.
+**Fix / Decision:** 
+1. Thay toàn bộ class kích thước max-w dùng chữ sang hardcoded arbitrary values: max-w-sm -> max-w-[384px], max-w-lg -> max-w-[512px].
+2. Tách Component OnboardingPage thành 3 luồng return layout riêng biệt 100% thay vì tái sử dụng wrapper chung, để đảm bảo khớp thiết kế từng Pixel.
+**Lesson / Warning:** Khi thực thi Design System có nhiều page flow (như Onboarding), không vội vã tạo wrapper chung nếu thiết kế các bước có khác biệt cấu trúc cơ bản (như Stepper dot vs Stepper line). Vẫn quy tắc Tailwind v4 cũ: cảnh giác cao độ với max-w-sm/md/lg nếu đã override spacing.
+---
+---
+[2026-05-12] [FRONTEND / TAILWIND] [BUG]
+
+**Problem:** Nút submit có màu đen chìm vào nền thay vì màu xanh Spotify, mặc dù DOM chứa class g-spotify-green. Checkbox thì vẫn lên màu xanh (checked:bg-spotify-green).
+**Root cause:** Tailwind v4 (với Vite) có thể lỗi trong việc ánh xạ các custom colors từ 	ailwind.config.ts sang các utility class nhất định nếu thứ tự cascade CSS hoặc override bị conflict.
+**Fix / Decision:** Thêm toàn bộ custom colors vào @theme bên trong index.css để đảm bảo tương thích chuẩn v4. Ngoài ra, thêm các utility rules cứng (.bg-spotify-green { background-color: #1ed760 !important; }) vào index.css cho các màu quan trọng nhất.
+**Lesson / Warning:** Khi nâng cấp hoặc setup Tailwind v4 với config cũ (v3), viết fallback utilities cứng với !important là giải pháp an toàn cho brand colors.
+
+---
+[2026-05-12] [FRONTEND / TAILWIND] [BUG]
+
+**Problem:** Giao diện Form Đăng nhập bị khóa (Account Locked) hiển thị dọc, ép hẹp lại thành một dải cực nhỏ (~16px chiều ngang), chữ xếp chồng lên nhau từng ký tự một.
+**Root cause:** 	ailwind.config.ts định nghĩa override bộ spacing (cụ thể: md: '16px'). Form Account Locked lại dùng class max-w-md. Trong Tailwind v4, việc ghi đè spacing có thể làm hỏng các built-in scale của max-width, khiến max-w-md bị ánh xạ thành 16px.
+**Fix / Decision:** Đổi class max-w-md thành class kích thước tĩnh max-w-[480px].
+**Lesson / Warning:** Khi custom Tailwind themes (đặc biệt ghi đè toàn bộ spacing), tránh dùng các class sizing chuẩn có suffix trùng tên (như sm, md, lg) cho max-w-* hoặc dùng Arbitrary Values để an toàn.
+---
 [2026-05-12] [FRONTEND] [DECISION]
 
 **Problem:** Chuyển đổi Auth Screens sang thiết kế mới nhưng giữ nguyên tính độc lập với backend cho màn hình đăng ký.

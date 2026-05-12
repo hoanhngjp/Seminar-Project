@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SearchPage from './pages/SearchPage';
 import CreatorDashboardPage from './pages/CreatorDashboardPage';
+import OnboardingPage from './pages/OnboardingPage';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/dashboard" element={<CreatorDashboardPage />} />
         <Route path="/party/:roomId" element={<div>Listening Party (placeholder)</div>} />

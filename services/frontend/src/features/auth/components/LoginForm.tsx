@@ -15,7 +15,7 @@ export const LoginForm: React.FC = () => {
 
   if (isLocked) {
     return (
-      <div className="w-full max-w-md bg-dark-surface rounded-[8px] p-xl relative overflow-hidden shadow-[rgba(0,0,0,0.5)_0px_8px_24px]">
+      <div className="w-full max-w-[480px] bg-dark-surface rounded-[8px] p-xl relative overflow-hidden shadow-[rgba(0,0,0,0.5)_0px_8px_24px]">
         {/* Background Decorative Blur */}
         <div className="absolute -top-32 -right-32 w-64 h-64 bg-spotify-green rounded-full mix-blend-screen filter blur-[100px] opacity-20 pointer-events-none"></div>
         <div className="text-center mb-xl relative z-10">

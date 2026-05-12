@@ -5,6 +5,54 @@
 
 /* Tailwind CSS v4 directives */
 @import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@theme {
+  --color-spotify-green: #1ed760;
+  --color-accent-border: #1db954;
+  --color-near-black: #121212;
+  --color-dark-surface: #181818;
+  --color-mid-dark: #1f1f1f;
+  --color-dark-card: #252525;
+  --color-mid-card: #272727;
+  --color-text-base: #ffffff;
+  --color-text-secondary: #b3b3b3;
+  --color-text-near-white: #cbcbcb;
+  --color-text-emphasis: #fdfdfd;
+  --color-negative: #f3727f;
+  --color-warning: #ffa42b;
+  --color-announcement: #539df5;
+  --color-border-muted: #4d4d4d;
+  --color-border-pill: #7c7c7c;
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-base: 8px;
+  --spacing-md: 16px;
+  --spacing-gutter: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-sidebar-width: 280px;
+
+  --radius-sm: 4px;
+  --radius-card: 8px;
+  --radius-DEFAULT: 1rem;
+  --radius-md: 1.5rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+  --radius-pill: 500px;
+  --radius-full: 9999px;
+
+  --font-body-regular: 'Plus Jakarta Sans', sans-serif;
+  --font-body-bold: 'Plus Jakarta Sans', sans-serif;
+  --font-section-title: 'Plus Jakarta Sans', sans-serif;
+  --font-feature-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-button-uppercase: 'Plus Jakarta Sans', sans-serif;
+  --font-nav-link: 'Plus Jakarta Sans', sans-serif;
+  --font-caption: 'Plus Jakarta Sans', sans-serif;
+  --font-small-bold: 'Plus Jakarta Sans', sans-serif;
+  --font-micro: 'Plus Jakarta Sans', sans-serif;
+}
 
 /* ─── CSS Custom Properties ────────────────────────────────────────────────
    Mirrors tailwind.config.ts tokens for use in dynamic contexts
@@ -72,6 +120,18 @@ p { margin: 0; }
 a { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 input, textarea, select { font-family: inherit; }
+
+/* ─── Tailwind Override Utilities ─────────────────────────────────────────
+   Ensuring critical brand colors are applied if v4 theme fails to map
+   ─────────────────────────────────────────────────────────────────────── */
+.bg-spotify-green { background-color: #1ed760 !important; }
+.text-spotify-green { color: #1ed760 !important; }
+.border-spotify-green { border-color: #1ed760 !important; }
+.focus\:ring-spotify-green:focus { --tw-ring-color: #1ed760 !important; }
+.checked\:bg-spotify-green:checked { background-color: #1ed760 !important; }
+.checked\:border-spotify-green:checked { border-color: #1ed760 !important; }
+.text-near-black { color: #121212 !important; }
+.bg-near-black { background-color: #121212 !important; }
 
 /* ─── Material Symbols rendering ────────────────────────────────────── */
 .material-symbols-outlined {
