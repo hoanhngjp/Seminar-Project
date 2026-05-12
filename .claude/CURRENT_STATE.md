@@ -130,7 +130,7 @@
 - [X] Phase 0: `src/services/recommendationService.ts`, analyticsService.ts, notificationService.ts, searchService.ts
 - [X] Phase 0: Migrate tất cả imports từ `api/*` → `services/*` + `types/domain`
 - [X] Phase 0: Build pass 0 errors, 0 warnings (2026-05-12)
-- [ ] Phase 1: Shared UI Components (Button, Input, Modal, Toast, Spinner, SkeletonRow, AppShell, Sidebar, BottomPlayerBar)
+- [X] Phase 1: Shared UI Components (Button, Input, Modal, Toast, Spinner, SkeletonRow, AppShell, Sidebar, BottomPlayerBar) — 55/55 tests xanh (2026-05-12)
 - [ ] Phase 2: Auth Screens (Login + Register + error states)
 - [ ] Phase 3: Onboarding Flow (3-step wizard)
 - [ ] Phase 4: App Shell + Home Page
@@ -158,10 +158,11 @@
 ## Đang làm
 
 - **Service/Task:** Frontend Refactor — Spotify Design System (Stitch-based, 13 screens)
-- **File plan cần đọc:** `.claude/plans/t-t-b-y-gi-m-nh-curried-platypus.md`
-- **Checkpoint gần nhất đã pass:** Phase 0 hoàn thành — Tailwind CSS setup + token migration + services refactor, build pass 0 errors (2026-05-12)
+- **File plan cần đọc:** `.claude/plan/t-t-b-y-gi-m-nh-curried-platypus.md`
+- **Checkpoint gần nhất đã pass:** Phase 1 hoàn thành — 55/55 UI component tests xanh (2026-05-12)
 - **Ngày làm việc gần nhất:** 2026-05-12
-- **Tiếp theo:** Phase 1 — Shared UI Components (Button, Input, Modal, Toast, AppShell, Sidebar, BottomPlayerBar)
+- **Tiếp theo:** Phase 2 — Auth Screens (LoginPage Tailwind refactor + RegisterPage mới)
+- **Known pre-existing failures (chưa fix):** SearchPage 14/23, CreatorDashboardPage 3/10 — lỗi service response shape từ Phase 0
 
 ---
 

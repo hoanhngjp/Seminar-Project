@@ -10,15 +10,16 @@ export async function fetchUnreadNotifications(limit = 10, cursor?: string): Pro
   const params: Record<string, string | number> = { limit };
   if (cursor) params['cursor'] = cursor;
 
-  const res = await apiClient.get<ApiResponse<Notification[]>>(
+  const res = await apiClient.get<ApiResponse<{ items: Notification[]; hasMore: boolean }>>(
     '/api/v1/notifications/unread',
     { params },
   );
-  const meta = res.data.meta;
+  const payload = res.data.data;
+  const meta    = res.data.meta;
   return {
-    items:      res.data.data ?? [],
+    items:      payload?.items      ?? [],
     nextCursor: meta.pagination?.nextCursor ?? null,
-    hasMore:    meta.pagination?.hasMore ?? false,
+    hasMore:    payload?.hasMore    ?? meta.pagination?.hasMore ?? false,
   };
 }
 

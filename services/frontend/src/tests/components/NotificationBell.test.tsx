@@ -12,8 +12,8 @@ const UNREAD_URL = 'http://localhost:5000/api/v1/notifications/unread';
 const MARK_READ_URL = 'http://localhost:5000/api/v1/notifications/:id/read';
 
 const mockNotifications = [
-  { id: 'n1', title: 'Sơn Tùng ra bài mới!', body: 'Nghe ngay bài "Chúng Ta"', createdAt: '2026-05-07T10:00:00Z' },
-  { id: 'n2', title: 'Vũ. ra album mới', body: 'Album "Đâu Đó Và Ai Đó"', createdAt: '2026-05-06T08:00:00Z' },
+  { notificationId: 'n1', message: 'Sơn Tùng ra bài mới!', createdAt: '2026-05-07T10:00:00Z', isRead: false },
+  { notificationId: 'n2', message: 'Vũ. ra album mới',     createdAt: '2026-05-06T08:00:00Z', isRead: false },
 ];
 
 function makeUnreadHandler(items = mockNotifications, hasMore = false) {
@@ -21,7 +21,12 @@ function makeUnreadHandler(items = mockNotifications, hasMore = false) {
     HttpResponse.json({
       success: true,
       data: { items, hasMore },
-      meta: { apiVersion: 'v1', requestId: 'r1', timestamp: new Date().toISOString() },
+      meta: {
+        apiVersion: 'v1',
+        requestId:  'r1',
+        timestamp:  new Date().toISOString(),
+        pagination: { hasMore, nextCursor: null },
+      },
       error: null,
     }),
   );
@@ -68,7 +73,7 @@ describe('NotificationBell', () => {
 
     it('caps badge at 99+ when > 99 notifications', async () => {
       const manyItems = Array.from({ length: 100 }, (_, i) => ({
-        id: `n${i}`, title: `Notif ${i}`, body: 'body', createdAt: new Date().toISOString(),
+        notificationId: `n${i}`, message: `Notif ${i}`, createdAt: new Date().toISOString(), isRead: false,
       }));
       server.use(makeUnreadHandler(manyItems));
       render(<NotificationBell />);

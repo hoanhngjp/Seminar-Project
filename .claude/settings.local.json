@@ -4,7 +4,8 @@
       "Bash(docker compose *)",
       "Bash(dotnet build *)",
       "Bash(dotnet test *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(npm test *)"
     ]
   }
 }

@@ -4,6 +4,22 @@
 
 **Khi nào ghi:**
 ---
+[2026-05-12] [FRONTEND] [BUG]
+
+**Problem:** `notificationService.fetchUnreadNotifications` trả sai items — `res.data.data` là `{ items: [...], hasMore: bool }` nhưng code cũ gán `items: res.data.data ?? []` (treat cả object làm array).
+**Root cause:** Phase 0 refactor service signature nhưng không đọc đúng nested response shape từ API contract (`data: { items, hasMore }`).
+**Fix / Decision:** Đổi generic type sang `ApiResponse<{ items: Notification[]; hasMore: boolean }>`, đọc `payload.items` và `payload.hasMore`. Cập nhật test mock để dùng `notificationId`/`message` (domain type) thay vì `id`/`title` (old type).
+**Lesson / Warning:** Khi service return type là `Notification[]` nhưng API `data` field là `{ items: Notification[] }`, phải dùng generic đúng shape. Luôn verify response shape trong service unit tests trước khi rely vào integration.
+
+---
+[2026-05-12] [FRONTEND] [BUG]
+
+**Problem:** `getTimeContext()` tests fail vì expect `'none'` nhưng Phase 0 đã đổi return values sang `'night' | 'morning' | 'afternoon' | 'evening'` (xóa `'none'`).
+**Root cause:** Tests viết trước Phase 0 migration, chưa cập nhật theo `TimeContext` type mới trong `domain.ts`.
+**Fix / Decision:** Update test assertions: `'none'` (hour 0–5, 22–23) → `'night'`, `'none'` (hour 12–17) → `'afternoon'`.
+**Lesson / Warning:** Khi đổi enum/union type trong `domain.ts`, phải grep tất cả test files dùng giá trị cũ và update cùng lúc.
+
+---
 [2026-05-12] [FRONTEND] [DECISION]
 
 **Task:** Phase 0 — Tailwind CSS setup + service layer migration

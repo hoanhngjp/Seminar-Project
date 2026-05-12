@@ -324,18 +324,18 @@ describe('getTimeContext', () => {
     expect(getTimeContext()).toBe('evening');
   });
 
-  it('returns "none" for hour 0–5', () => {
+  it('returns "night" for hour 0–5', () => {
     vi.spyOn(Date.prototype, 'getHours').mockReturnValue(3);
-    expect(getTimeContext()).toBe('none');
+    expect(getTimeContext()).toBe('night');
   });
 
-  it('returns "none" for hour 12–17 (afternoon)', () => {
+  it('returns "afternoon" for hour 12–17', () => {
     vi.spyOn(Date.prototype, 'getHours').mockReturnValue(14);
-    expect(getTimeContext()).toBe('none');
+    expect(getTimeContext()).toBe('afternoon');
   });
 
-  it('returns "none" for hour 22–23 (late night)', () => {
+  it('returns "night" for hour 22–23 (late night)', () => {
     vi.spyOn(Date.prototype, 'getHours').mockReturnValue(23);
-    expect(getTimeContext()).toBe('none');
+    expect(getTimeContext()).toBe('night');
   });
 });
