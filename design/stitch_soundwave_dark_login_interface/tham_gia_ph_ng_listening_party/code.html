@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tham gia phòng - SonicPulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "dark-card": "#252525",
+                        "on-surface": "#dce5d8",
+                        "surface-container-lowest": "#081008",
+                        "primary-fixed-dim": "#34e36a",
+                        "dark-surface": "#181818",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "surface-dim": "#0d150d",
+                        "primary": "#4cf479",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary-fixed-variant": "#00531f",
+                        "on-tertiary": "#571f08",
+                        "on-secondary-fixed-variant": "#474646",
+                        "announcement": "#539df5",
+                        "secondary": "#c8c6c5",
+                        "primary-fixed": "#69ff89",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#ffa585",
+                        "on-secondary-container": "#bab8b7",
+                        "secondary-fixed": "#e5e2e1",
+                        "text-secondary": "#b3b3b3",
+                        "surface-tint": "#34e36a",
+                        "mid-dark": "#1f1f1f",
+                        "outline-variant": "#3c4a3c",
+                        "mid-card": "#272727",
+                        "tertiary-fixed": "#ffdbcf",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "border-muted": "#4d4d4d",
+                        "inverse-on-surface": "#2a3329",
+                        "on-primary-container": "#005721",
+                        "surface": "#0d150d",
+                        "on-tertiary-container": "#793820",
+                        "surface-container-high": "#232c23",
+                        "on-secondary": "#313030",
+                        "near-black": "#121212",
+                        "surface-container": "#192219",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "tertiary": "#ffccbb",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-error": "#690005",
+                        "surface-container-highest": "#2e372e",
+                        "outline": "#859583",
+                        "on-primary": "#003913",
+                        "border-pill": "#7c7c7c",
+                        "text-near-white": "#cbcbcb",
+                        "inverse-primary": "#006e2c",
+                        "background": "#0d150d",
+                        "text-emphasis": "#fdfdfd",
+                        "inverse-surface": "#dce5d8",
+                        "on-primary-fixed": "#002108",
+                        "negative": "#f3727f",
+                        "surface-bright": "#333b32",
+                        "surface-variant": "#2e372e",
+                        "secondary-container": "#4a4949",
+                        "surface-container-low": "#151e15",
+                        "on-surface-variant": "#bbcbb8",
+                        "spotify-green": "#1ed760",
+                        "primary-container": "#1ed760",
+                        "on-background": "#dce5d8",
+                        "warning": "#ffa42b",
+                        "text-base": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "24px",
+                        "sidebar-width": "280px",
+                        "base": "8px",
+                        "sm": "8px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "nav-link": ["plusJakartaSans"],
+                        "body-bold": ["plusJakartaSans"],
+                        "section-title": ["plusJakartaSans"],
+                        "micro": ["plusJakartaSans"],
+                        "body-regular": ["plusJakartaSans"],
+                        "small-bold": ["plusJakartaSans"],
+                        "caption": ["plusJakartaSans"],
+                        "feature-heading": ["plusJakartaSans"],
+                        "button-uppercase": ["plusJakartaSans"]
+                    },
+                    "fontSize": {
+                        "nav-link": ["14px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "body-bold": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "section-title": ["24px", { "lineHeight": "1.2", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "micro": ["10px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "body-regular": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "small-bold": ["12px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "caption": ["14px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "feature-heading": ["18px", { "lineHeight": "1.3", "letterSpacing": "normal", "fontWeight": "600" }],
+                        "button-uppercase": ["14px", { "lineHeight": "1.0", "letterSpacing": "1.4px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .input-inset {
+            box-shadow: rgb(18, 18, 18) 0px 1px 0px, rgb(124, 124, 124) 0px 0px 0px 1px inset;
+        }
+    </style>
+</head>
+<body class="bg-near-black text-text-base font-body-regular min-h-screen flex items-center justify-center p-md">
+<!-- Modal Overlay -->
+<div class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-md">
+<!-- Modal Container -->
+<div class="bg-dark-surface w-full max-w-[480px] rounded-[8px] shadow-[rgba(0,0,0,0.5)_0px_8px_24px] z-50 flex flex-col overflow-hidden relative">
+<!-- Close Button -->
+<button aria-label="Đóng" class="absolute top-md right-md text-text-secondary hover:text-text-emphasis transition-colors z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">close</span>
+</button>
+<!-- Header -->
+<div class="p-lg border-b border-border-muted/30">
+<h2 class="font-section-title text-[20px] text-text-emphasis flex items-center gap-xs">
+<span class="material-symbols-outlined text-text-secondary text-[24px]">link</span>
+                    Tham gia phòng
+                </h2>
+</div>
+<!-- Content Body -->
+<div class="p-lg flex flex-col gap-lg">
+<!-- Input Area -->
+<div class="flex flex-col gap-sm">
+<label class="font-body-bold text-[14px] text-text-emphasis">Nhập mã phòng</label>
+<div class="flex justify-between gap-xs">
+<input class="w-[48px] h-[56px] bg-mid-dark rounded-[8px] text-center text-[24px] font-section-title text-text-emphasis input-inset focus:outline-none focus:ring-1 focus:ring-spotify-green" maxlength="1" type="text" value="A"/>
+<input class="w-[48px] h-[56px] bg-mid-dark rounded-[8px] text-center text-[24px] font-section-title text-text-emphasis input-inset focus:outline-none focus:ring-1 focus:ring-spotify-green" maxlength="1" type="text" value="9"/>
+<input class="w-[48px] h-[56px] bg-mid-dark rounded-[8px] text-center text-[24px] font-section-title text-text-emphasis input-inset focus:outline-none focus:ring-1 focus:ring-spotify-green" maxlength="1" type="text" value="X"/>
+<input class="w-[48px] h-[56px] bg-mid-dark rounded-[8px] text-center text-[24px] font-section-title text-text-emphasis input-inset focus:outline-none focus:ring-1 focus:ring-spotify-green" maxlength="1" type="text" value="2"/>
+<input class="w-[48px] h-[56px] bg-mid-dark rounded-[8px] text-center text-[24px] font-section-title text-text-emphasis input-inset focus:outline-none focus:ring-1 focus:ring-spotify-green" maxlength="1" type="text" value="B"/>
+<input class="w-[48px] h-[56px] bg-mid-dark rounded-[8px] text-center text-[24px] font-section-title text-text-emphasis input-inset focus:outline-none focus:ring-1 focus:ring-spotify-green" maxlength="1" type="text" value="7"/>
+</div>
+<p class="font-caption text-caption text-text-secondary mt-xs">Nhờ Host gửi mã 6 chữ số cho bạn</p>
+</div>
+<!-- Valid State Preview Card -->
+<div class="bg-dark-card rounded-[8px] p-md flex flex-col gap-sm shadow-[rgba(0,0,0,0.3)_0px_8px_8px]">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-mid-dark flex items-center justify-center overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="A close-up portrait of a young person smiling warmly, lit by soft studio lighting against a dark, moody background. The image has a high-contrast, premium aesthetic that blends seamlessly with a dark UI. Shadows are deep and rich, while highlights gently define the subject's features." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqArfGefJeAPPNuolp1QfTqWEldnuP2SaZOx_huI2jPDEIxiJ9UJj0DxqKj6Kh2E6MN1JVX9MpUp5DZ1VPbCsqmR9-SIOz2s29U4cwW7h25pEomFHdIlJhjvjxZLiL9GedapwaQo67A9jP_M1StHcPH30AS7B--N88MDf_L_eaj80XjbwmLBM6_-WnLxlF03-dHUcx19L7f6prEn9qc2VF99zGnWcxJtOp_2ar2MHSH3oTXAgsEyZYJ6qSsOEK_HXZr4gy_l0OuRI"/>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-text-emphasis flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">music_note</span>
+                                Phòng của Nghiệp
+                            </span>
+<span class="font-caption text-[12px] text-text-secondary">3 thành viên · Đang phát: Nơi Này Có Anh</span>
+</div>
+</div>
+<div class="flex justify-end items-center text-spotify-green font-body-bold text-[14px] cursor-pointer hover:text-primary-fixed transition-colors">
+                        Tham gia ngay
+                        <span class="material-symbols-outlined ml-xs text-[18px]">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="p-lg pt-0 flex justify-center mt-sm">
+<button class="bg-spotify-green hover:bg-primary-fixed text-on-primary font-button-uppercase text-button-uppercase px-xl py-3 rounded-full w-full transition-colors">
+                    THAM GIA
+                </button>
+</div>
+</div>
+</div>
+</body></html>

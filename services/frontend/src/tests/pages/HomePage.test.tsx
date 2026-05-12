@@ -5,7 +5,7 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import HomePage from '../../pages/HomePage';
 import { useAuthStore } from '../../store/authStore';
-import { getTimeContext } from '../../api/recommendationApi';
+import { getTimeContext } from '../../utils/time';
 
 // ---------------------------------------------------------------------------
 // MSW server — intercept axios calls to http://localhost:5000

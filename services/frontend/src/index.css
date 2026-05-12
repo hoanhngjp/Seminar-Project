@@ -1,13 +1,14 @@
-/* Global reset & dark theme — Spotify Design System */
+/* Google Fonts — Plus Jakarta Sans (Stitch substitute for SpotifyMixUI) */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/* Tailwind CSS v4 directives */
+@import "tailwindcss";
 
+/* ─── CSS Custom Properties ────────────────────────────────────────────────
+   Mirrors tailwind.config.ts tokens for use in dynamic contexts
+   (e.g. inline styles for album art glow, progress fills)
+   ─────────────────────────────────────────────────────────────────────── */
 :root {
-  /* Design tokens as CSS variables — mirrors tokens.ts */
   --color-bg:           #121212;
   --color-surface:      #181818;
   --color-surface-mid:  #1f1f1f;
@@ -17,7 +18,7 @@
   --color-text-muted:   #b3b3b3;
 
   --color-accent:       #1ed760;
-  --color-accent-border:#1db954;
+  --color-accent-dark:  #1db954;
 
   --color-error:        #f3727f;
   --color-warning:      #ffa42b;
@@ -30,97 +31,62 @@
   --shadow-medium: rgba(0,0,0,0.3) 0px 8px 8px;
   --shadow-inset:  rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset;
 
-  --font-ui:    'SpotifyMixUI', 'CircularSp-Arab', 'CircularSp-Hebr', 'CircularSp-Cyrl', 'Helvetica Neue', helvetica, arial, 'Hiragino Sans', sans-serif;
-  --font-title: 'SpotifyMixUITitle', 'CircularSp-Arab', 'Helvetica Neue', helvetica, arial, 'Hiragino Sans', sans-serif;
+  --sidebar-width:      240px;
+  --bottom-bar-height:  72px;
+}
 
-  --sidebar-width:     240px;
-  --bottom-bar-height: 90px;
+/* ─── Base Reset ──────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
-  font-family: var(--font-ui);
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  font-family: 'Plus Jakarta Sans', 'Helvetica Neue', helvetica, arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   color: var(--color-text);
-  background-color: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   color-scheme: dark;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100vh;
-  background-color: var(--color-bg);
-}
-
 #root {
   width: 100%;
   min-height: 100vh;
   background-color: var(--color-bg);
-  /* Remove old Vite defaults */
   max-width: none;
   text-align: left;
-  border: none;
 }
 
-/* Remove default list styles */
-ul, ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+ul, ol { list-style: none; margin: 0; padding: 0; }
+h1, h2, h3, h4, h5, h6 { margin: 0; }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+input, textarea, select { font-family: inherit; }
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-border-light); }
+
+/* ─── Stitch utility: input inset shadow ────────────────────────────── */
+.input-inset {
+  box-shadow: rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset;
 }
 
-/* Remove default heading margins — controlled per component */
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  font-family: var(--font-title);
-}
-
-p {
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-family: var(--font-ui);
-}
-
-input, textarea, select {
-  font-family: var(--font-ui);
-}
-
-/* Scrollbar — dark theme */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-bg);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border-light);
-}
-
-/* Shimmer animation for skeleton loaders */
+/* ─── Skeleton shimmer ───────────────────────────────────────────────── */
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
 }
-
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
@@ -131,3 +97,10 @@ input, textarea, select {
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+
+/* ─── LIVE blink indicator (Listening Party) ────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.blink { animation: blink 1s ease-in-out infinite; }

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tìm kiếm - SonicPulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#c8c6c5",
+                        "on-background": "#dce5d8",
+                        "dark-card": "#252525",
+                        "on-surface-variant": "#bbcbb8",
+                        "surface-container": "#192219",
+                        "text-near-white": "#cbcbcb",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#081008",
+                        "primary-container": "#1ed760",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#005721",
+                        "border-muted": "#4d4d4d",
+                        "spotify-green": "#1ed760",
+                        "surface-container-high": "#232c23",
+                        "background": "#0d150d",
+                        "announcement": "#539df5",
+                        "negative": "#f3727f",
+                        "on-tertiary": "#571f08",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#dce5d8",
+                        "outline-variant": "#3c4a3c",
+                        "text-emphasis": "#fdfdfd",
+                        "secondary-fixed": "#e5e2e1",
+                        "tertiary-container": "#ffa585",
+                        "text-secondary": "#b3b3b3",
+                        "on-primary-fixed": "#002108",
+                        "mid-dark": "#1f1f1f",
+                        "tertiary": "#ffccbb",
+                        "surface-variant": "#2e372e",
+                        "warning": "#ffa42b",
+                        "on-secondary-container": "#bab8b7",
+                        "text-base": "#ffffff",
+                        "surface-container-low": "#151e15",
+                        "on-tertiary-fixed": "#380d00",
+                        "dark-surface": "#181818",
+                        "primary": "#4cf479",
+                        "on-primary": "#003913",
+                        "surface-bright": "#333b32",
+                        "on-secondary": "#313030",
+                        "on-tertiary-container": "#793820",
+                        "inverse-on-surface": "#2a3329",
+                        "secondary-container": "#4a4949",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#34e36a",
+                        "on-primary-fixed-variant": "#00531f",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "border-pill": "#7c7c7c",
+                        "outline": "#859583",
+                        "surface-tint": "#34e36a",
+                        "on-surface": "#dce5d8",
+                        "primary-fixed": "#69ff89",
+                        "near-black": "#121212",
+                        "surface-dim": "#0d150d",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "inverse-primary": "#006e2c",
+                        "surface-container-highest": "#2e372e",
+                        "tertiary-fixed": "#ffdbcf",
+                        "mid-card": "#272727",
+                        "surface": "#0d150d",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary-fixed-variant": "#474646"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar-width": "240px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-regular": ["Plus Jakarta Sans"],
+                        "body-bold": ["Plus Jakarta Sans"],
+                        "section-title": ["Plus Jakarta Sans"],
+                        "button-uppercase": ["Plus Jakarta Sans"],
+                        "micro": ["Plus Jakarta Sans"],
+                        "small-bold": ["Plus Jakarta Sans"],
+                        "feature-heading": ["Plus Jakarta Sans"],
+                        "caption": ["Plus Jakarta Sans"],
+                        "nav-link": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-regular": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "body-bold": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "section-title": ["24px", { "lineHeight": "1.2", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "button-uppercase": ["14px", { "lineHeight": "1.0", "letterSpacing": "1.4px", "fontWeight": "700" }],
+                        "micro": ["10px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "small-bold": ["12px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "feature-heading": ["18px", { "lineHeight": "1.3", "letterSpacing": "normal", "fontWeight": "600" }],
+                        "caption": ["14px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "nav-link": ["14px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-text-base font-body-regular min-h-screen pb-[72px] lg:pb-0">
+<!-- SideNavBar (Web) -->
+<nav class="hidden lg:flex flex-col h-full bg-near-black pt-xl fixed left-0 top-0 w-[240px] z-50">
+<div class="px-lg mb-8">
+<h1 class="font-section-title text-section-title text-text-emphasis tracking-tight">SonicPulse</h1>
+<p class="font-micro text-micro text-text-secondary mt-1">Premium Audio</p>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="space-y-2 px-sm">
+<li>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined">home</span>
+                        Home
+                    </a>
+</li>
+<li>
+<a class="text-text-base font-body-bold flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 rounded-lg active:scale-95 bg-mid-dark" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">search</span>
+                        Search
+                    </a>
+</li>
+<li>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined">notifications</span>
+                        Notifications
+                    </a>
+</li>
+<li>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined">groups</span>
+                        Listening Party
+                    </a>
+</li>
+<li>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined">library_music</span>
+                        Your Library
+                    </a>
+</li>
+</ul>
+</div>
+<div class="p-4 mt-auto">
+<button class="w-full py-2 px-4 bg-mid-dark text-text-base font-button-uppercase text-button-uppercase rounded-full hover:bg-dark-card transition-colors">
+                Create Playlist
+            </button>
+<div class="flex gap-4 mt-4 px-4">
+<a class="text-text-secondary hover:text-text-base" href="#"><span class="material-symbols-outlined text-[18px]">cookie</span></a>
+<a class="text-text-secondary hover:text-text-base" href="#"><span class="material-symbols-outlined text-[18px]">policy</span></a>
+</div>
+</div>
+</nav>
+<!-- TopAppBar -->
+<header class="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md flex justify-between items-center h-16 px-lg lg:ml-[240px] lg:w-[calc(100%-240px)]">
+<div class="lg:hidden">
+<h1 class="font-section-title text-section-title text-text-emphasis">SonicPulse</h1>
+</div>
+<!-- Search Input Header -->
+<div class="hidden lg:block w-full max-w-[680px]">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">search</span>
+<input class="w-full bg-mid-dark rounded-full py-[12px] pr-[20px] pl-[48px] text-body-regular font-body-regular text-text-base placeholder:text-text-secondary border border-border-muted shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] focus:outline-none focus:border-spotify-green focus:ring-1 focus:ring-spotify-green transition-all" placeholder="Bài hát, nghệ sĩ, thể loại…" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 ml-auto">
+<button class="hidden lg:block py-2 px-6 bg-spotify-green text-near-black font-button-uppercase text-button-uppercase rounded-full hover:brightness-110 transition-all">
+                Upgrade
+            </button>
+<button class="text-text-secondary hover:text-text-emphasis transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-text-secondary hover:text-text-emphasis transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-border-muted" data-alt="A close-up portrait of a user avatar for a premium music streaming app. The image features a modern, clean aesthetic with soft studio lighting, creating a polished and professional look consistent with a dark mode UI environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfYZ6DeKE_FSni3s0LJ7OxB8sdMwN7PvABH8CaH4qCsQiTZsUpTbj2nixwTT4ZPblT_VAUV4xRQFfxY1EPQh8s0-X1c7gglUAK3vUBw8TcXwVx3zgwUdd3BhVsDqdqnIjEW4i01--ASDfPTi3U1A5Qf4_CQYO9QPYvvmU88w19uQsK3opmz8MfQXqIoR7khYqcJgeVBSOIgFdKxs4Q5Qjhe-1Dny15KcJI4mDxAyObp9_j3zlc6ArP01ewqLnJQWFyreX3GjiH4B4"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="lg:ml-[240px] p-lg min-h-[calc(100vh-64px)]">
+<!-- Mobile Search Input (Visible only on mobile) -->
+<div class="lg:hidden mb-8 w-full max-w-[680px]">
+<h2 class="font-section-title text-section-title text-text-base mb-4">Tìm kiếm</h2>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">search</span>
+<input class="w-full bg-mid-dark rounded-full py-[12px] pr-[20px] pl-[48px] text-body-regular font-body-regular text-text-base placeholder:text-text-secondary border border-border-muted shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] focus:outline-none focus:border-spotify-green focus:ring-1 focus:ring-spotify-green transition-all" placeholder="Bài hát, nghệ sĩ, thể loại…" type="text"/>
+</div>
+</div>
+<section class="max-w-7xl mx-auto">
+<h3 class="font-feature-heading text-feature-heading text-text-base mb-6">Khám phá thể loại</h3>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+<!-- Genre Card: Pop -->
+<div class="relative h-[160px] rounded-[8px] overflow-hidden group cursor-pointer shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+<div class="absolute inset-0 bg-gradient-to-br from-pink-500 to-purple-600 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Pop Music" class="absolute -right-4 -bottom-4 w-24 h-24 rotate-12 shadow-2xl opacity-80" data-alt="A stylized, vibrant image representing Pop music within a premium dark mode streaming app. High contrast, energetic lighting highlights modern musical elements against a deep background, fitting seamlessly into an immersive, near-black cocoon UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9vbFUZxoxAayKpLJKHDfVs8u9sk01Bms6RKpw_3u-tGq_QY3FSevlvDzaTo830jgKv1JthLfZqSK48Srx1viOZBPRQTF8cgPWol9TI_DjPjLapVRYVgk27aLNB06peN6oN3kfH6_SX3HUhL2gN5kX_M1Z8AYpk5_6OlRgaqELJpUT5T5p6hgPYj32q-bzm0LQSqBZyr3Gh2ZSCKiWjEzc7dXtExVvm_bu28w7iTvBFNIpsPwg_9m-1StRGh1KaT9tILPMHKTNeyM"/>
+<div class="absolute inset-0 p-4">
+<span class="font-feature-heading text-feature-heading text-text-base drop-shadow-md">Pop</span>
+</div>
+</div>
+<!-- Genre Card: Rock -->
+<div class="relative h-[160px] rounded-[8px] overflow-hidden group cursor-pointer shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+<div class="absolute inset-0 bg-gradient-to-br from-red-600 to-red-900 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Rock Music" class="absolute -right-4 -bottom-4 w-24 h-24 rotate-12 shadow-2xl opacity-80" data-alt="A stylized, energetic image representing Rock music for a premium dark mode streaming interface. Intense, dramatic lighting with deep shadows highlights elements like a guitar or stage setup, aligning perfectly with a high-density, tactile aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEUx-xvKKkV-RyAdXftVA9_JXd65gZ5c2FeNRv0FaT7s5ToLZ9TnRQDYqmN2ZyNIBi1JQsmqAn926d5lhvK-cqAgvxMVr9s01lY74c8d2Wrx497F5Vf3gP56H5cjsbDaJpiMeRZu5fEOavHDj9uA2vfiWklVl9O3hSk98GXxW6f-zJsZB0jMRksGnaJLEvAhZpLN10TYZoB9E7EGcGZGRXZ_3EUHMS7sO-QDjvfKa-1DYSRCaHg6lanScBbJMb5vavWPnTXvSq3NI"/>
+<div class="absolute inset-0 p-4">
+<span class="font-feature-heading text-feature-heading text-text-base drop-shadow-md">Rock</span>
+</div>
+</div>
+<!-- Genre Card: R&B -->
+<div class="relative h-[160px] rounded-[8px] overflow-hidden group cursor-pointer shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+<div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-blue-700 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+<img alt="R&amp;B Music" class="absolute -right-4 -bottom-4 w-24 h-24 rotate-12 shadow-2xl opacity-80" data-alt="A sleek, moody image representing R&amp;B music in a dark-themed music app. Smooth, cool-toned lighting emphasizes smooth textures and modern urban vibes, designed to pop against a near-black background and heavy shadow styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOFSd4JA-vr5FrvHle6ZmYCiwz4JVlV-kJdI18DEkJwi3PmLLaqHRj9x2pmTiGQK0WVv5zBjvZ-EspLc77P1isMl7b-83_rp_wgkEwdXeqdOTcsp-mMhwC5jy4nlFE5oKFltqW0lVYigTQoz-YlOnvJDL5aZjf2wtt7rBh_1KVjdXFUf3QSrYoyAI3h5RtaC3QUIFB_zgCOIEeu0qLNTB-axlAuAs3DrcAXVmQOVu2F5fsTgUzwoUsUEBdnzfq7gSZrIaS-K_XWsE"/>
+<div class="absolute inset-0 p-4">
+<span class="font-feature-heading text-feature-heading text-text-base drop-shadow-md">R&amp;B</span>
+</div>
+</div>
+<!-- Genre Card: Jazz -->
+<div class="relative h-[160px] rounded-[8px] overflow-hidden group cursor-pointer shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+<div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-amber-700 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Jazz Music" class="absolute -right-4 -bottom-4 w-24 h-24 rotate-12 shadow-2xl opacity-80" data-alt="A warm, atmospheric image representing Jazz music for a dark mode streaming UI. Rich golden and amber lighting highlights classic instruments like a saxophone or brass, creating a premium, intimate theater-like mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBR7lzLbyap007CTxwWmn4ddIMrbP8xFuNlvqwmZYxkTw5wMYW8VHte2DAMfYg9CwBMqS0MBKJRlZC0QpdBg1Nrfu6nZUYIrWAzcfKpunk9WX-hwXY4LdVj7YKVUKfTWaJLCXGfAZs2_SiFyclyxgdswafurQvglfqEl_drdgufFcRMtGLuGWkUdnu0f037Rr03XrviOS6oyDqRXkcAir5CqA4bfcCMHcvImZhObSfBoWqPvejU6yIw8UW8YdbE-K1lyit7BeGFoYI"/>
+<div class="absolute inset-0 p-4">
+<span class="font-feature-heading text-feature-heading text-text-base drop-shadow-md">Jazz</span>
+</div>
+</div>
+<!-- Genre Card: Classical -->
+<div class="relative h-[160px] rounded-[8px] overflow-hidden group cursor-pointer shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+<div class="absolute inset-0 bg-gradient-to-br from-gray-500 to-gray-800 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Classical Music" class="absolute -right-4 -bottom-4 w-24 h-24 rotate-12 shadow-2xl opacity-80" data-alt="A sophisticated, minimalist image representing Classical music in a premium streaming app. Soft, high-contrast lighting over classical instruments like strings or piano keys, designed to provide a tactile visual rest within a high-density dark layout." src="https://lh3.googleusercontent.com/aida-public/AB6AXuChJkgbcY8OIR9y03gmAx0HTGLptgkvAFfHf8VASJv2gV-mNbCStNELeUhkP1Vf5naWUJTXgYZ3cXWnuoBN4wI2SI2bcET8_c8CGXtJVxR4DzZiNGcqE3HZwo3QnysTeaRgFM8nljl3sPoHhsIAsmZdwerdZfAAs-o9KAMBmNQjsWxeduTMuLp9NE3uvL6jE7xe74kwA-YO0Yf5iAehQFyVOYtLc-mGD4GRwsKtqFHo1pHhPc7C0oDzxNkRi1Ogls6ka-aMEAVGyY8"/>
+<div class="absolute inset-0 p-4">
+<span class="font-feature-heading text-feature-heading text-text-base drop-shadow-md">Classical</span>
+</div>
+</div>
+<!-- Genre Card: Electronic -->
+<div class="relative h-[160px] rounded-[8px] overflow-hidden group cursor-pointer shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+<div class="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-600 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Electronic Music" class="absolute -right-4 -bottom-4 w-24 h-24 rotate-12 shadow-2xl opacity-80" data-alt="A futuristic, vibrant image representing Electronic music for a dark audio device UI. Neon cyan and deep blue lighting creates an energetic, synthetic atmosphere, contrasting sharply with the near-black UI shell to draw focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIlPq0Z9iYeJK81-Sewv3oG2wAHWFvQUGHM0_SXzwfCUaC_1JppvrqdWViB2eAMEmwPE6wxA9NBMK9jmTav6WYTvExC37elfEKdR--Yy5-mlxJYarladcrOcucMkG-c54CeJjigGOVQXIDZvzyHpzUCNcrLF8StmqwF8IM_ZWHU0iLaggEAz5yaIqrhFZTw3U18PPnV0GuZBrzyz5PjX9tgzKYj0NBSuU7HTdtSX64hg6nCAp_ewhuyd1RraqhO9-uDgxrF0Xn9z8"/>
+<div class="absolute inset-0 p-4">
+<span class="font-feature-heading text-feature-heading text-text-base drop-shadow-md">Electronic</span>
+</div>
+</div>
+<!-- Genre Card: Hip-Hop -->
+<div class="relative h-[160px] rounded-[8px] overflow-hidden group cursor-pointer shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+<div class="absolute inset-0 bg-gradient-to-br from-yellow-500 to-orange-600 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Hip-Hop Music" class="absolute -right-4 -bottom-4 w-24 h-24 rotate-12 shadow-2xl opacity-80" data-alt="A bold, gritty image representing Hip-Hop music within a dark mode streaming interface. Strong directional lighting highlights urban elements or DJ gear, using deep shadows and vibrant accents to stand out in a tightly compressed dark layout." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUUMJ8PQn2H3CfknjPhNiizjC9_yGoMOcWNcSxC4UaA03c7HrU9Z4WEP8-sL9QgnWRbGTQYYtWoK_baj30ujvA5aFFIHI34EPX5XZGOMrsnRYgh05lcRjENDUW6571oOaoPj6uBC2b_GEDP4Y3Sxqp2j9wZoUzy_4d9ysu383tB2VX_K3H51ZbhwZffMqgoYAlouhKIMRxXu2qcMU9BaSE8nK_k_NtJ3_pK5fGZ0z7C-3lubSmJGH5xRckN1NWaLZ7IVNm3aQgz4w"/>
+<div class="absolute inset-0 p-4">
+<span class="font-feature-heading text-feature-heading text-text-base drop-shadow-md">Hip-Hop</span>
+</div>
+</div>
+<!-- Genre Card: Acoustic -->
+<div class="relative h-[160px] rounded-[8px] overflow-hidden group cursor-pointer shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+<div class="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-700 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Acoustic Music" class="absolute -right-4 -bottom-4 w-24 h-24 rotate-12 shadow-2xl opacity-80" data-alt="A serene, organic image representing Acoustic music in a premium audio app. Soft, natural lighting on acoustic instruments like a guitar, blending smoothly with the aggressive shadows and extreme roundedness of the UI components." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCR9v1CTnwAiksWdo2jzhUNrdp-Y4g5Bx8u8DxDTLOsXFcNnyjZI87SrenqpoFNm2EZH88sV5BX2NMnRUWTcu93yITmjH-uRi14XqI5wqrSlyWBnFdfiv1cQUi-C0rx6rh7PXta-zlCtRHg--hok_ovn36ZQbIiYyuaSED_D4crI1trVr1S8RygYUY9myxHP_nE519gpdooEgz-mszciDpjHjcSuVzGxZYsCCYaz4fnitFn88jU0-1ZsoMdRJBLcqItTPWVGrywFT4"/>
+<div class="absolute inset-0 p-4">
+<span class="font-feature-heading text-feature-heading text-text-base drop-shadow-md">Acoustic</span>
+</div>
+</div>
+<!-- Genre Card: Indie -->
+<div class="relative h-[160px] rounded-[8px] overflow-hidden group cursor-pointer shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+<div class="absolute inset-0 bg-gradient-to-br from-purple-400 to-fuchsia-600 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Indie Music" class="absolute -right-4 -bottom-4 w-24 h-24 rotate-12 shadow-2xl opacity-80" data-alt="A quirky, atmospheric image representing Indie music for a dark streaming platform. Dreamy, alternative lighting styles with soft contrasts highlight artistic elements, acting as a vibrant external content source against the `#121212` foundation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFYRPzgBCWMA6uZAu1R77k0DxZnbXZKw2m-RRL76aZDflSC8wsyxqbIIIXb5ASp5VrO4GsSDvQowD-G8Ytio_iTqj_LX9QakyDdGRhY_VCnwjaGNRBsK_8ALahVi4XcgF0Fyb3dwQf86jJTro_swilsJH9r3rWfaeONr-Ebf7fD__N63e02Yg4hGU9G0OvSfMKrgIbj4vCG_Qn_KW18clI0APxaUiVInaLZuBZ8CpzT-a1j-hIQgDJif_lWSKkb9JJT4Yl4LU20dI"/>
+<div class="absolute inset-0 p-4">
+<span class="font-feature-heading text-feature-heading text-text-base drop-shadow-md">Indie</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full h-[72px] z-50 bg-dark-surface shadow-[0_-4px_12px_rgba(0,0,0,0.5)] border-t border-border-muted flex items-center justify-between px-md">
+<a class="flex flex-col items-center justify-center w-full text-text-secondary hover:text-text-base transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-micro text-micro">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full text-spotify-green hover:scale-110 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">search</span>
+<span class="font-micro text-micro">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full text-text-secondary hover:text-text-base transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">library_music</span>
+<span class="font-micro text-micro">Library</span>
+</a>
+</nav>
+<!-- Persistent Player Control Bar (Desktop & Mobile) -->
+<div class="fixed bottom-[72px] lg:bottom-0 left-0 w-full h-[72px] lg:h-[90px] z-[45] bg-dark-surface shadow-2xl flex items-center justify-between px-md lg:px-lg border-t border-border-muted lg:border-none">
+<div class="flex items-center gap-4 w-1/3">
+<img alt="Now Playing Art" class="w-12 h-12 lg:w-14 lg:h-14 rounded-md shadow-md" data-alt="Small album art thumbnail for the 'Now Playing' persistent player bar. The image shows moody, abstract artwork with deep blues and purples, fitting seamlessly into the tactile, near-black cocoon of the overall UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkV26v_MTG56CGfoXvkwIvaptzFITLrPBOQ7NZpk3xtJc4iznCAvdlUVibkwvYEGtsdUxB4V2A_g0_ulKlPnKIaskmcwYu_13kYZVaz73lyNe0gofX5M0L0gxU1MzUilZyW2Pnm161MgBjIaOXwnLwX6guJKh9c52EORC25NZITx0TBBLn21JKOIl0YfHHIQOOiMjGLv8E-J07tkDmY5Q-RJcozEzqjmoKYLh5ThrTrlykZmNIYOm0_QO7u9nWxzX0tmdaCQmFrfI"/>
+<div class="hidden sm:flex flex-col">
+<span class="font-body-bold text-body-bold text-text-base truncate">Midnight City</span>
+<span class="font-caption text-caption text-text-secondary truncate">Synthwave Explorers</span>
+</div>
+<button class="text-text-secondary hover:text-text-base hidden lg:block"><span class="material-symbols-outlined">favorite</span></button>
+</div>
+<div class="flex flex-col items-center justify-center w-1/3 max-w-[400px]">
+<div class="flex items-center gap-4 lg:gap-6">
+<button class="text-text-secondary hover:text-text-base hidden sm:block"><span class="material-symbols-outlined text-[20px]">shuffle</span></button>
+<button class="text-text-secondary hover:text-text-base"><span class="material-symbols-outlined text-[24px]">skip_previous</span></button>
+<button class="w-10 h-10 bg-text-base text-near-black rounded-full flex items-center justify-center hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="text-text-secondary hover:text-text-base"><span class="material-symbols-outlined text-[24px]">skip_next</span></button>
+<button class="text-text-secondary hover:text-text-base hidden sm:block"><span class="material-symbols-outlined text-[20px]">repeat</span></button>
+</div>
+<div class="hidden lg:flex items-center gap-2 w-full mt-2">
+<span class="font-micro text-micro text-text-secondary">1:24</span>
+<div class="h-1 flex-1 bg-border-muted rounded-full overflow-hidden">
+<div class="h-full bg-text-base w-1/3 rounded-full"></div>
+</div>
+<span class="font-micro text-micro text-text-secondary">4:05</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-3 w-1/3 hidden lg:flex">
+<button class="text-text-secondary hover:text-text-base"><span class="material-symbols-outlined text-[20px]">mic</span></button>
+<button class="text-text-secondary hover:text-text-base"><span class="material-symbols-outlined text-[20px]">queue_music</span></button>
+<button class="text-text-secondary hover:text-text-base"><span class="material-symbols-outlined text-[20px]">computer</span></button>
+<div class="flex items-center gap-2 w-24">
+<button class="text-text-secondary hover:text-text-base"><span class="material-symbols-outlined text-[20px]">volume_up</span></button>
+<div class="h-1 flex-1 bg-border-muted rounded-full overflow-hidden">
+<div class="h-full bg-text-base w-2/3 rounded-full hover:bg-spotify-green transition-colors"></div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

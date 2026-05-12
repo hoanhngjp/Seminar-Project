@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SoundWave - Search</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4d4d4d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #7c7c7c;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#c8c6c5",
+                        "on-background": "#dce5d8",
+                        "dark-card": "#252525",
+                        "on-surface-variant": "#bbcbb8",
+                        "surface-container": "#192219",
+                        "text-near-white": "#cbcbcb",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#081008",
+                        "primary-container": "#1ed760",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#005721",
+                        "border-muted": "#4d4d4d",
+                        "spotify-green": "#1ed760",
+                        "surface-container-high": "#232c23",
+                        "background": "#0d150d",
+                        "announcement": "#539df5",
+                        "negative": "#f3727f",
+                        "on-tertiary": "#571f08",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#dce5d8",
+                        "outline-variant": "#3c4a3c",
+                        "text-emphasis": "#fdfdfd",
+                        "secondary-fixed": "#e5e2e1",
+                        "tertiary-container": "#ffa585",
+                        "text-secondary": "#b3b3b3",
+                        "on-primary-fixed": "#002108",
+                        "mid-dark": "#1f1f1f",
+                        "tertiary": "#ffccbb",
+                        "surface-variant": "#2e372e",
+                        "warning": "#ffa42b",
+                        "on-secondary-container": "#bab8b7",
+                        "text-base": "#ffffff",
+                        "surface-container-low": "#151e15",
+                        "on-tertiary-fixed": "#380d00",
+                        "dark-surface": "#181818",
+                        "primary": "#4cf479",
+                        "on-primary": "#003913",
+                        "surface-bright": "#333b32",
+                        "on-secondary": "#313030",
+                        "on-tertiary-container": "#793820",
+                        "inverse-on-surface": "#2a3329",
+                        "secondary-container": "#4a4949",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#34e36a",
+                        "on-primary-fixed-variant": "#00531f",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "border-pill": "#7c7c7c",
+                        "outline": "#859583",
+                        "surface-tint": "#34e36a",
+                        "on-surface": "#dce5d8",
+                        "primary-fixed": "#69ff89",
+                        "near-black": "#121212",
+                        "surface-dim": "#0d150d",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "inverse-primary": "#006e2c",
+                        "surface-container-highest": "#2e372e",
+                        "tertiary-fixed": "#ffdbcf",
+                        "mid-card": "#272727",
+                        "surface": "#0d150d",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary-fixed-variant": "#474646"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar-width": "280px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-regular": ["plusJakartaSans", "sans-serif"],
+                        "body-bold": ["plusJakartaSans", "sans-serif"],
+                        "section-title": ["plusJakartaSans", "sans-serif"],
+                        "button-uppercase": ["plusJakartaSans", "sans-serif"],
+                        "micro": ["plusJakartaSans", "sans-serif"],
+                        "small-bold": ["plusJakartaSans", "sans-serif"],
+                        "feature-heading": ["plusJakartaSans", "sans-serif"],
+                        "caption": ["plusJakartaSans", "sans-serif"],
+                        "nav-link": ["plusJakartaSans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-regular": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "body-bold": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "section-title": ["24px", { "lineHeight": "1.2", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "button-uppercase": ["14px", { "lineHeight": "1.0", "letterSpacing": "1.4px", "fontWeight": "700" }],
+                        "micro": ["10px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "small-bold": ["12px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "feature-heading": ["18px", { "lineHeight": "1.3", "letterSpacing": "normal", "fontWeight": "600" }],
+                        "caption": ["14px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "nav-link": ["14px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-text-base flex h-screen overflow-hidden font-body-regular selection:bg-spotify-green selection:text-near-black">
+<!-- SideNavBar (from JSON) -->
+<nav class="fixed left-0 top-0 h-full w-[240px] flex flex-col bg-near-black shadow-[rgba(0,0,0,0.5)_0px_8px_24px] z-50 hidden lg:flex pt-xl">
+<div class="px-lg mb-8">
+<h1 class="font-section-title text-section-title text-text-emphasis tracking-tight">SonicPulse</h1>
+</div>
+<div class="flex-1 flex flex-col gap-2 px-2">
+<!-- Home: Inactive -->
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 rounded-lg hover:text-text-base transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span>Home</span>
+</a>
+<!-- Search: Active -->
+<a class="text-text-base font-body-bold flex items-center gap-4 py-3 px-4 rounded-lg bg-dark-surface hover:text-text-base transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[24px] fill">search</span>
+<span>Search</span>
+</a>
+<!-- Notifications: Inactive -->
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 rounded-lg hover:text-text-base transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+<span>Notifications</span>
+</a>
+<!-- Listening Party: Inactive -->
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 rounded-lg hover:text-text-base transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[24px]">groups</span>
+<span>Listening Party</span>
+</a>
+<!-- Your Library: Inactive -->
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 rounded-lg hover:text-text-base transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[24px]">library_music</span>
+<span>Your Library</span>
+</a>
+</div>
+<div class="px-4 py-6 mt-auto">
+<button class="w-full bg-dark-surface hover:bg-mid-card text-text-base font-button-uppercase uppercase py-3 rounded-full transition-colors duration-200 shadow-[rgba(0,0,0,0.3)_0px_8px_8px]">
+                Create Playlist
+            </button>
+<div class="flex gap-4 mt-6 px-2">
+<a class="text-text-secondary hover:text-text-base transition-colors duration-200 flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">cookie</span>
+<span class="font-micro text-micro">Cookies</span>
+</a>
+<a class="text-text-secondary hover:text-text-base transition-colors duration-200 flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">policy</span>
+<span class="font-micro text-micro">Privacy</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 lg:ml-[240px] relative h-full">
+<!-- TopAppBar (from JSON + Search Input overlay) -->
+<header class="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md flex justify-between items-center h-16 px-lg">
+<!-- Navigation Links (JSON Source of Truth) -->
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-text-secondary hover:text-text-emphasis transition-colors font-body-bold text-body-bold active:opacity-80" href="#">Podcasts</a>
+<a class="text-text-secondary hover:text-text-emphasis transition-colors font-body-bold text-body-bold active:opacity-80" href="#">Music</a>
+<a class="text-text-secondary hover:text-text-emphasis transition-colors font-body-bold text-body-bold active:opacity-80" href="#">Live</a>
+</div>
+<!-- Specific Task Override: Search Input in Header -->
+<div class="flex-1 max-w-[400px] mx-4 relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-text-base transition-colors">search</span>
+<input class="w-full h-12 bg-mid-dark rounded-full pl-12 pr-12 font-body-regular text-body-regular text-text-base border border-border-pill focus:outline-none focus:border-text-secondary shadow-[inset_0px_1px_3px_rgba(0,0,0,0.5)] transition-all duration-200" placeholder="What do you want to play?" type="text" value="sơn tùng"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-base transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex items-center gap-4 ml-auto">
+<button class="text-text-secondary hover:text-text-emphasis transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-text-secondary hover:text-text-emphasis transition-colors"><span class="material-symbols-outlined">settings</span></button>
+<button class="bg-dark-surface hover:bg-mid-card px-4 py-2 rounded-full font-button-uppercase text-button-uppercase text-text-base transition-colors hidden sm:block">Upgrade</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-mid-dark shadow-md border border-border-muted cursor-pointer">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A small, circular profile picture of a young user with short dark hair, wearing a casual grey hoodie. The lighting is soft and neutral, perfectly exposing the face. The image is framed as a tight headshot and has a subtle dark vignette to blend effortlessly into a high-end dark mode application interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-TDoRND_VssGwHXAUkzzJ52LfsE1mChmWEcW4bW5-NpB5YFGtWigFNLHlKYe18g0Ci0OCOi1VujEBbkcU0bRWFX2-PaNMpImwt3ymFWyOK0EYW4Kuu-RY6dke8x0FCK1641l2h1oMJqfR0DRHDekBIhyP1214URZe7HIlfnTtzgvs2Rop2UquLzTa8Ss1U2hNHrWRMHHP7w0uG18ZwIzFlPCYmw9ini1cuwq8AWt9PbIzvP--tWaUp7P212K9AUnUnIfc5UocR0Y"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Content Canvas -->
+<div class="flex-1 overflow-y-auto px-lg pb-[120px] pt-4">
+<!-- Grid Layout for Top Result & Songs -->
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-10">
+<!-- Kết quả hàng đầu (Top Result) -->
+<section class="lg:col-span-2 flex flex-col gap-4">
+<h2 class="font-feature-heading text-feature-heading text-text-base">Kết quả hàng đầu</h2>
+<div class="bg-dark-surface rounded-lg p-6 flex flex-col justify-end relative group h-[240px] cursor-pointer transition-colors duration-300 hover:bg-[#282828] shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
+<!-- Play Button (Hover) -->
+<button class="absolute bottom-6 right-6 w-12 h-12 bg-spotify-green rounded-full flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl hover:scale-105 active:scale-95 z-10">
+<span class="material-symbols-outlined text-near-black text-[28px] fill">play_arrow</span>
+</button>
+<div class="w-24 h-24 rounded-full overflow-hidden mb-4 shadow-lg">
+<img alt="Sơn Tùng M-TP" class="w-full h-full object-cover" data-alt="A high-quality headshot portrait of a stylish Asian male pop artist in fashionable contemporary streetwear, resembling a music icon. The lighting is dramatic, featuring a dark cinematic atmosphere with subtle cool-toned rim light catching the edge of his jaw and hair. The background is pitch black, ensuring the portrait pops vividly as a premium focus element within a dark-themed music streaming UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAipl_0znjsk2JTFneFOJwVaU9vH-cXr2hsgKfiVnFya0emhmvtDfmwo1kR4hNXFR_Px3MYTH4zA9mdX-SCFnk8ovdSXZreEpbfmT4yzhfXsuNgTxuZb2BB4z3UmhFk0Pls-1EcVlt6JfAxBCcDBeSzfzbenw5r4wmRmZpTPBPkMKHGuZRgX4GfAl9mFB93MquVVXcfryFXEJ-if0HpyKIwGLbUd1I_pD-ecAm68XRYnS_wJ78L_327jykwY9fd9LfYd0V5HwFbrak"/>
+</div>
+<h3 class="font-section-title text-section-title text-text-base mb-1 truncate">Sơn Tùng M-TP</h3>
+<div class="flex items-center">
+<span class="bg-near-black px-3 py-1 rounded-full font-micro text-micro text-text-base uppercase tracking-wider shadow-inner border border-border-muted/30">Nghệ sĩ</span>
+</div>
+</div>
+</section>
+<!-- Bài hát (Songs List) -->
+<section class="lg:col-span-3 flex flex-col gap-4">
+<h2 class="font-feature-heading text-feature-heading text-text-base">Bài hát</h2>
+<div class="flex flex-col gap-1">
+<!-- Track 1 -->
+<div class="group flex items-center gap-4 p-2 rounded-md hover:bg-dark-surface transition-colors duration-200 cursor-pointer relative">
+<div class="w-8 flex justify-center text-text-secondary font-body-regular text-body-regular group-hover:hidden">1</div>
+<div class="w-8 hidden justify-center text-text-base group-hover:flex">
+<span class="material-symbols-outlined text-[20px] fill">play_arrow</span>
+</div>
+<img alt="Album Art" class="w-10 h-10 rounded shadow-md object-cover" data-alt="A square album cover featuring an abstract, moody design with deep swirling red and black fluid dynamics. The texture is glossy and rich, creating a sophisticated and energetic visual that contrasts sharply against a pure black background. Designed to look premium, high-fidelity, and perfectly suited as a thumbnail in a modern dark-mode media player." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVIsM_r8s655b_Fr1aqprRvvU0G9vdLPfXL3pCCfqG31Q1C07Zu2ryX5EZoU0BfCSOvrErsOe_G9ldTHZTDLFI4IQBDIFXz8wC9y6RT3WXPmgdhKkcUFyqUNMNSPtChX5Ty2fnKIytmgVwq3u-ldhSt0HYMTEsvsB133b8ol9zEVUJNYHAPiO7qdZzeWOyH-hsWaIburZBtr_BKQEADeXqJVfXIrdX_siIUqgof6R-r2L1nd97EBEtUbCAM3NSAGZ_baHshUFJA3E"/>
+<div class="flex-1 flex flex-col justify-center min-w-0">
+<span class="font-body-bold text-body-bold text-text-base truncate group-hover:text-spotify-green transition-colors">Chúng Ta Của Hiện Tại</span>
+<span class="font-caption text-caption text-text-secondary truncate hover:underline">Sơn Tùng M-TP</span>
+</div>
+<div class="text-text-secondary font-caption text-caption pr-4">5:02</div>
+</div>
+<!-- Track 2 -->
+<div class="group flex items-center gap-4 p-2 rounded-md hover:bg-dark-surface transition-colors duration-200 cursor-pointer relative">
+<div class="w-8 flex justify-center text-text-secondary font-body-regular text-body-regular group-hover:hidden">2</div>
+<div class="w-8 hidden justify-center text-text-base group-hover:flex">
+<span class="material-symbols-outlined text-[20px] fill">play_arrow</span>
+</div>
+<img alt="Album Art" class="w-10 h-10 rounded shadow-md object-cover" data-alt="A visually striking square album thumbnail depicting a hazy, neon-lit urban nightscape reflecting on a wet street. The color palette is dominated by deep cyans and magenta glowing out of profound shadows. The composition is cinematic and dense, perfectly optimized to sit as a vibrant, small square element on a high-contrast black UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYd6gcqGuRWxfiCXtbHC-wZhHzv9uVMKXo18rtVynMOW-28G0tfPb3jZ4qOsp_7dANaRYORsH80nCbG9_p2XWlfyOKLBCzEEyWVAR_bWIQ6kO7qO7BE68bgcVQNjodfyeBZgo2k5PNHQwHSyCTSOJEDl1JB1BQA5f3xZAQhMlR7qgF6Mkvd0CY6DxKzihBQQ4CU4tEq3fAg74xxQUO5cuZjyQfIWBOjHENBXxLD0gRiMRjZtU8bMLNjrOYWsZJprsuEYUkgzloXYU"/>
+<div class="flex-1 flex flex-col justify-center min-w-0">
+<span class="font-body-bold text-body-bold text-text-base truncate group-hover:text-spotify-green transition-colors">Có Chắc Yêu Là Đây</span>
+<span class="font-caption text-caption text-text-secondary truncate hover:underline">Sơn Tùng M-TP</span>
+</div>
+<div class="text-text-secondary font-caption text-caption pr-4">3:22</div>
+</div>
+<!-- Track 3 -->
+<div class="group flex items-center gap-4 p-2 rounded-md hover:bg-dark-surface transition-colors duration-200 cursor-pointer relative">
+<div class="w-8 flex justify-center text-text-secondary font-body-regular text-body-regular group-hover:hidden">3</div>
+<div class="w-8 hidden justify-center text-text-base group-hover:flex">
+<span class="material-symbols-outlined text-[20px] fill">play_arrow</span>
+</div>
+<img alt="Album Art" class="w-10 h-10 rounded shadow-md object-cover" data-alt="An atmospheric square album artwork showing an intense, close-up abstract texture of shattered glass illuminated from behind by a harsh, cold white light against complete blackness. The aesthetic is sharp, modern, and slightly aggressive, rendering beautifully as a crisp, contrast-heavy thumbnail within a minimalist dark media application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgF1vwzm_985Yc7tuCrhnJkxYcpaOJQd8UuSiR0kUbDeqivjVz5xpg_PVP_BST1zG01eRXP0eq6jf0E6654sfcHNuhJN_9UpX0qMHB0xOODpJtFSeh5bFDWS3Y61cDDG4nThkCZ-5PQSsn9BO9aUHVSFoYR_DGCv4FeWftBQvAU99f3FrDdBW04fyb9aOcQbTqtnXqWNu7e-2-v763U7WUza3PKpA_6Vk_KWMM8cp_q9vPFkZE7Zr86mOReppIyTuUxi5APsmI7nw"/>
+<div class="flex-1 flex flex-col justify-center min-w-0">
+<span class="font-body-bold text-body-bold text-text-base truncate group-hover:text-spotify-green transition-colors">Muộn Rồi Mà Sao Còn</span>
+<span class="font-caption text-caption text-text-secondary truncate hover:underline">Sơn Tùng M-TP</span>
+</div>
+<div class="text-text-secondary font-caption text-caption pr-4">4:35</div>
+</div>
+<!-- Track 4 -->
+<div class="group flex items-center gap-4 p-2 rounded-md hover:bg-dark-surface transition-colors duration-200 cursor-pointer relative">
+<div class="w-8 flex justify-center text-text-secondary font-body-regular text-body-regular group-hover:hidden">4</div>
+<div class="w-8 hidden justify-center text-text-base group-hover:flex">
+<span class="material-symbols-outlined text-[20px] fill">play_arrow</span>
+</div>
+<img alt="Album Art" class="w-10 h-10 rounded shadow-md object-cover" data-alt="A minimalist square album cover consisting of a smooth, hypnotic gradient fading from deep midnight blue to a glowing, subtle violet at the center. The design is sleek, smooth, and entirely digital, creating a sense of calm depth that provides a pop of elegant color against a surrounding near-black interface background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiIIDuuAlcVzp-pEF37as9g8t-z4bwH8bwMHbDW32SNbngRjtG9U2vrbsZ2TvYWjnzIUQMnkjruzAI9bevj4SGvNS8qNNzrUyHJ9MVHOpowajwsIWjssqDc0CIX2Wr35h_LW3dQ25UMONwIO03N5_wWNCBmZsx7J9TbqT_BxmUigEqJsML_uLA-FnERXmXD3IfzaOnu3V-_a3au5jm5DZ2fAglU09y5kLMmGJdIW5nGxRPB7zRS1o2ZTL5ShcWd5J8OvEC9i-jE8o"/>
+<div class="flex-1 flex flex-col justify-center min-w-0">
+<span class="font-body-bold text-body-bold text-text-base truncate group-hover:text-spotify-green transition-colors">Lạc Trôi</span>
+<span class="font-caption text-caption text-text-secondary truncate hover:underline">Sơn Tùng M-TP</span>
+</div>
+<div class="text-text-secondary font-caption text-caption pr-4">3:52</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Nghệ sĩ (Artists Row) -->
+<section class="mb-10">
+<h2 class="font-feature-heading text-feature-heading text-text-base mb-4">Nghệ sĩ</h2>
+<div class="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar">
+<!-- Artist Card 1 -->
+<div class="flex flex-col items-center gap-3 min-w-[140px] snap-start group cursor-pointer">
+<div class="w-[120px] h-[120px] rounded-full overflow-hidden shadow-lg relative">
+<img alt="Sơn Tùng M-TP" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A high-quality headshot portrait of a stylish Asian male pop artist in fashionable contemporary streetwear. The lighting is dramatic, featuring a dark cinematic atmosphere. The background is pitch black, ensuring the portrait pops vividly as a premium focus element." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGzI_RaDpX6lvv0ZZqUsB7gJ77RTsCnCbaO_gS9h9hrjMyy-LEccqnTx2myTUjmOymSuI9OSP8XjFcSIxZl9muaGr3Nc5yuS2S2s2GHB97XdPpUgERWyxqGeuMIW4u0AFzvFw2QJb3Ia_T41IEkA8jowWht72jyfK-HgP3k5w5e5GpggHz1YqF-X6utob19OFEef6-JxCvIJsCfay46jcdKzg7jIVBawjJnE1uY2BJ0yLterJ4Aa7Fy-i2P1-CWzQkZcdsTFwB9xk"/>
+<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-text-base text-[32px] fill">play_arrow</span>
+</div>
+</div>
+<span class="font-body-bold text-body-bold text-text-base text-center hover:underline">Sơn Tùng M-TP</span>
+</div>
+<!-- Artist Card 2 -->
+<div class="flex flex-col items-center gap-3 min-w-[140px] snap-start group cursor-pointer">
+<div class="w-[120px] h-[120px] rounded-full overflow-hidden shadow-lg relative">
+<img alt="Soobin Hoàng Sơn" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A professional portrait of an Asian male singer wearing a sleek black leather jacket. Shot against an entirely black void, the lighting uses a harsh, directional white flash that creates high contrast and sharp shadows across his features. The aesthetic is extremely modern, stark, and tailored for a dark-mode music app UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn0oQxIpRhpKIDjXPjA6WTKaR2EvIT3RZC8eoj0kOrqqzqU6mg1FCH_DFRg5YHrfJPnYwVSijhNBG8qsHcISr4cvZg-0umUeMlgPMm4Gcl_WRTdZzjG6iAOYcza2Jjs9uTntlUoyXPg4A2pWxrLVzsG_xOgY0nN8CVgqjlRAdGIS44GAX-mJOuyMNw5lZv7lcXkz1v_7GvENngs0HIAd_6aov5HQSkYNFN3K0vqIRNLRcVu8AaM9djyFvcf6ETqXmoFxCXDzMv8No"/>
+</div>
+<span class="font-body-bold text-body-bold text-text-base text-center hover:underline">Soobin</span>
+</div>
+<!-- Artist Card 3 -->
+<div class="flex flex-col items-center gap-3 min-w-[140px] snap-start group cursor-pointer">
+<div class="w-[120px] h-[120px] rounded-full overflow-hidden shadow-lg relative">
+<img alt="Bích Phương" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A stunning portrait of an Asian female pop artist with long dark flowing hair. She is softly lit with warm, golden-hour style rim lighting that creates a halo effect against a pure black background. The image feels intimate, premium, and perfectly color-graded to match a high-end, dark-themed digital environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDBJBVlJdpvnenXXa5qF7Ps6vLorwD3rSlNwOb442wzrGKuNLy62yRGLUF_Jzik2H4JQMdr4HFRv-9R0WdxdPquq4OohW3NSL5h72VVbs-buCLRjtBfNxYVz5P-QnX-FWpWed8hey9fjA0q3mBsIbAiGNYPOXyVPEP_pSxkxHO4LDOwexg4VA9_iJf1-HjvNWPTMwSFSWbN-LSHq2Qc-j89mcP_5LIFJHcy88fpf9c2qHOMahlznv4IZHeTqsHKTP4ScQXpJisd7U"/>
+</div>
+<span class="font-body-bold text-body-bold text-text-base text-center hover:underline">Bích Phương</span>
+</div>
+<!-- Artist Card 4 -->
+<div class="flex flex-col items-center gap-3 min-w-[140px] snap-start group cursor-pointer">
+<div class="w-[120px] h-[120px] rounded-full overflow-hidden shadow-lg relative">
+<img alt="Binz" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="An edgy, high-contrast portrait of an Asian male rapper wearing designer sunglasses. The scene is bathed in a subtle neon pink and purple glow emerging from the deep shadows of the background. The visual style is highly stylized, nocturnal, and perfectly aligned with a dark, modern music interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdUTKawMMi7H7bIDogRvxGGd8k-JX821TUOyUUp2yhjiVDSypl9P8Xy8htNMr3iDbFDfoDlRiAehv6WVDD3S-v43PgEwCPzppvuOaCdaGyeU3KgOnVM7pbVMHBhLQtE6IKIqsAwmO19znmziBZIoss-x0ekDsNyKMb1Cu__N1m1oBE1LGjKParAvhCGbA08jcUvUa-pMbpmKcdDBoxMJi_lWaMq_cqhUBX4ttF4C7y2aE3nLY2JWFKTobQ37ZE9DKilHKbIsFyAlg"/>
+</div>
+<span class="font-body-bold text-body-bold text-text-base text-center hover:underline">Binz</span>
+</div>
+<!-- Artist Card 5 -->
+<div class="flex flex-col items-center gap-3 min-w-[140px] snap-start group cursor-pointer">
+<div class="w-[120px] h-[120px] rounded-full overflow-hidden shadow-lg relative">
+<img alt="Tlinh" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A vibrant and cool portrait of a young Asian female artist with uniquely styled hair and vibrant makeup. She is photographed under stark, high-key studio lighting that isolates her perfectly against a solid black backdrop. The image is punchy, high-resolution, and serves as a striking visual element on a dark screen." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5wlWlQP7o1d4q0th1YFNisp32U59Gf-e8zKSyZYRjo5LzXCQTdbgUkR3zogOGnHkyTo6YdXg_JQldP1dyY-bcwhTAtO2a5Q8L2PN1_psjF0bxB98nuSrpYFn-3kNB3ZX0uQM3W5shshd6hjPVxshG9G9g9nb7XBri4iSTfZoomuHZfW-2po44f5BHAZ-MHZjb6UjEzZY8C5kCB_x4tmE50txjHWLdqhdCl7wYfwxDwFgO14fpRQWXPwt2uA6ty61HgCbQzkcmED0"/>
+</div>
+<span class="font-body-bold text-body-bold text-text-base text-center hover:underline">tlinh</span>
+</div>
+</div>
+</section>
+<!-- Bài hát liên quan (Related Songs Row) -->
+<section>
+<h2 class="font-feature-heading text-feature-heading text-text-base mb-4">Bài hát liên quan</h2>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<!-- Card 1 -->
+<div class="bg-dark-surface p-4 rounded-lg flex flex-col gap-3 group cursor-pointer hover:bg-mid-card transition-colors duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.4)]">
+<div class="relative w-full aspect-square rounded-md overflow-hidden shadow-md">
+<img alt="Related Track Art" class="w-full h-full object-cover" data-alt="A sleek, modern album cover featuring a minimal geometric pattern of overlapping semi-transparent circles in shades of deep teal and silver. The background is a rich, textured charcoal grey. The design is abstract, elegant, and perfectly suited for a high-end music streaming platform's dark UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTzUd0NeOnhSUrVw5BT-mwkCq9gTEWW_nNWPsxGKOEbs5N0tgQ4nzLUqI-oVjf3AeEncdv9xia_ANmtiKoOGMg848iCDhBxsUl66Saja9LBajBceDUoTq1AiTcyjdxEdq4ugenLP8UIpMOO4ddIIRCDiJHQu9V1ap_dQl1rohn4mLTpSzYtYzsRkfb7FikkF9XsqeI4uuIkAytJsn1rH66Jtc5csJg2Cyp4r4u2gVIxzIBCF9Bm1XTmBuZ_ZmNsVgtfhFy4PwMXjM"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl hover:scale-105">
+<span class="material-symbols-outlined text-near-black text-[24px] fill">play_arrow</span>
+</button>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-text-base truncate">Nơi Này Có Anh</span>
+<span class="font-caption text-caption text-text-secondary truncate mt-1">Sơn Tùng M-TP</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-dark-surface p-4 rounded-lg flex flex-col gap-3 group cursor-pointer hover:bg-mid-card transition-colors duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.4)]">
+<div class="relative w-full aspect-square rounded-md overflow-hidden shadow-md">
+<img alt="Related Track Art" class="w-full h-full object-cover" data-alt="A dynamic, moody photo of a DJ mixing board illuminated solely by the glowing blue and purple LEDs of the equipment in a pitch-black room. The shot is tightly cropped, highly textured, and conveys a strong sense of electronic music energy within a dark aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2XkfQF59YH1sjZMe2KPh-KpuamS2L93DqzmEWChHOxH9NGSonTQJ4W33cTeOKlisZ_ziIcWkea3qN4HUqw-S_wQkjY0OnKw8C4VlyiE1Uj0Htk1kx43DGNvs1Ec5KQq5RoHx2nH-nwAywUYrHzaKtSOWGvpYhas3B3nF2OjLFodio0-2su4cry8SAyqE3Bi0tqp5YT92Wi_o-CyZCOagQ_0MAXl2ZM-fQ3CK_4BNklO9QxLwoJNolKg1i3Lryz7kbrZuvfDzmG7g"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl hover:scale-105">
+<span class="material-symbols-outlined text-near-black text-[24px] fill">play_arrow</span>
+</button>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-text-base truncate">Chạy Ngay Đi</span>
+<span class="font-caption text-caption text-text-secondary truncate mt-1">Sơn Tùng M-TP</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-dark-surface p-4 rounded-lg flex flex-col gap-3 group cursor-pointer hover:bg-mid-card transition-colors duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.4)] hidden md:flex">
+<div class="relative w-full aspect-square rounded-md overflow-hidden shadow-md">
+<img alt="Related Track Art" class="w-full h-full object-cover" data-alt="A vivid abstract liquid art composition showing thick ribbons of metallic gold and deep emerald green swirling against a jet-black backdrop. The image is hyper-realistic with high contrast and deep shadows, making it a luxurious and striking visual element for a digital player." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQvvxCbk39C8ZbzmpDeFCrUPr9zn1B6lUeJmPECtAitwSTLcu5c1tnOvomCsUI7EadKrZwrO-YhjhO965c0cOPkhKHq6iJcNJQww5-rykyJ8G9xukcvIh9pHf2LY5LyyZPOHpzYgPPDQKmVpjIhtvU9oOZwXPwsFDHE-ip-dMXwEiHZ-nfmW0Vscwiw0cQ0rxx41XH6Q_NJ2lPCNAWS3VvixuRfyZZprmIAyiFGZ1Pd_y96nD2oyY24fac4Uvt-wIZqhMkgIEOGT4"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl hover:scale-105">
+<span class="material-symbols-outlined text-near-black text-[24px] fill">play_arrow</span>
+</button>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-text-base truncate">Em Của Ngày Hôm Qua</span>
+<span class="font-caption text-caption text-text-secondary truncate mt-1">Sơn Tùng M-TP</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-dark-surface p-4 rounded-lg flex flex-col gap-3 group cursor-pointer hover:bg-mid-card transition-colors duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.4)] hidden lg:flex">
+<div class="relative w-full aspect-square rounded-md overflow-hidden shadow-md">
+<img alt="Related Track Art" class="w-full h-full object-cover" data-alt="A minimalist photograph of a single glowing neon red tube suspended vertically in an empty, completely dark space. The light casts a subtle, fading crimson aura into the surrounding blackness. It represents a sleek, high-fidelity audio aesthetic typical of modern, premium music platforms." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDej9HFLYSDcHBPC3RLLvZjItbIbwO46TOxon5LzJuRqG9sYo_CO2k2UFmSEvn6Sf9kvZSlrcWtxcJC5bjVWnp7qYrvMZWWpQTrZgR2sxOgsdSVspCahS8VZZ_FaL2QSErAMbOXiJmgmV0ojkSHqZqbA1REQVAnS0AxryiXHQ3w0Q6mgCYvBnwA92XU93STuE6HZL13WX370NMzXy5hew_p2n_VNpzpGp6ixDl1M3isPQwt97RGgVtcn8eL3q5fHcHP5HfPG-255rM"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl hover:scale-105">
+<span class="material-symbols-outlined text-near-black text-[24px] fill">play_arrow</span>
+</button>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-text-base truncate">Cơn Mưa Ngang Qua</span>
+<span class="font-caption text-caption text-text-secondary truncate mt-1">Sơn Tùng M-TP</span>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="bg-dark-surface p-4 rounded-lg flex flex-col gap-3 group cursor-pointer hover:bg-mid-card transition-colors duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.4)] hidden lg:flex">
+<div class="relative w-full aspect-square rounded-md overflow-hidden shadow-md">
+<img alt="Related Track Art" class="w-full h-full object-cover" data-alt="A close-up, dramatic image of an old-school vinyl record playing on a sleek, modern turntable. The scene is shot in extreme low light, with a single, sharp spotlight reflecting off the grooves of the black vinyl. The overall mood is deeply tactile, nocturnal, and audiophile-focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC91ZESDzX8c5TB3_iqQgukkXXOqSUoANtlNR38WilKK-lCeHgzjTY4DF7eOdI5OTemcAiO5v_HrCw19LQlkmFFXd8JKoS3Oc-p7uxEl_MN9GPT4oCteujLS8atUNGhXIoeeZO3RrzWMBAEHVCj7wPWwiLfhq3M2OZPlJS116-Ew_TA9fioi6pDLVTXfxc2oIUXanXTqk_gPrGtal-EQjvngANMXx-6lw6JT-4U5S22RBZPttClCiy38QbHpzGQSXyz4Cpu1pSJHS8"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl hover:scale-105">
+<span class="material-symbols-outlined text-near-black text-[24px] fill">play_arrow</span>
+</button>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-text-base truncate">Khuôn Mặt Đáng Thương</span>
+<span class="font-caption text-caption text-text-secondary truncate mt-1">Sơn Tùng M-TP</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Player, from JSON) -->
+<nav class="fixed bottom-0 left-0 w-full h-[72px] z-50 flex items-center justify-between px-md w-full bg-dark-surface shadow-2xl">
+<!-- Now Playing -->
+<div class="flex items-center gap-4 w-1/3 min-w-0">
+<img alt="Now Playing Art" class="w-12 h-12 rounded shadow-md object-cover hidden sm:block" data-alt="A small square thumbnail of an abstract, moody design with deep swirling red and black fluid dynamics, sitting perfectly on a dark grey interface bar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDORQC6BJS1e5HuN6x93EWhMSDFJoQz1wLm0NRriiekwYC7fmnhpvg6kBgzFZtTvxBTiPgXSur11X_5rQuwX0H6ODaM02DtBglEiUXlnS7b08xYq4f9pdM9ntq3YuEi69liaQ3hKulx4s_FADYF6BiwdXebhGaAcQwNzyhIO6-aWBN1a7aW6BpPi7AUXuhB72rfMdPmQouFK6dWs9JD04IEosIp-2FzBc-D2WE_mjszZ0n9JchIpGsUJ5mBFKlYTxhBsz8SAKV4rEU"/>
+<div class="flex flex-col min-w-0">
+<span class="font-body-bold text-body-bold text-text-base truncate cursor-pointer hover:underline">Chúng Ta Của Hiện Tại</span>
+<span class="font-micro text-micro text-text-secondary truncate cursor-pointer hover:underline">Sơn Tùng M-TP</span>
+</div>
+<button class="text-text-secondary hover:text-text-base transition-colors ml-2 hidden lg:block"><span class="material-symbols-outlined text-[20px]">favorite</span></button>
+</div>
+<!-- Controls -->
+<div class="flex flex-col items-center justify-center w-1/3 max-w-[400px]">
+<div class="flex items-center gap-6 mb-1">
+<button class="text-text-secondary hover:text-text-base transition-colors hidden sm:block"><span class="material-symbols-outlined text-[20px]">shuffle</span></button>
+<button class="text-text-secondary hover:text-text-base transition-colors"><span class="material-symbols-outlined text-[24px] fill">skip_previous</span></button>
+<button class="w-8 h-8 flex items-center justify-center bg-text-base rounded-full text-near-black hover:scale-105 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[24px] fill">play_arrow</span>
+</button>
+<button class="text-text-secondary hover:text-text-base transition-colors"><span class="material-symbols-outlined text-[24px] fill">skip_next</span></button>
+<button class="text-text-secondary hover:text-text-base transition-colors hidden sm:block"><span class="material-symbols-outlined text-[20px]">repeat</span></button>
+</div>
+<div class="w-full flex items-center gap-2 hidden md:flex">
+<span class="font-micro text-micro text-text-secondary w-8 text-right">0:00</span>
+<div class="flex-1 h-1 bg-border-muted rounded-full overflow-hidden group cursor-pointer relative">
+<div class="h-full bg-text-secondary group-hover:bg-spotify-green w-0 rounded-full"></div>
+</div>
+<span class="font-micro text-micro text-text-secondary w-8">5:02</span>
+</div>
+</div>
+<!-- Volume & Extra Controls -->
+<div class="flex items-center justify-end gap-3 w-1/3 hidden md:flex">
+<button class="text-text-secondary hover:text-text-base transition-colors"><span class="material-symbols-outlined text-[20px]">slideshow</span></button>
+<button class="text-text-secondary hover:text-text-base transition-colors"><span class="material-symbols-outlined text-[20px]">queue_music</span></button>
+<button class="text-text-secondary hover:text-text-base transition-colors"><span class="material-symbols-outlined text-[20px]">devices</span></button>
+<div class="flex items-center gap-2 w-24 group cursor-pointer">
+<button class="text-text-secondary hover:text-text-base transition-colors"><span class="material-symbols-outlined text-[20px]">volume_up</span></button>
+<div class="flex-1 h-1 bg-border-muted rounded-full overflow-hidden">
+<div class="h-full bg-text-secondary group-hover:bg-spotify-green w-2/3 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Mobile specific items from JSON (if forced to use label_icon style strictly on mobile) -->
+<div class="flex md:hidden items-center justify-between w-full px-4">
+<div class="flex flex-col items-center gap-1 text-spotify-green hover:scale-110 transition-transform active:scale-90">
+<span class="material-symbols-outlined">graphic_eq</span>
+<span class="font-micro text-micro">Now Playing</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-text-secondary hover:scale-110 transition-transform active:scale-90">
+<span class="material-symbols-outlined">play_circle</span>
+<span class="font-micro text-micro">Controls</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-text-secondary hover:scale-110 transition-transform active:scale-90">
+<span class="material-symbols-outlined">volume_up</span>
+<span class="font-micro text-micro">Volume</span>
+</div>
+</div>
+</nav>
+</body></html>

@@ -16,6 +16,24 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend Refactor Phase 0 — Tailwind CSS + Service Layer (2026-05-12)**
+- `services/frontend/tailwind.config.ts` — Tailwind v4 config với 65 color tokens, fontSize scale, borderRadius, boxShadow từ Google Stitch design output
+- `services/frontend/vite.config.ts` — thêm `@tailwindcss/vite` plugin
+- `services/frontend/src/index.css` — migrate sang Tailwind directives + giữ CSS custom properties
+- `services/frontend/src/types/api.ts` — `ApiResponse<T>`, `ApiMeta`, `ApiError` (shared response types)
+- `services/frontend/src/types/domain.ts` — domain models: `Song`, `User`, `RecommendedSong`, `SearchResult`, `Notification`, `Party`, `AnalyticsStats`, v.v.
+- `services/frontend/src/utils/errorMessages.ts` — map tất cả API error codes → tiếng Việt
+- `services/frontend/src/utils/time.ts` — `getTimeContext()`, `getGreeting()` (morning/afternoon/evening/night)
+- `services/frontend/src/services/api.ts` — Axios instance migrate từ `api/client.ts`
+- `services/frontend/src/services/recommendationService.ts`, `analyticsService.ts`, `notificationService.ts`, `searchService.ts` — service layer dùng `ApiResponse<T>` types
+
+### Changed
+- `services/frontend/src/pages/HomePage.tsx` — migrate imports sang `services/*` + `types/domain`, update property names (`item.id`, `item.reason.text`)
+- `services/frontend/src/pages/SearchPage.tsx` — migrate sang `searchContent()` + `SearchResult` type
+- `services/frontend/src/pages/CreatorDashboardPage.tsx` — migrate sang `AnalyticsStats` shape (dailyListeners[], uniqueUsers) theo API contract
+- `services/frontend/src/components/NotificationBell.tsx` — migrate sang `Notification` domain type (`notificationId`, `message`)
+- `services/frontend/src/components/Player/AudioPlayer.tsx`, `src/hooks/usePartyWebSocket.ts` — update import path
+
 **Bugfix — notification-service + recommendationApi (2026-05-12)**
 - `infra/docker-compose.yml` — thêm `MongoDB__ConnectionString` + `mongodb: service_healthy` dependency cho notification-service (env var bị thiếu khiến service không start)
 - `notification-service/KafkaConsumerBackgroundService.cs` — wrap `consumer.Consume(ct)` bằng `await Task.Run()` (blocking call block host startup → Kestrel không start), thêm `await Task.Delay(5s)` trong catch block (tránh tight loop)

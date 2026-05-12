@@ -1,0 +1,85 @@
+// Axios instance — migrated from api/client.ts
+// Access token in-memory (NOT localStorage) per security-non-negotiable rule
+import axios, { type AxiosError } from 'axios';
+
+let _accessToken: string | null = null;
+
+export const setAccessToken = (token: string | null): void => {
+  _accessToken = token;
+};
+
+export const getAccessToken = (): string | null => _accessToken;
+
+export const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
+  withCredentials: true, // sends HTTP-only refresh cookie automatically
+});
+
+// Attach Bearer token to every request
+apiClient.interceptors.request.use((config) => {
+  if (_accessToken) {
+    config.headers.Authorization = `Bearer ${_accessToken}`;
+  }
+  return config;
+});
+
+// Queue-based token refresh on 401 TOKEN_EXPIRED
+let _isRefreshing = false;
+let _refreshQueue: Array<(token: string | null) => void> = [];
+
+const processQueue = (token: string | null): void => {
+  _refreshQueue.forEach((cb) => cb(token));
+  _refreshQueue = [];
+};
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const original = error.config as (typeof error.config & { _retry?: boolean }) | undefined;
+
+    const errorCode = (error.response?.data as { error?: { code?: string } })?.error?.code;
+    const isTokenExpired =
+      error.response?.status === 401 &&
+      errorCode === 'TOKEN_EXPIRED' &&
+      !original?._retry;
+
+    if (!isTokenExpired) return Promise.reject(error);
+
+    if (_isRefreshing) {
+      return new Promise((resolve, reject) => {
+        _refreshQueue.push((token) => {
+          if (!token || !original) { reject(error); return; }
+          original._retry = true;
+          original.headers?.set('Authorization', `Bearer ${token}`);
+          resolve(apiClient(original));
+        });
+      });
+    }
+
+    _isRefreshing = true;
+    if (original) original._retry = true;
+
+    try {
+      const res = await apiClient.post<{ data: { accessToken: string } }>(
+        '/api/v1/auth/refresh',
+        {},
+        { withCredentials: true },
+      );
+      const newToken = res.data.data.accessToken;
+      setAccessToken(newToken);
+      processQueue(newToken);
+      if (original) {
+        original.headers?.set('Authorization', `Bearer ${newToken}`);
+        return apiClient(original);
+      }
+    } catch {
+      setAccessToken(null);
+      processQueue(null);
+      window.location.href = '/login';
+    } finally {
+      _isRefreshing = false;
+    }
+
+    return Promise.reject(error);
+  },
+);

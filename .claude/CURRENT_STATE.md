@@ -117,16 +117,27 @@
 - [X] Track A+B W9: usePartyWebSocket hook (SignalR thật, @microsoft/signalr) — 14/14 tests xanh
 - [ ] Checkpoint W9: 2-tab test — Host Play → Member sync < 500ms
 
-### Frontend Redesign — Spotify Design System
+### Frontend Redesign — Spotify Design System (Stitch-based, full refactor)
 
-- [X] Phase 1: Design tokens (`src/styles/tokens.ts`) + Global CSS reset (`index.css`) + playerStore (`src/store/playerStore.ts`)
-- [X] Phase 2: AppShell layout (`src/components/layout/AppShell.tsx`) — sidebar 240px + bottom player bar 90px
-- [X] Phase 3: Restyle pages (LoginPage, HomePage, SearchPage, CreatorDashboardPage) + FontAwesome icons
-- [X] Phase 6: Update tests (playerStore reset in afterEach setup.ts, MSW notification handler)
-- [X] Bugfix: `recommendationApi.ts` — map Python snake_case `song_id` → `songId` (was causing streaming/undefined/url + React key warning)
-- [X] Bugfix: `notification-service` — 4 lỗi xếp chồng (Kafka topics, blocking Consume, MongoDB env, duplicate /health route)
-- [ ] Phase 4: Restyle components (AudioPlayer, NotificationBell)
-- [ ] Phase 5: PartyPage mới
+- [X] Phase 0: Tailwind CSS v4 + @tailwindcss/vite cài đặt thành công
+- [X] Phase 0: `tailwind.config.ts` — 65 color tokens, fontSize, borderRadius, boxShadow từ Stitch
+- [X] Phase 0: `index.css` — @import Google Fonts (Plus Jakarta Sans) + Tailwind directives + CSS vars
+- [X] Phase 0: `src/types/api.ts` — ApiResponse<T>, ApiMeta, ApiError
+- [X] Phase 0: `src/types/domain.ts` — Song, User, Party, RecommendedSong, SearchResult, Notification, v.v.
+- [X] Phase 0: `src/utils/errorMessages.ts` — error code → tiếng Việt mapping
+- [X] Phase 0: `src/utils/time.ts` — getTimeContext(), getGreeting()
+- [X] Phase 0: `src/services/api.ts` — migrate từ api/client.ts (giữ nguyên token refresh logic)
+- [X] Phase 0: `src/services/recommendationService.ts`, analyticsService.ts, notificationService.ts, searchService.ts
+- [X] Phase 0: Migrate tất cả imports từ `api/*` → `services/*` + `types/domain`
+- [X] Phase 0: Build pass 0 errors, 0 warnings (2026-05-12)
+- [ ] Phase 1: Shared UI Components (Button, Input, Modal, Toast, Spinner, SkeletonRow, AppShell, Sidebar, BottomPlayerBar)
+- [ ] Phase 2: Auth Screens (Login + Register + error states)
+- [ ] Phase 3: Onboarding Flow (3-step wizard)
+- [ ] Phase 4: App Shell + Home Page
+- [ ] Phase 5: Player + Search
+- [ ] Phase 6: Listening Party
+- [ ] Phase 7: Creator Screens
+- [ ] Phase 8: Notifications + Polish
 
 ### Week 10–12 — Polish + Demo
 
@@ -146,11 +157,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Frontend Redesign — Spotify Design System (Phase 3 + 6 + bugfixes xong)
-- **File plan cần đọc:** `.claude/plan/frontend_redesign-spotify_design_system.md`
-- **Checkpoint gần nhất đã pass:** Phase 3 + 6 + bugfixes — 79/79 tests xanh, notification-service healthy (2026-05-12)
+- **Service/Task:** Frontend Refactor — Spotify Design System (Stitch-based, 13 screens)
+- **File plan cần đọc:** `.claude/plans/t-t-b-y-gi-m-nh-curried-platypus.md`
+- **Checkpoint gần nhất đã pass:** Phase 0 hoàn thành — Tailwind CSS setup + token migration + services refactor, build pass 0 errors (2026-05-12)
 - **Ngày làm việc gần nhất:** 2026-05-12
-- **Tiếp theo:** Phase 4 — Restyle components (AudioPlayer bottom bar, NotificationBell dropdown)
+- **Tiếp theo:** Phase 1 — Shared UI Components (Button, Input, Modal, Toast, AppShell, Sidebar, BottomPlayerBar)
 
 ---
 

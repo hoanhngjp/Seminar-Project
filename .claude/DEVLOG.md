@@ -6,6 +6,18 @@
 ---
 [2026-05-12] [FRONTEND] [DECISION]
 
+**Task:** Phase 0 — Tailwind CSS setup + service layer migration
+**Decisions:**
+- Dùng `@tailwindcss/vite` plugin (không phải PostCSS) — phù hợp với Vite 8 + Tailwind v4.
+- Google Fonts `@import` phải đứng TRƯỚC `@import "tailwindcss"` trong index.css — Tailwind v4 báo warning nếu ngược lại.
+- `src/api/*` files (client.ts, recommendationApi.ts, analyticsApi.ts, notificationApi.ts, searchApi.ts) giữ nguyên nhưng không dùng nữa — các service mới ở `src/services/*` thay thế hoàn toàn.
+- Domain types thống nhất ở `src/types/domain.ts` — tránh duplicate type giữa service files. `CreatorDashboardPage` dùng `AnalyticsStats` shape từ API contract (`dailyListeners[]`, `uniqueUsers`) thay vì `SongStats` cũ (`totalPlays`, `totalSkips`).
+- `NotificationBell` dùng `notificationId` (domain type) thay vì `id` (old type) — cần update key prop và markRead call.
+**Lesson:** Khi migrate type, phải trace toàn bộ JSX dùng old property names, không chỉ import line. Hook IDE diagnostics giúp catch nhanh.
+---
+
+[2026-05-12] [FRONTEND] [DECISION]
+
 **Problem:** AppShell cần render `<AudioPlayer>` trong bottom bar, nhưng tests hiện tại tìm `aria-label="Đóng player"` ở trong pages (HomePage, SearchPage). Nếu chuyển close button sang AppShell, tests vẫn cần tìm được nó.
 **Root cause:** Tests render `<HomePage />` wrapped với `MemoryRouter` — AppShell được render bên trong page, nên toàn bộ DOM của AppShell (bao gồm bottom bar + close button) vẫn nằm trong render tree của test.
 **Fix / Decision:** Close button giữ nguyên `aria-label="Đóng player"` trong AppShell — tests vẫn tìm được vì AppShell render cùng cây với page. Không cần thay đổi test structure cho Phase 2.

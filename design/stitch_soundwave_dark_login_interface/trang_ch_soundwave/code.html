@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SoundWave - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "text-base": "#ffffff",
+                "surface-container": "#192219",
+                "surface-tint": "#34e36a",
+                "inverse-primary": "#006e2c",
+                "inverse-surface": "#dce5d8",
+                "on-surface": "#dce5d8",
+                "warning": "#ffa42b",
+                "on-tertiary-container": "#793820",
+                "text-near-white": "#cbcbcb",
+                "text-emphasis": "#fdfdfd",
+                "on-primary-container": "#005721",
+                "surface-container-high": "#232c23",
+                "secondary-fixed-dim": "#c8c6c5",
+                "outline": "#859583",
+                "error": "#ffb4ab",
+                "border-muted": "#4d4d4d",
+                "tertiary-fixed-dim": "#ffb59b",
+                "on-secondary-fixed": "#1c1b1b",
+                "primary-fixed-dim": "#34e36a",
+                "on-error": "#690005",
+                "primary": "#4cf479",
+                "secondary": "#c8c6c5",
+                "primary-container": "#1ed760",
+                "mid-card": "#272727",
+                "mid-dark": "#1f1f1f",
+                "negative": "#f3727f",
+                "on-tertiary-fixed-variant": "#73341c",
+                "on-background": "#dce5d8",
+                "tertiary-fixed": "#ffdbcf",
+                "surface-container-lowest": "#081008",
+                "on-secondary-container": "#bab8b7",
+                "on-secondary-fixed-variant": "#474646",
+                "surface-variant": "#2e372e",
+                "on-error-container": "#ffdad6",
+                "inverse-on-surface": "#2a3329",
+                "on-tertiary-fixed": "#380d00",
+                "on-secondary": "#313030",
+                "on-primary-fixed": "#002108",
+                "dark-surface": "#181818",
+                "background": "#0d150d",
+                "border-pill": "#7c7c7c",
+                "primary-fixed": "#69ff89",
+                "outline-variant": "#3c4a3c",
+                "spotify-green": "#1ed760",
+                "dark-card": "#252525",
+                "error-container": "#93000a",
+                "tertiary": "#ffccbb",
+                "surface": "#0d150d",
+                "surface-container-highest": "#2e372e",
+                "text-secondary": "#b3b3b3",
+                "on-surface-variant": "#bbcbb8",
+                "surface-container-low": "#151e15",
+                "tertiary-container": "#ffa585",
+                "surface-bright": "#333b32",
+                "secondary-container": "#4a4949",
+                "on-tertiary": "#571f08",
+                "on-primary-fixed-variant": "#00531f",
+                "on-primary": "#003913",
+                "near-black": "#121212",
+                "announcement": "#539df5",
+                "surface-dim": "#0d150d",
+                "secondary-fixed": "#e5e2e1"
+        },
+        "borderRadius": {
+                "DEFAULT": "1rem",
+                "lg": "2rem",
+                "xl": "3rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "xl": "32px",
+                "base": "8px",
+                "lg": "24px",
+                "xs": "4px",
+                "sm": "8px",
+                "sidebar-width": "280px",
+                "md": "16px",
+                "gutter": "16px"
+        },
+        "fontFamily": {
+                "section-title": [
+                        "plusJakartaSans"
+                ],
+                "body-regular": [
+                        "plusJakartaSans"
+                ],
+                "nav-link": [
+                        "plusJakartaSans"
+                ],
+                "feature-heading": [
+                        "plusJakartaSans"
+                ],
+                "body-bold": [
+                        "plusJakartaSans"
+                ],
+                "small-bold": [
+                        "plusJakartaSans"
+                ],
+                "micro": [
+                        "plusJakartaSans"
+                ],
+                "caption": [
+                        "plusJakartaSans"
+                ],
+                "button-uppercase": [
+                        "plusJakartaSans"
+                ]
+        },
+        "fontSize": {
+                "section-title": [
+                        "24px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "normal",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-regular": [
+                        "16px",
+                        {
+                                "lineHeight": "1.5",
+                                "letterSpacing": "normal",
+                                "fontWeight": "400"
+                        }
+                ],
+                "nav-link": [
+                        "14px",
+                        {
+                                "lineHeight": "normal",
+                                "letterSpacing": "normal",
+                                "fontWeight": "400"
+                        }
+                ],
+                "feature-heading": [
+                        "18px",
+                        {
+                                "lineHeight": "1.3",
+                                "letterSpacing": "normal",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-bold": [
+                        "16px",
+                        {
+                                "lineHeight": "1.5",
+                                "letterSpacing": "normal",
+                                "fontWeight": "700"
+                        }
+                ],
+                "small-bold": [
+                        "12px",
+                        {
+                                "lineHeight": "1.5",
+                                "letterSpacing": "normal",
+                                "fontWeight": "700"
+                        }
+                ],
+                "micro": [
+                        "10px",
+                        {
+                                "lineHeight": "normal",
+                                "letterSpacing": "normal",
+                                "fontWeight": "400"
+                        }
+                ],
+                "caption": [
+                        "14px",
+                        {
+                                "lineHeight": "1.5",
+                                "letterSpacing": "normal",
+                                "fontWeight": "400"
+                        }
+                ],
+                "button-uppercase": [
+                        "14px",
+                        {
+                                "lineHeight": "1.0",
+                                "letterSpacing": "1.4px",
+                                "fontWeight": "700"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  body {
+    background-color: #121212;
+    color: white;
+  }
+  
+  /* Custom scrollbar for webkit */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+  
+  .group:hover .play-button {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body class="font-body-regular text-body-regular h-screen flex overflow-hidden selection:bg-spotify-green selection:text-black">
+<!-- SideNavBar -->
+<nav class="hidden lg:flex flex-col h-full bg-near-black pt-xl fixed left-0 top-0 w-[240px] shadow-[rgba(0,0,0,0.5)_0px_8px_24px] z-50 pb-[72px]">
+<div class="px-lg mb-8">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-spotify-green" style="font-variation-settings: 'FILL' 1;">music_note</span>
+<h1 class="font-section-title text-[16px] font-bold text-text-emphasis tracking-tight">SoundWave</h1>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-2 space-y-1">
+<a class="text-text-base font-body-bold flex items-center gap-4 py-3 px-4 rounded-md bg-mid-dark/50 hover:text-text-base transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-spotify-green" style="font-variation-settings: 'FILL' 1;">home</span>
+<span>Trang chủ</span>
+</a>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 rounded-md hover:text-text-base transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">search</span>
+<span>Tìm kiếm</span>
+</a>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 rounded-md hover:text-text-base transition-all duration-200 active:scale-95 transition-transform" href="#">
+<div class="relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-spotify-green rounded-full"></span>
+</div>
+<span>Thông báo</span>
+</a>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 rounded-md hover:text-text-base transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span>Listening Party</span>
+</a>
+<div class="mt-6 pt-4 border-t border-border-muted/30 px-4">
+<div class="flex items-center justify-between text-text-secondary mb-4">
+<span class="font-body-bold text-sm tracking-wide">Thư viện của bạn</span>
+<span class="material-symbols-outlined hover:text-text-base cursor-pointer">add</span>
+</div>
+<div class="space-y-3">
+<a class="flex items-center gap-3 group" href="#">
+<div class="w-12 h-12 rounded bg-mid-dark overflow-hidden flex-shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="A moody, close-up shot of a vintage microphone in a dimly lit recording studio. The scene is bathed in a soft, atmospheric blue light, creating a deep, cinematic aesthetic. Rich blacks and dark shadows dominate the background, fitting perfectly into a dark-mode, high-end audio interface design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0PmW7Qtv1p6jEnoGPahX-3VYHHaC_d4dE4VW1KJKVp5kZyf-zVoPZA_bPgV9lk6ABsSWOw5GhBiSVX8oRPhyMPaJoqvyeqWb9xgEIgoJMvAjGOBWEKiS0Q2lHPjriumb-rd48eKyhRZ3vmt0IhG5j6-5L_EgLwi5hgfVaetQ_OJmxQl_MUwcTlKsVNHDXrF9tPFRqoABLVO-VNX40dVPQ5WlJhBKeyPU0iiQIc-Vb11_T8CI8gjD4UUMupfN9rD5q5guQki80j7I"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-regular text-text-base truncate group-hover:text-spotify-green transition-colors">Nhạc Indie Việt</span>
+<span class="font-caption text-text-secondary truncate text-xs">Playlist • Vì bạn nghe sáng nay</span>
+</div>
+</a>
+<a class="flex items-center gap-3 group" href="#">
+<div class="w-12 h-12 rounded bg-mid-dark overflow-hidden flex-shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="A stylized, abstract image of blurred city lights at night, shot with a shallow depth of field. The lights form glowing orbs of warm amber and deep red against a stark black background. The overall mood is urban, energetic yet melancholic, perfect for a late-night driving playlist cover in a dark UI environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyVIjXl2575axNRAfPa2H-u7d4GVRcdUwJRhPYZ4HKj0CYQ61rNT7XhgXKANGLBf4NO7UOmonzOze8ojEohAP_AhO011j29O3FO6nWAFwxvvM1WFwER7zVlPVtWQmzOsrMFZOGlDYdv068DgG8ZfCpsj1iNRf_dkx1wyVN_ZtehqNmjmt5UAPgDKZLYCkK6Q2v0pC1s38e42Ol_MrgUOkDNoHMMviaiyQ1bTaYkQs_RFtgA1suEqiOguavQM6uFh6EAjfdaV13ndU"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-regular text-text-base truncate group-hover:text-spotify-green transition-colors">Acoustic Chill</span>
+<span class="font-caption text-text-secondary truncate text-xs">Playlist • SoundWave</span>
+</div>
+</a>
+<a class="flex items-center gap-3 group" href="#">
+<div class="w-12 h-12 rounded-full bg-mid-dark overflow-hidden flex-shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="A high-contrast black and white portrait of a DJ performing live, seen in silhouette against a massive LED screen. The lighting is harsh and dramatic, emphasizing the shape of the headphones and the intensity of the performance. The image conveys energy and raw musical passion within a sleek, premium dark-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASvgxhtj8eWbantNjG2PMj5pz-xwC1LDmD6NyaPzA-RhthCFiwlAFt1s5pOabuLUyvHnhd2fA3-K0dH6O2JerEalYQyxQ1cxn453Na2R8NXWvXM-Rl8TL7iRLWRY4opRvbVdxot4kL7wYt2ONW3Y3iyhUW8JxikRUSONUWkpu1VuafAc-uhGZgDonQABH6FudPL86ZOnUzwtdbHBWtxm6M_Lzu_7y4zOSSLUgwMW3xkLI9g4Bsg8s0yXYMlKRP0XknX2nnKXnqNaY"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-regular text-text-base truncate group-hover:text-spotify-green transition-colors">The Strokes</span>
+<span class="font-caption text-text-secondary truncate text-xs">Nghệ sĩ</span>
+</div>
+</a>
+</div>
+</div>
+</div>
+<div class="p-4 mt-auto">
+<div class="bg-dark-surface rounded-lg p-3 flex items-center gap-3 hover:bg-mid-dark transition-colors cursor-pointer group">
+<img class="w-10 h-10 rounded-full border border-border-muted" data-alt="A clean, professional headshot of a young man with a slight smile, illuminated by soft, neutral lighting. He is set against a very dark, almost black background. The image feels modern, polished, and perfectly suited as a user avatar in a premium, dark-themed digital application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlr0hD4m3IX18f8s-qM2JFNI_vatxByILtOaoYbQYhr31kMDiSDrToanRNDm3XU0v_HQF_JP1SIgWREWK84F5TCX13JjvRivF9sI20_jJa--gAMF_vkh6TL7jY9eyju2Hbi7T1pfRCwWwEJYsLwZIE07HscxcoFpBpDOAloNlRT89ggQBDpK9hstSvPvyUYSHFZwLVqEa5rQ7dmEWOO4KvHGlyOBwpoX2Zset9g1kXeeFPr1crKUFjLnpGHv2uBXw2NcpYc02Phns"/>
+<div class="flex flex-col">
+<span class="font-body-bold text-sm group-hover:text-white transition-colors">Nghiệp</span>
+<span class="font-caption text-xs text-text-secondary">Premium</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 lg:ml-[240px] pb-[72px] h-full overflow-y-auto bg-near-black relative">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-40 w-full bg-near-black/80 backdrop-blur-md flex justify-between items-center h-16 px-lg border-b border-transparent">
+<div class="flex items-center gap-4">
+<h2 class="font-section-title text-[24px] text-text-emphasis tracking-tight">Chào buổi sáng, Nghiệp 👋</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-white text-black font-button-uppercase px-4 py-1.5 rounded-full hover:scale-105 transition-transform text-xs">Nâng cấp</button>
+<span class="material-symbols-outlined text-text-secondary hover:text-white cursor-pointer transition-colors">settings</span>
+</div>
+</header>
+<div class="p-lg space-y-10">
+<!-- Section 1 -->
+<section>
+<div class="mb-4">
+<h3 class="font-feature-heading text-[18px] font-semibold text-text-base">Gợi ý cho bạn sáng nay</h3>
+<p class="font-caption text-text-secondary text-sm">Vì bạn nghe nhạc buổi sáng</p>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4 -mx-lg px-lg snap-x">
+<!-- Card 1 -->
+<div class="w-[160px] flex-shrink-0 bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_4px_8px] hover:shadow-[rgba(0,0,0,0.5)_0px_8px_16px] snap-start">
+<div class="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A bright, sunlit cup of coffee resting on a wooden table beside a pair of modern black headphones. The lighting is warm and inviting, evoking a peaceful morning atmosphere. The image provides a slight, pleasant contrast to the surrounding dark UI while maintaining a sophisticated, high-quality aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAziRgcgR-Gg9JMmRK2ph118Fh82gmkqFLHjdBGgZMQtyBuiECv0_Yx_kDMU3vXXQcfXBPgZqiVAibmK1qNILa9sQoYK6p6OPglOUg-uG0RuLtrzOk60PqUh8yh6JBllLYHfRV5vciZK6bWV70DPVQovZ-bMhIgU6L_xTPkv187Lji-v35DLSLISf9ApuTmerBDmNNRxONKzY-4MAclJWHXGZ4_wAdNKbVOFxgKJ5F--ELUMJ7lYETOg_CxF3Ubz-NxHZu-uGclVvs"/>
+<!-- Play Button Hover -->
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center text-black shadow-xl opacity-0 transform translate-y-2 transition-all duration-300 play-button hover:scale-105 hover:bg-[#34e36a]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h4 class="font-body-bold text-text-base truncate text-sm">Cà Phê Sáng</h4>
+<p class="font-caption text-text-secondary truncate text-xs mt-1">Nhiều nghệ sĩ</p>
+<div class="mt-2 inline-flex items-center gap-1 bg-mid-dark px-2 py-0.5 rounded text-[10px] text-text-secondary">
+<span>☀️</span>
+<span>Buổi sáng</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="w-[160px] flex-shrink-0 bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_4px_8px] hover:shadow-[rgba(0,0,0,0.5)_0px_8px_16px] snap-start">
+<div class="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A close-up of a vintage record player needle resting on a vinyl record. The scene is shot with moody, low-key lighting that emphasizes the metallic textures of the tonearm and the deep black grooves of the vinyl. The image exudes a timeless, premium analog audio feel perfect for a dark music interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwXEBxE-CAu70WKmjTIzTBBegE7ksG_rzC6FFUo2ROVlk63_3yRE4vOGDuCk5ScQevZQhWemJ7KGVRistivFnJGqE45HcqFVzSeHpfmVRO0wEm6Dt_PcmSoCBssbWBZDnkcUnJKXCuPzeX4l9j-YUZsvKySuKPy4IrOlDxfBmu9FsVcwHw8wle1zEco01ypaBqhWRL8Wns_E4c4Lt-MbsFiN9gc6a2lRCogXmSaKismRaZYh6ahoM8sUsAiihZJ6bY8gvg0USlzog"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center text-black shadow-xl opacity-0 transform translate-y-2 transition-all duration-300 play-button hover:scale-105 hover:bg-[#34e36a]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h4 class="font-body-bold text-text-base truncate text-sm">Nhẹ Nhàng Thức Giấc</h4>
+<p class="font-caption text-text-secondary truncate text-xs mt-1">Chillies, Vũ., Ngọt</p>
+<div class="mt-2 inline-flex items-center gap-1 bg-mid-dark px-2 py-0.5 rounded text-[10px] text-text-secondary">
+<span>☀️</span>
+<span>Buổi sáng</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="w-[160px] flex-shrink-0 bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_4px_8px] hover:shadow-[rgba(0,0,0,0.5)_0px_8px_16px] snap-start">
+<div class="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="An abstract, blurry view of a city street during a gentle rain shower, seen through a wet window. The colors are muted blues and grays, creating a calm, reflective, and slightly melancholic mood. The deep, rich tones blend seamlessly into a sophisticated, dark-mode design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMEOPSKCj7Qj4cZ-E5blAaPZAW75d2Eor-lH_2gYwKuqSZTQPddA--3IyXORz4xjmB6DCL7AFEV7eJ86ACPjR3WSEFG53EID4yMtjo9Y8BhsJ4HiJDbvU0ZoxdwBW6BIrrsR2jqnmsP4rVa0Or0jPQRqBVAUTmn5J-vYetADTTFQB9INc1NJR0XMU47glezGpAphM_mxTL_LpaxdrDE4RgVFMe6L08NWlPpD6kCGRIFWiyGsg709HWjkS2CyeS2OOB5Dc0xx3ER9I"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center text-black shadow-xl opacity-0 transform translate-y-2 transition-all duration-300 play-button hover:scale-105 hover:bg-[#34e36a]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h4 class="font-body-bold text-text-base truncate text-sm">Lofi Morning</h4>
+<p class="font-caption text-text-secondary truncate text-xs mt-1">Lofi Girl, ChilledCow</p>
+<div class="mt-2 inline-flex items-center gap-1 bg-mid-dark px-2 py-0.5 rounded text-[10px] text-text-secondary">
+<span>☀️</span>
+<span>Buổi sáng</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="w-[160px] flex-shrink-0 bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_4px_8px] hover:shadow-[rgba(0,0,0,0.5)_0px_8px_16px] snap-start">
+<div class="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A minimalist, top-down shot of acoustic guitar strings resting against the soundhole. The lighting is dramatic, casting deep shadows across the dark wood of the guitar body. The rich, earthy tones and sharp contrast are designed to look striking within a deep black UI environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCm6nV30-b8FcOmW8UCtCOhiXYyYgNWagBDgjhxtgQ1Hz_7s-OITjljJQKOhX69ab3pBQHMK1y3mV0mDDvDsHnFYt0UrGSFNiCPTtcQz4RDMRrt9cO-z5xCxeti6hqHt2g2OK1U7Njf4_5VMUH_bed_AShKI1iDJBxWLb4hV--IXJd3rjhxhfeAjZAO8hTOASY_PM5qUlmEQv8goyp4AZ2RfOsJLcdb5sxwVQlafdfZgWfHqCzn8I_tNwG_NvViLHroZMbds0sFcc8"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center text-black shadow-xl opacity-0 transform translate-y-2 transition-all duration-300 play-button hover:scale-105 hover:bg-[#34e36a]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h4 class="font-body-bold text-text-base truncate text-sm">Acoustic Đón Nắng</h4>
+<p class="font-caption text-text-secondary truncate text-xs mt-1">Sun D, Hải Sâm</p>
+<div class="mt-2 inline-flex items-center gap-1 bg-mid-dark px-2 py-0.5 rounded text-[10px] text-text-secondary">
+<span>☀️</span>
+<span>Buổi sáng</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2 -->
+<section>
+<div class="mb-4 flex justify-between items-end">
+<h3 class="font-feature-heading text-[18px] font-semibold text-text-base">Đang thịnh hành</h3>
+<span class="font-caption text-text-secondary text-sm hover:underline cursor-pointer">Hiển thị tất cả</span>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4 -mx-lg px-lg snap-x">
+<!-- Card 1 -->
+<div class="w-[160px] flex-shrink-0 bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_4px_8px] hover:shadow-[rgba(0,0,0,0.5)_0px_8px_16px] snap-start">
+<div class="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 z-10"></div>
+<img class="w-full h-full object-cover" data-alt="A dynamic, brightly colored neon light installation shaped like a stylized sound wave against a pitch-black background. The glowing pink and blue lights create a vibrant, energetic pop aesthetic that stands out vividly against the surrounding dark UI elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWqql0_9WJQNWoTMwnxVLV0rvqvCNZTZEgZbAabi06JO6RVc8uMdykmfxEndg32eAz-UaTMnSpTw8qj0-bFhm9kmrTwEcoi35uEpyybUFcAGdSktHVABZW5tARS3MwSYghlAtbFoCToaAHsgDTS1sBPdh9DXwwmKygOu0x1Tl_P7JGn_DBDhYLvnW2pvVCg3Rwvy2gVOMt61irH342q5hcjm4PfPp2Pa-30yGoXhsP6D3F4r6vuvBxbqvZkLZPokXq04Kyz9KID8U"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center text-black shadow-xl opacity-0 transform translate-y-2 transition-all duration-300 play-button hover:scale-105 hover:bg-[#34e36a] z-20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h4 class="font-body-bold text-text-base truncate text-sm">Top 50 - Việt Nam</h4>
+<p class="font-caption text-text-secondary truncate text-xs mt-1">Cập nhật mỗi ngày</p>
+</div>
+<!-- Card 2 -->
+<div class="w-[160px] flex-shrink-0 bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_4px_8px] hover:shadow-[rgba(0,0,0,0.5)_0px_8px_16px] snap-start">
+<div class="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-tr from-[#1e3a8a]/40 to-[#9333ea]/40 mix-blend-overlay z-10"></div>
+<img class="w-full h-full object-cover" data-alt="A wide shot of a massive concert crowd at night, silhouetted against brilliant, sweeping stage lights cutting through thick fog. The atmosphere is electric and chaotic. Deep blacks contrast sharply with intense beams of white and blue light, perfectly suited for a high-energy music platform dark mode." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh7qXx2WriTZiz-TIVjLBuBkkMC5hCrR-5C9f0gT62YkCe7HnDYyx-BVtYbPwL6ojvdptqmAyVWFtak7_vgDqfebutgCm1eqBQZrSvxN_SyjItDaZTtDZz9HPCQ1K9DhVVemRHgvxYuOgi2KYwDDRL-MqlQaL0KaMcnzldE1_Mq_faVPJ6etHQ4p_huKSf2OH2sF5QIm14a03_MAveg-O4a0rA5OMVX1iABOCH3XHCaFmrvAG08iw7KRiuPG39wsDxMHfPlMMdrT0"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center text-black shadow-xl opacity-0 transform translate-y-2 transition-all duration-300 play-button hover:scale-105 hover:bg-[#34e36a] z-20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h4 class="font-body-bold text-text-base truncate text-sm">Nhạc Trẻ Gây Nghiện</h4>
+<p class="font-caption text-text-secondary truncate text-xs mt-1">HIEUTHUHAI, Wren Evans</p>
+</div>
+</div>
+</section>
+<!-- Section 3 -->
+<section class="pb-10">
+<div class="mb-4">
+<h3 class="font-feature-heading text-[18px] font-semibold text-text-base">Vì bạn nghe Indie Rock</h3>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+<!-- Card 1 -->
+<div class="bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_4px_8px] hover:shadow-[rgba(0,0,0,0.5)_0px_8px_16px]">
+<div class="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A gritty, heavily textured black and white photo of a tangled mass of electric guitar cables and effects pedals on a scuffed stage floor. The lighting is harsh and directional. The rugged, raw aesthetic conveys a deeply authentic indie rock vibe, seamlessly fitting into a premium dark UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBL79Ey1STcCrmNJDwCo02VL4-xdhOpGq5f5aI2DHuN5KVo_Ee1N-W_OdvrGw_mqCjBVQY387nFAXuCNOsGpkTihmOe4fcYU_CGMYp7gFQIcbxQQF2LhdAJJ2bCU5KSWH5k7QId_SEYEK02-mluL2jzcqxCp0YJTxTirOHob-dKGPf8nSNRtKJpZrKfBq0qyuJYIrSkb5Lc2mwyUw5QFBuZQSEgY_Y4auAZj832XB4LlbzIo8zaVXkR_d6Xck9xcDNL7SzZ_JP0qxQ"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center text-black shadow-xl opacity-0 transform translate-y-2 transition-all duration-300 play-button hover:scale-105 hover:bg-[#34e36a]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h4 class="font-body-bold text-text-base truncate text-sm">Rock Việt Tuyển Chọn</h4>
+<p class="font-caption text-text-secondary truncate text-xs mt-1">Bức Tường, Ngũ Cung</p>
+</div>
+<!-- Card 2 -->
+<div class="bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_4px_8px] hover:shadow-[rgba(0,0,0,0.5)_0px_8px_16px]">
+<div class="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A moody, atmospheric shot of a drum kit set up in a dimly lit, slightly hazy room. A single, warm spotlight highlights the cymbals, leaving the rest of the kit in deep shadow. The rich tones and high contrast create a compelling, tactile image for a dark-mode music application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0_8jMAMxNSqeSFC1qPnlaBJb_srtp_hawLc0_zD71wZD6eVPaHtpfP9dLpY_Zp1L2lL4X46JRTYlxmqFi95BaSipqxJ_3yLXEIfu9_62KrQSt89f9uB1RNcp0b9YeRi690OnXZEArJN4hwtHdFkHKjSulIdHv_y-v4LbFafCaXskG59cw2CaQO1tNDpD_hDkMSg992asdWDmrhT_nRUNvLZveX8J1UWbvvJSYQjAY3Rf2ITWVE-k40Ic3o4qah9iHqNapHa1tQI8"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center text-black shadow-xl opacity-0 transform translate-y-2 transition-all duration-300 play-button hover:scale-105 hover:bg-[#34e36a]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h4 class="font-body-bold text-text-base truncate text-sm">Indie Mix</h4>
+<p class="font-caption text-text-secondary truncate text-xs mt-1">Ngọt, Cá Hồi Hoang</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Player Controls) -->
+<footer class="fixed bottom-0 left-0 w-full h-[72px] bg-dark-surface border-t border-border-muted z-50 flex items-center justify-between px-md shadow-[0_-4px_12px_rgba(0,0,0,0.5)]">
+<!-- Song Info -->
+<div class="flex items-center gap-3 w-[30%] min-w-[180px]">
+<img class="w-14 h-14 rounded bg-mid-dark object-cover" data-alt="A minimalist album cover design featuring a dark, textured background with a subtle, glowing orange and red geometric shape in the center. The design is abstract, evoking a sense of modern alternative rock or synth-wave. It sits perfectly within a deep dark-mode UI, providing a pop of subtle color." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAuSg2z6IVqPzNUj4ZVPiIUU09EUumpbriY09b7zXoyPXAnse5sC00lT8fcCpTuj-l3FqeH5qfVZ6-hEHeUru-cA1GkmlfzkdCtCTDIln4pVL-RnI6JSbtgCcrkC-RpQ5lJrpV-_735ID7Q4TbB8fmbWEkj47lZOYmHyukXzBmn3VC9Vamhh2YeE8FhB1JgGnKFda4d7owg58Y14kaBaDRwXfAcNKWJeWtd8igoV2M0-6LN0l-KFU1Vfl9L8_gms_tUv8p_Q4-hjg"/>
+<div class="flex flex-col truncate">
+<a class="font-body-bold text-sm text-text-base hover:underline truncate" href="#">Chuyến Xe</a>
+<a class="font-caption text-xs text-text-secondary hover:underline truncate" href="#">Ngọt</a>
+</div>
+<button class="text-spotify-green hover:scale-110 transition-transform ml-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+<!-- Playback Controls -->
+<div class="flex flex-col items-center max-w-[40%] w-full gap-1">
+<div class="flex items-center gap-4">
+<button class="text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">shuffle</span>
+</button>
+<button class="text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">skip_previous</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-black hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">skip_next</span>
+</button>
+<button class="text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">repeat</span>
+</button>
+</div>
+<div class="flex items-center gap-2 w-full max-w-md">
+<span class="font-micro text-[10px] text-text-secondary">1:24</span>
+<div class="h-1 flex-1 bg-border-muted rounded-full overflow-hidden group cursor-pointer relative">
+<div class="h-full bg-white group-hover:bg-spotify-green w-1/3 rounded-full relative">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 shadow"></div>
+</div>
+</div>
+<span class="font-micro text-[10px] text-text-secondary">4:05</span>
+</div>
+</div>
+<!-- Extra Controls -->
+<div class="flex items-center justify-end gap-3 w-[30%] min-w-[180px] text-text-secondary">
+<button class="hover:text-white transition-colors" title="Lời bài hát">
+<span class="material-symbols-outlined text-[18px]">lyrics</span>
+</button>
+<button class="hover:text-white transition-colors" title="Danh sách chờ">
+<span class="material-symbols-outlined text-[18px]">queue_music</span>
+</button>
+<button class="hover:text-white transition-colors" title="Thiết bị">
+<span class="material-symbols-outlined text-[18px]">devices</span>
+</button>
+<div class="flex items-center gap-2 w-24 group">
+<button class="hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">volume_up</span>
+</button>
+<div class="h-1 flex-1 bg-border-muted rounded-full cursor-pointer relative overflow-hidden">
+<div class="h-full bg-white group-hover:bg-spotify-green w-2/3 rounded-full relative"></div>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

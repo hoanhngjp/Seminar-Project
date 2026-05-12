@@ -1,0 +1,74 @@
+// Domain model types — shared across features
+
+export type Role = 'Listener' | 'Creator' | 'Admin';
+
+export type TimeContext = 'morning' | 'afternoon' | 'evening' | 'night';
+
+export interface User {
+  userId: string;
+  name: string;
+  email: string;
+  role: Role;
+}
+
+export interface Song {
+  id: string;
+  title: string;
+  artist: string;
+  album?: string;
+  duration: number;       // seconds
+  coverUrl?: string;
+  isExplicit: boolean;
+  genreId?: string;
+  mood?: string;
+}
+
+export interface RecommendedSong extends Song {
+  reason: {
+    type: 'CONTEXT' | 'PREFERENCE' | 'TRENDING';
+    text: string;         // explain_text — e.g. "Gợi ý buổi sáng"
+  };
+}
+
+export interface SearchResult {
+  id: string;
+  name: string;
+  type: 'song' | 'artist';
+  score: number;
+  coverUrl?: string;
+  artist?: string;        // only for type=song
+}
+
+export interface Notification {
+  notificationId: string;
+  message: string;
+  read: boolean;
+  createdAt: string;      // ISO 8601
+}
+
+export interface Party {
+  roomId: string;
+  joinCode: string;
+  hostId: string;
+  currentSongId: string | null;
+  playbackPositionSec: number;
+  members: PartyMember[];
+}
+
+export interface PartyMember {
+  userId: string;
+  name: string;
+  avatarUrl?: string;
+  isHost: boolean;
+}
+
+export interface AnalyticsStats {
+  songId: string;
+  dailyListeners: { date: string; count: number }[];
+  uniqueUsers: number;
+}
+
+export interface HeatmapDropOff {
+  second: number;
+  count: number;
+}

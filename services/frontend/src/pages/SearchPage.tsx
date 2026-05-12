@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchSongs, type SearchResultItem } from '../api/searchApi';
+import { searchContent } from '../services/searchService';
+import type { SearchResult as SearchResultItem } from '../types/domain';
 import { useAuthStore } from '../store/authStore';
 import AppShell from '../components/layout/AppShell';
 import { usePlayerStore } from '../store/playerStore';
@@ -46,7 +47,7 @@ export default function SearchPage() {
     }
 
     try {
-      const data = await searchSongs(q.trim(), 10, cursor);
+      const data = await searchContent(q.trim(), 'all', 10, cursor);
       setItems((prev) => (cursor ? [...prev, ...data.items] : data.items));
       setNextCursor(data.nextCursor);
       setHasMore(data.hasMore);
@@ -132,20 +133,22 @@ export default function SearchPage() {
           <div>
             <ul style={styles.list} role="list">
               {items.map((item) => (
-                <li key={item.songId} style={styles.listItem} role="listitem">
+                <li key={item.id} style={styles.listItem} role="listitem">
                   <button
                     style={styles.resultBtn}
-                    onClick={() => setSong({ songId: item.songId, title: item.title, artist: item.artist })}
-                    aria-label={`Phát ${item.title} — ${item.artist}`}
+                    onClick={() => item.type === 'song'
+                      ? setSong({ songId: item.id, title: item.name, artist: item.artist ?? '' })
+                      : undefined
+                    }
+                    aria-label={`${item.type === 'song' ? 'Phát' : 'Xem'} ${item.name}`}
                   >
-                    <div style={styles.resultIcon} aria-hidden="true"><i className="fa-solid fa-music"></i></div>
+                    <div style={styles.resultIcon} aria-hidden="true">
+                      <i className={item.type === 'artist' ? 'fa-solid fa-user' : 'fa-solid fa-music'}></i>
+                    </div>
                     <div style={styles.resultBody}>
-                      <p style={styles.resultTitle}>{item.title}</p>
+                      <p style={styles.resultTitle}>{item.name}</p>
                       <p style={styles.resultMeta}>
-                        {item.artist}
-                        {item.album && (
-                          <span style={styles.albumText}> · {item.album}</span>
-                        )}
+                        {item.type === 'song' ? item.artist : 'Nghệ sĩ'}
                       </p>
                     </div>
                   </button>

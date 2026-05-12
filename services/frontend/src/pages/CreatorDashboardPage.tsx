@@ -4,10 +4,8 @@ import { useAuthStore } from '../store/authStore';
 import {
   fetchHeatmap,
   fetchSongStats,
-  type HeatmapPoint,
-  type SongStats,
   type TimeRange,
-} from '../api/analyticsApi';
+} from '../services/analyticsService';
 import AppShell from '../components/layout/AppShell';
 import { colors, font, fontSize, fontWeight, radius, shadows, spacing } from '../styles/tokens';
 
@@ -26,8 +24,9 @@ export default function CreatorDashboardPage() {
   const [activeSongId, setActiveSongId] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>('7d');
 
-  const [heatmap, setHeatmap] = useState<HeatmapPoint[]>([]);
-  const [stats, setStats] = useState<SongStats | null>(null);
+  const [heatmap, setHeatmap] = useState<{ second: number; count: number }[]>([]);
+  // AnalyticsStats shape: { songId, dailyListeners: [{date,count}], uniqueUsers }
+  const [stats, setStats] = useState<{ songId: string; dailyListeners: { date: string; count: number }[]; uniqueUsers: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -116,12 +115,23 @@ export default function CreatorDashboardPage() {
         {/* Stats cards */}
         {!loading && stats && (
           <div style={styles.statsGrid} aria-label="Thống kê bài hát">
-            <StatCard label="Lượt nghe" value={stats.totalPlays.toLocaleString()} />
-            <StatCard label="Lượt bỏ qua" value={stats.totalSkips.toLocaleString()} />
-            <StatCard label="Người nghe" value={stats.uniqueListeners.toLocaleString()} />
             <StatCard
-              label="Nghe trung bình"
-              value={`${stats.avgListenPercent.toFixed(1)}%`}
+              label="Lượt nghe hôm nay"
+              value={(stats.dailyListeners.at(-1)?.count ?? 0).toLocaleString()}
+            />
+            <StatCard
+              label="Người nghe độc nhất"
+              value={stats.uniqueUsers.toLocaleString()}
+            />
+            <StatCard
+              label="Ngày có dữ liệu"
+              value={stats.dailyListeners.length.toLocaleString()}
+            />
+            <StatCard
+              label="Tổng lượt nghe"
+              value={stats.dailyListeners
+                .reduce((sum, d) => sum + d.count, 0)
+                .toLocaleString()}
             />
           </div>
         )}
@@ -138,17 +148,21 @@ export default function CreatorDashboardPage() {
               aria-label="Heatmap bỏ qua theo giây"
               role="img"
             >
-              {heatmap.map((point) => (
-                <div
-                  key={point.second}
-                  title={`Giây ${point.second}: skip ${(point.skipRate * 100).toFixed(1)}%`}
-                  style={{
-                    ...styles.heatmapCell,
-                    background: point.skipRate > 0.3 ? colors.error : colors.accent,
-                    opacity: 0.3 + point.skipRate * 0.7,
-                  }}
-                />
-              ))}
+              {heatmap.map((point) => {
+                const maxCount = Math.max(...heatmap.map((p) => p.count), 1);
+                const ratio = point.count / maxCount;
+                return (
+                  <div
+                    key={point.second}
+                    title={`Giây ${point.second}: ${point.count} lượt bỏ qua`}
+                    style={{
+                      ...styles.heatmapCell,
+                      background: ratio > 0.6 ? colors.error : ratio > 0.3 ? colors.warning : colors.accent,
+                      opacity: 0.3 + ratio * 0.7,
+                    }}
+                  />
+                );
+              })}
             </div>
           </section>
         )}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { useNavigate } from 'react-router-dom';
-import { getAccessToken } from '../api/client';
+import { getAccessToken } from '../services/api';
 import type {
   SyncState,
   MemberJoin,

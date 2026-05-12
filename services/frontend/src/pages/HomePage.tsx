@@ -3,13 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import AppShell from '../components/layout/AppShell';
 import { usePlayerStore } from '../store/playerStore';
 import { colors, font, fontSize, fontWeight, radius, spacing } from '../styles/tokens';
-import {
-  fetchRecommendations,
-  getTimeContext,
-  type RecommendationItem,
-  type ContextType,
-} from '../api/recommendationApi';
+import { fetchRecommendations } from '../services/recommendationService';
+import { getTimeContext } from '../utils/time';
 import { useAuthStore } from '../store/authStore';
+import type { RecommendedSong } from '../types/domain';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -19,11 +16,11 @@ export default function HomePage() {
     if (!accessToken) navigate('/login', { replace: true });
   }, [accessToken, navigate]);
 
-  const [items, setItems] = useState<RecommendationItem[]>([]);
+  const [items, setItems] = useState<RecommendedSong[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const setSong = usePlayerStore((s) => s.setSong);
-  const [context] = useState<ContextType>(() => getTimeContext());
+  const [context] = useState(() => getTimeContext());
 
   const loadRecommendations = useCallback(async () => {
     setLoading(true);
@@ -49,9 +46,7 @@ export default function HomePage() {
       <main style={styles.main}>
         <h2 style={styles.sectionTitle}>
           Gợi ý cho bạn
-          {context !== 'none' && (
             <span style={styles.contextBadge}>{context}</span>
-          )}
         </h2>
 
         {loading && (
@@ -81,18 +76,18 @@ export default function HomePage() {
           <div style={styles.grid}>
             {items.map((item) => (
               <button
-                key={item.songId}
+                key={item.id}
                 style={styles.card}
-                onClick={() => setSong({ songId: item.songId, title: item.title, artist: item.artist })}
+                onClick={() => setSong({ songId: item.id, title: item.title, artist: item.artist })}
                 aria-label={`Phát ${item.title} — ${item.artist}`}
               >
                 <div style={styles.coverPlaceholder} aria-hidden="true">🎵</div>
                 <div style={styles.cardBody}>
                   <p style={styles.cardTitle}>{item.title}</p>
                   <p style={styles.cardArtist}>{item.artist}</p>
-                  {item.explainText && (
+                  {item.reason.text && (
                     <span data-testid="explain-badge" style={styles.explainBadge}>
-                      {item.explainText}
+                      {item.reason.text}
                     </span>
                   )}
                 </div>

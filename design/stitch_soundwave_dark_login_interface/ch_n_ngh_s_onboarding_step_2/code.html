@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SoundWave - Chọn nghệ sĩ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "text-emphasis": "#fdfdfd",
+                        "on-background": "#dce5d8",
+                        "tertiary-container": "#ffa585",
+                        "on-secondary-container": "#bab8b7",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#ffccbb",
+                        "surface-container-highest": "#2e372e",
+                        "primary-fixed": "#69ff89",
+                        "primary-container": "#1ed760",
+                        "mid-dark": "#1f1f1f",
+                        "error-container": "#93000a",
+                        "outline": "#859583",
+                        "primary-fixed-dim": "#34e36a",
+                        "negative": "#f3727f",
+                        "surface-container-lowest": "#081008",
+                        "text-secondary": "#b3b3b3",
+                        "surface": "#0d150d",
+                        "outline-variant": "#3c4a3c",
+                        "on-tertiary-container": "#793820",
+                        "inverse-primary": "#006e2c",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "near-black": "#121212",
+                        "surface-container": "#192219",
+                        "primary": "#4cf479",
+                        "on-secondary": "#313030",
+                        "on-primary-fixed-variant": "#00531f",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#bbcbb8",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#4a4949",
+                        "on-secondary-fixed-variant": "#474646",
+                        "secondary": "#c8c6c5",
+                        "on-primary-fixed": "#002108",
+                        "dark-card": "#252525",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary-container": "#005721",
+                        "border-pill": "#7c7c7c",
+                        "inverse-on-surface": "#2a3329",
+                        "on-surface": "#dce5d8",
+                        "border-muted": "#4d4d4d",
+                        "on-tertiary-fixed": "#380d00",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-tint": "#34e36a",
+                        "mid-card": "#272727",
+                        "surface-dim": "#0d150d",
+                        "spotify-green": "#1ed760",
+                        "surface-variant": "#2e372e",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "inverse-surface": "#dce5d8",
+                        "text-base": "#ffffff",
+                        "surface-container-low": "#151e15",
+                        "on-primary": "#003913",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "text-near-white": "#cbcbcb",
+                        "surface-container-high": "#232c23",
+                        "warning": "#ffa42b",
+                        "on-tertiary": "#571f08",
+                        "surface-bright": "#333b32",
+                        "background": "#0d150d",
+                        "tertiary-fixed": "#ffdbcf",
+                        "dark-surface": "#181818",
+                        "announcement": "#539df5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "base": "8px",
+                        "gutter": "16px",
+                        "xl": "32px",
+                        "sidebar-width": "280px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "section-title": ["plusJakartaSans", "sans-serif"],
+                        "nav-link": ["plusJakartaSans", "sans-serif"],
+                        "feature-heading": ["plusJakartaSans", "sans-serif"],
+                        "caption": ["plusJakartaSans", "sans-serif"],
+                        "body-regular": ["plusJakartaSans", "sans-serif"],
+                        "body-bold": ["plusJakartaSans", "sans-serif"],
+                        "button-uppercase": ["plusJakartaSans", "sans-serif"],
+                        "small-bold": ["plusJakartaSans", "sans-serif"],
+                        "micro": ["plusJakartaSans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "section-title": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "nav-link": ["14px", { "lineHeight": "normal", "fontWeight": "400" }],
+                        "feature-heading": ["18px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "caption": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-regular": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-bold": ["16px", { "lineHeight": "1.5", "fontWeight": "700" }],
+                        "button-uppercase": ["14px", { "lineHeight": "1.0", "letterSpacing": "1.4px", "fontWeight": "700" }],
+                        "small-bold": ["12px", { "lineHeight": "1.5", "fontWeight": "700" }],
+                        "micro": ["10px", { "lineHeight": "normal", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-near-black text-text-base font-body-regular min-h-screen flex flex-col pb-32 selection:bg-spotify-green selection:text-near-black">
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-screen-md mx-auto px-lg py-xl flex flex-col pt-16">
+<!-- Top Stepper -->
+<div class="flex items-center gap-sm justify-center mb-xl w-full max-w-[200px] mx-auto">
+<div class="h-1 flex-1 bg-spotify-green rounded-full opacity-50"></div>
+<div class="h-1 flex-1 bg-spotify-green rounded-full"></div>
+<div class="h-1 flex-1 bg-surface-variant rounded-full"></div>
+</div>
+<!-- Header Area -->
+<header class="text-center mb-xl">
+<h1 class="font-section-title text-section-title text-text-base mb-xs tracking-tight">Chọn nghệ sĩ bạn yêu thích</h1>
+<p class="font-caption text-caption text-text-secondary">Chọn ít nhất 3 nghệ sĩ</p>
+</header>
+<!-- Artist Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-xl gap-x-md place-items-center">
+<!-- Artist 1: Sơn Tùng M-TP (Selected) -->
+<button aria-pressed="true" class="flex flex-col items-center gap-sm group focus:outline-none w-full">
+<div class="relative rounded-full ring-2 ring-spotify-green ring-offset-4 ring-offset-near-black transition-all duration-300">
+<img alt="Sơn Tùng M-TP" class="w-24 h-24 rounded-full object-cover shadow-[rgba(0,0,0,0.5)_0px_8px_24px]" data-alt="A striking promotional studio portrait of a contemporary Asian male pop artist. The artist exudes confidence, wearing high-fashion streetwear with metallic accents. The lighting is dramatic, featuring a rim light that separates him from a deep, velvety black background. The overall aesthetic is polished, modern, and perfectly suited for a premium music streaming application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVdMZoRI86iJuhToo2k-y89l5NSBjsA0IB3DjELwg8UJrEHnFBHLAwqDa0X4dKFP8mJ6HCT94MamyIiPH-cjlb6SdXf2AgQ3714RIaPB0BxEl5j_WHNmDXYrB1RGdfnPaN3bl3OGcUK7B14DRSvgqMhFu48b5bXhUo5z-puk2QR9wisuvZFlFQPp3ngeeeRm38k5WM-QbsPtzebK8ASbjuqYZoDGu4Gve6MS34R0g8EySvMqTskNplTVLCpT5pbdFS7-W8ormXy_w"/>
+<div class="absolute bottom-0 right-0 bg-spotify-green text-near-black rounded-full w-7 h-7 flex items-center justify-center border-4 border-near-black shadow-md">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">check</span>
+</div>
+</div>
+<span class="font-body-bold text-body-bold text-text-base text-center line-clamp-2 mt-sm">Sơn Tùng M-TP</span>
+</button>
+<!-- Artist 2: BLACKPINK (Selected) -->
+<button aria-pressed="true" class="flex flex-col items-center gap-sm group focus:outline-none w-full">
+<div class="relative rounded-full ring-2 ring-spotify-green ring-offset-4 ring-offset-near-black transition-all duration-300">
+<img alt="BLACKPINK" class="w-24 h-24 rounded-full object-cover shadow-[rgba(0,0,0,0.5)_0px_8px_24px]" data-alt="A highly stylized, glossy group portrait of four female K-pop idols. They are dressed in coordinated, edgy outfits that blend high-fashion with urban streetwear aesthetics. The lighting uses strong directional strobes to create a crisp, high-contrast look against a dark, moody backdrop. The mood is powerful, glamorous, and intensely energetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD32ogSTuduqNc23W71RZr6gghLQH8yMUPO5PgJjpWoMbiz7Wjcdb1oozFtZuajMuedlqHBrQbqJSEMCdI1mXj3wJX3gioLGByTEo77yROEFZjzNfCY1i2zP58oIp6i4k2a7pf3HBbtLyslVriU4NREmdXjT8q8oFKmMHrx2p1_UePy9tOmQwdWXmDY3pjNqt6gxi2j1qtMIW8AB5nwlBjeven4eVD4X5CshgXnM0kdxShlBwDB7oEjk_ZIype5fRdxYzxpWLKB49A"/>
+<div class="absolute bottom-0 right-0 bg-spotify-green text-near-black rounded-full w-7 h-7 flex items-center justify-center border-4 border-near-black shadow-md">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">check</span>
+</div>
+</div>
+<span class="font-body-bold text-body-bold text-text-base text-center line-clamp-2 mt-sm">BLACKPINK</span>
+</button>
+<!-- Artist 3: BTS (Selected) -->
+<button aria-pressed="true" class="flex flex-col items-center gap-sm group focus:outline-none w-full">
+<div class="relative rounded-full ring-2 ring-spotify-green ring-offset-4 ring-offset-near-black transition-all duration-300">
+<img alt="BTS" class="w-24 h-24 rounded-full object-cover shadow-[rgba(0,0,0,0.5)_0px_8px_24px]" data-alt="An evocative, cinematic group portrait of seven male K-pop artists. They are styled in sleek, monochromatic dark suits, standing in a subtle formation. The setting is minimalist, relying on soft, diffused overhead lighting that casts gentle shadows, emphasizing their features. The overall vibe is sophisticated, unified, and undeniably premium." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFhoYQMol6Eg0oy0A0w-Dk4uVHNEA0hCNIzP5D2bZU4MFzSfsFcZi8ZuU8itXtMCKLCdSldjjdNJRKoY2obmeOrn1BjO7pAXvE_GmZBB22uCOkGIiyRW9Dq9hfnPdX1RVXpKwhDnOX1Su6Yyd5ZKUH1i1xBXAsrgEE-cFGxEtnqh_9NQaeUTP2yDRJb6y8SGXkTke46R5BtLXMYDM9RbkHy28Ee2Tc5kz3GUkeD5_9b8MdSDgUYJ19pw5ITQPNoV6wPuU9tJHu6SY"/>
+<div class="absolute bottom-0 right-0 bg-spotify-green text-near-black rounded-full w-7 h-7 flex items-center justify-center border-4 border-near-black shadow-md">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">check</span>
+</div>
+</div>
+<span class="font-body-bold text-body-bold text-text-base text-center line-clamp-2 mt-sm">BTS</span>
+</button>
+<!-- Artist 4: Ed Sheeran (Unselected) -->
+<button aria-pressed="false" class="flex flex-col items-center gap-sm group focus:outline-none w-full">
+<div class="relative rounded-full transition-all duration-300 transform group-hover:scale-105 group-active:scale-95">
+<img alt="Ed Sheeran" class="w-24 h-24 rounded-full object-cover shadow-none group-hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px]" data-alt="A candid, authentic portrait of a male singer-songwriter holding an acoustic guitar. He has a relaxed, approachable demeanor, softly lit by warm, golden-hour style studio lights. The background is a rich, dark textured surface that brings the focus entirely on the artist. The image feels intimate, grounded, and richly textured." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwSMpBMClliDM-BLNT62dQFgcrbjBYI7VIv3WBS0vqMwiVN6wTHb1dYZ3-RYUwg4of5Ma_4mJJv-TyYk2Mj5WwhJQBwvfzzK7VXmpKE1KxDIVjjeH2F8xd7_kEmcCYE6jbZXF8ouiEs8jgY2zQ8VtA0CQ_VDGupeihh3youkz7VeXE-H4V1OukIX_KkNNxIdRvOFhdKe27h68U7aKoeV-rFC_KVzToJHo-n8se01Ku3qw_o6xFBKwmrEAhyCVSVhcGALYIKoNmDjY"/>
+</div>
+<span class="font-body-bold text-body-bold text-text-secondary group-hover:text-text-base transition-colors duration-200 text-center line-clamp-2 mt-sm">Ed Sheeran</span>
+</button>
+<!-- Artist 5: Taylor Swift (Unselected) -->
+<button aria-pressed="false" class="flex flex-col items-center gap-sm group focus:outline-none w-full">
+<div class="relative rounded-full transition-all duration-300 transform group-hover:scale-105 group-active:scale-95">
+<img alt="Taylor Swift" class="w-24 h-24 rounded-full object-cover shadow-none group-hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px]" data-alt="A captivating, ethereal studio portrait of a female pop superstar. She is looking slightly off-camera with a thoughtful expression, illuminated by soft, glowing light that creates a subtle halo effect around her hair. The background is a seamless deep charcoal grey, enhancing the high-end, editorial feel of the photograph. The mood is timeless and magnetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUeek1rKln1YCM8LapylqsHTO5OMCwGs8jJFilmAbt11_eyo_l7aWUf5lXEY3AzSFF0b-STy2Ekl7GXUYr2BKY-3grwguTX4GraTqEMrLVDLBfgwKRPQJCc0W2JKbtXSpn0761KQmEGX1yl_wPoa0aV1UXW7FEbnxLV0Uxd3psRfGKaFnxPtUIZQRTfcxGKSm3BeX9tntAg6omtqtpdiKmbCTTbwOf-1n0HaNLmgRLB7YJzA-5TdZSKNNgw73DazP87py5npk2OvM"/>
+</div>
+<span class="font-body-bold text-body-bold text-text-secondary group-hover:text-text-base transition-colors duration-200 text-center line-clamp-2 mt-sm">Taylor Swift</span>
+</button>
+<!-- Artist 6: Doja Cat (Selected) -->
+<button aria-pressed="true" class="flex flex-col items-center gap-sm group focus:outline-none w-full">
+<div class="relative rounded-full ring-2 ring-spotify-green ring-offset-4 ring-offset-near-black transition-all duration-300">
+<img alt="Doja Cat" class="w-24 h-24 rounded-full object-cover shadow-[rgba(0,0,0,0.5)_0px_8px_24px]" data-alt="A bold, avant-garde portrait of a female hip-hop and pop artist. She is wearing an intensely creative, futuristic outfit with vibrant, iridescent textures. The lighting is vibrant and experimental, utilizing subtle neon accents that pop against a pitch-black background. The image is striking, unconventional, and visually arresting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6lIW37GUO4dvTu9PoPZtWUVx7ssC8tmFPJU6FYlvZCxViWVl3Cnmwsz8yT7_Nr5akmOH5UiIg7YpCSle_enSe8zHzL7oxX-Q4CkTRDCTAqlStv4V1kIQzYceWk1JdGLohWW9A9U64aWovO_AeQsKWx0GKif5a-dmTt1dHH96XAPhc_dKGBGflVAo-CMsqEtrcWIiTspCh3KZDMoP-Bz-_3LrylnkgZFuCOtXNQiPeAPDj1Pgjyy_08nwysk7Fe_uuB3BS_GEpXqo"/>
+<div class="absolute bottom-0 right-0 bg-spotify-green text-near-black rounded-full w-7 h-7 flex items-center justify-center border-4 border-near-black shadow-md">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">check</span>
+</div>
+</div>
+<span class="font-body-bold text-body-bold text-text-base text-center line-clamp-2 mt-sm">Doja Cat</span>
+</button>
+<!-- Artist 7: Coldplay (Unselected) -->
+<button aria-pressed="false" class="flex flex-col items-center gap-sm group focus:outline-none w-full">
+<div class="relative rounded-full transition-all duration-300 transform group-hover:scale-105 group-active:scale-95">
+<img alt="Coldplay" class="w-24 h-24 rounded-full object-cover shadow-none group-hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px]" data-alt="An atmospheric, moody group portrait of a four-piece British rock band. They are silhouetted slightly against a hazy, deep blue and purple back-light, evoking the feeling of a live stadium concert. The overall tone is emotive, expansive, and deeply musical, fitting perfectly within a dark-themed user interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACfIKnMZe7LquvnZz0aYByOaqUXcYg3wjWTKT02KvsUkNj6SQA1mapxFBwFuxmflA5SehzlUPHpHzHFX9lInbCRgHnAA7gL5xyR5HqaA-zyRwswtBnZ38sfhUZ2WalsBZzKelv-8Zp4Q_jIe6j9g93MHt9DhYQ5RwDnudZQWM9kx--dgY2gSStMvzKn2h1xfha5rxSF2ORXsKp2Y80v1NRkIFDPmjSMjAon1MpKXbJWAVDYIl6NYj0Pk_al27nvfTB-Vou9mYs1RU"/>
+</div>
+<span class="font-body-bold text-body-bold text-text-secondary group-hover:text-text-base transition-colors duration-200 text-center line-clamp-2 mt-sm">Coldplay</span>
+</button>
+<!-- Artist 8: Adele (Unselected) -->
+<button aria-pressed="false" class="flex flex-col items-center gap-sm group focus:outline-none w-full">
+<div class="relative rounded-full transition-all duration-300 transform group-hover:scale-105 group-active:scale-95">
+<img alt="Adele" class="w-24 h-24 rounded-full object-cover shadow-none group-hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px]" data-alt="A classic, profoundly elegant portrait of a female powerhouse vocalist. She is captured in a timeless style, focusing deeply on her expressive features. The lighting is traditional chiaroscuro, highlighting her face against an enveloping dark background. The mood is soulful, serious, and majestic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs_Er5RWi-n52r-IbH5eVTDlNtLnE_C4kFb_6UnjgmSfy3TJhJ5On7nFDcVpBdTZJRtQ8vY8_c1fnNWvIiPT-Exetbau6WuI52Ly68QI0G6VTwJ5DUwo8YNXBZcs7elfOL84P-dFxcaf-q-uZuBSY6NW0-3quhfgEBOO3fKhse7RLTORLiPWGn9wqMJk4S-r9W9Wf3uKE0mN8gFSgi_rsrUcFUfTkZT9ijFkbrxnEAqThGjawwgIOLYh8IP0a5jRIAaOdCmvKZw90"/>
+</div>
+<span class="font-body-bold text-body-bold text-text-secondary group-hover:text-text-base transition-colors duration-200 text-center line-clamp-2 mt-sm">Adele</span>
+</button>
+</div>
+</main>
+<!-- Fixed Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-dark-surface z-50 shadow-[rgba(0,0,0,0.5)_0px_-8px_24px]">
+<!-- Progress Indicator -->
+<div class="w-full h-1 bg-mid-dark">
+<div class="h-full bg-spotify-green w-full transition-all duration-500 ease-out"></div>
+</div>
+<!-- Controls -->
+<div class="max-w-screen-md mx-auto px-lg py-md flex items-center justify-between gap-md">
+<div class="flex items-center gap-sm">
+<span class="font-body-bold text-body-bold text-spotify-green">Đã chọn: 4/3</span>
+</div>
+<button class="bg-spotify-green text-[#000000] px-lg py-sm rounded-full font-button-uppercase text-button-uppercase hover:scale-105 active:scale-95 transition-transform shadow-[rgba(0,0,0,0.3)_0px_4px_12px] flex items-center gap-xs">
+                TIẾP THEO
+                <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'wght' 700;">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>

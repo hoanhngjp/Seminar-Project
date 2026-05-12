@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SoundWave - Account Locked</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "surface-tint": "#34e36a",
+                        "announcement": "#539df5",
+                        "inverse-surface": "#dce5d8",
+                        "primary-container": "#1ed760",
+                        "text-emphasis": "#fdfdfd",
+                        "surface-dim": "#0d150d",
+                        "tertiary-fixed": "#ffdbcf",
+                        "secondary-fixed": "#e5e2e1",
+                        "mid-dark": "#1f1f1f",
+                        "spotify-green": "#1ed760",
+                        "surface-container-low": "#151e15",
+                        "on-background": "#dce5d8",
+                        "inverse-primary": "#006e2c",
+                        "primary-fixed": "#69ff89",
+                        "outline-variant": "#3c4a3c",
+                        "warning": "#ffa42b",
+                        "tertiary-container": "#ffa585",
+                        "on-primary": "#003913",
+                        "background": "#0d150d",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "near-black": "#121212",
+                        "tertiary": "#ffccbb",
+                        "surface-container-lowest": "#081008",
+                        "primary-fixed-dim": "#34e36a",
+                        "surface-container-highest": "#2e372e",
+                        "border-muted": "#4d4d4d",
+                        "dark-surface": "#181818",
+                        "inverse-on-surface": "#2a3329",
+                        "mid-card": "#272727",
+                        "text-base": "#ffffff",
+                        "secondary-container": "#4a4949",
+                        "dark-card": "#252525",
+                        "on-surface-variant": "#bbcbb8",
+                        "on-tertiary-container": "#793820",
+                        "on-primary-fixed-variant": "#00531f",
+                        "on-secondary-fixed-variant": "#474646",
+                        "negative": "#f3727f",
+                        "primary": "#4cf479",
+                        "surface-bright": "#333b32",
+                        "on-primary-fixed": "#002108",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "text-near-white": "#cbcbcb",
+                        "on-secondary": "#313030",
+                        "border-pill": "#7c7c7c",
+                        "on-primary-container": "#005721",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "text-secondary": "#b3b3b3",
+                        "on-error-container": "#ffdad6",
+                        "surface": "#0d150d",
+                        "on-secondary-container": "#bab8b7",
+                        "secondary": "#c8c6c5",
+                        "on-error": "#690005",
+                        "surface-variant": "#2e372e",
+                        "error-container": "#93000a",
+                        "outline": "#859583",
+                        "surface-container": "#192219",
+                        "on-surface": "#dce5d8",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-tertiary": "#571f08",
+                        "surface-container-high": "#232c23"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "sidebar-width": "280px",
+                        "lg": "24px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "body-bold": ["Plus Jakarta Sans", "sans-serif"],
+                        "section-title": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-regular": ["Plus Jakarta Sans", "sans-serif"],
+                        "small-bold": ["Plus Jakarta Sans", "sans-serif"],
+                        "feature-heading": ["Plus Jakarta Sans", "sans-serif"],
+                        "button-uppercase": ["Plus Jakarta Sans", "sans-serif"],
+                        "micro": ["Plus Jakarta Sans", "sans-serif"],
+                        "nav-link": ["Plus Jakarta Sans", "sans-serif"],
+                        "caption": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-bold": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "section-title": ["24px", { "lineHeight": "1.2", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "body-regular": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "small-bold": ["12px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "feature-heading": ["18px", { "lineHeight": "1.3", "letterSpacing": "normal", "fontWeight": "600" }],
+                        "button-uppercase": ["14px", { "lineHeight": "1.0", "letterSpacing": "1.4px", "fontWeight": "700" }],
+                        "micro": ["10px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "nav-link": ["14px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "caption": ["14px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .inset-shadow-input {
+            box-shadow: rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset;
+        }
+        .locked-banner {
+            background-color: rgba(243, 114, 127, 0.1);
+            border-left: 3px solid #f3727f;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+<!-- Top Navigation (Suppressed for Transactional Intent but keeping minimal brand presence) -->
+<header class="bg-near-black flex justify-between items-center w-full px-lg py-md max-w-none">
+<div class="font-section-title text-section-title font-bold text-text-base flex items-center gap-sm">
+<span class="material-symbols-outlined text-spotify-green" style="font-variation-settings: 'FILL' 1;">graphic_eq</span>
+            SoundWave
+        </div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex items-center justify-center p-md">
+<div class="w-full max-w-md bg-dark-surface rounded-[8px] p-xl relative overflow-hidden" style="box-shadow: rgba(0,0,0,0.5) 0px 8px 24px;">
+<!-- Background Decorative Blur -->
+<div class="absolute -top-32 -right-32 w-64 h-64 bg-spotify-green rounded-full mix-blend-screen filter blur-[100px] opacity-20 pointer-events-none"></div>
+<div class="text-center mb-xl relative z-10">
+<h1 class="font-section-title text-section-title text-text-base mb-sm">Log in to SoundWave</h1>
+<p class="font-body-regular text-body-regular text-text-secondary">Welcome back to the music.</p>
+</div>
+<!-- Account Locked Banner -->
+<div class="locked-banner p-md rounded-r-md mb-xl relative z-10 flex items-start gap-md">
+<span class="material-symbols-outlined text-negative" style="font-variation-settings: 'FILL' 1;">lock</span>
+<p class="text-negative font-caption text-caption">
+                    Tài khoản tạm khóa do đăng nhập sai quá 5 lần. Vui lòng thử lại sau.
+                </p>
+</div>
+<form class="space-y-lg relative z-10">
+<!-- Email Input -->
+<div class="space-y-xs">
+<label class="block font-small-bold text-small-bold text-text-base" for="email">Email or username</label>
+<input class="w-full bg-mid-dark text-text-base font-body-regular text-body-regular rounded-full py-md px-lg focus:outline-none focus:ring-2 focus:ring-spotify-green inset-shadow-input border-none placeholder:text-text-secondary disabled:opacity-50" disabled="" id="email" placeholder="Email or username" type="email"/>
+</div>
+<!-- Password Input -->
+<div class="space-y-xs">
+<label class="block font-small-bold text-small-bold text-text-base" for="password">Password</label>
+<input class="w-full bg-mid-dark text-text-base font-body-regular text-body-regular rounded-full py-md px-lg focus:outline-none focus:ring-2 focus:ring-spotify-green inset-shadow-input border-none placeholder:text-text-secondary disabled:opacity-50" disabled="" id="password" placeholder="Password" type="password"/>
+</div>
+<!-- Remember Me & Forgot Password -->
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-sm cursor-not-allowed">
+<input class="w-5 h-5 rounded-[4px] bg-mid-dark border-border-pill text-spotify-green focus:ring-spotify-green focus:ring-offset-dark-surface focus:ring-offset-2 disabled:opacity-50" disabled="" type="checkbox"/>
+<span class="font-caption text-caption text-text-secondary">Remember me</span>
+</label>
+<a class="font-caption text-caption text-text-base hover:text-spotify-green transition-colors underline opacity-50 pointer-events-none" href="#">Forgot password?</a>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-mid-dark text-text-base font-button-uppercase text-button-uppercase py-md px-lg rounded-full border border-border-pill opacity-50 cursor-not-allowed uppercase tracking-[1.4px]" disabled="" type="submit">
+                    Log In
+                </button>
+</form>
+<!-- Divider -->
+<div class="mt-xl mb-lg flex items-center gap-md relative z-10 opacity-50">
+<div class="h-[1px] bg-border-muted flex-grow"></div>
+<span class="font-caption text-caption text-text-secondary">OR</span>
+<div class="h-[1px] bg-border-muted flex-grow"></div>
+</div>
+<!-- Social Logins -->
+<div class="space-y-md relative z-10 opacity-50">
+<button class="w-full bg-transparent border border-border-pill text-text-base font-button-uppercase text-button-uppercase py-md px-lg rounded-full flex items-center justify-center gap-sm cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined">g_mobiledata</span>
+                    Continue with Google
+                </button>
+<button class="w-full bg-transparent border border-border-pill text-text-base font-button-uppercase text-button-uppercase py-md px-lg rounded-full flex items-center justify-center gap-sm cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined">ios</span>
+                    Continue with Apple
+                </button>
+</div>
+<!-- Sign Up Prompt -->
+<div class="mt-xl text-center relative z-10">
+<p class="font-caption text-caption text-text-secondary">
+                    Don't have an account? 
+                    <a class="text-text-base hover:text-spotify-green font-body-bold text-body-bold transition-colors underline ml-sm" href="#">Sign up for SoundWave</a>
+</p>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-near-black flex flex-col md:flex-row justify-between items-center w-full px-lg py-xl gap-md mt-auto">
+<div class="font-section-title text-section-title text-text-base">
+            SoundWave
+        </div>
+<div class="flex gap-lg">
+<a class="font-caption text-caption text-text-secondary hover:text-text-base underline opacity-80 hover:opacity-100" href="#">Support</a>
+<a class="font-caption text-caption text-text-secondary hover:text-text-base underline opacity-80 hover:opacity-100" href="#">Privacy</a>
+<a class="font-caption text-caption text-text-secondary hover:text-text-base underline opacity-80 hover:opacity-100" href="#">Terms</a>
+</div>
+<div class="font-caption text-caption text-text-secondary">
+            © 2024 SoundWave. All rights reserved.
+        </div>
+</footer>
+</body></html>

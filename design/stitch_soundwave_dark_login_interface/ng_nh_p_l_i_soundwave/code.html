@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Log In - SoundWave</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "surface-tint": "#34e36a",
+                        "announcement": "#539df5",
+                        "inverse-surface": "#dce5d8",
+                        "primary-container": "#1ed760",
+                        "text-emphasis": "#fdfdfd",
+                        "surface-dim": "#0d150d",
+                        "tertiary-fixed": "#ffdbcf",
+                        "secondary-fixed": "#e5e2e1",
+                        "mid-dark": "#1f1f1f",
+                        "spotify-green": "#1ed760",
+                        "surface-container-low": "#151e15",
+                        "on-background": "#dce5d8",
+                        "inverse-primary": "#006e2c",
+                        "primary-fixed": "#69ff89",
+                        "outline-variant": "#3c4a3c",
+                        "warning": "#ffa42b",
+                        "tertiary-container": "#ffa585",
+                        "on-primary": "#003913",
+                        "background": "#0d150d",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "near-black": "#121212",
+                        "tertiary": "#ffccbb",
+                        "surface-container-lowest": "#081008",
+                        "primary-fixed-dim": "#34e36a",
+                        "surface-container-highest": "#2e372e",
+                        "border-muted": "#4d4d4d",
+                        "dark-surface": "#181818",
+                        "inverse-on-surface": "#2a3329",
+                        "mid-card": "#272727",
+                        "text-base": "#ffffff",
+                        "secondary-container": "#4a4949",
+                        "dark-card": "#252525",
+                        "on-surface-variant": "#bbcbb8",
+                        "on-tertiary-container": "#793820",
+                        "on-primary-fixed-variant": "#00531f",
+                        "on-secondary-fixed-variant": "#474646",
+                        "negative": "#f3727f",
+                        "primary": "#4cf479",
+                        "surface-bright": "#333b32",
+                        "on-primary-fixed": "#002108",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "text-near-white": "#cbcbcb",
+                        "on-secondary": "#313030",
+                        "border-pill": "#7c7c7c",
+                        "on-primary-container": "#005721",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "text-secondary": "#b3b3b3",
+                        "on-error-container": "#ffdad6",
+                        "surface": "#0d150d",
+                        "on-secondary-container": "#bab8b7",
+                        "secondary": "#c8c6c5",
+                        "on-error": "#690005",
+                        "surface-variant": "#2e372e",
+                        "error-container": "#93000a",
+                        "outline": "#859583",
+                        "surface-container": "#192219",
+                        "on-surface": "#dce5d8",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-tertiary": "#571f08",
+                        "surface-container-high": "#232c23"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "sidebar-width": "280px",
+                        "lg": "24px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "body-bold": ["plusJakartaSans"],
+                        "section-title": ["plusJakartaSans"],
+                        "body-regular": ["plusJakartaSans"],
+                        "small-bold": ["plusJakartaSans"],
+                        "feature-heading": ["plusJakartaSans"],
+                        "button-uppercase": ["plusJakartaSans"],
+                        "micro": ["plusJakartaSans"],
+                        "nav-link": ["plusJakartaSans"],
+                        "caption": ["plusJakartaSans"]
+                    },
+                    "fontSize": {
+                        "body-bold": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "section-title": ["24px", { "lineHeight": "1.2", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "body-regular": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "small-bold": ["12px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "feature-heading": ["18px", { "lineHeight": "1.3", "letterSpacing": "normal", "fontWeight": "600" }],
+                        "button-uppercase": ["14px", { "lineHeight": "1.0", "letterSpacing": "1.4px", "fontWeight": "700" }],
+                        "micro": ["10px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "nav-link": ["14px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "caption": ["14px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-near-black text-text-base font-body-regular min-h-screen flex flex-col justify-center items-center p-md">
+<!-- Main Login Container -->
+<main class="w-full max-w-[480px] flex flex-col items-center">
+<!-- Brand / Logo Area -->
+<div class="mb-xl text-center">
+<h1 class="font-section-title text-section-title font-bold tracking-tight">SoundWave</h1>
+</div>
+<!-- Login Card -->
+<div class="bg-dark-surface w-full rounded-lg p-xl shadow-[0_8px_24px_rgba(0,0,0,0.5)] border border-border-muted/20">
+<h2 class="font-section-title text-section-title font-bold text-center mb-xl text-text-base">Log in to SoundWave</h2>
+<form class="flex flex-col gap-lg">
+<!-- Email Input Group (ERROR STATE) -->
+<div class="flex flex-col gap-sm">
+<label class="font-body-bold text-body-bold text-text-base" for="email">Email or username</label>
+<div class="relative">
+<!-- Input field with error border styling -->
+<input class="w-full bg-mid-dark border-2 border-negative rounded-[4px] px-md py-md text-text-base font-body-regular text-body-regular focus:outline-none focus:border-negative shadow-[inset_0px_1px_2px_rgba(0,0,0,0.3)] transition-colors" id="email" name="email" placeholder="Email or username" type="text" value="invalid.user@example.com"/>
+</div>
+<!-- Error Message -->
+<div class="flex items-center gap-xs mt-xs text-negative">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">warning</span>
+<span class="font-small-bold text-small-bold">Email hoặc mật khẩu không đúng</span>
+</div>
+</div>
+<!-- Password Input Group -->
+<div class="flex flex-col gap-sm">
+<label class="font-body-bold text-body-bold text-text-base" for="password">Password</label>
+<div class="relative">
+<input class="w-full bg-mid-dark border border-border-muted rounded-[4px] px-md py-md text-text-base font-body-regular text-body-regular hover:border-[#7c7c7c] focus:outline-none focus:border-text-base shadow-[inset_0px_1px_2px_rgba(0,0,0,0.3)] transition-colors" id="password" name="password" placeholder="Password" type="password"/>
+<!-- Optional: Eye icon for password visibility -->
+<button class="absolute right-md top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-base focus:outline-none" type="button">
+<span class="material-symbols-outlined">visibility_off</span>
+</button>
+</div>
+</div>
+<!-- Remember Me Toggle -->
+<div class="flex items-center gap-sm mt-xs">
+<div class="relative flex items-center">
+<input class="peer sr-only" id="remember" type="checkbox"/>
+<div class="w-10 h-6 bg-mid-dark border border-border-muted rounded-full peer-checked:bg-spotify-green peer-checked:border-spotify-green transition-colors cursor-pointer relative">
+<div class="absolute left-1 top-1 w-4 h-4 bg-text-secondary rounded-full peer-checked:translate-x-4 peer-checked:bg-near-black transition-transform"></div>
+</div>
+</div>
+<label class="font-body-regular text-body-regular text-text-secondary cursor-pointer hover:text-text-base transition-colors" for="remember">Remember me</label>
+</div>
+<!-- Submit Button -->
+<button class="w-full mt-md bg-spotify-green text-near-black font-button-uppercase text-button-uppercase py-[14px] rounded-full hover:scale-[1.02] hover:bg-[#34e36a] active:scale-[0.98] transition-all duration-200" type="button">
+                    LOG IN
+                </button>
+</form>
+<div class="mt-lg text-center font-caption text-caption">
+<a class="text-text-base hover:underline hover:text-spotify-green transition-colors" href="#">Forgot your password?</a>
+</div>
+<!-- Divider -->
+<div class="w-full h-px bg-border-muted/30 my-lg"></div>
+<!-- Sign Up Prompt -->
+<div class="text-center">
+<p class="font-body-regular text-body-regular text-text-secondary mb-md">Don't have an account?</p>
+<button class="w-full bg-transparent border border-border-muted text-text-base font-button-uppercase text-button-uppercase py-[14px] rounded-full hover:border-text-base transition-colors" type="button">
+                    SIGN UP FOR SOUNDWAVE
+                </button>
+</div>
+</div>
+</main>
+</body></html>

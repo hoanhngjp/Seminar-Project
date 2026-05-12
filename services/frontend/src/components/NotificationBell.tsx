@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   fetchUnreadNotifications,
   markNotificationRead,
-  type NotificationItem,
-} from '../api/notificationApi';
+} from '../services/notificationService';
+import type { Notification as NotificationItem } from '../types/domain';
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -47,9 +47,9 @@ export default function NotificationBell() {
   const handleNotificationClick = async (notification: NotificationItem) => {
     const idempotencyKey = crypto.randomUUID();
     // Optimistic update — remove from unread list immediately
-    setItems((prev) => prev.filter((n) => n.id !== notification.id));
+    setItems((prev) => prev.filter((n) => n.notificationId !== notification.notificationId));
     try {
-      await markNotificationRead(notification.id, idempotencyKey);
+      await markNotificationRead(notification.notificationId, idempotencyKey);
     } catch {
       // Restore if API fails
       setItems((prev) => [notification, ...prev]);
@@ -95,14 +95,13 @@ export default function NotificationBell() {
 
           {!error && items.map((notification) => (
             <button
-              key={notification.id}
+              key={notification.notificationId}
               role="option"
               aria-selected={false}
               onClick={() => handleNotificationClick(notification)}
               style={styles.notifItem}
             >
-              <p style={styles.notifTitle}>{notification.title}</p>
-              <p style={styles.notifBody}>{notification.body}</p>
+              <p style={styles.notifTitle}>{notification.message}</p>
               <p style={styles.notifTime}>
                 {new Date(notification.createdAt).toLocaleDateString('vi-VN')}
               </p>

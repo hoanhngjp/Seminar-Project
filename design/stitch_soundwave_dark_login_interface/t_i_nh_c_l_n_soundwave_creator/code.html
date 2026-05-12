@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tải nhạc lên - SonicPulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "text-base": "#ffffff",
+                      "inverse-primary": "#006e2c",
+                      "surface-container-highest": "#2e372e",
+                      "text-secondary": "#b3b3b3",
+                      "outline-variant": "#3c4a3c",
+                      "text-emphasis": "#fdfdfd",
+                      "on-secondary-fixed-variant": "#474646",
+                      "on-secondary-container": "#bab8b7",
+                      "inverse-on-surface": "#2a3329",
+                      "surface-container-low": "#151e15",
+                      "on-secondary": "#313030",
+                      "on-error": "#690005",
+                      "on-background": "#dce5d8",
+                      "dark-surface": "#181818",
+                      "secondary-fixed": "#e5e2e1",
+                      "on-primary-fixed": "#002108",
+                      "near-black": "#121212",
+                      "primary-container": "#1ed760",
+                      "text-near-white": "#cbcbcb",
+                      "border-muted": "#4d4d4d",
+                      "on-tertiary-fixed": "#380d00",
+                      "tertiary-fixed-dim": "#ffb59b",
+                      "error-container": "#93000a",
+                      "surface-container-high": "#232c23",
+                      "on-primary-fixed-variant": "#00531f",
+                      "tertiary": "#ffccbb",
+                      "dark-card": "#252525",
+                      "on-tertiary-fixed-variant": "#73341c",
+                      "surface-dim": "#0d150d",
+                      "surface-variant": "#2e372e",
+                      "surface-container-lowest": "#081008",
+                      "on-primary-container": "#005721",
+                      "on-error-container": "#ffdad6",
+                      "surface": "#0d150d",
+                      "primary-fixed": "#69ff89",
+                      "on-tertiary-container": "#793820",
+                      "on-surface-variant": "#bbcbb8",
+                      "mid-dark": "#1f1f1f",
+                      "spotify-green": "#1ed760",
+                      "background": "#0d150d",
+                      "outline": "#859583",
+                      "inverse-surface": "#dce5d8",
+                      "primary": "#4cf479",
+                      "error": "#ffb4ab",
+                      "surface-tint": "#34e36a",
+                      "on-primary": "#003913",
+                      "secondary": "#c8c6c5",
+                      "tertiary-fixed": "#ffdbcf",
+                      "surface-container": "#192219",
+                      "on-tertiary": "#571f08",
+                      "announcement": "#539df5",
+                      "mid-card": "#272727",
+                      "primary-fixed-dim": "#34e36a",
+                      "surface-bright": "#333b32",
+                      "border-pill": "#7c7c7c",
+                      "negative": "#f3727f",
+                      "secondary-container": "#4a4949",
+                      "tertiary-container": "#ffa585",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "on-surface": "#dce5d8",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "warning": "#ffa42b"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "xl": "32px",
+                      "xs": "4px",
+                      "sm": "8px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "sidebar-width": "280px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "feature-heading": [
+                              "plusJakartaSans"
+                      ],
+                      "section-title": [
+                              "plusJakartaSans"
+                      ],
+                      "caption": [
+                              "plusJakartaSans"
+                      ],
+                      "body-bold": [
+                              "plusJakartaSans"
+                      ],
+                      "button-uppercase": [
+                              "plusJakartaSans"
+                      ],
+                      "body-regular": [
+                              "plusJakartaSans"
+                      ],
+                      "small-bold": [
+                              "plusJakartaSans"
+                      ],
+                      "micro": [
+                              "plusJakartaSans"
+                      ],
+                      "nav-link": [
+                              "plusJakartaSans"
+                      ]
+              },
+              "fontSize": {
+                      "feature-heading": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "section-title": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "caption": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-bold": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "button-uppercase": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "1.4px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-regular": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "small-bold": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "micro": [
+                              "10px",
+                              {
+                                      "lineHeight": "normal",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "nav-link": [
+                              "14px",
+                              {
+                                      "lineHeight": "normal",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .inset-input-shadow {
+            box-shadow: rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset;
+        }
+      </style>
+</head>
+<body class="bg-near-black text-text-base font-body-regular min-h-screen flex">
+<!-- SideNavBar (Suppressed as per rules for transactional/upload page) -->
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto">
+<div class="max-w-[720px] mx-auto px-lg py-xl">
+<!-- HEADER -->
+<header class="mb-lg">
+<h1 class="font-section-title text-section-title text-text-base mb-sm flex items-center gap-sm">
+<span class="material-symbols-outlined" data-icon="upload" data-weight="fill" style="font-variation-settings: 'FILL' 1;">upload</span>
+                    Tải nhạc lên
+                </h1>
+<p class="font-caption text-caption text-text-secondary">Chia sẻ âm nhạc của bạn với thế giới</p>
+</header>
+<form class="flex flex-col gap-lg">
+<!-- SECTION 1 - File Upload -->
+<section class="bg-dark-surface rounded-[8px] p-xl">
+<div class="border-2 border-dashed border-border-muted rounded-[8px] p-[48px] flex flex-col items-center justify-center text-center hover:bg-[#1f1f1f] transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[48px] text-text-secondary mb-md" data-icon="music_note">music_note</span>
+<h2 class="font-body-bold text-body-bold text-text-base mb-lg">Kéo thả file nhạc vào đây</h2>
+<button class="font-button-uppercase text-button-uppercase text-text-base bg-transparent border border-border-pill rounded-full px-lg py-md hover:border-text-base hover:text-text-emphasis transition-colors" type="button">
+                            CHỌN FILE
+                        </button>
+</div>
+</section>
+<!-- SECTION 2 - Metadata -->
+<section class="bg-dark-surface rounded-[8px] p-lg flex flex-col gap-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="flex flex-col gap-sm">
+<label class="font-small-bold text-small-bold text-text-secondary">Tên bài hát</label>
+<input class="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base inset-input-shadow border-none focus:ring-0 focus:outline-none" placeholder="Nhập tên bài hát" type="text"/>
+</div>
+<div class="flex flex-col gap-sm">
+<label class="font-small-bold text-small-bold text-text-secondary">Thể loại</label>
+<input class="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base inset-input-shadow border-none focus:ring-0 focus:outline-none" placeholder="VD: Pop, Rock, Rap" type="text"/>
+</div>
+<div class="flex flex-col gap-sm">
+<label class="font-small-bold text-small-bold text-text-secondary">Tâm trạng</label>
+<input class="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base inset-input-shadow border-none focus:ring-0 focus:outline-none" placeholder="Vui vẻ, Buồn, Sôi động" type="text"/>
+</div>
+<div class="flex flex-col gap-sm">
+<label class="font-small-bold text-small-bold text-text-secondary">Ngôn ngữ</label>
+<input class="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base inset-input-shadow border-none focus:ring-0 focus:outline-none" placeholder="Tiếng Việt" type="text"/>
+</div>
+</div>
+<div class="flex items-start gap-lg border-t border-border-muted pt-lg mt-sm">
+<div class="flex flex-col gap-sm w-full md:w-auto">
+<label class="font-small-bold text-small-bold text-text-secondary">Bìa album</label>
+<div class="w-[120px] h-[120px] border-2 border-dashed border-border-muted rounded-[8px] flex items-center justify-center hover:bg-[#1f1f1f] cursor-pointer transition-colors bg-mid-dark">
+<span class="material-symbols-outlined text-text-secondary" data-icon="add_photo_alternate">add_photo_alternate</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-center h-[120px]">
+<div class="flex items-center justify-between p-md bg-mid-dark rounded-[8px]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-text-secondary" data-icon="warning">warning</span>
+<span class="font-body-regular text-body-regular text-text-base">🔞 Nội dung người lớn (Explicit)</span>
+</div>
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-border-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-spotify-green"></div>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3 - Preview -->
+<section class="bg-dark-card rounded-[8px] p-md shadow-[rgba(0,0,0,0.3)_0px_8px_8px]">
+<div class="font-micro text-micro text-text-secondary mb-md tracking-widest">XEM TRƯỚC</div>
+<div class="flex items-center justify-between bg-mid-dark rounded-[8px] p-sm">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-[#2a2a2a] rounded-[4px] flex items-center justify-center">
+<span class="material-symbols-outlined text-text-secondary" data-icon="music_note">music_note</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-text-base">Tên bài hát</span>
+<span class="font-caption text-caption text-text-secondary">Tên nghệ sĩ</span>
+</div>
+</div>
+<button class="w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center text-near-black hover:scale-105 transition-transform" type="button">
+<span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</section>
+<!-- SUBMIT -->
+<div class="flex flex-col items-center gap-md mt-md">
+<button class="w-full bg-spotify-green text-near-black font-button-uppercase text-button-uppercase rounded-full py-lg hover:brightness-110 active:scale-[0.98] transition-all" type="submit">
+                        TẢI LÊN
+                    </button>
+<a class="font-caption text-caption text-text-secondary hover:text-text-base transition-colors" href="#">Hủy</a>
+</div>
+</form>
+</div>
+</main>
+</body></html>

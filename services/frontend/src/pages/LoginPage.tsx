@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiClient, setAccessToken } from '../api/client';
+import { apiClient, setAccessToken } from '../services/api';
 import { useAuthStore } from '../store/authStore';
 import { colors, font, fontSize, fontWeight, radius, shadows, spacing } from '../styles/tokens';
 
