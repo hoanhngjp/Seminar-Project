@@ -132,7 +132,7 @@
 - [X] Phase 0: Build pass 0 errors, 0 warnings (2026-05-12)
 - [X] Phase 1: Shared UI Components (Button, Input, Modal, Toast, Spinner, SkeletonRow, AppShell, Sidebar, BottomPlayerBar) — 55/55 tests xanh (2026-05-12)
 - [X] Phase 2: Auth Screens (Login + Register + error states)
-- [ ] Phase 3: Onboarding Flow (3-step wizard)
+- [ ] Phase 3: Onboarding Flow (3-step wizard) — Đã cập nhật Backend API (PreferredArtists, hasCompletedOnboarding)
 - [ ] Phase 4: App Shell + Home Page
 - [ ] Phase 5: Player + Search
 - [ ] Phase 6: Listening Party
@@ -188,6 +188,7 @@
 | 2026-05-10 | All Services | Prometheus `/metrics` expose trên cùng HTTP port (80) dùng `MapMetrics()` — không cần port riêng 9091 |
 | 2026-05-10 | Auth Service | `POST /api/v1/auth/register` không có trong API Design V2 — thêm cho demo. `USER_ALREADY_EXISTS` chưa có trong error catalogue, dùng `VALIDATION_ERROR` tạm (TODO) |
 | 2026-05-10 | All Services | `using Prometheus;` phải thêm explicit vào Program.cs — không nằm trong implicit usings |
+| 2026-05-12 | User Service | Đổi `PreferredLanguages` thành `PreferredArtists` trong `UserPreferences`, và trả về `hasCompletedOnboarding` từ `GET /users/me` để FE redirect đúng. |
 
 ---
 

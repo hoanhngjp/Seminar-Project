@@ -37,7 +37,7 @@ public class UserProfileServiceTests
     {
         // AC1.2.3: cache-aside — Redis HIT → skip PostgreSQL
         var userId = Guid.NewGuid();
-        var cached = new UserProfileDto(userId, "test@example.com", "test", "Test User", "Listener", null, null, DateTime.UtcNow);
+        var cached = new UserProfileDto(userId, "test@example.com", "test", "Test User", "Listener", null, null, DateTime.UtcNow, false);
         _cacheMock.Setup(c => c.GetAsync<UserProfileDto>($"user:profile:{userId}", It.IsAny<CancellationToken>()))
             .ReturnsAsync(cached);
 

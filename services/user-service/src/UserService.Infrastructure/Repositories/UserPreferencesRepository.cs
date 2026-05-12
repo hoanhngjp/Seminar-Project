@@ -23,7 +23,7 @@ public class UserPreferencesRepository(UserDbContext db) : IUserPreferencesRepos
         else
         {
             existing.PreferredGenres = preferences.PreferredGenres;
-            existing.PreferredLanguages = preferences.PreferredLanguages;
+            existing.PreferredArtists = preferences.PreferredArtists;
             existing.AudioQuality = preferences.AudioQuality;
             existing.UpdatedAt = DateTime.UtcNow;
             db.UserPreferences.Update(existing);

@@ -8,5 +8,6 @@ public record UserProfileDto(
     string Role,
     string? AvatarUrl,
     string? Bio,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    bool HasCompletedOnboarding
 );

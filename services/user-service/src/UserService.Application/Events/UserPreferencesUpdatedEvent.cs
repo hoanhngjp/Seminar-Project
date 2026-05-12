@@ -7,6 +7,6 @@ public record UserPreferencesUpdatedEvent(
     string CorrelationId,
     string UserId,
     List<string> PreferredGenres,
-    List<string> PreferredLanguages,
+    List<string> PreferredArtists,
     string AudioQuality
 ) : IKafkaEvent;

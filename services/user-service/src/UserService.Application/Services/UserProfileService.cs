@@ -29,7 +29,10 @@ public class UserProfileService(
         var user = await userRepo.GetByIdAsync(userId, ct)
             ?? throw new NotFoundException("User");
 
-        var dto = MapToDto(user);
+        var prefs = await prefsRepo.GetByUserIdAsync(userId, ct);
+        var hasCompletedOnboarding = prefs != null && prefs.PreferredGenres.Count >= 3;
+
+        var dto = MapToDto(user, hasCompletedOnboarding);
         await cache.SetAsync(cacheKey, dto, ProfileCacheTtl, ct);
         logger.LogInformation("Profile cache MISS — loaded from DB. UserId={UserId}", userId);
         return (dto, false);
@@ -65,7 +68,7 @@ public class UserProfileService(
             .ToList();
 
         existing.PreferredGenres = genreIds;
-        existing.PreferredLanguages = request.PreferredLanguages;
+        existing.PreferredArtists = request.PreferredArtists;
         existing.AudioQuality = request.AudioQuality;
         existing.UpdatedAt = DateTime.UtcNow;
 
@@ -82,7 +85,7 @@ public class UserProfileService(
             CorrelationId: correlationId,
             UserId: userId.ToString(),
             PreferredGenres: request.PreferredGenres,
-            PreferredLanguages: request.PreferredLanguages,
+            PreferredArtists: request.PreferredArtists,
             AudioQuality: request.AudioQuality
         );
         await kafka.PublishAsync("User_Preferences_Updated", @event, ct);
@@ -95,7 +98,7 @@ public class UserProfileService(
         if (prefs is null) return null;
         return new UserPreferencesDto(
             prefs.PreferredGenres.Select(g => g.ToString()).ToList(),
-            prefs.PreferredLanguages,
+            prefs.PreferredArtists,
             prefs.AudioQuality
         );
     }
@@ -112,6 +115,6 @@ public class UserProfileService(
         Guid artistId, int limit, string? cursor, CancellationToken ct)
         => userRepo.GetFollowerIdsAsync(artistId, limit, cursor, ct);
 
-    private static UserProfileDto MapToDto(User u) => new(
-        u.Id, u.Email, u.Username, u.DisplayName, u.Role, u.AvatarUrl, u.Bio, u.CreatedAt);
+    private static UserProfileDto MapToDto(User u, bool hasCompletedOnboarding) => new(
+        u.Id, u.Email, u.Username, u.DisplayName, u.Role, u.AvatarUrl, u.Bio, u.CreatedAt, hasCompletedOnboarding);
 }

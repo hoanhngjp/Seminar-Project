@@ -28,6 +28,15 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `services/frontend/src/services/recommendationService.ts`, `analyticsService.ts`, `notificationService.ts`, `searchService.ts` — service layer dùng `ApiResponse<T>` types
 
 ### Changed
+
+**Backend & Frontend Alignment — Onboarding API (2026-05-12)**
+- `services/user-service` — Đổi trường `PreferredLanguages` thành `PreferredArtists` trong `UserPreferences`, `UpdatePreferencesRequest`, `UserPreferencesDto` và Kafka event `UserPreferencesUpdatedEvent`.
+- `services/user-service` — API `GET /api/v1/users/me` (và `UserProfileDto`) giờ đây trả về cờ `HasCompletedOnboarding` (kiểm tra `prefs != null && prefs.PreferredGenres.Count >= 3`).
+- `services/user-service/src/UserService.Infrastructure` — Thêm EF Core migration `UpdatePreferencesArtists`.
+- `services/frontend/src/services/authService.ts` — Lấy `hasCompletedOnboarding` từ response của `getMe` và trả về cùng token.
+- `services/frontend/src/store/authStore.ts` — Cập nhật `hasCompletedOnboarding` vào `useAuthStore` và thêm action `completeOnboarding`.
+- `services/frontend/src/features/auth/hooks/useAuth.ts` — Xử lý logic redirect: Nếu role là `Listener` và `hasCompletedOnboarding` là false, tự động redirect sang `/onboarding` sau khi login thành công.
+
 - `services/frontend/src/pages/HomePage.tsx` — migrate imports sang `services/*` + `types/domain`, update property names (`item.id`, `item.reason.text`)
 - `services/frontend/src/pages/SearchPage.tsx` — migrate sang `searchContent()` + `SearchResult` type
 - `services/frontend/src/pages/CreatorDashboardPage.tsx` — migrate sang `AnalyticsStats` shape (dailyListeners[], uniqueUsers) theo API contract

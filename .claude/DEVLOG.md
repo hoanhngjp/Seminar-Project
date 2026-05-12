@@ -4,6 +4,14 @@
 
 **Khi nào ghi:**
 ---
+[2026-05-12] [USER SERVICE / FRONTEND] [DECISION]
+
+**Problem:** FE Onboarding plan cần truyền `artists` lên `POST /users/me/preferences` và cần cờ `hasCompletedOnboarding` sau khi login, nhưng BE hiện tại dùng `PreferredLanguages` và không trả về cờ nào.
+**Root cause:** API implementation cũ của BE không khớp với UI/UX plan mới cho Onboarding (Spotify wizard).
+**Fix / Decision:** Cập nhật BE `UserService`: đổi `PreferredLanguages` thành `PreferredArtists` trong DTOs/Entities, tạo EF Core Migration `UpdatePreferencesArtists`. Sửa `UserProfileDto` để trả về `hasCompletedOnboarding` (logic: `prefs != null && prefs.PreferredGenres.Count >= 3`). FE đọc cờ này ở `authService.login` và redirect sang `/onboarding` nếu false.
+**Lesson / Warning:** Khi Frontend UI/UX thay đổi, nếu API không khớp, cần chủ động update DTO/Entities phía Backend để keep mọi thứ in-sync thay vì dùng workaround trên FE.
+
+---
 [2026-05-12] [FRONTEND] [DECISION]
 
 **Problem:** Chuyển đổi Auth Screens sang thiết kế mới nhưng giữ nguyên tính độc lập với backend cho màn hình đăng ký.

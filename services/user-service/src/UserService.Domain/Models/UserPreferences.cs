@@ -5,7 +5,7 @@ public class UserPreferences
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
     public List<Guid> PreferredGenres { get; set; } = [];
-    public List<string> PreferredLanguages { get; set; } = [];
+    public List<string> PreferredArtists { get; set; } = [];
     public string AudioQuality { get; set; } = "standard";
     public bool Autoplay { get; set; } = true;
     public bool ExplicitContent { get; set; }

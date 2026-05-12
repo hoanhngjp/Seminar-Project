@@ -33,8 +33,8 @@ public class UsersController(IUserService userService, ILogger<UsersController> 
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         cts.CancelAfter(TimeSpan.FromMilliseconds(400));
 
-        if (request.PreferredGenres is null || request.PreferredLanguages is null)
-            throw new ValidationException("preferredGenres and preferredLanguages are required.");
+        if (request.PreferredGenres is null || request.PreferredArtists is null)
+            throw new ValidationException("preferredGenres and preferredArtists are required.");
 
         var userId = GetCurrentUserId();
         var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? Guid.NewGuid().ToString();

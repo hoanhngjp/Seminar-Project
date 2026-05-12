@@ -42,7 +42,7 @@ public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(
             e.Property(p => p.UserId).HasColumnName("user_id").IsRequired();
             e.Property(p => p.PreferredGenres).HasColumnName("preferred_genres")
                 .HasColumnType("uuid[]").HasDefaultValueSql("'{}'");
-            e.Property(p => p.PreferredLanguages).HasColumnName("preferred_languages")
+            e.Property(p => p.PreferredArtists).HasColumnName("preferred_languages")
                 .HasColumnType("varchar(10)[]").HasDefaultValueSql("'{}'");
             e.Property(p => p.AudioQuality).HasColumnName("audio_quality").HasMaxLength(20)
                 .HasDefaultValue("standard").IsRequired();

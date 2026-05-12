@@ -11,6 +11,7 @@ export interface MeData {
   id: string;
   username: string;
   role: Role;
+  hasCompletedOnboarding: boolean;
 }
 
 export const authService = {
@@ -22,6 +23,7 @@ export const authService = {
       accessToken: loginRes.data.data.accessToken,
       userId: meRes.data.data.id,
       role: meRes.data.data.role,
+      hasCompletedOnboarding: meRes.data.data.hasCompletedOnboarding,
     };
   },
   

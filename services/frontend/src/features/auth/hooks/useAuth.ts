@@ -18,10 +18,15 @@ export function useAuth() {
     setIsLocked(false);
     
     try {
-      const { accessToken, userId, role } = await authService.login(credentials);
+      const { accessToken, userId, role, hasCompletedOnboarding } = await authService.login(credentials);
       setAccessToken(accessToken);
-      setAuth(accessToken, userId, role);
-      navigate(role === 'Creator' ? '/dashboard' : '/');
+      setAuth(accessToken, userId, role, hasCompletedOnboarding);
+      
+      if (!hasCompletedOnboarding && role === 'Listener') {
+        navigate('/onboarding');
+      } else {
+        navigate(role === 'Creator' ? '/dashboard' : '/');
+      }
     } catch (err: any) {
       const code = err?.response?.data?.error?.code;
       if (code === 'ACCOUNT_LOCKED') {
