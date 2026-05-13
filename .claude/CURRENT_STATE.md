@@ -139,7 +139,7 @@
 - [X] Phase 5: SearchPage + NowPlayingOverlay — 29/29 tests xanh (2026-05-14)
 - [X] Phase 6: Listening Party — PartyLandingPage, PartyRoomPage, CreateRoomModal, JoinRoomModal, MemberList, HostControls, RoomPlayer, useListeningParty — 78/78 tests xanh (2026-05-14)
 - [X] Phase 6 bugfix: WS proxy (ws:// → http://), RoomPlayer layout (max-w-md removed), Sidebar /party → modal flow, CreateRoomModal onSwitchToJoin — 232/232 xanh (2026-05-14)
-- [ ] Phase 7: Creator Screens (UploadPage)
+- [X] Phase 7: Creator Screens (UploadPage) — 15/15 tests xanh (2026-05-14)
 - [ ] Phase 8: Notifications + Polish
 
 ### Week 10–12 — Polish + Demo
@@ -162,9 +162,9 @@
 
 - **Service/Task:** Frontend Refactor — Spotify Design System (Stitch-based, 13 screens)
 - **File plan cần đọc:** `.claude/plan/t-t-b-y-gi-m-nh-curried-platypus.md`
-- **Checkpoint gần nhất đã pass:** Phase 6 hoàn thành — Listening Party UI — 232/232 tests xanh (2026-05-14)
+- **Checkpoint gần nhất đã pass:** Phase 7 hoàn thành — UploadPage — 247/247 tests xanh (2026-05-14)
 - **Ngày làm việc gần nhất:** 2026-05-14
-- **Tiếp theo:** Phase 7 — Creator Screens (UploadPage)
+- **Tiếp theo:** Phase 8 — Notifications + Polish
 
 ---
 

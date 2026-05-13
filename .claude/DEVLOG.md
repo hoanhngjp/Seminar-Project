@@ -1,5 +1,15 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-14] [FRONTEND / PHASE 7 — UPLOAD PAGE] [BUG]
+
+**Problem:** 4/15 tests thất bại: "shows error for invalid MIME", "shows success screen", "shows error on failure", "resets form". Tất cả timeout ở ~1042ms.
+**Root cause:** `uploadSong()` trong `musicService.ts` dùng `axios.post` với `FormData`. Trong vitest/jsdom environment, axios với FormData không được MSW (`msw/node`) intercept đúng cách — request bị "bypass" thay vì bị intercept, dẫn đến network error → `catch` block set `status = 'error'` thay vì success. Riêng "invalid MIME" test fail vì `userEvent.upload` trên `aria-hidden` input không fire `onChange` event.
+**Fix / Decision:**
+  1. Đổi sang `vi.mock('../../services/musicService')` — mock toàn bộ service thay vì dùng MSW. Đơn giản hơn, không phụ thuộc vào FormData serialization.
+  2. Đổi từ `userEvent.upload` sang `fireEvent.change` + `Object.defineProperty(input, 'files', ...)` cho tất cả file input tests — reliable hơn với hidden inputs.
+**Lesson / Warning:** Khi upload endpoint dùng FormData (multipart): trong vitest tests, không nên dùng MSW để intercept — mock service function trực tiếp bằng `vi.mock`. MSW chỉ reliable cho JSON endpoints. Pattern: `vi.mock('../services/xyzService', () => ({ uploadFn: vi.fn() }))`.
+
+---
 [2026-05-14] [FRONTEND / POST-PHASE 6] [BUG × 3]
 
 **Problem 1:** `http proxy error: /ws/v1/parties/{roomId}/negotiate?negotiateVersion=1` trong Vite dev server console.

@@ -14,6 +14,19 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Added
+
+**Frontend Phase 7 — UploadPage + Creator Screens (2026-05-14)**
+- `src/pages/creator/UploadPage.tsx` — trang tải nhạc lên tại `/upload`: no-sidebar layout (theo Stitch design `t_i_nh_c_l_n_soundwave_creator`), RoleGuard Creator+Admin, form tải file + metadata + preview card + success/error screen
+- `src/features/creator/components/FileDropzone.tsx` — drag-and-drop dropzone với validation MIME type (mp3/wav/ogg) + size ≤50MB, hiện file name + size sau khi chọn, error alert
+- `src/features/creator/components/MetadataForm.tsx` — form 2-column: Tên bài hát, Thể loại, Tâm trạng, Ngôn ngữ, Bìa album uploader, Explicit toggle
+- `src/features/creator/hooks/useUpload.ts` — hook quản lý toàn bộ upload state: file validation, form state, canSubmit guard, submit async, reset after success
+- `src/services/musicService.ts` — `uploadSong()` (FormData POST, Idempotency-Key header) + `getSong()`
+- `src/components/RoleGuard.tsx` — wrapper component gọi `useProtectedRoute(roles)`, dùng cho `/upload` (Creator+Admin only)
+- App.tsx — thêm route `/upload` (UploadPage)
+- Tests: 15/15 xanh — file validation, MIME error, size error, metadata fields, preview update, success screen, error alert, reset flow
+- **Total: 247/247 tests xanh**
+
 ### Fixed
 
 **Frontend — Listening Party UX + WS proxy (2026-05-14)**
