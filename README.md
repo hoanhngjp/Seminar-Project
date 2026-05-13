@@ -49,6 +49,10 @@ cd Seminar-Project
 # 3. Sua secrets - bat buoc truoc khi chay docker-compose
 #    Mo .env, thay moi gia tri changeme_local
 notepad infra/.env
+# Luu y: Dien them cac gia tri sau trong .env:
+#   GCP_PROJECT_ID, GCP_BUCKET_NAME — Google Cloud Storage cho file .mp3
+#   GOOGLE_APPLICATION_CREDENTIALS — duong dan toi Service Account Key JSON
+#   CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET — luu tru anh
 
 # 4. Khoi dong toan bo infrastructure + services
 docker-compose -f infra/docker-compose.yml up -d

@@ -188,6 +188,7 @@
 | 2026-05-10 | All Services | Prometheus `/metrics` expose trên cùng HTTP port (80) dùng `MapMetrics()` — không cần port riêng 9091 |
 | 2026-05-10 | Auth Service | `POST /api/v1/auth/register` không có trong API Design V2 — thêm cho demo. `USER_ALREADY_EXISTS` chưa có trong error catalogue, dùng `VALIDATION_ERROR` tạm (TODO) |
 | 2026-05-10 | All Services | `using Prometheus;` phải thêm explicit vào Program.cs — không nằm trong implicit usings |
+| 2026-05-13 | Music / Streaming / Infra | Chuyển storage backend từ AWS S3/MinIO → Google Cloud Storage (audio .mp3) + Cloudinary (avatar, ảnh bìa). Env vars mới: `GCP_PROJECT_ID`, `GCP_BUCKET_NAME`, `GOOGLE_APPLICATION_CREDENTIALS`, `CLOUDINARY_*`. Service Account Key JSON tại `infra/secrets/google-cloud-key.json` (gitignored). |
 | 2026-05-12 | User Service | Đổi `PreferredLanguages` thành `PreferredArtists` trong `UserPreferences`, và trả về `hasCompletedOnboarding` từ `GET /users/me` để FE redirect đúng. |
 
 ---

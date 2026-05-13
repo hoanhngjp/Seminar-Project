@@ -16,6 +16,17 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Infrastructure — GCS + Cloudinary (2026-05-13)**
+- `infra/.env.example` — Thêm biến `GCP_PROJECT_ID`, `GCP_BUCKET_NAME`, `GOOGLE_APPLICATION_CREDENTIALS` cho Google Cloud Storage (lưu trữ file .mp3)
+- `infra/.env.example` — Thêm biến `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `CLOUDINARY_SECURE` cho Cloudinary (lưu trữ avatar, ảnh bìa album/playlist)
+
+### Changed
+
+**Infrastructure — Chuyển từ AWS S3/MinIO sang GCS + Cloudinary (2026-05-13)**
+- Music Service: storage backend chuyển từ AWS SDK (MinIO local) → Google Cloud Storage SDK cho file audio .mp3
+- Streaming Service: pre-signed URL provider chuyển từ S3 → GCS Signed URL (vẫn giữ 900s expiry)
+- Image assets (avatar, album art): dùng Cloudinary thay vì S3 bucket riêng
+
 **Frontend Refactor Phase 0 — Tailwind CSS + Service Layer (2026-05-12)**
 - `services/frontend/tailwind.config.ts` — Tailwind v4 config với 65 color tokens, fontSize scale, borderRadius, boxShadow từ Google Stitch design output
 - `services/frontend/vite.config.ts` — thêm `@tailwindcss/vite` plugin

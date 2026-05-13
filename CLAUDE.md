@@ -13,8 +13,8 @@ Nền tảng nghe nhạc trực tuyến kiến trúc Microservices, xây dựng 
 | API Gateway | C# | ASP.NET Core + YARP | Redis |
 | Auth Service | C# | ASP.NET Core Identity | PostgreSQL + Redis |
 | User Service | C# | ASP.NET Core + EF Core | PostgreSQL |
-| Music Service | C# | ASP.NET Core + AWS SDK | PostgreSQL / MongoDB |
-| Streaming Service | C# | ASP.NET Core | S3 + CDN |
+| Music Service | C# | ASP.NET Core + GCS SDK + Cloudinary | PostgreSQL / MongoDB |
+| Streaming Service | C# | ASP.NET Core | GCS + CDN |
 | Listening Party Service | C# | ASP.NET Core + SignalR | Redis |
 | Analytics Service | C# | ASP.NET Core | InfluxDB / MongoDB |
 | Notification Service | C# | ASP.NET Core | MongoDB |

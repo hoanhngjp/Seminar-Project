@@ -65,3 +65,4 @@ desktop.ini
 .idea/
 *.swp
 *~
+./infra/secrets/*

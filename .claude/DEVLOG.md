@@ -4,6 +4,17 @@
 
 **Khi nào ghi:**
 ---
+[2026-05-13] [MUSIC SERVICE / STREAMING SERVICE / INFRA] [DECISION]
+
+**Problem:** Dự án cần storage backend thực tế để lưu file .mp3 và ảnh bìa, không muốn phụ thuộc vào AWS credentials hay duy trì MinIO local trong production/demo.
+**Root cause:** MinIO chỉ phù hợp local dev; AWS S3 yêu cầu credit card; nhóm muốn dùng free tier GCS + Cloudinary cho demo.
+**Fix / Decision:** Chuyển storage sang 2 provider:
+  - Google Cloud Storage (GCS): lưu file audio .mp3. Authen qua Service Account Key JSON (`GOOGLE_APPLICATION_CREDENTIALS`). Pre-signed URL vẫn 900s.
+  - Cloudinary: lưu avatar user + ảnh bìa album/playlist. SDK upload qua `CLOUDINARY_API_KEY`/`CLOUDINARY_API_SECRET`.
+  File key JSON phải đặt tại `infra/secrets/google-cloud-key.json` (đã có trong `.gitignore`).
+**Lesson / Warning:** `GOOGLE_APPLICATION_CREDENTIALS` là biến đặc biệt — Google SDK tự động đọc, không cần inject thủ công vào constructor. KHÔNG commit file .json lên Git.
+
+---
 [2026-05-12] [USER SERVICE / FRONTEND] [DECISION]
 
 **Problem:** FE Onboarding plan cần truyền `artists` lên `POST /users/me/preferences` và cần cờ `hasCompletedOnboarding` sau khi login, nhưng BE hiện tại dùng `PreferredLanguages` và không trả về cờ nào.
