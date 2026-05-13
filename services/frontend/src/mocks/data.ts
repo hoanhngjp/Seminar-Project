@@ -214,12 +214,18 @@ export const MOCK_RECOMMENDATIONS = [
 // ─────────────────────────────────────────────
 
 export const MOCK_SEARCH_RESULTS = [
-  { id: 'song-001', name: 'Lạc Trôi',                  type: 'song',   score: 0.98, artist: 'Sơn Tùng M-TP',       coverUrl: 'https://picsum.photos/seed/lactroi/300/300' },
-  { id: 'song-003', name: 'Chuyến Xe',                 type: 'song',   score: 0.91, artist: 'Ngọt',                  coverUrl: 'https://picsum.photos/seed/chuyenxe/300/300' },
-  { id: 'song-006', name: 'Đưa Nhau Đi Trốn',          type: 'song',   score: 0.87, artist: 'Đen Vâu ft. Linh Cáo', coverUrl: 'https://picsum.photos/seed/ditrong/300/300' },
-  { id: 'song-004', name: 'Từ Hôm Nay',                type: 'song',   score: 0.83, artist: 'Vũ.',                  coverUrl: 'https://picsum.photos/seed/tuhomnay/300/300' },
-  { id: 'artist-1', name: 'Sơn Tùng M-TP',             type: 'artist', score: 0.95, coverUrl: 'https://picsum.photos/seed/sontung/300/300' },
-  { id: 'artist-2', name: 'Vũ.',                        type: 'artist', score: 0.80, coverUrl: 'https://picsum.photos/seed/vuartist/300/300' },
+  // Songs
+  { id: 'song-001', name: 'Lạc Trôi',           type: 'song',   score: 0.98, artist: 'Sơn Tùng M-TP',       coverUrl: 'https://picsum.photos/seed/lactroi/300/300',    duration: 245 },
+  { id: 'song-002', name: 'Có Chắc Yêu Là Đây', type: 'song',   score: 0.94, artist: 'Sơn Tùng M-TP',       coverUrl: 'https://picsum.photos/seed/cochac/300/300',     duration: 228 },
+  { id: 'song-003', name: 'Chuyến Xe',           type: 'song',   score: 0.91, artist: 'Ngọt',                 coverUrl: 'https://picsum.photos/seed/chuyenxe/300/300',   duration: 210 },
+  { id: 'song-006', name: 'Đưa Nhau Đi Trốn',   type: 'song',   score: 0.87, artist: 'Đen Vâu ft. Linh Cáo',coverUrl: 'https://picsum.photos/seed/ditrong/300/300',    duration: 267 },
+  { id: 'song-007', name: 'Mang Tiền Về Cho Mẹ',type: 'song',   score: 0.82, artist: 'Đen Vâu',              coverUrl: 'https://picsum.photos/seed/mangtienvemee/300/300', duration: 290 },
+  // Artists
+  { id: 'artist-1', name: 'Sơn Tùng M-TP',      type: 'artist', score: 0.95, coverUrl: 'https://picsum.photos/seed/sontung/300/300' },
+  { id: 'artist-2', name: 'Vũ.',                 type: 'artist', score: 0.80, coverUrl: 'https://picsum.photos/seed/vuartist/300/300' },
+  { id: 'artist-3', name: 'Ngọt',                type: 'artist', score: 0.75, coverUrl: 'https://picsum.photos/seed/ngotband/300/300' },
+  { id: 'artist-4', name: 'Đen Vâu',             type: 'artist', score: 0.70, coverUrl: 'https://picsum.photos/seed/denvau/300/300' },
+  { id: 'artist-5', name: 'Chillies',             type: 'artist', score: 0.65, coverUrl: 'https://picsum.photos/seed/chillies/300/300' },
 ];
 
 // ─────────────────────────────────────────────

@@ -16,6 +16,18 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend Phase 5 — SearchPage + NowPlayingOverlay (2026-05-14)**
+- `src/pages/SearchPage.tsx` — rewrite hoàn toàn theo Stitch design: empty state (genre browse grid 9 cards với gradient), results state (top result card + songs list với duration + artists circular row + related songs grid), 300ms debounce, clear button, dispatch playSong khi click song row
+- `src/features/search/hooks/useSearch.ts` — custom hook quản lý query + debounce 300ms + kết quả; error/timeout → `[]` (per API contract)
+- `src/features/player/components/NowPlayingOverlay.tsx` — fullscreen overlay được trigger từ BottomPlayerBar: album art với green glow shadow, song info, seek bar, playback controls, 3 tabs (Lời bài hát / Hàng chờ / Liên quan) với mock lyrics
+- `src/features/player/components/NowPlayingOverlay.types.ts` — `CurrentSong` interface
+- `src/components/layout/AppShell.tsx` — thêm optional `headerContent?: ReactNode` prop (sticky desktop search bar)
+- `src/mocks/data.ts` — enrich mock search data: 5 songs với duration + coverUrl + artist, 5 artists
+- `src/types/domain.ts` — thêm `duration?: number` vào `SearchResult`
+- SearchPage tests (13/13 xanh): empty state, genre grid, results, top result, song rows, duration format, artists section, no results, genre hide/show, play song dispatch, clear button
+- NowPlayingOverlay tests (16/16 xanh): render, dialog role, album art, play/pause toggle, disabled loading, close, seek, 3 tabs switch, lyrics content
+- **Total: 154/154 tests xanh**
+
 **Frontend — MSW Mock Mode (2026-05-14)**
 - `src/mocks/data.ts` — mock data tiếng Việt: 8 bài hát, 2 user profiles (Listener + Creator), 4 notifications, analytics stats 7d/30d, deterministic heatmap pattern, mock party
 - `src/mocks/handlers.ts` — 18 MSW handlers phủ toàn bộ API: auth (login/refresh/logout), users/me, recommendations, streaming URL, music CRUD, search, notifications (read/read-all), analytics (stats/heatmap/play event), listening party (create/join)

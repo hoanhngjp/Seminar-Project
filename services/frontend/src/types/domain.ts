@@ -38,6 +38,7 @@ export interface SearchResult {
   score: number;
   coverUrl?: string;
   artist?: string;        // only for type=song
+  duration?: number;      // seconds, only for type=song
 }
 
 export interface Notification {

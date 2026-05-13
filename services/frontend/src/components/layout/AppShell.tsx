@@ -4,9 +4,11 @@ import BottomPlayerBar from './BottomPlayerBar';
 
 interface AppShellProps {
   children: ReactNode;
+  /** Optional content rendered in a sticky top header (e.g. search input) */
+  headerContent?: ReactNode;
 }
 
-export default function AppShell({ children }: AppShellProps) {
+export default function AppShell({ children, headerContent }: AppShellProps) {
   return (
     <div className="flex h-screen overflow-hidden bg-near-black text-text-base font-sans selection:bg-spotify-green selection:text-black">
       {/* ── Fixed Sidebar (hidden on mobile) ── */}
@@ -14,6 +16,12 @@ export default function AppShell({ children }: AppShellProps) {
 
       {/* ── Main scrollable content ── */}
       <main className="flex-1 ml-0 lg:ml-[240px] pb-[72px] h-full overflow-y-auto bg-near-black relative">
+        {/* Optional sticky header */}
+        {headerContent && (
+          <header className="sticky top-0 z-40 bg-[rgba(13,21,13,0.85)] backdrop-blur-md flex items-center h-16 px-6 border-b border-border-muted/20">
+            {headerContent}
+          </header>
+        )}
         {children}
       </main>
 

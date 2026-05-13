@@ -136,7 +136,7 @@
 - [X] Phase 4: App Shell + Home Page — Sidebar (user profile + notification dot + Thư viện), SongCard, useRecommendations, HomePage 3-section Stitch layout — 35/35 tests xanh (2026-05-13)
 - [X] Phase 7 (partial): Creator Dashboard — rewrite theo Stitch design: 4 KPI cards, Skip Heatmap, Line Chart, Bar Chart, Donut Chart, auto-load, song selector dropdown — 15/15 tests xanh (2026-05-14)
 - [X] MSW Mock Mode — `VITE_MOCK=true` intercepts tất cả API calls trong `npm run dev`: auth, recommendations, streaming, search, notifications, analytics, party (2026-05-14)
-- [ ] Phase 5: Player + Search
+- [X] Phase 5: SearchPage + NowPlayingOverlay — 29/29 tests xanh (2026-05-14)
 - [ ] Phase 6: Listening Party
 - [ ] Phase 7: Creator Screens
 - [ ] Phase 8: Notifications + Polish
@@ -161,10 +161,9 @@
 
 - **Service/Task:** Frontend Refactor — Spotify Design System (Stitch-based, 13 screens)
 - **File plan cần đọc:** `.claude/plan/t-t-b-y-gi-m-nh-curried-platypus.md`
-- **Checkpoint gần nhất đã pass:** Phase 4 + Creator Dashboard + MSW mock mode hoàn thành — 134/148 tests xanh (2026-05-14)
+- **Checkpoint gần nhất đã pass:** Phase 5 hoàn thành — SearchPage + NowPlayingOverlay — 154/154 tests xanh (2026-05-14)
 - **Ngày làm việc gần nhất:** 2026-05-14
-- **Tiếp theo:** Phase 5 — Player (NowPlayingOverlay) + Search refactor
-- **Known pre-existing failures (chưa fix):** SearchPage 14/23 — lỗi service response shape từ Phase 0
+- **Tiếp theo:** Phase 6 — Listening Party UI
 
 ---
 

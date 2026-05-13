@@ -4,6 +4,25 @@
 
 **Khi nào ghi:**
 ---
+[2026-05-14] [FRONTEND / PHASE 5] [BUG]
+
+**Problem:** 3 loại bug khi chạy test SearchPage + NowPlayingOverlay.
+**Root cause:**
+1. SearchPage renders `const searchInput = <SearchInput/>` ở 2 vị trí DOM (mobile + desktop header). JSDOM không apply `lg:hidden` CSS nên cả 2 input đều visible → `getByRole('textbox', ...)` throw "Found multiple elements". Tương tự cho clear button ("Xóa tìm kiếm").
+2. NowPlayingOverlay: `MOCK_LYRICS[2]` là `'Và chuyến xe này sẽ đi về đâu'` (chữ thường sau "Và") nhưng test assert `'Chuyến xe này sẽ đi về đâu'` (chữ hoa C) — substring không match.
+3. TopResultCard test: mock `song-001` có score 0.98 > `artist-1` score 0.95 → SearchPage chọn song làm top result, nhưng test expect artist.
+**Fix:** (1) Thêm helper `getSearchInput()` dùng `getAllByRole(...)[0]` cho cả input và clear button. (2) Sửa lyrics test assert thành lowercase `'chuyến xe này sẽ đi về đâu'`. (3) Đổi mock `artist-1` score từ 0.95 → 0.99 để artist thực sự là highest-scored item.
+**Lesson / Warning:** Khi component được reuse ở nhiều DOM positions (responsive show/hide bằng CSS class), luôn dùng `getAllBy*` + index thay vì `getBy*`. JSDOM không apply media query / Tailwind responsive classes.
+
+---
+[2026-05-14] [FRONTEND / PHASE 5] [BUG]
+
+**Problem:** Nút play trong BottomPlayerBar và NowPlayingOverlay hiển thị màu đen cho icon.
+**Root cause:** BottomPlayerBar dùng `bg-white text-black` trên button container. NowPlayingOverlay có `bg-text-emphasis` trên button và `text-near-black` hardcoded trên cả 2 thẻ `<span>` bên trong — span override màu từ parent.
+**Fix:** BottomPlayerBar: bỏ `bg-white text-black`, thêm `text-text-secondary hover:text-white`. NowPlayingOverlay: bỏ `bg-text-emphasis`, bỏ `text-near-black` khỏi cả 2 span để thừa kế màu từ button cha.
+**Lesson / Warning:** Khi icon Material Symbols bị hardcode màu trực tiếp trên `<span>`, class màu trên `<button>` cha không có tác dụng. Phải xóa màu trên span để inheritance hoạt động đúng.
+
+---
 [2026-05-14] [FRONTEND / MOCK MODE] [DECISION]
 
 **Problem:** Team cần test giao diện mà không cần backend chạy — mỗi lần demo phải khởi động đầy đủ stack (PostgreSQL, Redis, Kafka, MinIO...) rất tốn thời gian.
