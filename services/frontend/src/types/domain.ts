@@ -67,6 +67,7 @@ export interface AnalyticsStats {
   songId: string;
   dailyListeners: { date: string; count: number }[];
   uniqueUsers: number;
+  completionRate?: number;  // 0–1, e.g. 0.72 = 72%
 }
 
 export interface HeatmapDropOff {

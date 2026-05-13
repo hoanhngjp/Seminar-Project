@@ -4,6 +4,38 @@
 
 **Khi nào ghi:**
 ---
+[2026-05-14] [FRONTEND / MOCK MODE] [DECISION]
+
+**Problem:** Team cần test giao diện mà không cần backend chạy — mỗi lần demo phải khởi động đầy đủ stack (PostgreSQL, Redis, Kafka, MinIO...) rất tốn thời gian.
+**Root cause:** Tất cả services giao tiếp qua HTTP thật, không có lớp mock nào.
+**Fix / Decision:** Dùng MSW (Mock Service Worker) browser mode. Tạo `src/mocks/handlers.ts` với 18 handlers phủ toàn bộ API endpoints. Bật/tắt qua `VITE_MOCK=true/false` trong `.env.development`. Khi bật: mọi axios request bị intercept trước khi ra network. `onUnhandledRequest: 'bypass'` — request không mock sẽ đi qua bình thường.
+**Lesson / Warning:** MSW browser mode cần file `public/mockServiceWorker.js` (generate bằng `npx msw init public/`). File này phải được serve từ cùng origin. Không commit `.env` thật — chỉ `.env.development` với `VITE_MOCK=true` là safe vì không có secret.
+
+---
+[2026-05-14] [FRONTEND / CREATOR DASHBOARD] [DECISION]
+
+**Problem:** `toLocaleString('vi-VN')` dùng `.` làm thousands separator (ví dụ: 8420 → "8.420"), nhưng test dùng regex `/8.420|8,420/` — dấu `.` trong regex match bất kỳ ký tự nào, gây false positive. Ngoài ra `text-transform: uppercase` trong Tailwind chỉ là CSS visual — `getByText('LƯỢT NGHE ĐỘC NHẤT')` sẽ fail vì DOM text vẫn là "Lượt nghe độc nhất".
+**Root cause:** Tailwind utility classes thay đổi visual rendering nhưng không thay đổi DOM text content. `getByText` đọc actual DOM text.
+**Fix / Decision:** (1) Dùng `getByText('8.420')` thay regex. (2) Dùng label text đúng case ("Lượt nghe độc nhất" không phải "LƯỢT NGHE ĐỘC NHẤT"). (3) Khi cùng text xuất hiện nhiều lần (ví dụ "72%" ở KPI card và donut chart), dùng `getAllByText(...).length >= 1` thay vì `getByText`.
+**Lesson / Warning:** Rule chung: khi test text bị style bởi Tailwind (uppercase, lowercase, capitalize) — luôn assert bằng original text case, không phải CSS-transformed. Khi text có thể xuất hiện nhiều nơi trong cùng page layout (vì component dùng trong nhiều section) — dùng `getAllByText`.
+
+---
+[2026-05-13] [FRONTEND / PHASE 4] [DECISION]
+
+**Problem:** Sidebar cần hiển thị tên user thật và notification dot, nhưng data này không có trong authStore.
+**Root cause:** authStore chỉ lưu accessToken, userId, role — không có displayName hay unreadCount.
+**Fix / Decision:** Sidebar tự fetch `/users/me` và `/notifications/unread` trong useEffect khi accessToken có. Không tạo thêm Zustand store — keep isolated per-component. Tests dùng MSW để mock cả 2 endpoints. Tất cả pages render Sidebar qua AppShell phải mock 2 endpoints này.
+**Lesson / Warning:** Mọi page test render AppShell cần mock: (1) `/api/v1/notifications/unread`, (2) `/api/v1/users/me`. Nếu thiếu và `onUnhandledRequest: 'error'`, test sẽ throw.
+
+---
+[2026-05-13] [FRONTEND / PHASE 4] [DECISION]
+
+**Problem:** API `/recommendations` trả 1 flat list, nhưng Stitch design yêu cầu 3 sections riêng biệt.
+**Root cause:** Backend Rule Engine gắn `reason.type` (CONTEXT | TRENDING | PREFERENCE) vào mỗi item.
+**Fix / Decision:** `useRecommendations` hook split items theo `reason.type` thành 3 groups: contextItems, trendingItems, preferenceItems. Mỗi group render vào 1 section riêng trong HomePage. Empty groups không render section (tránh empty heading).
+**Lesson / Warning:** mockItems trong test phải có đủ 3 reason types để test 3 section headings.
+
+---
 [2026-05-13] [MUSIC SERVICE / STREAMING SERVICE / INFRA] [DECISION]
 
 **Problem:** Dự án cần storage backend thực tế để lưu file .mp3 và ảnh bìa, không muốn phụ thuộc vào AWS credentials hay duy trì MinIO local trong production/demo.

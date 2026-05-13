@@ -5,51 +5,110 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import CreatorDashboardPage from '../../pages/CreatorDashboardPage';
 import { useAuthStore } from '../../store/authStore';
+import { usePlayerStore } from '../../store/playerStore';
 
 // ---------------------------------------------------------------------------
-// MSW server
+// Mock data — deterministic values for assertions
+// ---------------------------------------------------------------------------
+
+const MOCK_STATS_7D = {
+  songId: 'song-001',
+  dailyListeners: [
+    { date: '2026-05-07', count: 1240 },
+    { date: '2026-05-08', count: 1580 },
+    { date: '2026-05-09', count: 2100 },
+    { date: '2026-05-10', count: 1870 },
+    { date: '2026-05-11', count: 2340 },
+    { date: '2026-05-12', count: 3100 },
+    { date: '2026-05-13', count: 2760 },
+  ],
+  uniqueUsers: 8420,
+  completionRate: 0.72,
+};
+
+const MOCK_STATS_30D = {
+  ...MOCK_STATS_7D,
+  uniqueUsers: 28640,
+  dailyListeners: Array.from({ length: 30 }, (_, i) => ({
+    date: `2026-04-${String(14 + i).padStart(2, '0')}`,
+    count: 500 + i * 80,
+  })),
+};
+
+const MOCK_HEATMAP = {
+  songId: 'song-001',
+  dropOffs: [8,12,18,25,38,52,65,78,88,90,82,68,52,40,32,24,18,14,10,7].map(
+    (count, i) => ({ second: i * 12, count }),
+  ),
+};
+
+// ---------------------------------------------------------------------------
+// MSW handlers
 // ---------------------------------------------------------------------------
 
 const HEATMAP_URL = 'http://localhost:5000/api/v1/analytics/creator/heatmap/:songId';
-const STATS_URL = 'http://localhost:5000/api/v1/analytics/creator/stats/:songId';
+const STATS_URL   = 'http://localhost:5000/api/v1/analytics/creator/stats/:songId';
+const PROFILE_URL = 'http://localhost:5000/api/v1/users/me';
+const NOTIF_URL   = 'http://localhost:5000/api/v1/notifications/unread';
 
-const mockHeatmap = [
-  { second: 0, skipRate: 0.1 },
-  { second: 1, skipRate: 0.35 }, // red — skipRate > 0.3
-  { second: 2, skipRate: 0.05 },
-];
+const heatmapHandler = http.get(HEATMAP_URL, () =>
+  HttpResponse.json({
+    success: true,
+    data: MOCK_HEATMAP,
+    meta: { apiVersion: 'v1', requestId: 'r1', timestamp: '' },
+    error: null,
+  }),
+);
 
-const mockStats = {
-  totalPlays: 1500,
-  totalSkips: 300,
-  uniqueListeners: 800,
-  avgListenPercent: 72.5,
-};
+const statsHandler = http.get(STATS_URL, ({ request }) => {
+  const url = new URL(request.url);
+  const range = url.searchParams.get('timeRange') ?? '7d';
+  return HttpResponse.json({
+    success: true,
+    data: range === '30d' ? MOCK_STATS_30D : MOCK_STATS_7D,
+    meta: { apiVersion: 'v1', requestId: 'r2', timestamp: '' },
+    error: null,
+  });
+});
 
-const successHandlers = [
-  http.get(HEATMAP_URL, () =>
-    HttpResponse.json({
-      success: true,
-      data: { heatmap: mockHeatmap },
-      meta: { apiVersion: 'v1', requestId: 'r1', timestamp: new Date().toISOString() },
-      error: null,
-    }),
-  ),
-  http.get(STATS_URL, () =>
-    HttpResponse.json({
-      success: true,
-      data: mockStats,
-      meta: { apiVersion: 'v1', requestId: 'r2', timestamp: new Date().toISOString() },
-      error: null,
-    }),
-  ),
-];
+const profileHandler = http.get(PROFILE_URL, () =>
+  HttpResponse.json({
+    success: true,
+    data: { userId: 'u1', email: 'creator@soundwave.vn', displayName: 'Sơn Tùng M-TP', role: 'Creator', hasCompletedOnboarding: true },
+    meta: { apiVersion: 'v1', requestId: 'r3', timestamp: '' },
+    error: null,
+  }),
+);
 
-const server = setupServer(...successHandlers);
+const notifHandler = http.get(NOTIF_URL, () =>
+  HttpResponse.json({
+    success: true,
+    data: { items: [], totalUnread: 0 },
+    meta: { apiVersion: 'v1', requestId: 'r4', timestamp: '' },
+    error: null,
+  }),
+);
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
-afterEach(() => { server.resetHandlers(); useAuthStore.setState({ accessToken: 'tok', userId: 'u1', role: 'Creator' }); });
+const server = setupServer(heatmapHandler, statsHandler, profileHandler, notifHandler);
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => {
+  server.resetHandlers();
+  useAuthStore.setState({ accessToken: null, userId: null, role: null });
+  usePlayerStore.getState().clearSong();
+  server.use(heatmapHandler, statsHandler, profileHandler, notifHandler);
+});
 afterAll(() => server.close());
+
+// ---------------------------------------------------------------------------
+// Navigation mock
+// ---------------------------------------------------------------------------
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  return { ...actual, useNavigate: () => mockNavigate };
+});
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -67,133 +126,181 @@ function renderPage() {
   );
 }
 
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
-  return { ...actual, useNavigate: () => mockNavigate };
+// ---------------------------------------------------------------------------
+// Tests — RBAC
+// ---------------------------------------------------------------------------
+
+describe('CreatorDashboardPage — RBAC', () => {
+  it('renders page heading for Creator role', async () => {
+    setRole('Creator');
+    renderPage();
+    // Use name filter — Sidebar h1 = "SoundWave", page h1 contains "Analytics"
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: /Analytics/ })).toBeInTheDocument(),
+    );
+  });
+
+  it('renders page heading for Admin role', async () => {
+    setRole('Admin');
+    renderPage();
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: /Analytics/ })).toBeInTheDocument(),
+    );
+  });
+
+  it('redirects Listener to / — AC RBAC', () => {
+    setRole('Listener');
+    renderPage();
+    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
+  });
 });
 
 // ---------------------------------------------------------------------------
-// Tests
+// Tests — Auto-load & KPI cards
 // ---------------------------------------------------------------------------
 
-describe('CreatorDashboardPage', () => {
-  describe('RBAC', () => {
-    it('renders dashboard for Creator role', () => {
-      setRole('Creator');
-      renderPage();
-      expect(screen.getByText('Creator Dashboard')).toBeInTheDocument();
-    });
-
-    it('renders dashboard for Admin role', () => {
-      setRole('Admin');
-      renderPage();
-      expect(screen.getByText('Creator Dashboard')).toBeInTheDocument();
-    });
-
-    it('redirects Listener to / — AC RBAC', () => {
-      // Given role = Listener → redirect, không render dashboard
-      setRole('Listener');
-      renderPage();
-      expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
+describe('CreatorDashboardPage — KPI cards', () => {
+  it('auto-loads analytics for default song on mount', async () => {
+    setRole('Creator');
+    renderPage();
+    // Thống kê section appears without any user interaction
+    await waitFor(() => {
+      expect(screen.getByLabelText('Thống kê bài hát')).toBeInTheDocument();
     });
   });
 
-  describe('Song ID search', () => {
-    it('shows empty-state hint before any search', () => {
-      setRole('Creator');
-      renderPage();
-      expect(screen.getByText(/Nhập Song ID ở trên/i)).toBeInTheDocument();
+  it('shows "Lượt nghe độc nhất" KPI with uniqueUsers value', async () => {
+    setRole('Creator');
+    renderPage();
+    // KPI label text is the actual string (Tailwind uppercase class = CSS only)
+    await waitFor(() => {
+      expect(screen.getByText('Lượt nghe độc nhất')).toBeInTheDocument();
     });
+    // 8420 → "8.420" in vi-VN locale (thousands sep = ".")
+    expect(screen.getByText('8.420')).toBeInTheDocument();
+  });
 
-    it('fetches heatmap and stats on form submit', async () => {
-      setRole('Creator');
-      renderPage();
-
-      fireEvent.change(screen.getByLabelText('Song ID'), {
-        target: { value: 'song-001' },
-      });
-      fireEvent.submit(screen.getByRole('button', { name: /Xem Analytics/i }).closest('form')!);
-
-      await waitFor(() => {
-        expect(screen.getByLabelText('Thống kê bài hát')).toBeInTheDocument();
-      });
-
-      // toLocaleString output varies by locale — just verify stats section is visible
-      expect(screen.getByText('72.5%')).toBeInTheDocument(); // avgListenPercent
-      expect(screen.getByText('Lượt nghe')).toBeInTheDocument();
-      expect(screen.getByText('Lượt bỏ qua')).toBeInTheDocument();
+  it('shows "Tỷ lệ nghe đủ bài" KPI as 72%', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      // "Tỷ lệ nghe đủ bài" appears in KPI label AND donut chart heading
+      expect(screen.getAllByText('Tỷ lệ nghe đủ bài').length).toBeGreaterThanOrEqual(1);
     });
+    // "72%" appears in KPI card value AND donut chart center text
+    expect(screen.getAllByText('72%').length).toBeGreaterThanOrEqual(1);
+  });
 
-    it('shows heatmap with correct aria label', async () => {
-      setRole('Creator');
-      renderPage();
-
-      fireEvent.change(screen.getByLabelText('Song ID'), { target: { value: 'song-001' } });
-      fireEvent.submit(screen.getByRole('button', { name: /Xem Analytics/i }).closest('form')!);
-
-      await waitFor(() => {
-        expect(screen.getByRole('img', { name: /Heatmap bỏ qua/i })).toBeInTheDocument();
-      });
+  it('shows "Lượt nghe hôm nay" KPI with last dailyListeners count', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByText('Lượt nghe hôm nay')).toBeInTheDocument();
     });
+    // Last entry: count=2760 → "2.760" vi-VN
+    expect(screen.getByText('2.760')).toBeInTheDocument();
+  });
+});
 
-    it('ignores submit when input is empty', () => {
-      setRole('Creator');
-      renderPage();
+// ---------------------------------------------------------------------------
+// Tests — Charts
+// ---------------------------------------------------------------------------
 
-      fireEvent.submit(screen.getByRole('button', { name: /Xem Analytics/i }).closest('form')!);
-      // activeSongId never set — no loading text, no API call
-      expect(screen.queryByText('Đang tải...')).not.toBeInTheDocument();
+describe('CreatorDashboardPage — charts', () => {
+  it('renders skip heatmap with aria role', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByRole('img', { name: /Heatmap bỏ qua/i })).toBeInTheDocument();
     });
   });
 
-  describe('Time range selector', () => {
-    it('shows time range buttons after search', async () => {
-      setRole('Creator');
-      renderPage();
-
-      fireEvent.change(screen.getByLabelText('Song ID'), { target: { value: 'song-001' } });
-      fireEvent.submit(screen.getByRole('button', { name: /Xem Analytics/i }).closest('form')!);
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /7 ngày/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /30 ngày/i })).toBeInTheDocument();
-      });
+  it('renders section headings for all charts', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByText('Heatmap tỷ lệ bỏ qua (skip)')).toBeInTheDocument();
+      expect(screen.getByText('Lượt nghe theo ngày')).toBeInTheDocument();
+      expect(screen.getByText('Người nghe theo ngày')).toBeInTheDocument();
+      // "Tỷ lệ nghe đủ bài" appears in both KPI label and donut chart heading
+      expect(screen.getAllByText('Tỷ lệ nghe đủ bài').length).toBeGreaterThanOrEqual(1);
     });
+  });
+});
 
-    it('switches to 30d and reloads data', async () => {
-      setRole('Creator');
-      renderPage();
+// ---------------------------------------------------------------------------
+// Tests — Time range
+// ---------------------------------------------------------------------------
 
-      fireEvent.change(screen.getByLabelText('Song ID'), { target: { value: 'song-001' } });
-      fireEvent.submit(screen.getByRole('button', { name: /Xem Analytics/i }).closest('form')!);
-
-      await waitFor(() => screen.getByRole('button', { name: /30 ngày/i }));
-
-      fireEvent.click(screen.getByRole('button', { name: /30 ngày/i }));
-
-      await waitFor(() => {
-        const btn = screen.getByRole('button', { name: /30 ngày/i });
-        expect(btn).toHaveAttribute('aria-pressed', 'true');
-      });
+describe('CreatorDashboardPage — time range', () => {
+  it('renders 7 ngày and 30 ngày buttons', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /7 ngày/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /30 ngày/i })).toBeInTheDocument();
     });
   });
 
-  describe('Error state', () => {
-    it('shows error message when API fails', async () => {
-      server.use(
-        http.get(HEATMAP_URL, () => HttpResponse.json({ success: false }, { status: 500 })),
-      );
-      setRole('Creator');
-      renderPage();
-
-      fireEvent.change(screen.getByLabelText('Song ID'), { target: { value: 'bad-id' } });
-      fireEvent.submit(screen.getByRole('button', { name: /Xem Analytics/i }).closest('form')!);
-
-      await waitFor(() => {
-        expect(screen.getByRole('alert')).toBeInTheDocument();
-      });
-      expect(screen.getByText(/Không thể tải dữ liệu/i)).toBeInTheDocument();
+  it('7 ngày button is active by default', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /7 ngày/i })).toHaveAttribute('aria-pressed', 'true');
     });
+  });
+
+  it('switches to 30d and reloads data — shows 30 ngày active', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => screen.getByRole('button', { name: /30 ngày/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: /30 ngày/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /30 ngày/i })).toHaveAttribute('aria-pressed', 'true');
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests — Song selector
+// ---------------------------------------------------------------------------
+
+describe('CreatorDashboardPage — song selector', () => {
+  it('shows default song "Lạc Trôi" in selector', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByText('Lạc Trôi')).toBeInTheDocument();
+    });
+  });
+
+  it('opens dropdown and shows other song options on click', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => screen.getByText('Lạc Trôi'));
+
+    fireEvent.click(screen.getByText('Lạc Trôi'));
+    expect(screen.getByText('Chuyến Xe')).toBeInTheDocument();
+    expect(screen.getByText('Đưa Nhau Đi Trốn')).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests — Error state
+// ---------------------------------------------------------------------------
+
+describe('CreatorDashboardPage — error state', () => {
+  it('shows error when API fails', async () => {
+    server.use(
+      http.get(STATS_URL, () => HttpResponse.json({ success: false }, { status: 500 })),
+    );
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+    });
+    expect(screen.getByText(/Không thể tải dữ liệu/i)).toBeInTheDocument();
   });
 });

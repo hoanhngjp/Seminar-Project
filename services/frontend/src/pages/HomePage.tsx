@@ -1,216 +1,188 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppShell from '../components/layout/AppShell';
 import { usePlayerStore } from '../store/playerStore';
-import { colors, font, fontSize, fontWeight, radius, spacing } from '../styles/tokens';
-import { fetchRecommendations } from '../services/recommendationService';
-import { getTimeContext } from '../utils/time';
 import { useAuthStore } from '../store/authStore';
+import { useRecommendations } from '../features/recommendation/hooks/useRecommendations';
+import SongCard from '../features/recommendation/components/SongCard';
+import SkeletonRow from '../components/ui/SkeletonRow';
 import type { RecommendedSong } from '../types/domain';
 
+const CONTEXT_LABEL: Record<string, string> = {
+  morning:   'Gợi ý cho bạn sáng nay',
+  afternoon: 'Gợi ý buổi chiều',
+  evening:   'Gợi ý buổi tối',
+  night:     'Nhạc khuya cho bạn',
+};
+
+const CONTEXT_SUB: Record<string, string> = {
+  morning:   'Vì bạn nghe nhạc buổi sáng',
+  afternoon: 'Vì bạn nghe nhạc buổi chiều',
+  evening:   'Vì bạn nghe nhạc buổi tối',
+  night:     'Nhạc nhẹ nhàng cho đêm muộn',
+};
+
+function HorizontalSection({
+  title,
+  subtitle,
+  items,
+  onPlay,
+  showAll,
+}: {
+  title: string;
+  subtitle?: string;
+  items: RecommendedSong[];
+  onPlay: (song: RecommendedSong) => void;
+  showAll?: boolean;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <section>
+      <div className="mb-4 flex justify-between items-end">
+        <div>
+          <h3 className="text-[18px] font-semibold text-text-base">{title}</h3>
+          {subtitle && <p className="text-text-secondary text-sm">{subtitle}</p>}
+        </div>
+        {showAll && (
+          <span className="text-text-secondary text-sm hover:underline cursor-pointer">
+            Hiển thị tất cả
+          </span>
+        )}
+      </div>
+      <div className="flex gap-4 overflow-x-auto pb-4 -mx-lg px-lg snap-x">
+        {items.map((song) => (
+          <SongCard key={song.id} song={song} onPlay={onPlay} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function GridSection({
+  title,
+  items,
+  onPlay,
+}: {
+  title: string;
+  items: RecommendedSong[];
+  onPlay: (song: RecommendedSong) => void;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <section className="pb-10">
+      <div className="mb-4">
+        <h3 className="text-[18px] font-semibold text-text-base">{title}</h3>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {items.map((song) => (
+          <SongCard key={song.id} song={song} onPlay={onPlay} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function HomePage() {
-  const navigate = useNavigate();
+  const navigate    = useNavigate();
   const accessToken = useAuthStore((s) => s.accessToken);
+  const setSong     = usePlayerStore((s) => s.setSong);
 
   useEffect(() => {
     if (!accessToken) navigate('/login', { replace: true });
   }, [accessToken, navigate]);
 
-  const [items, setItems] = useState<RecommendedSong[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const setSong = usePlayerStore((s) => s.setSong);
-  const [context] = useState(() => getTimeContext());
+  const { contextItems, trendingItems, preferenceItems, loading, error, context, reload } =
+    useRecommendations();
 
-  const loadRecommendations = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchRecommendations(context);
-      setItems(data);
-    } catch {
-      setError('Không thể tải gợi ý. Thử lại.');
-    } finally {
-      setLoading(false);
-    }
-  }, [context]);
-
-  useEffect(() => {
-    if (accessToken) loadRecommendations();
-  }, [accessToken, loadRecommendations]);
+  const handlePlay = (song: RecommendedSong) => {
+    setSong({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl });
+  };
 
   if (!accessToken) return null;
 
+  const allEmpty = !loading && !error && contextItems.length === 0 && trendingItems.length === 0 && preferenceItems.length === 0;
+
   return (
     <AppShell>
-      <main style={styles.main}>
-        <h2 style={styles.sectionTitle}>
-          Gợi ý cho bạn
-            <span style={styles.contextBadge}>{context}</span>
+      {/* ── Sticky Header ── */}
+      <header className="sticky top-0 z-40 w-full bg-near-black/80 backdrop-blur-md flex justify-between items-center h-16 px-lg border-b border-transparent">
+        <h2 className="text-[24px] font-bold text-text-emphasis tracking-tight">
+          {CONTEXT_LABEL[context] ?? 'Chào mừng trở lại'} 👋
         </h2>
+        <div className="flex items-center gap-4">
+          <button className="bg-white text-black font-bold px-4 py-1.5 rounded-full hover:scale-105 transition-transform text-xs tracking-wider">
+            Nâng cấp
+          </button>
+          <span className="material-symbols-outlined text-text-secondary hover:text-white cursor-pointer transition-colors">
+            settings
+          </span>
+        </div>
+      </header>
 
+      {/* ── Content ── */}
+      <div className="p-lg space-y-10">
+        {/* Loading skeletons */}
         {loading && (
-          <div style={styles.grid} aria-label="Đang tải danh sách nhạc">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} style={styles.skeleton} aria-hidden="true" />
+          <div aria-label="Đang tải danh sách nhạc" className="space-y-10">
+            {[0, 1].map((s) => (
+              <section key={s}>
+                <div className="mb-4 h-5 w-40 bg-mid-dark rounded animate-shimmer" />
+                <div className="flex gap-4 overflow-hidden">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <SkeletonRow key={i} />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         )}
 
+        {/* Error */}
         {!loading && error && (
-          <div style={styles.errorBox} role="alert">
-            <p style={styles.errorText}>{error}</p>
-            <button onClick={loadRecommendations} style={styles.retryBtn}>
+          <div
+            role="alert"
+            className="flex flex-col items-center gap-4 py-16 text-center"
+          >
+            <p className="text-negative">{error}</p>
+            <button
+              onClick={reload}
+              className="px-6 py-2.5 bg-spotify-green text-black font-bold rounded-full hover:scale-105 transition-transform text-sm tracking-wider"
+            >
               Thử lại
             </button>
           </div>
         )}
 
-        {!loading && !error && items.length === 0 && (
-          <p style={styles.emptyText}>
+        {/* Empty */}
+        {allEmpty && (
+          <p className="text-text-secondary text-center py-16">
             Không có gợi ý. Hãy nghe nhạc để cá nhân hoá!
           </p>
         )}
 
-        {!loading && !error && items.length > 0 && (
-          <div style={styles.grid}>
-            {items.map((item) => (
-              <button
-                key={item.id}
-                style={styles.card}
-                onClick={() => setSong({ songId: item.id, title: item.title, artist: item.artist })}
-                aria-label={`Phát ${item.title} — ${item.artist}`}
-              >
-                <div style={styles.coverPlaceholder} aria-hidden="true">🎵</div>
-                <div style={styles.cardBody}>
-                  <p style={styles.cardTitle}>{item.title}</p>
-                  <p style={styles.cardArtist}>{item.artist}</p>
-                  {item.reason.text && (
-                    <span data-testid="explain-badge" style={styles.explainBadge}>
-                      {item.reason.text}
-                    </span>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
+        {/* Sections */}
+        {!loading && !error && (
+          <>
+            <HorizontalSection
+              title={CONTEXT_LABEL[context] ?? 'Gợi ý cho bạn'}
+              subtitle={CONTEXT_SUB[context]}
+              items={contextItems}
+              onPlay={handlePlay}
+            />
+            <HorizontalSection
+              title="Đang thịnh hành"
+              items={trendingItems}
+              onPlay={handlePlay}
+              showAll
+            />
+            <GridSection
+              title="Vì bạn nghe"
+              items={preferenceItems}
+              onPlay={handlePlay}
+            />
+          </>
         )}
-      </main>
+      </div>
     </AppShell>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  main: {
-    padding: '2rem',
-    width: '100%',
-    boxSizing: 'border-box',
-  },
-  sectionTitle: {
-    margin: `0 0 ${spacing[4]}px`,
-    fontSize: fontSize.section,
-    fontWeight: fontWeight.bold,
-    display: 'flex',
-    alignItems: 'center',
-    gap: `${spacing[2]}px`,
-    fontFamily: font.title,
-    color: colors.text,
-  },
-  contextBadge: {
-    fontSize: fontSize.caption,
-    fontWeight: fontWeight.semibold,
-    background: '#1ed76020',
-    color: colors.accent,
-    borderRadius: radius.subtle,
-    padding: '2px 6px',
-    textTransform: 'capitalize',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-    gap: `${spacing[4]}px`,
-  },
-  skeleton: {
-    height: 220,
-    borderRadius: radius.card,
-    background: colors.surfaceCard,
-    animation: 'shimmer 1.5s infinite',
-  },
-  card: {
-    background: colors.surface,
-    border: 'none',
-    borderRadius: radius.card,
-    padding: `${spacing[4]}px`,
-    cursor: 'pointer',
-    textAlign: 'left',
-    color: colors.text,
-    transition: 'background 0.15s',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: `${spacing[2]}px`,
-  },
-  coverPlaceholder: {
-    fontSize: '2.5rem',
-    textAlign: 'center',
-    padding: `${spacing[2]}px 0`,
-  },
-  cardBody: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: `${spacing[1]}px`,
-  },
-  cardTitle: {
-    margin: 0,
-    fontWeight: fontWeight.bold,
-    fontSize: fontSize.body,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    fontFamily: font.title,
-  },
-  cardArtist: {
-    margin: 0,
-    fontSize: fontSize.caption,
-    color: colors.textMuted,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  explainBadge: {
-    fontSize: fontSize.small,
-    color: colors.accent,
-    background: '#1ed76020',
-    borderRadius: radius.subtle,
-    padding: '2px 6px',
-    display: 'inline-block',
-    marginTop: `${spacing[1]}px`,
-  },
-  errorBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: `${spacing[4]}px`,
-    padding: `${spacing[6]}px`,
-    textAlign: 'center',
-  },
-  errorText: {
-    margin: 0,
-    color: colors.error,
-  },
-  retryBtn: {
-    padding: '10px 24px',
-    background: colors.accent,
-    color: '#000000',
-    border: 'none',
-    borderRadius: radius.fullPill,
-    cursor: 'pointer',
-    fontWeight: fontWeight.bold,
-    textTransform: 'uppercase',
-    letterSpacing: '1.4px',
-  },
-  emptyText: {
-    color: colors.textMuted,
-    textAlign: 'center',
-    padding: `${spacing[6]}px`,
-  },
-};

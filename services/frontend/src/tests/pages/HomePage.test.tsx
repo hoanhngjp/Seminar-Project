@@ -5,39 +5,49 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import HomePage from '../../pages/HomePage';
 import { useAuthStore } from '../../store/authStore';
+import { usePlayerStore } from '../../store/playerStore';
 import { getTimeContext } from '../../utils/time';
 
 // ---------------------------------------------------------------------------
-// MSW server — intercept axios calls to http://localhost:5000
+// URLs
 // ---------------------------------------------------------------------------
 
 const RECOMMENDATIONS_URL = 'http://localhost:5000/api/v1/recommendations';
-const STREAMING_URL = 'http://localhost:5000/api/v1/streaming/:songId/url';
+const STREAMING_URL       = 'http://localhost:5000/api/v1/streaming/:songId/url';
+const NOTIFICATIONS_URL   = 'http://localhost:5000/api/v1/notifications/unread';
+const PROFILE_URL         = 'http://localhost:5000/api/v1/users/me';
 
-// Mock data matches Python FastAPI response shape (snake_case)
+// ---------------------------------------------------------------------------
+// Mock data — items distributed across 3 reason types
+// ---------------------------------------------------------------------------
+
 const mockItems = [
   {
     song_id: 'song-001',
-    title: 'Lạc Trôi',
-    artist: 'Sơn Tùng M-TP',
+    title:   'Lạc Trôi',
+    artist:  'Sơn Tùng M-TP',
     thumbnail: '',
-    reason: { type: 'CONTEXT', text: 'Phù hợp buổi sáng' },
+    reason:  { type: 'CONTEXT', text: 'Phù hợp buổi sáng' },
   },
   {
     song_id: 'song-002',
-    title: 'Có Chắc Yêu Là Đây',
-    artist: 'Sơn Tùng M-TP',
+    title:   'Có Chắc Yêu Là Đây',
+    artist:  'Sơn Tùng M-TP',
     thumbnail: '',
-    reason: { type: 'TRENDING', text: 'Trending' },
+    reason:  { type: 'TRENDING', text: 'Trending' },
   },
   {
     song_id: 'song-003',
-    title: 'Ngày Mai',
-    artist: 'Vũ.',
+    title:   'Ngày Mai',
+    artist:  'Vũ.',
     thumbnail: '',
-    reason: { type: 'TRENDING', text: '' },
+    reason:  { type: 'PREFERENCE', text: '' },
   },
 ];
+
+// ---------------------------------------------------------------------------
+// MSW handlers
+// ---------------------------------------------------------------------------
 
 const successHandler = http.get(RECOMMENDATIONS_URL, () =>
   HttpResponse.json({
@@ -60,35 +70,41 @@ const errorHandler = http.get(RECOMMENDATIONS_URL, () =>
   ),
 );
 
-const NOTIFICATIONS_URL = 'http://localhost:5000/api/v1/notifications/unread';
-const notificationsHandler = http.get(NOTIFICATIONS_URL, () => HttpResponse.json({
-  success: true,
-  data: { items: [], totalUnread: 0 },
-  error: null,
-}));
+const notificationsHandler = http.get(NOTIFICATIONS_URL, () =>
+  HttpResponse.json({
+    success: true,
+    data: { items: [], totalUnread: 0 },
+    meta: { apiVersion: 'v1', requestId: 'r2', timestamp: '' },
+    error: null,
+  }),
+);
 
-const server = setupServer(successHandler, notificationsHandler);
+const profileHandler = http.get(PROFILE_URL, () =>
+  HttpResponse.json({
+    success: true,
+    data: { userId: 'u1', email: 'test@example.com', displayName: 'Nghiệp', role: 'Listener', hasCompletedOnboarding: true },
+    meta: { apiVersion: 'v1', requestId: 'r3', timestamp: '' },
+    error: null,
+  }),
+);
+
+const server = setupServer(successHandler, notificationsHandler, profileHandler);
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
   server.resetHandlers();
-  // Reset Zustand store between tests
   useAuthStore.setState({ accessToken: null, userId: null, role: null });
-  // Add fallback for notifications when resetHandlers happens
-  server.use(notificationsHandler);
+  usePlayerStore.getState().clearSong();
+  server.use(notificationsHandler, profileHandler);
 });
 afterAll(() => server.close());
 
 // ---------------------------------------------------------------------------
-// Helper: render with auth token set
+// Helper
 // ---------------------------------------------------------------------------
 
 function renderAuthenticated() {
-  useAuthStore.setState({
-    accessToken: 'mock-token',
-    userId: 'user-001',
-    role: 'Listener',
-  });
+  useAuthStore.setState({ accessToken: 'mock-token', userId: 'user-001', role: 'Listener' });
   return render(
     <MemoryRouter initialEntries={['/']}>
       <HomePage />
@@ -97,79 +113,85 @@ function renderAuthenticated() {
 }
 
 // ---------------------------------------------------------------------------
-// Tests
+// Tests — Auth redirect
 // ---------------------------------------------------------------------------
 
-describe('HomePage', () => {
-  // ─── Auth redirect ───────────────────────────────────────────────────────
-
+describe('HomePage — auth', () => {
   it('redirects to /login when not authenticated', () => {
-    // No token set — useAuthStore has accessToken: null
     const { container } = render(
       <MemoryRouter initialEntries={['/']}>
         <HomePage />
       </MemoryRouter>,
     );
-    // Component returns null and triggers navigate('/login')
-    // The rendered output should be empty (null returned before render)
     expect(container).toBeEmptyDOMElement();
   });
+});
 
-  // ─── Loading state ───────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// Tests — Loading state
+// ---------------------------------------------------------------------------
 
+describe('HomePage — loading', () => {
   it('shows loading skeleton while fetching', () => {
     renderAuthenticated();
-    // Skeleton grid should be present immediately before fetch resolves
     expect(screen.getByLabelText('Đang tải danh sách nhạc')).toBeInTheDocument();
   });
+});
 
-  // ─── Happy path ──────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// Tests — Happy path (3 sections)
+// ---------------------------------------------------------------------------
 
-  it('renders recommendation list after successful fetch', async () => {
+describe('HomePage — song rendering', () => {
+  it('renders all song titles after fetch', async () => {
     renderAuthenticated();
-
     await waitFor(() => {
       expect(screen.getByText('Lạc Trôi')).toBeInTheDocument();
     });
-
     expect(screen.getByText('Có Chắc Yêu Là Đây')).toBeInTheDocument();
     expect(screen.getByText('Ngày Mai')).toBeInTheDocument();
   });
 
   it('renders artist names for each song', async () => {
     renderAuthenticated();
-
     await waitFor(() => {
       expect(screen.getAllByText('Sơn Tùng M-TP')).toHaveLength(2);
     });
     expect(screen.getByText('Vũ.')).toBeInTheDocument();
   });
 
-  it('renders explainText badge when present', async () => {
+  it('renders explain badge when reason.text is present', async () => {
     renderAuthenticated();
-
     await waitFor(() => {
       expect(screen.getByText('Phù hợp buổi sáng')).toBeInTheDocument();
     });
     expect(screen.getByText('Trending')).toBeInTheDocument();
   });
 
-  it('does NOT render explainText badge when field is empty', async () => {
+  it('does NOT render explain badge when reason.text is empty', async () => {
     renderAuthenticated();
-
     await waitFor(() => {
       expect(screen.getByText('Ngày Mai')).toBeInTheDocument();
     });
-    // mockItems has 3 songs: 2 with non-empty explainText, 1 with ''
-    // Only 2 badge spans should be rendered
-    const badges = screen.getAllByTestId('explain-badge');
-    expect(badges).toHaveLength(2);
+    // song-001: 'Phù hợp buổi sáng', song-002: 'Trending', song-003: '' → 2 badges
+    expect(screen.getAllByTestId('explain-badge')).toHaveLength(2);
   });
 
-  // ─── Click → AudioPlayer mounts ──────────────────────────────────────────
+  it('renders section headings for non-empty groups', async () => {
+    renderAuthenticated();
+    await waitFor(() => {
+      expect(screen.getByText('Đang thịnh hành')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Vì bạn nghe')).toBeInTheDocument();
+  });
+});
 
+// ---------------------------------------------------------------------------
+// Tests — Playback
+// ---------------------------------------------------------------------------
+
+describe('HomePage — playback', () => {
   it('mounts AudioPlayer when a song card is clicked', async () => {
-    // Also stub the streaming URL so AudioPlayer doesn't throw
     server.use(
       http.get(STREAMING_URL, () =>
         HttpResponse.json({
@@ -182,14 +204,9 @@ describe('HomePage', () => {
     );
 
     renderAuthenticated();
-
-    await waitFor(() => {
-      expect(screen.getByText('Lạc Trôi')).toBeInTheDocument();
-    });
+    await waitFor(() => expect(screen.getByText('Lạc Trôi')).toBeInTheDocument());
 
     fireEvent.click(screen.getByLabelText('Phát Lạc Trôi — Sơn Tùng M-TP'));
-
-    // PlayerBar should appear containing the close button
     expect(screen.getByLabelText('Đóng player')).toBeInTheDocument();
   });
 
@@ -206,10 +223,7 @@ describe('HomePage', () => {
     );
 
     renderAuthenticated();
-
-    await waitFor(() => {
-      expect(screen.getByText('Lạc Trôi')).toBeInTheDocument();
-    });
+    await waitFor(() => expect(screen.getByText('Lạc Trôi')).toBeInTheDocument());
 
     fireEvent.click(screen.getByLabelText('Phát Lạc Trôi — Sơn Tùng M-TP'));
     expect(screen.getByLabelText('Đóng player')).toBeInTheDocument();
@@ -219,13 +233,16 @@ describe('HomePage', () => {
       expect(screen.queryByLabelText('Đóng player')).not.toBeInTheDocument();
     });
   });
+});
 
-  // ─── Error state ─────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// Tests — Error + retry
+// ---------------------------------------------------------------------------
 
+describe('HomePage — error state', () => {
   it('shows error message when API returns 500', async () => {
     server.use(errorHandler);
     renderAuthenticated();
-
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
     });
@@ -234,7 +251,6 @@ describe('HomePage', () => {
   });
 
   it('retry button re-fetches recommendations', async () => {
-    // First call fails, second succeeds
     let callCount = 0;
     server.use(
       http.get(RECOMMENDATIONS_URL, () => {
@@ -255,21 +271,18 @@ describe('HomePage', () => {
     );
 
     renderAuthenticated();
-
-    await waitFor(() => {
-      expect(screen.getByText('Thử lại')).toBeInTheDocument();
-    });
-
+    await waitFor(() => expect(screen.getByText('Thử lại')).toBeInTheDocument());
     fireEvent.click(screen.getByText('Thử lại'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Lạc Trôi')).toBeInTheDocument();
-    });
+    await waitFor(() => expect(screen.getByText('Lạc Trôi')).toBeInTheDocument());
     expect(callCount).toBe(2);
   });
+});
 
-  // ─── Empty state ─────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// Tests — Empty state
+// ---------------------------------------------------------------------------
 
+describe('HomePage — empty state', () => {
   it('shows empty state when API returns empty list', async () => {
     server.use(
       http.get(RECOMMENDATIONS_URL, () =>
@@ -281,9 +294,7 @@ describe('HomePage', () => {
         }),
       ),
     );
-
     renderAuthenticated();
-
     await waitFor(() => {
       expect(
         screen.getByText('Không có gợi ý. Hãy nghe nhạc để cá nhân hoá!'),

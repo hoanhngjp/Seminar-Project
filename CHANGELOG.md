@@ -16,6 +16,31 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — MSW Mock Mode (2026-05-14)**
+- `src/mocks/data.ts` — mock data tiếng Việt: 8 bài hát, 2 user profiles (Listener + Creator), 4 notifications, analytics stats 7d/30d, deterministic heatmap pattern, mock party
+- `src/mocks/handlers.ts` — 18 MSW handlers phủ toàn bộ API: auth (login/refresh/logout), users/me, recommendations, streaming URL, music CRUD, search, notifications (read/read-all), analytics (stats/heatmap/play event), listening party (create/join)
+- `src/mocks/browser.ts` — MSW browser worker setup
+- `public/mockServiceWorker.js` — MSW service worker (generated via `npx msw init public/`)
+- `.env.development` — `VITE_MOCK=true` bật mock mode mặc định khi `npm run dev`
+
+**Frontend Phase 7 (partial) — Creator Dashboard (2026-05-14)**
+- `CreatorDashboardPage.tsx` — rewrite hoàn toàn theo Stitch design: 4 KPI cards với trend badges, Skip Heatmap với tooltip + peak marker, SVG Line Chart, CSS Bar Chart, SVG Donut Chart, song selector dropdown, auto-load khi mount
+- `domain.ts` — thêm `completionRate?: number` vào `AnalyticsStats`
+- Creator Dashboard tests (15/15 xanh): RBAC, auto-load, KPI values, charts, time range switch, song selector, error state
+
+**Frontend Phase 4 — App Shell + Home Page (2026-05-13)**
+- `Sidebar.tsx` — Stitch-based redesign: "Thư viện của bạn" static section, user bottom section (displayName từ `/users/me`), notification dot từ `/notifications/unread` count
+- `features/recommendation/hooks/useRecommendations.ts` — hook fetch + split items theo reason.type (CONTEXT / TRENDING / PREFERENCE)
+- `features/recommendation/components/SongCard.tsx` — Stitch card design: hover play button overlay, cover art, explain badge
+- `services/userService.ts` — thêm `getProfile()` method để lấy displayName
+- Sidebar tests (17/17 xanh): navigation, Thư viện section, user bottom, notification dot
+- HomePage tests (19/19 xanh): 3 sections, song cards, playback, error, empty, retry
+
+### Changed
+
+**Frontend Phase 4 — Home Page refactor (2026-05-13)**
+- `HomePage.tsx` — refactor sang Stitch design: sticky header với greeting + time context + upgrade button, 3 recommendation sections (HorizontalSection × 2, GridSection × 1), dùng SongCard component, xóa inline styles
+
 **Infrastructure — GCS + Cloudinary (2026-05-13)**
 - `infra/.env.example` — Thêm biến `GCP_PROJECT_ID`, `GCP_BUCKET_NAME`, `GOOGLE_APPLICATION_CREDENTIALS` cho Google Cloud Storage (lưu trữ file .mp3)
 - `infra/.env.example` — Thêm biến `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `CLOUDINARY_SECURE` cho Cloudinary (lưu trữ avatar, ảnh bìa album/playlist)
