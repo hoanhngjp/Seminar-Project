@@ -194,12 +194,12 @@ export default function BottomPlayerBar() {
               onClick={handleToggle}
               disabled={loading}
               aria-label={isPlaying ? 'Dừng' : 'Phát'}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-text-secondary hover:text-white hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+              className="w-8 h-8 rounded-full bg-spotify-green flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
             >
               {loading ? (
                 <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
               ) : (
-                <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                <span className="material-symbols-outlined text-[20px] text-near-black" style={{ fontVariationSettings: "'FILL' 1" }}>
                   {isPlaying ? 'pause' : 'play_arrow'}
                 </span>
               )}

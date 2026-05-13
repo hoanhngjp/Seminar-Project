@@ -339,10 +339,12 @@ export const MOCK_PARTY = {
   roomId: 'room-mock-001',
   joinCode: 'ABC123',
   hostId: 'user-listener-001',
+  name: 'Phòng của Nghiệp',
   currentSongId: 'song-001',
-  playbackPositionSec: 0,
+  playbackPositionSec: 84,
   members: [
-    { userId: 'user-listener-001', name: 'Nguyễn Thành Nghiệp', isHost: true },
-    { userId: 'user-creator-001',  name: 'Sơn Tùng M-TP',        isHost: false },
+    { userId: 'user-listener-001', name: 'Nghiệp',        isHost: true,  avatarUrl: 'https://picsum.photos/seed/user001/100/100' },
+    { userId: 'user-creator-001',  name: 'Linh',          isHost: false, avatarUrl: 'https://picsum.photos/seed/user002/100/100' },
+    { userId: 'user-member-003',   name: 'Hải',           isHost: false },
   ],
 };

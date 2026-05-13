@@ -1,4 +1,38 @@
 # DEVLOG — Smart Music Streaming Platform
+---
+[2026-05-14] [FRONTEND / POST-PHASE 6] [BUG × 3]
+
+**Problem 1:** `http proxy error: /ws/v1/parties/{roomId}/negotiate?negotiateVersion=1` trong Vite dev server console.
+**Root cause:** SignalR negotiate là HTTP POST trước khi upgrade lên WebSocket. `vite.config.ts` dùng `target: 'ws://localhost:5005'` — Vite không proxy HTTP request đến `ws://` target đúng cách.
+**Fix:** Đổi sang `target: 'http://localhost:5005', changeOrigin: true` — Vite tự handle WS upgrade từ `http://` target khi có `ws: true`.
+
+**Problem 2:** RoomPlayer bị nén — `div` với `max-w-md mx-auto` (448px) trong layout 60% width làm player squeeze content.
+**Fix:** Bỏ `max-w-md mx-auto`, dùng `w-full` để player fill toàn bộ section được cấp.
+
+**Problem 3:** `/party` route dẫn đến `PartyLandingPage` gây vỡ layout vì page thiếu context đầy đủ khi access trực tiếp từ Sidebar.
+**Fix:** Đổi Sidebar `/party` nav item từ `<Link>` thành `<button>` → click mở `CreateRoomModal` trực tiếp. Thêm `onSwitchToJoin` prop vào `CreateRoomModal` để render nút "THAM GIA PHÒNG" chuyển sang `JoinRoomModal` mà không cần navigate. Sidebar giờ render cả 2 modals và handle navigate sau khi create/join thành công.
+**Lesson / Warning:** WS proxy trong Vite phải dùng `http://` làm target, không phải `ws://` — `ws: true` flag là đủ để Vite handle upgrade protocol.
+
+---
+[2026-05-14] [FRONTEND / PHASE 6] [BUG]
+
+**Problem:** 3 test failures khi viết tests cho Listening Party components.
+**Root cause:**
+1. `CreateRoomModal` - `toHaveValue(expect.stringContaining(...))` không hoạt động với jest-dom — `toHaveValue` không nhận `asymmetric matcher`. Phải dùng `(input as HTMLInputElement).value.toContain(...)`.
+2. `JoinRoomModal` - Preview card dùng `aria-label="Thông tin phòng"` trên `<div>` (không phải `role="region"`) nên `getByRole('region', ...)` không tìm thấy. Phải dùng `getByLabelText(...)`.
+3. `PartyLandingPage` - `getByText(/Listening Party/)` tìm thấy 2 elements: Sidebar nav link + h1 heading. `getByRole('button', { name: /TẠO PHÒNG/i })` tìm thấy 2: landing card + modal submit. Cần scope với `getByRole('heading', ...)` và `within(dialog).getByRole(...)`.
+**Fix:** (1) Đổi sang `(element as HTMLInputElement).value.toContain()`. (2) Đổi sang `getByLabelText()`. (3) Dùng `getByRole('heading')` và import `within` từ testing-library để scope search trong dialog.
+**Lesson / Warning:** Khi component được render bên trong AppShell (có Sidebar), tất cả text trong Sidebar nav (Home, Search, Listening Party...) sẽ xuất hiện trong DOM. Tránh dùng `getByText` với text mà Sidebar cũng dùng. Dùng `getByRole('heading')`, `within(dialog)`, hoặc `getByRole` có scope cụ thể hơn.
+
+---
+[2026-05-14] [FRONTEND / PHASE 6] [BUG]
+
+**Problem:** `partyService.ts` dùng `import api from './api'` nhưng `api.ts` không có default export, chỉ export named `apiClient`.
+**Root cause:** Nhầm pattern — các service khác (searchService, analyticsService) đều dùng `apiClient` named import.
+**Fix:** Đổi thành `import { apiClient } from './api'` và thay `api.post(...)` bằng `apiClient.post(...)`.
+**Lesson / Warning:** Khi tạo service mới, luôn kiểm tra export pattern của `api.ts` trước. `api.ts` export `apiClient` (named) và `getAccessToken`, `setAccessToken` — không có default export.
+
+---
 
 **Dành cho:** nhóm dev + Claude (đọc khi debug để tránh lặp lại vấn đề cũ).
 

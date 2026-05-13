@@ -14,7 +14,30 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Fixed
+
+**Frontend — Listening Party UX + WS proxy (2026-05-14)**
+- `vite.config.ts` — Đổi WS proxy target từ `ws://localhost:5005` → `http://localhost:5005` + `changeOrigin: true` để fix SignalR negotiate HTTP error
+- `RoomPlayer.tsx` — Bỏ `max-w-md mx-auto` constraint trên player wrapper, player giờ fill full width của section 60%
+- `Sidebar.tsx` — Đổi nav item "Listening Party" từ `<Link to="/party">` thành button → mở `CreateRoomModal` trực tiếp không qua route `/party`; thêm `onSwitchToJoin` flow để chuyển sang `JoinRoomModal` inline
+- `CreateRoomModal.tsx` — Thêm optional prop `onSwitchToJoin` + nút "THAM GIA PHÒNG" (chỉ hiện khi prop được truyền vào)
+
 ### Added
+
+**Frontend Phase 6 — Listening Party UI (2026-05-14)**
+- `src/pages/party/PartyLandingPage.tsx` — landing page tại `/party`: 2 action cards (Tạo phòng mới / Tham gia phòng), render modals overlay theo Stitch design
+- `src/pages/party/PartyRoomPage.tsx` — room page tại `/party/:roomId`: 2-column layout (60% player + 40% member list), room header (tên phòng + join code + member count + rời phòng button), kết nối SignalR qua `useListeningParty`, accept party data từ `location.state`, fallback mock data khi direct URL access
+- `src/features/party/components/CreateRoomModal.tsx` — modal tạo phòng theo Stitch design: room name pill input, song search với live-filter results list, "TẠO PHÒNG" green button, gọi `POST /api/v1/parties`
+- `src/features/party/components/JoinRoomModal.tsx` — modal tham gia theo Stitch design: 6 individual character inputs với auto-advance focus + paste support, preview card khi đủ 6 ký tự, "THAM GIA" button, gọi `POST /api/v1/parties/{joinCode}/join`
+- `src/features/party/components/MemberList.tsx` — danh sách thành viên: host với ⭐ "Chủ phòng" badge màu warning, member với "Thành viên" badge, online dot, avatar hoặc person icon placeholder, invite button
+- `src/features/party/components/HostControls.tsx` — play/pause/skip controls: active cho Host, disabled cho Member + note "Chỉ Host mới điều khiển phát nhạc", queue button
+- `src/features/party/components/RoomPlayer.tsx` — player area: album art 280x280 với green glow effect, song title + artist, sync indicator (host: "Đang phát trực tiếp" / member: "🔄 Đồng bộ với Host"), progress bar với "LIVE" pulsing badge, HostControls sub-component
+- `src/features/party/hooks/useListeningParty.ts` — re-export từ `hooks/usePartyWebSocket` (backward compatible)
+- `src/services/partyService.ts` — `createParty()` + `joinParty()` calling API Gateway
+- `src/mocks/data.ts` — cập nhật `MOCK_PARTY`: thêm `name`, avatar URLs cho 3 members, `playbackPositionSec: 84`
+- App.tsx — thêm routes `/party` (PartyLandingPage) và `/party/:roomId` (PartyRoomPage) thay placeholder
+- Tests: CreateRoomModal (15), JoinRoomModal (10), MemberList (8), HostControls (11), RoomPlayer (8), PartyRoomPage (13), PartyLandingPage (7) = **72 tests mới**
+- **Total: 232/232 tests xanh**
 
 **Frontend Phase 5 — SearchPage + NowPlayingOverlay (2026-05-14)**
 - `src/pages/SearchPage.tsx` — rewrite hoàn toàn theo Stitch design: empty state (genre browse grid 9 cards với gradient), results state (top result card + songs list với duration + artists circular row + related songs grid), 300ms debounce, clear button, dispatch playSong khi click song row

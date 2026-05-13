@@ -157,8 +157,17 @@ export default function AudioPlayer({ songId, title, artist, coverUrl }: AudioPl
 
       {/* Controls */}
       <div style={styles.controls}>
-        <button onClick={handleToggle} style={styles.playBtn} aria-label={isPlaying ? 'Pause' : 'Play'}>
-          {isPlaying ? '⏸' : '▶'}
+        <button
+          onClick={handleToggle}
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+          className="w-10 h-10 rounded-full bg-spotify-green flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        >
+          <span
+            className="material-symbols-outlined text-[20px] text-near-black"
+            style={{ fontVariationSettings: "'FILL' 1" }}
+          >
+            {isPlaying ? 'pause' : 'play_arrow'}
+          </span>
         </button>
 
         <div style={styles.volumeRow}>
@@ -231,19 +240,6 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: '1rem',
-  },
-  playBtn: {
-    background: '#1db954',
-    border: 'none',
-    borderRadius: '50%',
-    width: 40,
-    height: 40,
-    fontSize: '1.1rem',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#fff',
   },
   volumeRow: {
     display: 'flex',

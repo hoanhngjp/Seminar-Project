@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { userService, type UserProfile } from '../../services/userService';
 import { apiClient } from '../../services/api';
 import type { ApiResponse } from '../../types/api';
+import type { Party } from '../../types/domain';
+import CreateRoomModal from '../../features/party/components/CreateRoomModal';
+import JoinRoomModal from '../../features/party/components/JoinRoomModal';
 
 interface NavItem {
   to: string;
@@ -28,13 +31,17 @@ const LIBRARY_ITEMS = [
   { id: 'lib-3', name: 'The Strokes',        sub: 'Nghệ sĩ',                         round: true  },
 ];
 
+type PartyModal = 'none' | 'create' | 'join';
+
 export default function Sidebar() {
   const location   = useLocation();
+  const navigate   = useNavigate();
   const accessToken = useAuthStore((s) => s.accessToken);
   const role        = useAuthStore((s) => s.role);
 
   const [profile,     setProfile]     = useState<UserProfile | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [partyModal,  setPartyModal]  = useState<PartyModal>('none');
 
   useEffect(() => {
     if (!accessToken) return;
@@ -56,7 +63,18 @@ export default function Sidebar() {
     (item) => !item.roles || (role && item.roles.includes(role)),
   );
 
+  const handlePartyCreated = (party: Party) => {
+    setPartyModal('none');
+    navigate(`/party/${party.roomId}`, { state: { party, isHost: true } });
+  };
+
+  const handlePartyJoined = (party: Party) => {
+    setPartyModal('none');
+    navigate(`/party/${party.roomId}`, { state: { party, isHost: false } });
+  };
+
   return (
+    <>
     <nav
       aria-label="Điều hướng chính"
       className="hidden lg:flex flex-col h-full bg-near-black pt-xl fixed left-0 top-0 w-[240px] shadow-[rgba(0,0,0,0.5)_0px_8px_24px] z-50 pb-[72px]"
@@ -79,42 +97,62 @@ export default function Sidebar() {
         {visibleItems.map((item) => {
           const active = isActive(item.to);
           const isNotif = item.to === '/notifications';
+          const isParty = item.to === '/party';
+
+          const itemClass = [
+            'flex items-center gap-4 py-3 px-4 rounded-md w-full text-left',
+            'transition-all duration-200 active:scale-95',
+            active
+              ? 'text-text-base font-bold bg-mid-dark/50 hover:text-text-base'
+              : 'text-text-secondary hover:text-text-base font-normal',
+          ].join(' ');
+
+          const iconEl = isNotif ? (
+            <div className="relative">
+              <span
+                className="material-symbols-outlined"
+                style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
+              >
+                notifications
+              </span>
+              {unreadCount > 0 && (
+                <span
+                  data-testid="notification-dot"
+                  className="absolute top-0 right-0 w-2 h-2 bg-spotify-green rounded-full"
+                />
+              )}
+            </div>
+          ) : (
+            <span
+              className="material-symbols-outlined"
+              style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
+            >
+              {item.icon}
+            </span>
+          );
+
+          if (isParty) {
+            return (
+              <button
+                key={item.to}
+                onClick={() => setPartyModal('create')}
+                aria-label={item.label}
+                className={itemClass}
+              >
+                {iconEl}
+                <span>{item.label}</span>
+              </button>
+            );
+          }
+
           return (
             <Link
               key={item.to}
               to={item.to}
               aria-current={active ? 'page' : undefined}
-              className={[
-                'flex items-center gap-4 py-3 px-4 rounded-md',
-                'transition-all duration-200 active:scale-95',
-                active
-                  ? 'text-text-base font-bold bg-mid-dark/50 hover:text-text-base'
-                  : 'text-text-secondary hover:text-text-base font-normal',
-              ].join(' ')}
+              className={itemClass}
             >
-              {isNotif ? (
-                <div className="relative">
-                  <span
-                    className="material-symbols-outlined"
-                    style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
-                  >
-                    notifications
-                  </span>
-                  {unreadCount > 0 && (
-                    <span
-                      data-testid="notification-dot"
-                      className="absolute top-0 right-0 w-2 h-2 bg-spotify-green rounded-full"
-                    />
-                  )}
-                </div>
-              ) : (
-                <span
-                  className="material-symbols-outlined"
-                  style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
-                >
-                  {item.icon}
-                </span>
-              )}
+              {iconEl}
               <span>{item.label}</span>
             </Link>
           );
@@ -171,5 +209,21 @@ export default function Sidebar() {
         </div>
       </div>
     </nav>
+
+    {/* Party modals — rendered outside nav to avoid z-index clipping */}
+    {partyModal === 'create' && (
+      <CreateRoomModal
+        onClose={() => setPartyModal('none')}
+        onCreated={handlePartyCreated}
+        onSwitchToJoin={() => setPartyModal('join')}
+      />
+    )}
+    {partyModal === 'join' && (
+      <JoinRoomModal
+        onClose={() => setPartyModal('none')}
+        onJoined={handlePartyJoined}
+      />
+    )}
+    </>
   );
 }

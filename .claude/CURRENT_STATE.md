@@ -137,8 +137,9 @@
 - [X] Phase 7 (partial): Creator Dashboard — rewrite theo Stitch design: 4 KPI cards, Skip Heatmap, Line Chart, Bar Chart, Donut Chart, auto-load, song selector dropdown — 15/15 tests xanh (2026-05-14)
 - [X] MSW Mock Mode — `VITE_MOCK=true` intercepts tất cả API calls trong `npm run dev`: auth, recommendations, streaming, search, notifications, analytics, party (2026-05-14)
 - [X] Phase 5: SearchPage + NowPlayingOverlay — 29/29 tests xanh (2026-05-14)
-- [ ] Phase 6: Listening Party
-- [ ] Phase 7: Creator Screens
+- [X] Phase 6: Listening Party — PartyLandingPage, PartyRoomPage, CreateRoomModal, JoinRoomModal, MemberList, HostControls, RoomPlayer, useListeningParty — 78/78 tests xanh (2026-05-14)
+- [X] Phase 6 bugfix: WS proxy (ws:// → http://), RoomPlayer layout (max-w-md removed), Sidebar /party → modal flow, CreateRoomModal onSwitchToJoin — 232/232 xanh (2026-05-14)
+- [ ] Phase 7: Creator Screens (UploadPage)
 - [ ] Phase 8: Notifications + Polish
 
 ### Week 10–12 — Polish + Demo
@@ -161,9 +162,9 @@
 
 - **Service/Task:** Frontend Refactor — Spotify Design System (Stitch-based, 13 screens)
 - **File plan cần đọc:** `.claude/plan/t-t-b-y-gi-m-nh-curried-platypus.md`
-- **Checkpoint gần nhất đã pass:** Phase 5 hoàn thành — SearchPage + NowPlayingOverlay — 154/154 tests xanh (2026-05-14)
+- **Checkpoint gần nhất đã pass:** Phase 6 hoàn thành — Listening Party UI — 232/232 tests xanh (2026-05-14)
 - **Ngày làm việc gần nhất:** 2026-05-14
-- **Tiếp theo:** Phase 6 — Listening Party UI
+- **Tiếp theo:** Phase 7 — Creator Screens (UploadPage)
 
 ---
 
@@ -191,6 +192,8 @@
 | 2026-05-10 | All Services | `using Prometheus;` phải thêm explicit vào Program.cs — không nằm trong implicit usings |
 | 2026-05-13 | Music / Streaming / Infra | Chuyển storage backend từ AWS S3/MinIO → Google Cloud Storage (audio .mp3) + Cloudinary (avatar, ảnh bìa). Env vars mới: `GCP_PROJECT_ID`, `GCP_BUCKET_NAME`, `GOOGLE_APPLICATION_CREDENTIALS`, `CLOUDINARY_*`. Service Account Key JSON tại `infra/secrets/google-cloud-key.json` (gitignored). |
 | 2026-05-12 | User Service | Đổi `PreferredLanguages` thành `PreferredArtists` trong `UserPreferences`, và trả về `hasCompletedOnboarding` từ `GET /users/me` để FE redirect đúng. |
+| 2026-05-14 | Frontend | Vite WS proxy phải dùng `http://` target (không phải `ws://`) — `ws: true` flag đủ để handle WebSocket upgrade. |
+| 2026-05-14 | Frontend | Sidebar giờ render CreateRoomModal/JoinRoomModal trực tiếp (không navigate `/party`). `/party` route + PartyLandingPage vẫn còn trong App.tsx cho backward compat với tests. |
 
 ---
 
