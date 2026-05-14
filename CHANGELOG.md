@@ -16,6 +16,19 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — Phase 2 Phase 2: Creator Components (2026-05-15)**
+- `features/creator/components/TimeRangeSelector.tsx` — pill toggle 7d/30d, extract từ `CreatorDashboardPage`, aria-pressed
+- `features/creator/components/SongStatsCard.tsx` — KPI card với Material Symbol icon, trend badge optional (positive/negative)
+- `features/creator/components/DailyListenersChart.tsx` — SVG line chart + hover tooltip per data point; helper `buildChartPaths` co-located
+- `features/creator/components/HeatmapChart.tsx` — heatmap bar với peak marker (warning) + threshold dashed line mới (`thresholdPct` prop, default 30%); helpers `formatSeconds` + `heatColor` co-located
+- `features/creator/components/CreatorSongTable.tsx` — table đầy đủ: sort 5 cột client-side, pagination 10 rows/page, loading skeleton, empty state, "Xem phân tích" hover reveal
+- 94 tests mới — 471/471 toàn bộ suite xanh
+
+### Changed
+
+**Frontend — Phase 2 Phase 2: Creator Components (2026-05-15)**
+- `pages/CreatorDashboardPage.tsx` — refactor: xóa 6 inline sub-component definitions (TrendBadge, KpiCard, SkipHeatmap, LineChart + helpers); thay bằng import 4 components mới; `SongStatsCard` dùng icons Material Symbols
+
 **Frontend — Phase 2 Phase 1: Shared UI Components (2026-05-15)**
 - `components/ui/EmptyState.tsx` — component mới, 4 variants: `music` / `search` / `bell` / `group`; icon circle 80px, optional CTA pill `bg-spotify-green`
 - `components/ui/SongContextMenu.tsx` — dropdown 200px, 5 items (Phát ngay, Queue, Party, Nghệ sĩ, Chia sẻ), đóng khi click ngoài

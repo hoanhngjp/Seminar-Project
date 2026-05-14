@@ -1,5 +1,30 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / PHASE 2 — PHASE 2: CREATOR COMPONENTS] [DONE]
+
+**Task:** Tạo 5 Creator components từ Stitch designs, extract từ `CreatorDashboardPage`, cập nhật page dùng components mới.
+
+**Files đã tạo:**
+- `features/creator/components/TimeRangeSelector.tsx` — pill toggle 7d/30d, extract từ inline code trong Dashboard, aria-pressed
+- `features/creator/components/SongStatsCard.tsx` — KPI card với icon Material Symbol mới, trend optional (KpiCard cũ trend required)
+- `features/creator/components/DailyListenersChart.tsx` — SVG line chart với hover tooltip per data point (tính năng mới), `buildChartPaths` helper co-located
+- `features/creator/components/HeatmapChart.tsx` — heatmap bar với peak marker + threshold dashed line mới (`thresholdPct` prop, default 30%), `formatSeconds` + `heatColor` helpers co-located
+- `features/creator/components/CreatorSongTable.tsx` — table mới hoàn toàn: sort 5 cột (client-side, toggle asc/desc), pagination 10 rows/page, loading (SkeletonRow), empty (EmptyState), "Xem phân tích" opacity-0 hover
+- Tests: 5 files, 94 tests tổng (10 + 11 + 15 + 19 + 39)
+
+**Files đã sửa:**
+- `pages/CreatorDashboardPage.tsx` — xóa 6 inline definitions (TrendBadge, KpiCard, SkipHeatmap, LineChart, formatSeconds, buildChartPaths, heatColor); import 4 components mới; dùng SongStatsCard với icons (headphones, play_circle, task_alt, trending_up); dùng TimeRangeSelector, HeatmapChart, DailyListenersChart
+
+**Key decisions:**
+- `DailyListenersChart` bỏ `timeRange` prop so với `LineChart` cũ — time range label đã hiện qua `TimeRangeSelector` ở header
+- `SongStatsCard.trend` là optional (KpiCard cũ là required) — flexible hơn cho `CreatorSongAnalyticsPage` ở Phase 5
+- `HeatmapChart.thresholdPct` default = 0.3 (30%) — vị trí line tính từ left của bar theo phần trăm song duration
+- `CreatorSongTable` default sort = `uploadedAt desc` — phù hợp UX Creator muốn xem bài mới nhất trước
+- Tests dùng `within(row).queryByText()` để tìm đúng row sau sort thay vì index cứng — tránh flaky khi default sort thay đổi
+
+**Tests:** 94/94 Phase 2 tests xanh, 471/471 toàn bộ test suite xanh — không regression.
+
+---
 [2026-05-15] [FRONTEND / PHASE 2 — PHASE 1: SHARED UI COMPONENTS] [DONE]
 
 **Task:** Tạo 3 shared UI components mới cho Phase 2: EmptyState, SongContextMenu, UserMenuDropdown.
