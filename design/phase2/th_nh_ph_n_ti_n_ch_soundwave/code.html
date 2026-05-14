@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SoundWave Utility Components</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#2e372e",
+                      "spotify-green": "#1ed760",
+                      "on-primary-fixed-variant": "#00531f",
+                      "inverse-primary": "#006e2c",
+                      "on-primary-container": "#005721",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "secondary": "#c8c6c5",
+                      "on-primary-fixed": "#002108",
+                      "error-container": "#93000a",
+                      "surface-bright": "#333b32",
+                      "primary-container": "#1ed760",
+                      "inverse-on-surface": "#2a3329",
+                      "outline": "#859583",
+                      "surface-container-lowest": "#081008",
+                      "negative": "#f3727f",
+                      "primary-fixed": "#69ff89",
+                      "announcement": "#539df5",
+                      "on-tertiary-container": "#793820",
+                      "dark-surface": "#181818",
+                      "text-base": "#ffffff",
+                      "border-pill": "#7c7c7c",
+                      "on-background": "#dce5d8",
+                      "on-surface-variant": "#bbcbb8",
+                      "on-tertiary-fixed-variant": "#73341c",
+                      "on-primary": "#003913",
+                      "on-error-container": "#ffdad6",
+                      "text-near-white": "#cbcbcb",
+                      "text-emphasis": "#fdfdfd",
+                      "on-tertiary": "#571f08",
+                      "error": "#ffb4ab",
+                      "outline-variant": "#3c4a3c",
+                      "tertiary-container": "#ffa585",
+                      "background": "#0d150d",
+                      "on-error": "#690005",
+                      "secondary-fixed": "#e5e2e1",
+                      "inverse-surface": "#dce5d8",
+                      "surface-container-high": "#232c23",
+                      "on-surface": "#dce5d8",
+                      "surface": "#0d150d",
+                      "on-secondary-container": "#bab8b7",
+                      "border-muted": "#4d4d4d",
+                      "tertiary-fixed-dim": "#ffb59b",
+                      "surface-dim": "#0d150d",
+                      "tertiary-fixed": "#ffdbcf",
+                      "on-secondary-fixed-variant": "#474646",
+                      "surface-container": "#192219",
+                      "warning": "#ffa42b",
+                      "surface-variant": "#2e372e",
+                      "surface-container-low": "#151e15",
+                      "primary": "#4cf479",
+                      "mid-card": "#272727",
+                      "secondary-container": "#4a4949",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "on-tertiary-fixed": "#380d00",
+                      "tertiary": "#ffccbb",
+                      "surface-tint": "#34e36a",
+                      "near-black": "#121212",
+                      "mid-dark": "#1f1f1f",
+                      "primary-fixed-dim": "#34e36a",
+                      "on-secondary": "#313030",
+                      "dark-card": "#252525",
+                      "text-secondary": "#b3b3b3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "lg": "24px",
+                      "md": "16px",
+                      "sidebar-width": "280px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "sm": "8px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "micro": [
+                              "plusJakartaSans"
+                      ],
+                      "section-title": [
+                              "plusJakartaSans"
+                      ],
+                      "small-bold": [
+                              "plusJakartaSans"
+                      ],
+                      "body-regular": [
+                              "plusJakartaSans"
+                      ],
+                      "caption": [
+                              "plusJakartaSans"
+                      ],
+                      "feature-heading": [
+                              "plusJakartaSans"
+                      ],
+                      "nav-link": [
+                              "plusJakartaSans"
+                      ],
+                      "button-uppercase": [
+                              "plusJakartaSans"
+                      ],
+                      "body-bold": [
+                              "plusJakartaSans"
+                      ]
+              },
+              "fontSize": {
+                      "micro": [
+                              "10px",
+                              {
+                                      "lineHeight": "normal",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "section-title": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "small-bold": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-regular": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "caption": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "feature-heading": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "nav-link": [
+                              "14px",
+                              {
+                                      "lineHeight": "normal",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "button-uppercase": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "1.4px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-bold": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+</head>
+<body class="bg-near-black text-text-base min-h-screen flex flex-col relative font-body-regular">
+<!-- Top Navigation (Auto-injected style commands) -->
+<header class="bg-background/80 backdrop-blur-md text-primary font-body-bold text-body-bold font-section-title text-section-title text-text-emphasis sticky top-0 z-40 w-full bg-transparent flex justify-between items-center h-16 px-lg ml-[240px]">
+<div class="flex items-center gap-4">
+<span class="text-text-emphasis">SonicPulse</span>
+</div>
+<nav class="hidden md:flex gap-6">
+<a class="text-text-secondary hover:text-text-emphasis transition-colors" href="#">Podcasts</a>
+<a class="text-text-base border-b-2 border-primary pb-1 hover:text-text-emphasis transition-colors" href="#">Music</a>
+<a class="text-text-secondary hover:text-text-emphasis transition-colors" href="#">Live</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="bg-spotify-green text-near-black font-button-uppercase text-button-uppercase px-4 py-2 rounded-full hover:scale-105 transition-transform">Upgrade</button>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-text-secondary hover:text-text-emphasis cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-text-secondary hover:text-text-emphasis cursor-pointer">settings</span>
+</div>
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-border-muted" data-alt="A close up portrait of a confident user avatar in a modern minimalist setting. The lighting is soft and cinematic, casting subtle shadows on the face against a dark background. The image evokes a premium digital service experience, consistent with a high-end audio application. Deep blacks and a smooth gradient background define the visual mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0QLFi-a5h8DwpIZIFRonk35038UJX8eZ_u-jMKDEqMzDnM_1ZJ1IAGw638ZSbrPsbC2MhXL-DhcmqghO4JWwwgJE8M8aZE3Jic8FjMPNgFYaNNKXJFY6gjYHIYMsCRauGIFm7iUqq0VqAQkF6_39dhIOW8QMIDJcEa--P1JA5UM76evaRJExVLWK8V1nfPTtbtofK1Qm3d93wHmajGlg0u44t1UHbW7yUoxjRGQD3vCG5DXyABTyr0IUMkJF_LhJOKeOw_MpPygc"/>
+</div>
+</header>
+<!-- Side Navigation (Auto-injected style commands) -->
+<aside class="bg-near-black text-spotify-green font-nav-link text-nav-link font-section-title text-section-title text-text-emphasis tracking-tight fixed left-0 top-0 h-full w-[240px] flex flex-col shadow-[rgba(0,0,0,0.5)_0px_8px_24px] hidden lg:flex pt-xl z-50 border-r border-border-muted">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-mid-dark flex items-center justify-center border border-border-muted overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A highly detailed close-up portrait of a user avatar for a premium audio app profile. The subject is illuminated by soft, moody studio lighting against a near-black dark mode background. The visual aesthetic is sleek, modern, and professional, aligning with a high-end music streaming interface. Rich dark tones dominate the scene." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAX-J-t6UDGqQcywGD_KSWmMZErn47fuHZP035wqws1RfgPxcooPJsEOatsps6y34ykBb3IUBbwy0C3CojxlGsyhQ60MfgHrqePqW9SmiHws5WS-I3zsTsAnTeE9ykTCHgZRIyZw3SkReuNX3Acreq2LzB9N3yulcNT2p5O15fE8yzGvayUbQnfWCdfchGcNquKdKQ4DWBS2m1sp_5L-vm2Gu-LelQe9Xtw9q2cxuqqPt6GPLQ9GMuf0bMsYelRcoX-yT5g_xxMtQ8"/>
+</div>
+<div>
+<h1 class="font-section-title text-section-title text-text-emphasis tracking-tight">SonicPulse</h1>
+<p class="text-caption text-text-secondary">Premium Audio</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1 px-2">
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 rounded-md hover:bg-mid-dark/50" href="#">
+<span class="material-symbols-outlined">home</span>
+                Home
+            </a>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 rounded-md hover:bg-mid-dark/50" href="#">
+<span class="material-symbols-outlined">search</span>
+                Search
+            </a>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 rounded-md hover:bg-mid-dark/50" href="#">
+<span class="material-symbols-outlined">notifications</span>
+                Notifications
+            </a>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 rounded-md hover:bg-mid-dark/50" href="#">
+<span class="material-symbols-outlined">groups</span>
+                Listening Party
+            </a>
+<a class="text-text-base font-body-bold flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 rounded-md bg-mid-dark/50 border-l-2 border-spotify-green" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">library_music</span>
+                Your Library
+            </a>
+</nav>
+<div class="p-6 mt-auto">
+<button class="w-full bg-transparent border border-border-pill text-text-base font-button-uppercase text-button-uppercase py-2 rounded-full hover:border-text-emphasis hover:text-text-emphasis transition-colors mb-6">Create Playlist</button>
+<div class="flex gap-4 px-2">
+<a class="text-text-secondary hover:text-text-base flex items-center gap-2 text-micro font-micro" href="#"><span class="material-symbols-outlined text-[16px]">cookie</span>Cookies</a>
+<a class="text-text-secondary hover:text-text-base flex items-center gap-2 text-micro font-micro" href="#"><span class="material-symbols-outlined text-[16px]">policy</span>Privacy</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 lg:ml-[240px] p-lg flex flex-wrap gap-8 items-start justify-center pb-[100px]">
+<!-- Component 2: SongContextMenu -->
+<div class="relative group">
+<div class="bg-mid-card p-4 rounded-lg flex items-center gap-4 border border-border-muted cursor-pointer hover:bg-dark-card transition-colors">
+<span class="text-body-regular text-text-base">Right click a song...</span>
+</div>
+<div class="absolute top-full mt-2 left-0 w-[200px] bg-[#282828] rounded-[8px] border border-[#4d4d4d] shadow-[rgba(0,0,0,0.5)_0px_8px_24px] overflow-hidden z-50 opacity-100 transition-opacity">
+<button class="w-full h-[40px] px-4 flex items-center gap-3 hover:bg-[#333333] text-text-base font-nav-link text-nav-link text-left transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#b3b3b3]">play_arrow</span>
+                    Play Now
+                </button>
+<button class="w-full h-[40px] px-4 flex items-center gap-3 hover:bg-[#333333] text-text-base font-nav-link text-nav-link text-left transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#b3b3b3]">playlist_add</span>
+                    Add to Queue
+                </button>
+<button class="w-full h-[40px] px-4 flex items-center gap-3 hover:bg-[#333333] text-text-base font-nav-link text-nav-link text-left transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#b3b3b3]">group_add</span>
+                    Add to Listening Party
+                </button>
+<div class="h-[1px] bg-[#4d4d4d] w-full"></div>
+<button class="w-full h-[40px] px-4 flex items-center gap-3 hover:bg-[#333333] text-text-base font-nav-link text-nav-link text-left transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#b3b3b3]">link</span>
+                    Copy Link
+                </button>
+<button class="w-full h-[40px] px-4 flex items-center gap-3 hover:bg-[#333333] text-text-base font-nav-link text-nav-link text-left transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#b3b3b3]">info</span>
+                    View Song Details
+                </button>
+</div>
+</div>
+<!-- Component 4: UserMenuDropdown -->
+<div class="relative group">
+<div class="w-10 h-10 rounded-full border border-border-muted overflow-hidden cursor-pointer">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="A sleek, modern profile avatar for a dark-themed music streaming application. The portrait is sharply focused against a near-black background, emphasizing premium high-end audio aesthetics. Deep blacks and subtle silver highlights create a sophisticated contrast. The mood is intimate and focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSGrUhhSPDiVAH7E4AC_vBZckw8NBQkbQ4C4qsqL1DI3fsK_XmqwkRxmLtgGBWZop_AsYJwoQ12w_jgBrPZ51bEY7S_DF_Kh_Y0L4L0Z-Y-fXc5-JIdWVzkvR50AzAqjrjnG2ZM3DuJ7KQ-tEyGirszjlG3nEmC1QLMRRAmTb2CBbtOvKsEPFusasoKvY4VR4CXj0AGs8d51uXgNeTbhHq7csnnyBn_fuU8G3boKly9fFsipUr6L07EDGOG9yM4qCLRjblWplmpB0"/>
+</div>
+<div class="absolute top-full mt-2 left-0 w-[220px] bg-[#282828] rounded-[8px] border border-[#4d4d4d] shadow-[rgba(0,0,0,0.5)_0px_8px_24px] overflow-hidden z-50 opacity-100 transition-opacity">
+<div class="p-[16px] flex flex-col items-center gap-2">
+<img alt="Profile avatar large" class="w-[40px] h-[40px] rounded-full object-cover border border-[#4d4d4d]" data-alt="A circular profile avatar image displayed within a dark mode UI dropdown menu. The portrait is subtly lit with high contrast against an immersive black background, matching a premium music service design system. The styling relies on deep shadows and sharp, clear focus on the subject." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2k-gm3Ryw_fmDYiTIQVQ9Wzi_bEORTEvJyMM-IHada3oBioVYVi5XCksWu0hO4nX5-jTGrOu4TMHVpiadTXBAdUSfUcwMxAed9ueZGt4ibxT4fBZ2c5URXJsIaOiG9WQ0A0JtnK8e6jycGWw_bzimdkx31gpNzSizdnrl7fFJjGx4Rbd-aJD2kQq2UlpnAGgFlXAqTTQ4_3d4C5eD7dukgAjDe8224boYokWr3f9Dn8wXfA_jLUkiLs6jlubk2lAlXen8PVr8IDs"/>
+<div class="text-center">
+<div class="font-body-bold text-body-bold text-text-base leading-tight">Alex Vũ</div>
+<div class="font-small-bold text-small-bold text-[#b3b3b3] font-normal mt-1">alex.vu@example.com</div>
+</div>
+</div>
+<div class="h-[1px] bg-[#4d4d4d] w-full"></div>
+<button class="w-full h-[40px] px-4 flex items-center gap-3 hover:bg-[#333333] text-text-base font-nav-link text-nav-link text-left transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#b3b3b3]">person</span>
+                    Profile
+                </button>
+<button class="w-full h-[40px] px-4 flex items-center gap-3 hover:bg-[#333333] text-text-base font-nav-link text-nav-link text-left transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#b3b3b3]">settings</span>
+                    Settings
+                </button>
+<div class="h-[1px] bg-[#4d4d4d] w-full"></div>
+<button class="w-full h-[40px] px-4 flex items-center gap-3 hover:bg-[#333333] text-[#f3727f] font-nav-link text-nav-link text-left transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#f3727f]">logout</span>
+                    Logout
+                </button>
+</div>
+</div>
+<!-- Component 3: EmptyStates Flex Container -->
+<div class="w-full flex flex-wrap justify-center gap-8 mt-12">
+<!-- Music Empty State -->
+<div class="flex flex-col items-center justify-center p-8 border border-[#4d4d4d] border-dashed rounded-lg bg-near-black/50 w-full max-w-sm">
+<div class="w-[80px] h-[80px] rounded-full bg-[#1f1f1f] flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[40px] text-[#4d4d4d]">music_note</span>
+</div>
+<h3 class="font-body-bold text-body-bold text-text-base mb-1">Không có bài hát</h3>
+<p class="font-caption text-caption text-[#b3b3b3] text-center mb-4">Hãy thêm bài hát vào thư viện của bạn để bắt đầu thưởng thức.</p>
+<button class="bg-spotify-green text-black font-button-uppercase text-button-uppercase px-6 py-2 rounded-full hover:scale-105 transition-transform">Khám phá ngay</button>
+</div>
+<!-- Search Empty State -->
+<div class="flex flex-col items-center justify-center p-8 border border-[#4d4d4d] border-dashed rounded-lg bg-near-black/50 w-full max-w-sm">
+<div class="w-[80px] h-[80px] rounded-full bg-[#1f1f1f] flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[40px] text-[#4d4d4d]">search</span>
+</div>
+<h3 class="font-body-bold text-body-bold text-text-base mb-1">Không có kết quả</h3>
+<p class="font-caption text-caption text-[#b3b3b3] text-center">Thử nghiệm với các từ khóa khác hoặc kiểm tra lại chính tả.</p>
+</div>
+<!-- Bell Empty State -->
+<div class="flex flex-col items-center justify-center p-8 border border-[#4d4d4d] border-dashed rounded-lg bg-near-black/50 w-full max-w-sm">
+<div class="w-[80px] h-[80px] rounded-full bg-[#1f1f1f] flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[40px] text-[#4d4d4d]">notifications</span>
+</div>
+<h3 class="font-body-bold text-body-bold text-text-base mb-1">Không có thông báo</h3>
+<p class="font-caption text-caption text-[#b3b3b3] text-center">Bạn đã xem hết tất cả các thông báo mới nhất.</p>
+</div>
+<!-- Group Empty State -->
+<div class="flex flex-col items-center justify-center p-8 border border-[#4d4d4d] border-dashed rounded-lg bg-near-black/50 w-full max-w-sm">
+<div class="w-[80px] h-[80px] rounded-full bg-[#1f1f1f] flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[40px] text-[#4d4d4d]">groups</span>
+</div>
+<h3 class="font-body-bold text-body-bold text-text-base mb-1">Không có phòng nào</h3>
+<p class="font-caption text-caption text-[#b3b3b3] text-center mb-4">Hiện chưa có Listening Party nào diễn ra. Hãy tạo phòng của riêng bạn.</p>
+<button class="bg-spotify-green text-black font-button-uppercase text-button-uppercase px-6 py-2 rounded-full hover:scale-105 transition-transform">Tạo phòng</button>
+</div>
+</div>
+</main>
+<!-- Component 1: QueueDrawer (Fixed to right side) -->
+<aside class="fixed right-0 top-0 h-[1024px] w-[360px] bg-[#121212] flex flex-col shadow-[rgba(0,0,0,0.5)_-8px_0px_24px] z-50 border-l border-[#4d4d4d]">
+<!-- Header -->
+<div class="h-[56px] flex items-center justify-between px-4 border-b border-[#4d4d4d]">
+<h2 class="font-body-bold text-body-bold text-text-base">Danh sách chờ</h2>
+<button class="w-[32px] h-[32px] rounded-full bg-[#1f1f1f] flex items-center justify-center hover:bg-[#333333] transition-colors">
+<span class="material-symbols-outlined text-text-base text-[20px]">close</span>
+</button>
+</div>
+<!-- Now Playing Section -->
+<div class="h-[64px] bg-[#1f1f1f] border-l-[3px] border-spotify-green flex items-center px-4 gap-3 relative">
+<img alt="Now Playing Album Art" class="w-[48px] h-[48px] rounded-sm object-cover" data-alt="A square album cover featuring an abstract, moody geometric design in deep dark tones with vibrant green neon accents. The lighting is intense and focused, creating a premium electronic music vibe. The background is a solid, immersive black, perfectly matching a dark-mode audio application interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLSGJ1u8gK0azr5GkATRcnJucACxNVJtLkSv2SxRZIG-2Qj10zXlZyRFZaVmccip6-lXyM4filQCVPvQ_tNDejzFxaIOKLtpi5rPiHn4Yej-RK6DcfCxM9n_JsfG8W9C14ZG4M_qwWakmuAvNbHvGLF3ef6q7BO9pe9PZSBrkSxV5G7lXDvuDtnntBhZgj3tCw6N5IOwHMVgiwYHSsM37ggRCYaIFwvH6aLFWD5-nXDmuHf5wvhvUEuHZV3-DEpxWTLgglQBbP-3M"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-caption text-caption font-bold text-text-base truncate">Neon Pulse</span>
+<span class="text-[10px] text-spotify-green bg-spotify-green/10 px-1.5 py-0.5 rounded-sm uppercase tracking-wider font-bold whitespace-nowrap border border-spotify-green/20">Đang phát</span>
+</div>
+<div class="font-small-bold text-small-bold font-normal text-[#b3b3b3] truncate mt-0.5">Synthwave Collective</div>
+</div>
+<button class="text-[#b3b3b3] hover:text-text-base">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<!-- Queue List -->
+<div class="flex-1 overflow-y-auto py-2">
+<!-- Queue Item 1 -->
+<div class="h-[56px] flex items-center px-2 hover:bg-[#1f1f1f] group transition-colors cursor-pointer relative">
+<div class="w-[24px] flex items-center justify-center cursor-grab">
+<span class="material-symbols-outlined text-[16px] text-[#4d4d4d] group-hover:text-text-base transition-colors">drag_indicator</span>
+</div>
+<img alt="Queue Item Album Art" class="w-[40px] h-[40px] rounded-sm object-cover ml-1 mr-3" data-alt="A square album artwork showing a dark, atmospheric city street at night under heavy rain, illuminated by distant streetlights. The aesthetic is cinematic and moody, dominated by deep blacks and cool blue tones. This image serves as a premium thumbnail within a dark-mode digital audio player list." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFAo_QkNE6c8ebsTGukjT-0_EI15jaUq1Hk-Kv3jAHw7k-TGgBRC2Jhqkt1qCPvOhCe-mhEVU4ghGQmaJQFOcIerk3wYZephsUx2nBRX5HCktCB7Cp6QEdMfgswfbzcrZJA82bJefayMoRsnwnAx20m5XwOgqnJsiyZWouqDxM1EV4-kxU_wSr3ANhJtfOXTGPQevxdPKmWZdL0PtDwJsmIi49XfVFfzs557iRaprIzyu2wFFmg1XuJF1ONUZjsnATLnX-iMIu-Vg"/>
+<div class="flex-1 min-w-0 flex flex-col justify-center">
+<span class="font-nav-link text-nav-link font-bold text-text-base truncate">Midnight Ride</span>
+<span class="font-small-bold text-small-bold font-normal text-[#b3b3b3] truncate">The Nightcrawlers</span>
+</div>
+<span class="font-micro text-micro text-[#b3b3b3] mr-2">3:42</span>
+<button class="w-[32px] h-[32px] flex items-center justify-center text-[#b3b3b3] hover:text-[#f3727f] opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Queue Item 2 -->
+<div class="h-[56px] flex items-center px-2 hover:bg-[#1f1f1f] group transition-colors cursor-pointer relative">
+<div class="w-[24px] flex items-center justify-center cursor-grab">
+<span class="material-symbols-outlined text-[16px] text-[#4d4d4d] group-hover:text-text-base transition-colors">drag_indicator</span>
+</div>
+<img alt="Queue Item Album Art" class="w-[40px] h-[40px] rounded-sm object-cover ml-1 mr-3" data-alt="A square album thumbnail depicting a hazy, smoky jazz club interior scene rendered in deep, rich shadows and warm, low-key lighting. The visual style is intimate and sophisticated, utilizing a dark background to enhance the glowing elements. It perfectly fits a high-density, dark-mode music streaming queue layout." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtAh-hdKwLx1aHSg0GOm7CkX263S2Hj6NPCONMOsa71MZY-mO3UxtLoBLZ6TsfKWKx8xuzG7bN-rcMi8T92TktpkdG3cdRo9fqL-SrgRqYo-ya3bBvrrbBPizZr3lLlXt8dmINHteVRR6Bb7rbAQtAghQljPq7Xt-MyOuyFbACYC-pz3NDPXvCEr03nntKlW46jtq4DiS62z7-MxUbf1hevvjyASWGYACamEjApyak0CTWPyLCcZjq0-PjB39Oybb_HP1XUnCPXu8"/>
+<div class="flex-1 min-w-0 flex flex-col justify-center">
+<span class="font-nav-link text-nav-link font-bold text-text-base truncate">Deep House Cuts</span>
+<span class="font-small-bold text-small-bold font-normal text-[#b3b3b3] truncate">DJ Solstice</span>
+</div>
+<span class="font-micro text-micro text-[#b3b3b3] mr-2">5:15</span>
+<button class="w-[32px] h-[32px] flex items-center justify-center text-[#b3b3b3] hover:text-[#f3727f] opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+<!-- Empty State Example (Hidden by default, shown for reference if list was empty) -->
+<!--
+        <div class="flex-1 flex flex-col items-center justify-center text-center px-6">
+            <span class="material-symbols-outlined text-[48px] text-[#4d4d4d] mb-4">music_off</span>
+            <span class="font-nav-link text-nav-link text-[#b3b3b3]">Danh sách chờ trống</span>
+        </div>
+        -->
+</aside>
+<!-- Bottom Navigation Bar (Mobile only) -->
+<nav class="bg-dark-surface text-spotify-green font-micro text-micro fixed bottom-0 left-0 w-full h-[72px] z-50 shadow-2xl flex items-center justify-between px-md w-full border-t border-border-muted md:hidden border-none shadow-[0_-4px_12px_rgba(0,0,0,0.5)] bg-dark-surface">
+<div class="flex flex-col items-center justify-center w-full text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-1">graphic_eq</span>
+<span>Now Playing</span>
+</div>
+<div class="flex flex-col items-center justify-center w-full text-text-secondary hover:scale-110 transition-transform active:scale-90">
+<span class="material-symbols-outlined mb-1">play_circle</span>
+<span>Controls</span>
+</div>
+<div class="flex flex-col items-center justify-center w-full text-text-secondary hover:scale-110 transition-transform active:scale-90">
+<span class="material-symbols-outlined mb-1">volume_up</span>
+<span>Volume</span>
+</div>
+</nav>
+</body></html>

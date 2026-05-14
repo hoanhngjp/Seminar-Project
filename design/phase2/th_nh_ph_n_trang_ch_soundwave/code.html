@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SoundWave - Context &amp; Recommendations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "border-muted": "#4d4d4d",
+                        "near-black": "#121212",
+                        "inverse-primary": "#006e2c",
+                        "on-secondary-container": "#bab8b7",
+                        "dark-surface": "#181818",
+                        "warning": "#ffa42b",
+                        "secondary-fixed": "#e5e2e1",
+                        "tertiary-container": "#ffa585",
+                        "secondary-container": "#4a4949",
+                        "error-container": "#93000a",
+                        "mid-dark": "#1f1f1f",
+                        "text-secondary": "#b3b3b3",
+                        "primary-fixed": "#69ff89",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "surface": "#0d150d",
+                        "primary-container": "#1ed760",
+                        "border-pill": "#7c7c7c",
+                        "mid-card": "#272727",
+                        "on-error-container": "#ffdad6",
+                        "text-base": "#ffffff",
+                        "secondary": "#c8c6c5",
+                        "on-primary-fixed-variant": "#00531f",
+                        "on-primary-fixed": "#002108",
+                        "background": "#0d150d",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "surface-container-low": "#151e15",
+                        "on-error": "#690005",
+                        "text-near-white": "#cbcbcb",
+                        "outline": "#859583",
+                        "outline-variant": "#3c4a3c",
+                        "inverse-on-surface": "#2a3329",
+                        "on-tertiary-container": "#793820",
+                        "surface-container-high": "#232c23",
+                        "negative": "#f3727f",
+                        "surface-container-lowest": "#081008",
+                        "surface-container": "#192219",
+                        "on-surface": "#dce5d8",
+                        "text-emphasis": "#fdfdfd",
+                        "on-secondary-fixed-variant": "#474646",
+                        "surface-tint": "#34e36a",
+                        "on-secondary": "#313030",
+                        "dark-card": "#252525",
+                        "primary": "#4cf479",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-tertiary": "#571f08",
+                        "surface-variant": "#2e372e",
+                        "spotify-green": "#1ed760",
+                        "error": "#ffb4ab",
+                        "on-primary": "#003913",
+                        "surface-bright": "#333b32",
+                        "on-primary-container": "#005721",
+                        "inverse-surface": "#dce5d8",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "announcement": "#539df5",
+                        "surface-dim": "#0d150d",
+                        "tertiary-fixed": "#ffdbcf",
+                        "surface-container-highest": "#2e372e",
+                        "tertiary": "#ffccbb",
+                        "primary-fixed-dim": "#34e36a",
+                        "on-surface-variant": "#bbcbb8",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-background": "#dce5d8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "lg": "24px",
+                        "sidebar-width": "280px",
+                        "base": "8px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "micro": ["Plus Jakarta Sans", "sans-serif"],
+                        "caption": ["Plus Jakarta Sans", "sans-serif"],
+                        "button-uppercase": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-regular": ["Plus Jakarta Sans", "sans-serif"],
+                        "feature-heading": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-bold": ["Plus Jakarta Sans", "sans-serif"],
+                        "section-title": ["Plus Jakarta Sans", "sans-serif"],
+                        "small-bold": ["Plus Jakarta Sans", "sans-serif"],
+                        "nav-link": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "micro": ["10px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "caption": ["14px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "button-uppercase": ["14px", { "lineHeight": "1.0", "letterSpacing": "1.4px", "fontWeight": "700" }],
+                        "body-regular": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "feature-heading": ["18px", { "lineHeight": "1.3", "letterSpacing": "normal", "fontWeight": "600" }],
+                        "body-bold": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "section-title": ["24px", { "lineHeight": "1.2", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "small-bold": ["12px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "nav-link": ["14px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Skeleton Shimmer */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        .animate-shimmer {
+            animation: shimmer 2s infinite linear;
+            background: linear-gradient(to right, #282828 4%, #333333 25%, #282828 36%);
+            background-size: 1000px 100%;
+        }
+
+        /* Hover effect for row */
+        .song-row:hover .play-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-near-black text-text-base min-h-screen p-8 antialiased">
+<div class="max-w-4xl mx-auto space-y-12">
+<!-- Component 1: ContextSelector -->
+<section aria-label="Context Selector">
+<div class="flex flex-wrap gap-base">
+<!-- Active Chip -->
+<button class="bg-spotify-green text-black font-nav-link font-bold px-4 py-2 rounded-full whitespace-nowrap transition-transform hover:scale-105">
+                    🌅 Buổi sáng
+                </button>
+<!-- Inactive Chips -->
+<button class="bg-mid-dark text-text-secondary font-nav-link font-bold px-4 py-2 rounded-full whitespace-nowrap hover:bg-[#2a2a2a] transition-colors">
+                    ☀️ Buổi chiều
+                </button>
+<button class="bg-mid-dark text-text-secondary font-nav-link font-bold px-4 py-2 rounded-full whitespace-nowrap hover:bg-[#2a2a2a] transition-colors">
+                    🌙 Buổi tối
+                </button>
+<button class="bg-mid-dark text-text-secondary font-nav-link font-bold px-4 py-2 rounded-full whitespace-nowrap hover:bg-[#2a2a2a] transition-colors">
+                    🌃 Đêm khuya
+                </button>
+</div>
+</section>
+<!-- Component 2: RecommendationFeed (Full State) -->
+<section aria-label="Recommendation Feed - Full State" class="space-y-4">
+<!-- Header -->
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-feature-heading text-text-base">Gợi ý cho bạn</h2>
+<button aria-label="Refresh recommendations" class="bg-mid-dark w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#2a2a2a] transition-colors">
+<span class="material-symbols-outlined text-text-secondary" data-icon="refresh">refresh</span>
+</button>
+</div>
+<!-- Feed List -->
+<div class="flex flex-col">
+<!-- Song Row 1 -->
+<div class="song-row group flex items-center justify-between h-[64px] px-4 rounded-md hover:bg-mid-dark transition-colors cursor-pointer">
+<div class="flex items-center gap-4 flex-1 overflow-hidden">
+<!-- Album Art -->
+<div class="w-[56px] h-[56px] rounded-[6px] overflow-hidden flex-shrink-0 bg-dark-card">
+<img alt="Album cover" class="w-full h-full object-cover" data-alt="A macro, high-contrast photograph of an acoustic guitar's soundhole and strings resting in deep, moody lighting. The background is engulfed in pitch-black shadow, focusing intensely on the warm wood grain and metallic strings. Subtle reflections glint off the strings. The aesthetic is intimate, musical, and premium dark mode." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBps8QRpd4YfLdEK3wOSI6FuoDjBeLD7xpWMWJRIVHqbXNyG3y4GLH54z4nxKJCjKVWaT3C4EXlAdqeK8BSLAJWwa1k4WuzMXp9sWquuu5GD1NzMjGLwz16bk5BzJZd8JebBxJDXoTuTXebyLO5aKhxq_iDb9Mo22CaXs1nhR74g3YD1DqbKRUNKlZVAbTmn5UfHrI5MW_X8DUovrxtD00Zf--XO9-SASiT4nBp3RQi0_rkod8pFAW5me0DIuwxEK_ws4zOLs2uI8"/>
+</div>
+<!-- Track Info -->
+<div class="flex flex-col overflow-hidden min-w-0">
+<span class="font-body-bold text-text-base truncate">Cơn Mưa Ngang Qua</span>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="bg-spotify-green/10 text-spotify-green font-small-bold px-2 py-0.5 rounded-full whitespace-nowrap text-[10px]">
+                                    Vì bạn nghe nhiều Acoustic
+                                </span>
+<span class="font-caption text-text-secondary truncate">Sơn Tùng M-TP</span>
+</div>
+</div>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-4 flex-shrink-0 pl-4">
+<span class="font-caption text-text-secondary group-hover:hidden">3:45</span>
+<button aria-label="Play song" class="play-btn w-8 h-8 rounded-full bg-spotify-green text-black flex items-center justify-center opacity-0 scale-95 transition-all shadow-[0_8px_8px_rgba(0,0,0,0.3)] hidden group-hover:flex">
+<span class="material-symbols-outlined text-[20px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+</div>
+</div>
+<!-- Song Row 2 -->
+<div class="song-row group flex items-center justify-between h-[64px] px-4 rounded-md hover:bg-mid-dark transition-colors cursor-pointer">
+<div class="flex items-center gap-4 flex-1 overflow-hidden">
+<div class="w-[56px] h-[56px] rounded-[6px] overflow-hidden flex-shrink-0 bg-dark-card">
+<img alt="Album cover" class="w-full h-full object-cover" data-alt="A silhouette of a DJ raising hands against a backdrop of intense, vibrant neon laser lights in a dark nightclub. The glowing beams of electric blue and sharp magenta pierce through thick atmospheric smoke. The composition is dynamic and energetic, perfectly fitting a high-octane electronic music vibe. Premium dark aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC21mb8h9FAbVf4T11ESkea9XTgdHnAGnsBMg2oL5DDIetQk9oNb7gqib5d5NBJz1AHNRzz5FOiOGJ0IPwZjgv_26YczqA5-M0yFqhivAmL1JMaCrrTbwpqfLiPceHj7OkmJrtLqwRdo-N6rCnI-O6WE5juSyUranWbOTdVaSZe41tZCLXdhFmvveKKJGW6jFlOxVzeaPPNdr_gY5GdenV7pYT6Unv6PD8ODkGnIC_8PKRSzhliM4zI0gN2svpB9xaRKtug54xQybc"/>
+</div>
+<div class="flex flex-col overflow-hidden min-w-0">
+<span class="font-body-bold text-text-base truncate">Chạy Ngay Đi</span>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-caption text-text-secondary truncate">Sơn Tùng M-TP</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 flex-shrink-0 pl-4">
+<span class="font-caption text-text-secondary group-hover:hidden">4:05</span>
+<button aria-label="Play song" class="play-btn w-8 h-8 rounded-full bg-spotify-green text-black flex items-center justify-center opacity-0 scale-95 transition-all shadow-[0_8px_8px_rgba(0,0,0,0.3)] hidden group-hover:flex">
+<span class="material-symbols-outlined text-[20px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Divider for demonstration -->
+<hr class="border-border-muted opacity-30 my-8"/>
+<!-- RecommendationFeed (Loading State) -->
+<section aria-label="Recommendation Feed - Loading State" class="space-y-4 opacity-70">
+<div class="flex items-center justify-between mb-6">
+<div class="h-5 w-32 bg-[#282828] rounded-full animate-shimmer"></div>
+<div class="w-10 h-10 rounded-full bg-[#282828] animate-shimmer"></div>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Skeleton Row -->
+<div class="flex items-center justify-between h-[64px] px-4">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-[56px] h-[56px] rounded-[6px] bg-[#282828] animate-shimmer flex-shrink-0"></div>
+<div class="flex flex-col gap-2 w-full max-w-[200px]">
+<div class="h-4 w-3/4 bg-[#282828] rounded-full animate-shimmer"></div>
+<div class="h-3 w-1/2 bg-[#282828] rounded-full animate-shimmer"></div>
+</div>
+</div>
+<div class="w-8 h-4 bg-[#282828] rounded-full animate-shimmer"></div>
+</div>
+<!-- Skeleton Row -->
+<div class="flex items-center justify-between h-[64px] px-4">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-[56px] h-[56px] rounded-[6px] bg-[#282828] animate-shimmer flex-shrink-0"></div>
+<div class="flex flex-col gap-2 w-full max-w-[200px]">
+<div class="h-4 w-2/3 bg-[#282828] rounded-full animate-shimmer"></div>
+<div class="h-3 w-3/4 bg-[#282828] rounded-full animate-shimmer"></div>
+</div>
+</div>
+<div class="w-8 h-4 bg-[#282828] rounded-full animate-shimmer"></div>
+</div>
+</div>
+</section>
+<!-- Divider for demonstration -->
+<hr class="border-border-muted opacity-30 my-8"/>
+<!-- RecommendationFeed (Empty State) -->
+<section aria-label="Recommendation Feed - Empty State" class="space-y-4">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-feature-heading text-text-base">Gợi ý cho bạn</h2>
+</div>
+<div class="flex flex-col items-center justify-center py-16 text-center space-y-4 bg-dark-surface rounded-xl">
+<span class="material-symbols-outlined text-[40px] text-border-muted" data-icon="music_note">music_note</span>
+<p class="font-caption text-text-secondary">Chưa có gợi ý — hãy cập nhật sở thích của bạn</p>
+<button class="mt-2 px-6 py-2 rounded-full border border-border-pill text-text-base font-button-uppercase text-[12px] hover:border-text-base transition-colors">
+                    Cập nhật sở thích
+                </button>
+</div>
+</section>
+</div>
+</body></html>

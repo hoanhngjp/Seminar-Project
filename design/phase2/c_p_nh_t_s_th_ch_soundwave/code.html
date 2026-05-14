@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cập nhật sở thích - SoundWave</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "text-near-white": "#cbcbcb",
+                        "dark-card": "#252525",
+                        "secondary-container": "#4a4949",
+                        "border-muted": "#4d4d4d",
+                        "text-emphasis": "#fdfdfd",
+                        "primary": "#4cf479",
+                        "surface": "#0d150d",
+                        "on-error": "#690005",
+                        "announcement": "#539df5",
+                        "surface-dim": "#0d150d",
+                        "surface-container-highest": "#2e372e",
+                        "tertiary-fixed": "#ffdbcf",
+                        "on-primary-fixed": "#002108",
+                        "on-tertiary-container": "#793820",
+                        "negative": "#f3727f",
+                        "background": "#0d150d",
+                        "surface-container-low": "#151e15",
+                        "on-tertiary-fixed": "#380d00",
+                        "near-black": "#121212",
+                        "inverse-primary": "#006e2c",
+                        "tertiary-container": "#ffa585",
+                        "surface-container": "#192219",
+                        "primary-container": "#1ed760",
+                        "dark-surface": "#181818",
+                        "surface-variant": "#2e372e",
+                        "inverse-surface": "#dce5d8",
+                        "on-primary": "#003913",
+                        "primary-fixed": "#69ff89",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-tertiary": "#571f08",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "on-secondary-container": "#bab8b7",
+                        "on-secondary": "#313030",
+                        "surface-container-high": "#232c23",
+                        "spotify-green": "#1ed760",
+                        "on-primary-container": "#005721",
+                        "surface-container-lowest": "#081008",
+                        "surface-bright": "#333b32",
+                        "on-primary-fixed-variant": "#00531f",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "warning": "#ffa42b",
+                        "text-secondary": "#b3b3b3",
+                        "outline": "#859583",
+                        "secondary": "#c8c6c5",
+                        "on-background": "#dce5d8",
+                        "on-surface": "#dce5d8",
+                        "border-pill": "#7c7c7c",
+                        "surface-tint": "#34e36a",
+                        "text-base": "#ffffff",
+                        "primary-fixed-dim": "#34e36a",
+                        "tertiary": "#ffccbb",
+                        "inverse-on-surface": "#2a3329",
+                        "on-secondary-fixed-variant": "#474646",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "mid-dark": "#1f1f1f",
+                        "secondary-fixed": "#e5e2e1",
+                        "outline-variant": "#3c4a3c",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "mid-card": "#272727",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#bbcbb8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "sidebar-width": "280px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "feature-heading": ["plusJakartaSans"],
+                        "small-bold": ["plusJakartaSans"],
+                        "body-bold": ["plusJakartaSans"],
+                        "nav-link": ["plusJakartaSans"],
+                        "body-regular": ["plusJakartaSans"],
+                        "micro": ["plusJakartaSans"],
+                        "caption": ["plusJakartaSans"],
+                        "button-uppercase": ["plusJakartaSans"],
+                        "section-title": ["plusJakartaSans"]
+                    },
+                    "fontSize": {
+                        "feature-heading": ["18px", {"lineHeight": "1.3", "letterSpacing": "normal", "fontWeight": "600"}],
+                        "small-bold": ["12px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700"}],
+                        "body-bold": ["16px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700"}],
+                        "nav-link": ["14px", {"lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400"}],
+                        "body-regular": ["16px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400"}],
+                        "micro": ["10px", {"lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400"}],
+                        "caption": ["14px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400"}],
+                        "button-uppercase": ["14px", {"lineHeight": "1.0", "letterSpacing": "1.4px", "fontWeight": "700"}],
+                        "section-title": ["24px", {"lineHeight": "1.2", "letterSpacing": "normal", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-near-black text-text-base antialiased min-h-screen font-body-regular">
+<!-- TopNavBar -->
+<nav class="hidden md:flex justify-between items-center h-16 px-lg z-10 fixed top-0 right-0 w-[calc(100%-theme(spacing.sidebar-width))] bg-transparent backdrop-blur-md transition-all flat no shadows">
+<div>
+<!-- Empty for search on left structural alignment -->
+</div>
+<div class="flex items-center space-x-md text-primary dark:text-primary font-body-bold text-body-bold">
+<button aria-label="notifications" class="w-10 h-10 rounded-full flex items-center justify-center bg-dark-surface hover:bg-surface-bright/20 transition-all text-text-secondary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button aria-label="settings" class="w-10 h-10 rounded-full flex items-center justify-center bg-dark-surface hover:bg-surface-bright/20 transition-all text-text-secondary">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden ml-sm cursor-pointer border-2 border-transparent hover:border-text-secondary transition-colors">
+<img alt="Artist profile" class="w-full h-full object-cover" data-alt="A high-quality, professional headshot of a young woman with a neutral expression, serving as a user profile avatar. The portrait features moody, low-key lighting with subtle rim light, perfectly matching the premium dark mode aesthetic of the SoundWave music app. The background is completely black, isolating the subject in a cinematic, immersive style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbmek4-x8L-K9FTNLcDWTWxpHV64_835M6dqcKQ3GADqU-TzDlCEWwUITtrmnm3bDSdvnZseBL8W-jF3tTLJRNAij8egqf1XzBy7nR6EBuI2sLGISiFaMxCTQsYWfQDaj7QIhs57BBMxFGLIFXK7XjoDU90ZYYfFTh19ZvorxoIbZP6LoHbEhsEQLno9zfz7cp1fPGh4s4e4hCOuhsEzxWGj3lscT7BDoIVfGUeVzGyKfMs96y20UP8GoXBHLK_aXF7hc9rEQt0Yo"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full p-md fixed left-0 top-0 w-sidebar-width bg-surface dark:bg-surface text-primary dark:text-primary font-nav-link text-nav-link flat no shadows z-40">
+<div class="font-section-title text-section-title text-text-base mb-xl px-4 mt-2">
+            SoundWave
+        </div>
+<div class="flex flex-col space-y-2 flex-grow">
+<a class="flex items-center space-x-4 px-4 py-3 rounded-md text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95 transition-transform group" href="#">
+<span class="material-symbols-outlined group-hover:text-text-base transition-colors">home</span>
+<span>Home</span>
+</a>
+<a class="flex items-center space-x-4 px-4 py-3 rounded-md text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95 transition-transform group" href="#">
+<span class="material-symbols-outlined group-hover:text-text-base transition-colors">search</span>
+<span>Search</span>
+</a>
+<a class="flex items-center space-x-4 px-4 py-3 rounded-md text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95 transition-transform group" href="#">
+<span class="material-symbols-outlined group-hover:text-text-base transition-colors">library_music</span>
+<span>Your Library</span>
+</a>
+<div class="mt-8 mb-4 px-4"></div>
+<a class="flex items-center space-x-4 px-4 py-3 rounded-md text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95 transition-transform group" href="#">
+<span class="material-symbols-outlined group-hover:text-text-base transition-colors">add_box</span>
+<span>Create Playlist</span>
+</a>
+<a class="flex items-center space-x-4 px-4 py-3 rounded-md text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95 transition-transform group" href="#">
+<span class="material-symbols-outlined group-hover:text-text-base transition-colors" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span>Liked Songs</span>
+</a>
+</div>
+<div class="mt-auto flex items-center space-x-3 px-4 py-3 text-text-secondary hover:text-text-base cursor-pointer transition-colors">
+<span class="material-symbols-outlined">download</span>
+<span class="font-nav-link text-nav-link">Install App</span>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="md:pl-sidebar-width pt-20 pb-[160px] min-h-screen flex justify-center w-full">
+<div class="w-full max-w-[720px] px-lg">
+<!-- Header Section -->
+<header class="mb-xl">
+<h1 class="font-section-title text-section-title text-text-base mb-xs">Cập nhật sở thích</h1>
+<p class="font-body-regular text-body-regular text-text-secondary">Lựa chọn của bạn ảnh hưởng trực tiếp đến gợi ý nhạc</p>
+</header>
+<!-- Genre Selection -->
+<section class="mb-xl">
+<div class="flex justify-between items-baseline mb-md">
+<h2 class="font-feature-heading text-feature-heading text-text-base">Thể loại</h2>
+<span class="font-caption text-caption text-text-secondary">Đã chọn <span class="text-spotify-green font-bold">3</span>/∞ (tối thiểu 3)</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+<!-- Selected Genre -->
+<button class="relative h-[80px] rounded-lg flex flex-col justify-center items-center bg-spotify-green/10 border border-spotify-green text-text-base transition-all hover:brightness-110 active:scale-95">
+<span class="material-symbols-outlined absolute top-2 right-2 text-spotify-green" style="font-variation-settings: 'FILL' 1; font-size: 16px;">check_circle</span>
+<span class="text-2xl mb-1">🎸</span>
+<span class="font-small-bold text-small-bold">Rock</span>
+</button>
+<!-- Selected Genre -->
+<button class="relative h-[80px] rounded-lg flex flex-col justify-center items-center bg-spotify-green/10 border border-spotify-green text-text-base transition-all hover:brightness-110 active:scale-95">
+<span class="material-symbols-outlined absolute top-2 right-2 text-spotify-green" style="font-variation-settings: 'FILL' 1; font-size: 16px;">check_circle</span>
+<span class="text-2xl mb-1">🎹</span>
+<span class="font-small-bold text-small-bold">Jazz</span>
+</button>
+<!-- Selected Genre -->
+<button class="relative h-[80px] rounded-lg flex flex-col justify-center items-center bg-spotify-green/10 border border-spotify-green text-text-base transition-all hover:brightness-110 active:scale-95">
+<span class="material-symbols-outlined absolute top-2 right-2 text-spotify-green" style="font-variation-settings: 'FILL' 1; font-size: 16px;">check_circle</span>
+<span class="text-2xl mb-1">🎧</span>
+<span class="font-small-bold text-small-bold">EDM</span>
+</button>
+<!-- Unselected Genres -->
+<button class="relative h-[80px] rounded-lg flex flex-col justify-center items-center bg-dark-surface text-text-secondary transition-all hover:bg-mid-card hover:shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:text-text-base active:scale-95">
+<span class="text-2xl mb-1">🎤</span>
+<span class="font-small-bold text-small-bold">Pop</span>
+</button>
+<button class="relative h-[80px] rounded-lg flex flex-col justify-center items-center bg-dark-surface text-text-secondary transition-all hover:bg-mid-card hover:shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:text-text-base active:scale-95">
+<span class="text-2xl mb-1">🎻</span>
+<span class="font-small-bold text-small-bold">Classical</span>
+</button>
+<button class="relative h-[80px] rounded-lg flex flex-col justify-center items-center bg-dark-surface text-text-secondary transition-all hover:bg-mid-card hover:shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:text-text-base active:scale-95">
+<span class="text-2xl mb-1">🪘</span>
+<span class="font-small-bold text-small-bold">Indie</span>
+</button>
+<button class="relative h-[80px] rounded-lg flex flex-col justify-center items-center bg-dark-surface text-text-secondary transition-all hover:bg-mid-card hover:shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:text-text-base active:scale-95">
+<span class="text-2xl mb-1">📀</span>
+<span class="font-small-bold text-small-bold">R&amp;B</span>
+</button>
+<button class="relative h-[80px] rounded-lg flex flex-col justify-center items-center bg-dark-surface text-text-secondary transition-all hover:bg-mid-card hover:shadow-[0_8px_8px_rgba(0,0,0,0.3)] hover:text-text-base active:scale-95">
+<span class="text-2xl mb-1">🛸</span>
+<span class="font-small-bold text-small-bold">Lo-Fi</span>
+</button>
+</div>
+</section>
+<!-- Artist Selection -->
+<section class="mb-xl">
+<h2 class="font-feature-heading text-feature-heading text-text-base mb-md">Nghệ sĩ</h2>
+<!-- Search Input -->
+<div class="relative w-full mb-md">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-text-secondary">search</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-3 bg-mid-dark rounded-full text-text-base font-body-regular focus:outline-none placeholder-text-secondary border border-near-black shadow-[inset_0_1px_0_rgba(124,124,124,1)] transition-colors focus:border-border-muted" placeholder="Tìm nghệ sĩ..." type="text"/>
+</div>
+<!-- Selected Artists Chips -->
+<div class="flex flex-wrap gap-2">
+<div class="flex items-center bg-[#282828] rounded-full pl-1 pr-3 py-1 gap-2 border border-transparent hover:border-border-muted transition-colors cursor-pointer">
+<img alt="Artist" class="w-6 h-6 rounded-full object-cover" data-alt="A dramatic, close-up portrait of an alternative rock musician performing live. The image is lit with intense, high-contrast concert lighting featuring deep blues and stark whites. The dark background emphasizes the moody, premium aesthetic of the music application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASYT_n3gU-IPuL2Zu9HG_TbIfBrOfCiEieffMOP3ak5OeQbA6_QiF_RnV8ej1vkYHBP7DRBCN2LbEYlGnOzr_SRYla-s2xZx7TbXkcq6hl9iuWmVZWVEPUE5jK6p1h33dBlgbFDWnwFqkN_h9tMJVxXPqtV3tPxQyIdsrmd4m9X0p4mwN0t-qduyW8I7_vMYGNBzhUbUset7XPfzgHsKCJdIpGQf5U7HKJDg_kdHiwvf7n7q3G5YdeH7-oDMa5WAfpQcec4ec369s"/>
+<span class="font-caption text-caption text-text-base">Arctic Monkeys</span>
+<button class="flex items-center justify-center text-text-secondary hover:text-text-base ml-1"><span class="material-symbols-outlined" style="font-size: 16px;">close</span></button>
+</div>
+<div class="flex items-center bg-[#282828] rounded-full pl-1 pr-3 py-1 gap-2 border border-transparent hover:border-border-muted transition-colors cursor-pointer">
+<img alt="Artist" class="w-6 h-6 rounded-full object-cover" data-alt="A stylish portrait of an electronic music producer in a dimly lit studio. Neon green accents subtly highlight the edges of the subject against a pitch-black background, aligning perfectly with the app's dark, content-first design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSdGVt0F1Dp1p4iuhykA_9tjzjbiBPYQGKsxuQk_glCd_Xul-RpENCQH2t6uIQF-7UnsR1ERMMIdaaZXFGmV20k23ZkhRVGaMUAalH0fGHXvA5NR6mmuFKG-h2MtOiJXLkkBZlaipSC4b4PXHAG30awD-0KbayZE795HH6kjXROE_6mgBge7ZdxI-BR6USSc5V1Dj6F0BOvIHAsperUJrYguw0Ctkq7aSb38d8it6tYQ75hr-BG8FdpivuEcbi93mtEep_WBsrmvk"/>
+<span class="font-caption text-caption text-text-base">Daft Punk</span>
+<button class="flex items-center justify-center text-text-secondary hover:text-text-base ml-1"><span class="material-symbols-outlined" style="font-size: 16px;">close</span></button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer Action Bar -->
+<div class="fixed bottom-[80px] md:left-sidebar-width left-0 right-0 bg-near-black border-t border-border-muted py-4 px-lg flex justify-end items-center space-x-4 z-30 shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<button class="font-body-bold text-body-bold text-text-secondary hover:text-text-base px-6 py-2 transition-colors">Huỷ</button>
+<button class="bg-spotify-green text-[#000000] font-button-uppercase text-button-uppercase px-8 py-3 rounded-full hover:scale-105 active:scale-95 transition-transform tracking-widest">LƯU SỞ THÍCH</button>
+</div>
+<!-- BottomNavBar -->
+<nav class="flex md:hidden justify-between items-center px-md w-full bg-mid-dark dark:bg-mid-dark text-spotify-green dark:text-spotify-green font-small-bold text-small-bold fixed bottom-0 left-0 h-[80px] z-50 border-t border-border-muted shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<button class="flex flex-col items-center space-y-1 text-text-secondary hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">music_note</span>
+<span>Now Playing</span>
+</button>
+<button class="flex flex-col items-center space-y-1 text-primary hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+<span>Controls</span>
+</button>
+<button class="flex flex-col items-center space-y-1 text-text-secondary hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">queue_music</span>
+<span>Queue</span>
+</button>
+</nav>
+<!-- Desktop Persistent Bottom Player Bar -->
+<div class="hidden md:flex fixed bottom-0 left-0 w-full h-[80px] bg-mid-dark dark:bg-mid-dark border-t border-border-muted z-50 shadow-[0_-8px_24px_rgba(0,0,0,0.5)] justify-between items-center px-md">
+<!-- Player Placeholder Content -->
+<div class="flex items-center space-x-4 w-1/3">
+<div class="w-14 h-14 bg-dark-surface rounded overflow-hidden">
+<img alt="Album Art" class="w-full h-full object-cover" data-alt="Abstract album cover art featuring swirling nebulous shapes in vibrant greens and deep blacks. The design is modern, clean, and highly saturated, popping against the dark UI background. The image evokes a sense of deep bass and electronic rhythms." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm4J8euHu8a4Th6VPf2PoEhZ1DXVXoPWjgrJUd8irT4sXdEiJyjVZsMdgrwKkunWXX3MTFjA-97SQbmglQucH4DC1QOmcAjJKCNPN9JMGtFkBWm0a5h_9m8u5a1yhxZRVI5Ze7Cnm5eWzApvJK50R3eoWxvlxc-HedXAHjMtmlAoI5kLQYpEi8RvlT20au-Sj3aFBbmAvqZ5LEAiQjYQENpXJkwW1KMoGHGjtRAsENistoA6F3b7lJsUwMUS1EIWsRX54BAk6ILHk"/>
+</div>
+<div>
+<p class="font-body-bold text-body-bold text-text-base">Midnight City</p>
+<p class="font-caption text-caption text-text-secondary">M83</p>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center w-1/3 space-y-2">
+<div class="flex items-center space-x-6 text-text-secondary">
+<button class="hover:text-text-base transition-colors"><span class="material-symbols-outlined">shuffle</span></button>
+<button class="hover:text-text-base transition-colors"><span class="material-symbols-outlined">skip_previous</span></button>
+<button class="w-8 h-8 rounded-full bg-text-base text-near-black flex items-center justify-center hover:scale-105 transition-transform"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span></button>
+<button class="hover:text-text-base transition-colors"><span class="material-symbols-outlined">skip_next</span></button>
+<button class="hover:text-text-base transition-colors"><span class="material-symbols-outlined">repeat</span></button>
+</div>
+<div class="w-full max-w-md flex items-center space-x-2">
+<span class="font-micro text-micro text-text-secondary">0:00</span>
+<div class="h-1 flex-grow bg-dark-surface rounded-full overflow-hidden">
+<div class="h-full bg-text-base w-0 rounded-full"></div>
+</div>
+<span class="font-micro text-micro text-text-secondary">4:03</span>
+</div>
+</div>
+<div class="flex items-center justify-end space-x-4 w-1/3 text-text-secondary">
+<button class="hover:text-text-base transition-colors"><span class="material-symbols-outlined">queue_music</span></button>
+<button class="hover:text-text-base transition-colors"><span class="material-symbols-outlined">devices</span></button>
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined">volume_up</span>
+<div class="w-24 h-1 bg-dark-surface rounded-full overflow-hidden">
+<div class="h-full bg-text-base w-2/3 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

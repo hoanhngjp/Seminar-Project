@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sơn Tùng M-TP - SoundWave</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-low": "#151e15",
+                      "on-primary-fixed-variant": "#00531f",
+                      "tertiary-fixed-dim": "#ffb59b",
+                      "on-secondary-container": "#bab8b7",
+                      "mid-card": "#272727",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "secondary-container": "#4a4949",
+                      "dark-surface": "#181818",
+                      "text-emphasis": "#fdfdfd",
+                      "on-background": "#dce5d8",
+                      "border-pill": "#7c7c7c",
+                      "outline": "#859583",
+                      "on-secondary-fixed-variant": "#474646",
+                      "surface-tint": "#34e36a",
+                      "on-primary": "#003913",
+                      "border-muted": "#4d4d4d",
+                      "dark-card": "#252525",
+                      "surface": "#0d150d",
+                      "surface-bright": "#333b32",
+                      "background": "#0d150d",
+                      "mid-dark": "#1f1f1f",
+                      "on-tertiary": "#571f08",
+                      "surface-container": "#192219",
+                      "near-black": "#121212",
+                      "tertiary": "#ffccbb",
+                      "secondary": "#c8c6c5",
+                      "surface-container-highest": "#2e372e",
+                      "inverse-on-surface": "#2a3329",
+                      "surface-dim": "#0d150d",
+                      "outline-variant": "#3c4a3c",
+                      "announcement": "#539df5",
+                      "tertiary-container": "#ffa585",
+                      "spotify-green": "#1ed760",
+                      "text-near-white": "#cbcbcb",
+                      "on-primary-container": "#005721",
+                      "surface-variant": "#2e372e",
+                      "text-base": "#ffffff",
+                      "on-error": "#690005",
+                      "surface-container-high": "#232c23",
+                      "on-tertiary-container": "#793820",
+                      "warning": "#ffa42b",
+                      "primary-container": "#1ed760",
+                      "inverse-surface": "#dce5d8",
+                      "error-container": "#93000a",
+                      "text-secondary": "#b3b3b3",
+                      "inverse-primary": "#006e2c",
+                      "on-tertiary-fixed-variant": "#73341c",
+                      "tertiary-fixed": "#ffdbcf",
+                      "on-primary-fixed": "#002108",
+                      "on-tertiary-fixed": "#380d00",
+                      "on-surface": "#dce5d8",
+                      "primary": "#4cf479",
+                      "secondary-fixed": "#e5e2e1",
+                      "primary-fixed": "#69ff89",
+                      "on-error-container": "#ffdad6",
+                      "primary-fixed-dim": "#34e36a",
+                      "on-surface-variant": "#bbcbb8",
+                      "on-secondary": "#313030",
+                      "error": "#ffb4ab",
+                      "surface-container-lowest": "#081008",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "negative": "#f3727f"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "base": "8px",
+                      "xs": "4px",
+                      "sm": "8px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "sidebar-width": "280px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "body-bold": [
+                              "plusJakartaSans"
+                      ],
+                      "nav-link": [
+                              "plusJakartaSans"
+                      ],
+                      "small-bold": [
+                              "plusJakartaSans"
+                      ],
+                      "button-uppercase": [
+                              "plusJakartaSans"
+                      ],
+                      "section-title": [
+                              "plusJakartaSans"
+                      ],
+                      "feature-heading": [
+                              "plusJakartaSans"
+                      ],
+                      "body-regular": [
+                              "plusJakartaSans"
+                      ],
+                      "caption": [
+                              "plusJakartaSans"
+                      ],
+                      "micro": [
+                              "plusJakartaSans"
+                      ]
+              },
+              "fontSize": {
+                      "body-bold": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "nav-link": [
+                              "14px",
+                              {
+                                      "lineHeight": "normal",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "small-bold": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "button-uppercase": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "1.4px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "section-title": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "feature-heading": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-regular": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "caption": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "micro": [
+                              "10px",
+                              {
+                                      "lineHeight": "normal",
+                                      "letterSpacing": "normal",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .group:hover .play-icon-overlay {
+            opacity: 1;
+        }
+        .group:hover .track-number {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="bg-near-black text-text-base font-body-regular min-h-screen pb-[80px] md:pl-[280px]">
+<!-- SideNavBar -->
+<nav aria-label="Sidebar Navigation" class="hidden md:flex bg-surface dark:bg-surface fixed left-0 top-0 h-full w-sidebar-width flex-col p-md border-r border-border-muted">
+<div class="mb-xl">
+<h1 class="font-section-title text-section-title text-text-base flex items-center gap-sm">
+<span class="material-symbols-outlined text-[32px] text-spotify-green" data-weight="fill">graphic_eq</span>
+                SoundWave
+            </h1>
+</div>
+<ul class="flex flex-col gap-sm flex-grow">
+<li>
+<a class="flex items-center gap-md px-sm py-sm rounded-lg text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-nav-link text-nav-link">Home</span>
+</a>
+</li>
+<li>
+<a aria-current="page" class="flex items-center gap-md px-sm py-sm rounded-lg text-text-base font-body-bold bg-surface-bright/20 scale-100 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="search" data-weight="fill">search</span>
+<span class="font-nav-link text-nav-link">Search</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-sm py-sm rounded-lg text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="library_music">library_music</span>
+<span class="font-nav-link text-nav-link">Your Library</span>
+</a>
+</li>
+<li class="mt-lg">
+<a class="flex items-center gap-md px-sm py-sm rounded-lg text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="add_box">add_box</span>
+<span class="font-nav-link text-nav-link">Create Playlist</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-sm py-sm rounded-lg text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="font-nav-link text-nav-link">Liked Songs</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto pt-lg border-t border-border-muted flex items-center gap-md cursor-pointer hover:bg-surface-bright/20 p-sm rounded-lg transition-colors">
+<div class="w-10 h-10 rounded-full bg-surface-bright flex items-center justify-center overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a young person smiling softly. The lighting is soft and studio-like. The dark, near-black UI styling accentuates the bright, clear image. High quality, premium aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKEh6slrRdL-jDKb8j_Geapmx1Ty3Hfry_5LK4OLIyp1KEVcYK6DfF5vjccDZkMwdHSPwezo_DOLpC5HqcpT3-KLQt0dNma2NzPnGeaJZgScoSIqCmEgcmsMiar9dLFxG6-IFy3ZWzVWhe2ECuSZkmmT2jIROnw-wWy3_gfpl5f7zmcFug6QumqC8T4X-Sx-Fz88OP4Y029tPfmkaOY7eOoUXXvSnPh9lxIe6hA6c_a-tkH0yKfsIjZefJcPYVDF9TFFBL22QYpMc"/>
+</div>
+<div>
+<p class="font-body-bold text-body-bold text-text-base">User</p>
+<p class="font-caption text-caption text-text-secondary">Premium Account</p>
+</div>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 w-full md:w-[calc(100%-280px)] h-16 flex justify-between items-center px-lg z-10 bg-transparent backdrop-blur-md transition-all">
+<div class="flex items-center gap-sm">
+<button class="w-8 h-8 rounded-full bg-near-black/50 flex items-center justify-center text-text-base hover:bg-near-black/80 transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-near-black/50 flex items-center justify-center text-text-base hover:bg-near-black/80 transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-text-secondary hover:text-text-base hover:bg-surface-bright/20 p-sm rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-text-secondary hover:text-text-base hover:bg-surface-bright/20 p-sm rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-border-muted cursor-pointer">
+<img alt="Artist profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a young person smiling softly. The lighting is soft and studio-like. The dark, near-black UI styling accentuates the bright, clear image. High quality, premium aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe6IHmIHouURqMkVYWL-VEOU9bYha7dmilCfSfwRbaVH3OVjb68I26CC0vGjybxYRn7UbH9Gpbq_cu6aVG1Otw6XafPGCCChXhE4nhX_rD5a77nL95YMuHZrTCUXvyAm3vw9IdezOth1oV0XDgUJqra4RDzjV9Wi84MvO9Q5BZKAquRXvPAXMcuYa9dWeZxOTyaASGxCEIyaAeNgM5Tr8UY_j2TAHe7MtFxVhaZidU61R2i16cVvcWoHEHFSMrgSZmR3JxZCq8SqQ"/>
+</div>
+</div>
+</header>
+<main class="w-full h-full pb-xl">
+<!-- Hero Section -->
+<section class="relative w-full h-[380px] bg-dark-surface">
+<div class="absolute inset-0 w-full h-full bg-cover bg-center" data-alt="A dramatic portrait of a male Asian pop star performing on stage. He is wearing stylish streetwear. The lighting is moody with vibrant neon blues and purples. The background is a dark concert venue. The image has a subtle blur effect to allow text to stand out clearly. Premium music streaming app aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3gmXa_d-HDSnf3cnQhum2FUOgif_gS9yEkaV3eS40Ln_s2-ve9L_BuxiNzSasQKagxyRLVR1nojV29JuyZNEbTXfuAWb90r_koDuqvY0XKVYthdr51Rg43qwPq5d09jJDKeNefGm-BAQ3aBfyRym5rK0d2IHwp1dPN2AHZvh8qsGomc34F32DgYwbGEXQt88cs3VFuXfzrMDvotet8wjordOLEMcAXLrK0gGQq9pUcPt8tS_o5DPDV3PjEuMmQOKxyVMf76TO-vk');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-near-black via-near-black/60 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full px-lg md:px-xl pb-lg flex flex-col md:flex-row items-end gap-lg">
+<div class="relative w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-text-base shadow-[rgba(0,0,0,0.5)_0px_8px_24px]">
+<img alt="Sơn Tùng M-TP avatar" class="w-full h-full object-cover" data-alt="A close-up, highly detailed portrait of a male Asian pop star looking confidently at the camera. He has styled hair and wears fashionable accessories. The background is dark and moody. High contrast, premium aesthetic fitting a music streaming app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGQAhJr6NzlKEz09el6UiVYz2s4el7QJ9gJ4rg5saMcOMne7AML6HI-HcgJYKyLVyX2AM2TFbDry4ISHJHxe-Ju7IaUvHwzF-1xgKmGndTOfdUEddW4WqIwS1jdY28YvPchVL9C-xUiSJlSdidE3GqJiAsgHWmxrQnUIZbYESzEhjIgwCPsNhrslRUWtxEQYcVxFWlNei5CYQ7_TuZMLC0QAnD_hR0NMDBq8UgvZzakEDBqoixG1xMS45X2ewS9jFbdYaAuYcaef0"/>
+</div>
+<div class="flex-grow">
+<h1 class="font-section-title text-[48px] md:text-[64px] font-extrabold text-text-base leading-tight mb-xs">Sơn Tùng M-TP</h1>
+<p class="font-caption text-caption text-text-secondary mb-md">20,450,123 người theo dõi</p>
+<div class="flex items-center gap-md">
+<button class="w-12 h-12 rounded-full bg-spotify-green text-on-primary flex items-center justify-center hover:scale-105 transition-transform shadow-[rgba(0,0,0,0.3)_0px_8px_8px]">
+<span class="material-symbols-outlined text-[28px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+<button class="px-lg py-sm rounded-full border border-border-pill text-text-base font-button-uppercase text-button-uppercase hover:border-text-base hover:scale-105 transition-all">
+                            THEO DÕI
+                        </button>
+<button class="text-text-secondary hover:text-text-base transition-colors p-sm">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<div class="px-lg md:px-xl mt-lg space-y-xl">
+<!-- Stats Bar -->
+<section class="flex flex-wrap gap-md">
+<div class="bg-dark-surface rounded-[8px] p-md flex-1 min-w-[200px] shadow-[rgba(0,0,0,0.3)_0px_4px_12px]">
+<p class="font-section-title text-section-title text-text-base mb-xs">42</p>
+<p class="font-caption text-caption text-text-secondary">Tổng bài hát</p>
+</div>
+<div class="bg-dark-surface rounded-[8px] p-md flex-1 min-w-[200px] shadow-[rgba(0,0,0,0.3)_0px_4px_12px]">
+<p class="font-section-title text-section-title text-text-base mb-xs">1.2B</p>
+<p class="font-caption text-caption text-text-secondary">Tổng lượt nghe</p>
+</div>
+<div class="bg-dark-surface rounded-[8px] p-md flex-1 min-w-[200px] shadow-[rgba(0,0,0,0.3)_0px_4px_12px]">
+<p class="font-section-title text-section-title text-text-base mb-xs">20M</p>
+<p class="font-caption text-caption text-text-secondary">Người theo dõi</p>
+</div>
+</section>
+<!-- Popular Tracks -->
+<section>
+<h2 class="font-feature-heading text-feature-heading text-text-base mb-md">Bài hát phổ biến</h2>
+<div class="flex flex-col">
+<!-- Track 1 -->
+<div class="group flex items-center justify-between h-[56px] px-md rounded-lg hover:bg-mid-dark hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all cursor-pointer">
+<div class="flex items-center gap-md w-1/2">
+<div class="w-6 text-center relative flex-shrink-0">
+<span class="track-number text-text-secondary font-body-regular absolute inset-0 flex items-center justify-center transition-opacity">1</span>
+<span class="play-icon-overlay material-symbols-outlined text-text-base absolute inset-0 flex items-center justify-center opacity-0 transition-opacity" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</div>
+<img alt="Making My Way cover" class="w-10 h-10 rounded-[4px] object-cover shadow-sm" data-alt="A highly stylized music album cover featuring abstract neon geometry. A glowing pink and purple triangle floats above a dark, textured surface. The aesthetic is modern, electronic, and premium, fitting a dark-mode music streaming app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvzDr2gS1PB_FR-D6UKilLBNgWO9g_uaPwDTry8iEvnfQB1N3sqdibN2ZBuP5G6PKb4lPnAzCwGLAIegiOZEpMZS2Y58eoKFMTzKvXv5Ks-Lmg_Xj8fDiW0SDRCiZDStFWuhPjvx6J3HxJTi4rIf3fBNDJWbnj5BDhsloS2tOIIHyW0zQP-PFTVae02PWu601nO5t8KLy3SMc9KgenqIOfxZ2vSi0Gi7EhjGh5qBFNSX1MICme88QCdiQTpQt5xNbZrbXVXyqAJkU"/>
+<div class="flex flex-col overflow-hidden">
+<span class="font-body-bold text-body-bold text-text-base truncate">Making My Way</span>
+<span class="font-caption text-caption text-text-secondary truncate">Making My Way (Single)</span>
+</div>
+</div>
+<div class="hidden md:flex font-caption text-caption text-text-secondary w-1/4 justify-end pr-xl">
+                            125,432,098
+                        </div>
+<div class="font-caption text-caption text-text-secondary w-[50px] text-right">
+                            3:45
+                        </div>
+</div>
+<!-- Track 2 -->
+<div class="group flex items-center justify-between h-[56px] px-md rounded-lg hover:bg-mid-dark hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all cursor-pointer">
+<div class="flex items-center gap-md w-1/2">
+<div class="w-6 text-center relative flex-shrink-0">
+<span class="track-number text-text-secondary font-body-regular absolute inset-0 flex items-center justify-center transition-opacity">2</span>
+<span class="play-icon-overlay material-symbols-outlined text-text-base absolute inset-0 flex items-center justify-center opacity-0 transition-opacity" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</div>
+<img alt="Chạy Ngay Đi cover" class="w-10 h-10 rounded-[4px] object-cover shadow-sm" data-alt="A moody music album cover. A lone figure stands silhouetted against a deep, fiery red and black abstract background. The lighting is dramatic and cinematic. The aesthetic perfectly matches a premium, dark-mode audio application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7aNp2FwrfFeGxStA3p8O2oqHjNBKGWi05WDRBMUo8IxOc1IOsjuPlMhB2aj2gfxqU86bPEuzqmFyS8NZ46HN-B9TyDjraKvuwqfCcgmFQIo0qTOH9QdHFvICS3uOEkDIi0Og9FqS6kV67cyE0hlLo2CRAXuF9Ml30vNmA164b-NnMYkcNf-sjwbPytf0-UlioEbLWkmUq9hwyA6NjfVI0QgfntTyKfigEr6aHDQfut1W_9ndkF-T-jc71EHZ7j7TrhHWv-w6JZP8"/>
+<div class="flex flex-col overflow-hidden">
+<span class="font-body-bold text-body-bold text-text-base truncate">Chạy Ngay Đi</span>
+<span class="font-caption text-caption text-text-secondary truncate">Chạy Ngay Đi (Single)</span>
+</div>
+</div>
+<div class="hidden md:flex font-caption text-caption text-text-secondary w-1/4 justify-end pr-xl">
+                            98,765,432
+                        </div>
+<div class="font-caption text-caption text-text-secondary w-[50px] text-right">
+                            4:12
+                        </div>
+</div>
+<!-- Track 3 -->
+<div class="group flex items-center justify-between h-[56px] px-md rounded-lg hover:bg-mid-dark hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all cursor-pointer">
+<div class="flex items-center gap-md w-1/2">
+<div class="w-6 text-center relative flex-shrink-0">
+<span class="track-number text-text-secondary font-body-regular absolute inset-0 flex items-center justify-center transition-opacity">3</span>
+<span class="play-icon-overlay material-symbols-outlined text-text-base absolute inset-0 flex items-center justify-center opacity-0 transition-opacity" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</div>
+<img alt="Muộn Rồi Mà Sao Còn cover" class="w-10 h-10 rounded-[4px] object-cover shadow-sm" data-alt="A soft, melodic music album cover. A hazy, pastel-colored sky at sunset with gentle clouds, contrasted against a sleek black border. The visual style is dreamy and modern, fitting seamlessly into a dark-themed music app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQ3aJSHHRVE7mQyRjr8dD2x-M-jebFk4C2lbe2sz1_4shChrFSd4V0ZgT_-TZsm0p8cg1Vc-jWZgrUJYmlOVqY7hXQ9q2DliB4D0VfUInv0gnMa9h-zbxMfUpq7USuvSc0rZwVFwbOwMWbcQzVP2mOQEvdzvOj9mWg0qe5zecxScQF9uNfOcXnhoVma6gAQF58Xw0bP1rlcFRRzjDETOYbIw43QQ046cRK7Us6Lu1HgEF45QQ9e99exJkCfNS7oNLwv0QpRXmLGjg"/>
+<div class="flex flex-col overflow-hidden">
+<span class="font-body-bold text-body-bold text-text-base truncate">Muộn Rồi Mà Sao Còn</span>
+<span class="font-caption text-caption text-text-secondary truncate">Muộn Rồi Mà Sao Còn (Single)</span>
+</div>
+</div>
+<div class="hidden md:flex font-caption text-caption text-text-secondary w-1/4 justify-end pr-xl">
+                            150,234,876
+                        </div>
+<div class="font-caption text-caption text-text-secondary w-[50px] text-right">
+                            4:35
+                        </div>
+</div>
+</div>
+</section>
+<!-- Fans Also Like -->
+<section>
+<h2 class="font-feature-heading text-feature-heading text-text-base mb-md">Người nghe cũng thích</h2>
+<div class="flex overflow-x-auto gap-md pb-md snap-x scrollbar-hide">
+<!-- Artist Card 1 -->
+<div class="flex-shrink-0 w-[160px] h-[200px] bg-dark-surface rounded-[8px] p-md flex flex-col items-center justify-center hover:bg-[#282828] hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all cursor-pointer snap-start group">
+<div class="w-[100px] h-[100px] rounded-full overflow-hidden mb-md shadow-md group-hover:shadow-lg transition-shadow">
+<img alt="Soobin Hoàng Sơn" class="w-full h-full object-cover" data-alt="A portrait of a male Asian musician wearing a stylish dark jacket against a dark background. The lighting highlights his face and the texture of his clothing. Premium, dark-mode aesthetic suitable for a music app artist card." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEyG9uQguLenJBKbwIPK7q9MiKb49Lqr94mxp2k1aaZemHtSHONibxPatMv0YkJ8qmWSpWG1jat8bGa_Zl5_eWkzHOHOYHZ4YCGfahmtvvRdHtxfo-Hjt7Cf8IJMghpkzRAeEtptS1NwNbEbuOxuspgl7GS_9ZUgFFDHx00veW-HwA4oYyUtKKxel6LKD_xUR9LA3pZWji0TBmc5ISneoLODXf5Dbl0OAgYU_A4Ugwwu52VpgdviNglPJRigUMT8cx-2JfJnslHas"/>
+</div>
+<h3 class="font-body-bold text-body-bold text-text-base text-center truncate w-full">Soobin Hoàng Sơn</h3>
+</div>
+<!-- Artist Card 2 -->
+<div class="flex-shrink-0 w-[160px] h-[200px] bg-dark-surface rounded-[8px] p-md flex flex-col items-center justify-center hover:bg-[#282828] hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all cursor-pointer snap-start group">
+<div class="w-[100px] h-[100px] rounded-full overflow-hidden mb-md shadow-md group-hover:shadow-lg transition-shadow">
+<img alt="Binz" class="w-full h-full object-cover" data-alt="A stylized portrait of an Asian male rapper wearing sunglasses and a vibrant pink jacket, lit by neon lights. The background is pure black, creating a high-contrast, edgy look perfect for a dark-mode music interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXhxGCnBpy2ltX6ot8wizKcAeEXpo8l4263_dq-qN_S8RrD8NKWjQ_B1xH5j45JzaEoN-zWf8nbAPP54rZTpWeOBAJWwwq6wbLTO7I5QBkzDkPUHVqWa-RIdlNL4JzO8iACw9F6coRbG0XEICYZp-B7Uh4RND3IvXx2kn30ZsAKs-aJVoCHBbZWDJXkCwtAbcuxClk0u2LCE7WEzk_TIqy175Ua7FZKYRWPeHvTayRFW7U5iBLPId0GX_iDVuYa4VeH7c9ZM6tfPc"/>
+</div>
+<h3 class="font-body-bold text-body-bold text-text-base text-center truncate w-full">Binz</h3>
+</div>
+<!-- Artist Card 3 -->
+<div class="flex-shrink-0 w-[160px] h-[200px] bg-dark-surface rounded-[8px] p-md flex flex-col items-center justify-center hover:bg-[#282828] hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all cursor-pointer snap-start group">
+<div class="w-[100px] h-[100px] rounded-full overflow-hidden mb-md shadow-md group-hover:shadow-lg transition-shadow">
+<img alt="JustaTee" class="w-full h-full object-cover" data-alt="A portrait of a male music producer in a dimly lit studio setting. He is wearing headphones and looking thoughtfully away from the camera. Cool blue and purple ambient light. High quality, atmospheric portrait for a dark music app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwEU330HuvWanxSJTsYke8IlqEpAzGvq2gUGxzNYMZJbtOW2n7MzkFxxNXz0sKxkcUBo74-yjmtfqEYKjxdCVZ_q9bOqZ0ZIMXNDQIpHWPOi3h9GzbK24FWufwPHj-jDzNSqqWZCxCHDS5NF4PCJ4ovAyLZ-5vJuBE0wnOq_TrAITONg_K6yGiaHibDvnFEbVE5Y-MmrmnPTOwuXlBNFVyrYGFeN1fHAP31ep8BUP4k7fm5UoCF840XbtE9WkGBDk2EdGDFf48M-0"/>
+</div>
+<h3 class="font-body-bold text-body-bold text-text-base text-center truncate w-full">JustaTee</h3>
+</div>
+<!-- Artist Card 4 -->
+<div class="flex-shrink-0 w-[160px] h-[200px] bg-dark-surface rounded-[8px] p-md flex flex-col items-center justify-center hover:bg-[#282828] hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all cursor-pointer snap-start group">
+<div class="w-[100px] h-[100px] rounded-full overflow-hidden mb-md shadow-md group-hover:shadow-lg transition-shadow">
+<img alt="Đen Vâu" class="w-full h-full object-cover" data-alt="A black and white portrait of a male rapper with a beard. The lighting is dramatic, casting deep shadows across his face. The pure black background makes the portrait pop, fitting the premium dark-mode design system perfectly." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgPDpeCz4j1WSglkUMnVaqGwh82ncvi7vSXNOhVlbnPOULIgiVmdFukrfGdKIxpZqRZiWucadquWzG7oedSV4q4nrK-Bk2PbEAt2760gY3i0DkFmFtKSEXonFzuRtSLtggxhJUyzlbRUvGEwqeUaIYwEjx5Uncox2PVHrpjX2RLopLaM_DoyGbjvmy2fez0dGlYn6wydr9S9gbEZ7P5NbtJfKToi9f3JKKfYN6mGE0TfqsG7bRjTtx1OcHrdETCTLqVAw6kiWlmck"/>
+</div>
+<h3 class="font-body-bold text-body-bold text-text-base text-center truncate w-full">Đen Vâu</h3>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Player Control) -->
+<nav class="fixed bottom-0 left-0 w-full h-[80px] z-50 bg-mid-dark dark:bg-mid-dark border-t border-border-muted shadow-[0_-8px_24px_rgba(0,0,0,0.5)] flex justify-between items-center px-md">
+<div class="flex items-center gap-md w-1/3">
+<img alt="Now Playing Cover" class="w-14 h-14 rounded-[4px] object-cover" data-alt="A highly stylized music album cover featuring abstract neon geometry. A glowing pink and purple triangle floats above a dark, textured surface. The aesthetic is modern, electronic, and premium, fitting a dark-mode music streaming app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLXqhdoH4nXGtVVk-hmrYPAWwSvIPovcekdgaTKVamxEcJ_AG0BKN5PhZ9_CfNzGU2O3RZtb5tiBDX90WR7xh515D-eOFuNQTcrZaS6a4lhEkwFuD-HhysCZNnaVTJszHvix5tjuf0Jw1gsTdVlA0khZCc2XQeFL_X-4COUhcFjq8K4v6TXJlcuCxHSmmaJjwQ8SjZncDdLkPQV-l0a3_cNXs5hd1g4BYilvq0KZmVy6-F4S1kxxLRG17tVQyd_8owHtOvTGE2ojI"/>
+<div class="hidden sm:flex flex-col">
+<span class="font-body-bold text-body-bold text-text-base hover:underline cursor-pointer">Making My Way</span>
+<span class="font-caption text-caption text-text-secondary hover:underline cursor-pointer hover:text-text-base transition-colors">Sơn Tùng M-TP</span>
+</div>
+<button class="text-text-secondary hover:text-text-base transition-colors ml-xs">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="flex flex-col items-center justify-center w-1/3 gap-xs">
+<div class="flex items-center gap-md">
+<button class="text-text-secondary hover:text-text-base transition-colors hidden sm:block">
+<span class="material-symbols-outlined" data-icon="shuffle">shuffle</span>
+</button>
+<button class="text-text-secondary hover:text-text-base transition-colors">
+<span class="material-symbols-outlined" data-icon="skip_previous" data-weight="fill">skip_previous</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-text-base text-near-black flex items-center justify-center hover:scale-105 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[24px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+<button class="text-text-secondary hover:text-text-base transition-colors">
+<span class="material-symbols-outlined" data-icon="skip_next" data-weight="fill">skip_next</span>
+</button>
+<button class="text-text-secondary hover:text-text-base transition-colors hidden sm:block">
+<span class="material-symbols-outlined" data-icon="repeat">repeat</span>
+</button>
+</div>
+<div class="hidden sm:flex items-center gap-sm w-full max-w-[400px]">
+<span class="font-micro text-micro text-text-secondary w-8 text-right">1:23</span>
+<div class="h-1 flex-grow bg-border-muted rounded-full overflow-hidden group cursor-pointer relative">
+<div class="absolute top-0 left-0 h-full bg-text-base group-hover:bg-spotify-green transition-colors w-1/3"></div>
+</div>
+<span class="font-micro text-micro text-text-secondary w-8">3:45</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-md w-1/3 text-text-secondary">
+<button class="hover:text-text-base transition-colors hidden md:block">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+</button>
+<button class="hover:text-text-base transition-colors">
+<span class="material-symbols-outlined" data-icon="queue_music">queue_music</span>
+</button>
+<div class="hidden md:flex items-center gap-xs w-[100px] group cursor-pointer">
+<span class="material-symbols-outlined text-[20px]" data-icon="volume_up">volume_up</span>
+<div class="h-1 flex-grow bg-border-muted rounded-full overflow-hidden">
+<div class="h-full bg-text-base group-hover:bg-spotify-green transition-colors w-2/3"></div>
+</div>
+</div>
+</div>
+</nav>
+</body></html>

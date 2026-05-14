@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hồ sơ của bạn - SoundWave</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#2e372e",
+                    "inverse-on-surface": "#2a3329",
+                    "on-tertiary": "#571f08",
+                    "negative": "#f3727f",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-background": "#dce5d8",
+                    "tertiary-container": "#ffa585",
+                    "spotify-green": "#1ed760",
+                    "surface-container-high": "#232c23",
+                    "inverse-primary": "#006e2c",
+                    "outline": "#859583",
+                    "text-near-white": "#cbcbcb",
+                    "on-tertiary-fixed-variant": "#73341c",
+                    "tertiary-fixed": "#ffdbcf",
+                    "surface-container-highest": "#2e372e",
+                    "on-secondary-container": "#bab8b7",
+                    "tertiary-fixed-dim": "#ffb59b",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "near-black": "#121212",
+                    "primary-container": "#1ed760",
+                    "on-surface": "#dce5d8",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "secondary": "#c8c6c5",
+                    "text-emphasis": "#fdfdfd",
+                    "surface-dim": "#0d150d",
+                    "surface-container": "#192219",
+                    "on-surface-variant": "#bbcbb8",
+                    "warning": "#ffa42b",
+                    "dark-card": "#252525",
+                    "on-error": "#690005",
+                    "inverse-surface": "#dce5d8",
+                    "background": "#0d150d",
+                    "border-pill": "#7c7c7c",
+                    "surface": "#0d150d",
+                    "on-primary-fixed-variant": "#00531f",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-low": "#151e15",
+                    "outline-variant": "#3c4a3c",
+                    "error-container": "#93000a",
+                    "text-base": "#ffffff",
+                    "on-secondary-fixed-variant": "#474646",
+                    "on-primary": "#003913",
+                    "primary-fixed-dim": "#34e36a",
+                    "primary": "#4cf479",
+                    "dark-surface": "#181818",
+                    "mid-card": "#272727",
+                    "tertiary": "#ffccbb",
+                    "surface-tint": "#34e36a",
+                    "on-tertiary-fixed": "#380d00",
+                    "error": "#ffb4ab",
+                    "on-primary-fixed": "#002108",
+                    "text-secondary": "#b3b3b3",
+                    "on-tertiary-container": "#793820",
+                    "mid-dark": "#1f1f1f",
+                    "on-primary-container": "#005721",
+                    "surface-container-lowest": "#081008",
+                    "on-secondary": "#313030",
+                    "secondary-container": "#4a4949",
+                    "primary-fixed": "#69ff89",
+                    "border-muted": "#4d4d4d",
+                    "surface-bright": "#333b32",
+                    "announcement": "#539df5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "sidebar-width": "280px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "base": "8px",
+                    "xl": "32px",
+                    "sm": "8px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "micro": [
+                            "plusJakartaSans"
+                    ],
+                    "caption": [
+                            "plusJakartaSans"
+                    ],
+                    "feature-heading": [
+                            "plusJakartaSans"
+                    ],
+                    "button-uppercase": [
+                            "plusJakartaSans"
+                    ],
+                    "small-bold": [
+                            "plusJakartaSans"
+                    ],
+                    "body-regular": [
+                            "plusJakartaSans"
+                    ],
+                    "nav-link": [
+                            "plusJakartaSans"
+                    ],
+                    "section-title": [
+                            "plusJakartaSans"
+                    ],
+                    "body-bold": [
+                            "plusJakartaSans"
+                    ]
+            },
+            "fontSize": {
+                    "micro": [
+                            "10px",
+                            {
+                                    "lineHeight": "normal",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "caption": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "feature-heading": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "button-uppercase": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "1.4px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "small-bold": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-regular": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "nav-link": [
+                            "14px",
+                            {
+                                    "lineHeight": "normal",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "section-title": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-bold": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #121212; color: #ffffff; }
+        .input-inset { box-shadow: rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset; }
+    </style>
+</head>
+<body class="font-body-regular min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex bg-surface dark:bg-surface text-primary dark:text-primary font-nav-link text-nav-link fixed left-0 top-0 h-full w-sidebar-width flex-col p-md z-40 shadow-[0_0_24px_rgba(0,0,0,0.5)] border-r border-border-muted/20">
+<div class="mb-xl flex items-center gap-md">
+<img alt="User profile" class="w-10 h-10 rounded-full object-cover" data-alt="A macro shot of a sleek, dark metallic audio speaker cone vibrating slightly, dramatically lit with moody, cool blue and subtle purple rim lighting against a pitch-black background, embodying a premium audio aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx-wcnGL-oFBTq3qm5jIu1z8Y6yKCfQdI9zDXq3T3cXgXuWLJUM73M7Hn1mmE2ZAYlniNMfNZphxWiEsP24FGmRz_91eE96Un4KcdlYn12G7bfCqNEQh4tq5DzJ4vW4ks4vXkpHMQsRvy5FNuDyOqXHvl-XKcNjavvcCh0VtDjqPShLMl0qJD4-pxg4JxlcH86Nqre1Yj2hQ1CBU1WcS2sW9Kspeyyxg6X5gqDawI1CxgigwM0pTvMxfWVD8FCpwO8VvoVKenfdzA"/>
+<div>
+<h2 class="font-section-title text-section-title text-text-base m-0 leading-tight">SoundWave</h2>
+<p class="font-caption text-caption text-text-secondary m-0">Premium Account</p>
+</div>
+</div>
+<ul class="flex flex-col gap-sm flex-grow">
+<li class="flex items-center gap-md px-md py-sm rounded-lg hover:bg-surface-bright/20 cursor-pointer text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+                Home
+            </li>
+<li class="flex items-center gap-md px-md py-sm rounded-lg hover:bg-surface-bright/20 cursor-pointer text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+                Search
+            </li>
+<li class="flex items-center gap-md px-md py-sm rounded-lg hover:bg-surface-bright/20 cursor-pointer text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">library_music</span>
+                Your Library
+            </li>
+<li class="mt-lg flex items-center gap-md px-md py-sm rounded-lg hover:bg-surface-bright/20 cursor-pointer text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">add_box</span>
+                Create Playlist
+            </li>
+<li class="flex items-center gap-md px-md py-sm rounded-lg hover:bg-surface-bright/20 cursor-pointer text-text-secondary font-body-regular hover:text-text-base transition-colors scale-100 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+                Liked Songs
+            </li>
+</ul>
+<div class="mt-auto pt-lg border-t border-border-muted/30">
+<button class="flex items-center gap-sm text-text-secondary font-caption text-caption hover:text-text-base transition-colors">
+<span class="material-symbols-outlined">download</span>
+                Install App
+            </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-sidebar-width pb-[100px] flex justify-center w-full">
+<div class="w-full max-w-[640px] px-lg">
+<!-- Header -->
+<div class="pt-[32px] pb-lg">
+<h1 class="font-section-title text-section-title text-text-base">Hồ sơ của bạn</h1>
+</div>
+<!-- Avatar Section -->
+<div class="flex flex-col items-center mb-xl">
+<div class="relative group cursor-pointer mb-md">
+<img alt="User avatar" class="w-[120px] h-[120px] rounded-full object-cover border-4 border-near-black shadow-lg" data-alt="A dramatic close-up portrait of a young person in profile, illuminated by moody, high-contrast chiaroscuro lighting, set against a deep, pure black background, conveying a sense of artistic intensity and premium elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcVRteXI0Dl6LccxG4LjMc7ADP0NUJVQLO5J4HfQ_mKPb6JXlY1_rf-u-KcW4Gg0hVDXJIZMxREZ-d3CKeMimsAlICtA5HnDr_CGofpDoJbfFHOt60C7kXtA-yd-TJhPjBK4MrL7xsFlbGvl9afP6hubsHh2h1uNcM9zR-Umrs17ElfgrXsgjn81-K1YJcn3lqNUHvT5MT5stPp76zXFQpcz18jQbQo5GJa0ufvgSWj8ySjvzrBWeRT9M1gJNhrzQxOyVedvCtNJk"/>
+<div class="absolute inset-0 bg-near-black/50 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+<span class="material-symbols-outlined text-text-base mb-xs">photo_camera</span>
+<span class="font-small-bold text-small-bold text-text-base">Đổi ảnh</span>
+</div>
+</div>
+<div class="flex items-center gap-sm mb-xs cursor-pointer group">
+<h2 class="font-section-title text-section-title text-text-base m-0">Nguyễn Văn A</h2>
+<span class="material-symbols-outlined text-text-secondary group-hover:text-text-base transition-colors text-[18px]">edit</span>
+</div>
+<div class="flex items-center gap-sm text-text-secondary font-caption text-caption mb-md">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+                    nguyenvana@example.com
+                </div>
+<div class="bg-mid-dark border border-border-muted rounded-full px-md py-sm flex items-center justify-center">
+<span class="font-small-bold text-small-bold text-spotify-green">Listener</span>
+</div>
+</div>
+<!-- Edit Form Card -->
+<div class="bg-dark-surface rounded-lg p-lg mb-xl shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition-all hover:bg-[#282828] group">
+<div class="flex flex-col gap-sm mb-lg">
+<label class="font-small-bold text-small-bold text-text-secondary uppercase tracking-widest">Tên hiển thị</label>
+<input class="bg-mid-dark text-text-base rounded-full px-lg py-sm font-body-regular text-body-regular input-inset focus:outline-none focus:ring-1 focus:ring-spotify-green w-full h-[48px]" type="text" value="Nguyễn Văn A"/>
+</div>
+<div class="flex justify-end">
+<button class="bg-spotify-green text-near-black font-button-uppercase text-button-uppercase rounded-full px-xl py-sm hover:scale-105 hover:brightness-110 transition-all">LƯU THAY ĐỔI</button>
+</div>
+</div>
+<!-- Music Preferences Card -->
+<div class="bg-dark-surface rounded-lg p-lg mb-xl shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition-all hover:bg-[#282828]">
+<h3 class="font-feature-heading text-feature-heading text-text-base mb-md">Sở thích của bạn</h3>
+<div class="mb-lg">
+<p class="font-caption text-caption text-text-secondary mb-sm">Thể loại</p>
+<div class="flex flex-wrap gap-sm">
+<span class="bg-mid-dark text-text-secondary font-caption text-caption rounded-full px-md py-xs border border-border-muted hover:text-text-base cursor-pointer transition-colors">Pop</span>
+<span class="bg-mid-dark text-text-secondary font-caption text-caption rounded-full px-md py-xs border border-border-muted hover:text-text-base cursor-pointer transition-colors">R&amp;B</span>
+<span class="bg-mid-dark text-text-secondary font-caption text-caption rounded-full px-md py-xs border border-border-muted hover:text-text-base cursor-pointer transition-colors">Electronic</span>
+</div>
+</div>
+<div class="mb-lg">
+<p class="font-caption text-caption text-text-secondary mb-sm">Nghệ sĩ hàng đầu</p>
+<div class="flex flex-wrap gap-md">
+<div class="flex items-center gap-sm bg-mid-dark rounded-full pr-md p-xs border border-border-muted cursor-pointer hover:bg-surface-bright/20 transition-colors">
+<img alt="Artist 1" class="w-[24px] h-[24px] rounded-full object-cover" data-alt="A tightly cropped, atmospheric black and white studio portrait of a musician holding a guitar neck, heavily shadowed with intense rim lighting, against a pure black background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVr4IODk5FYhxxHeMWlkwn1IJlYcRI35_P8G8G7ZABmzbuAHsjNzr7YOUL9Yr2dpLNNl0dGNZQLW2eQrdbXWZ03Gml7xy2wz7Ojs27GlnUDIlvYiY79yAqGs0sakp3XlCqX34G5PO8XPOg5s_eJlk6QcJx4c12jhk_xHESmKUyrfCTmt_T43lkjFy8h2lWf7yI7qjWiwSTjPSZ2uOWVqc97vj35dbxznYIHn0oCB0UwTX3B0Tocox9nHoNr6roa1ujW5MogqlqZF0"/>
+<span class="font-caption text-caption text-text-secondary">Sơn Tùng M-TP</span>
+</div>
+<div class="flex items-center gap-sm bg-mid-dark rounded-full pr-md p-xs border border-border-muted cursor-pointer hover:bg-surface-bright/20 transition-colors">
+<img alt="Artist 2" class="w-[24px] h-[24px] rounded-full object-cover" data-alt="A moody, high-contrast close up of a singer at a vintage microphone on stage, bathed in a single piercing spotlight amidst deep shadows, cinematic and dark." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_q-Mj9h7eMKtMBsdeEQY6c8CEXofhZ3f8sc9D3qF0wOaRQ2fWhXsY413osYcL9c_sWzAurha9dFQqP5KRqjoBwgUl6W_jkmLoaJQ76C1TUA9gVT-9SYo1YYCU5t1qYjk8578sQF_Xzhvx-pCfoEQn07zBSPpEIdq7kKIebJ2OS2bg3A-8a9ZEZWcu-A0FvEjFb0J5-3ztGLQTicFLj5q7GSdi0KgY1ZYye8qZSK1HrsZzvTVYcEJx4FtsmPnQoiTeKhEfXN-NlK0"/>
+<span class="font-caption text-caption text-text-secondary">Vũ.</span>
+</div>
+</div>
+</div>
+<a class="inline-flex items-center gap-xs text-spotify-green font-caption text-caption hover:underline" href="#">
+                    Cập nhật sở thích <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<!-- Footer -->
+<div class="pt-lg border-t border-border-muted/30 flex justify-center mb-xl">
+<button class="border border-negative text-negative font-button-uppercase text-button-uppercase rounded-full px-xl py-sm hover:bg-negative/10 transition-colors">ĐĂNG XUẤT</button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-[80px] z-50 bg-mid-dark dark:bg-mid-dark text-spotify-green dark:text-spotify-green font-small-bold text-small-bold flex justify-between items-center px-md w-full shadow-[0_-8px_24px_rgba(0,0,0,0.5)] border-t-0 md:hidden">
+<button class="flex flex-col items-center justify-center gap-xs text-text-secondary hover:text-text-base transition-colors w-1/3">
+<span class="material-symbols-outlined">home</span>
+<span>Home</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-xs text-text-secondary hover:text-text-base transition-colors w-1/3">
+<span class="material-symbols-outlined">search</span>
+<span>Search</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-xs text-text-base transition-colors w-1/3 scale-105">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span>Profile</span>
+</button>
+</nav>
+<!-- Player Bar (Persistent Desktop) -->
+<div class="hidden md:flex fixed bottom-0 left-0 w-full h-[80px] z-50 bg-mid-dark dark:bg-mid-dark flex justify-between items-center px-md shadow-[0_-8px_24px_rgba(0,0,0,0.5)] border-t-0">
+<div class="flex items-center gap-md w-1/3">
+<img alt="Album art" class="w-[56px] h-[56px] rounded-sm object-cover" data-alt="A close up of a vinyl record grooved surface reflecting neon green and dark purple lights, minimal and abstract music visualization." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLAlTJ99qKwlwuvvN8-7i7MfZX9OIn3FsNDDVcoync3vcHGmAIfWBbAq6yo24S6Te-T1s32d3zhQHaL-wr46xLG7ul-S9EKAP4w1osR2ctMrYqrWMkGXqs4EgcTnpbF8Rs_9MBCo5OxVGWM6dBnwoRT0A_fzGeas_D7WFI8k8CozwBwq08r5vMXVj0f5UaAddrfQkWXgndVTGQhgcDqHjFNg_bBp6BPxb2b_o8gEa0l8fwuuh7U_VtLjbx6Magy8xyUZrf1xnGquQ"/>
+<div>
+<p class="font-body-regular text-body-regular text-text-base leading-tight mb-xs">Tình Yêu Chậm Trễ</p>
+<p class="font-caption text-caption text-text-secondary leading-tight">MONO</p>
+</div>
+<button class="text-text-secondary hover:text-text-base ml-sm"><span class="material-symbols-outlined">favorite</span></button>
+</div>
+<div class="flex flex-col items-center justify-center w-1/3">
+<div class="flex items-center gap-lg mb-xs">
+<button class="text-text-secondary hover:text-text-base"><span class="material-symbols-outlined">shuffle</span></button>
+<button class="text-text-secondary hover:text-text-base"><span class="material-symbols-outlined">skip_previous</span></button>
+<button class="bg-text-base text-near-black rounded-full w-[32px] h-[32px] flex items-center justify-center hover:scale-105 transition-transform"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span></button>
+<button class="text-text-secondary hover:text-text-base"><span class="material-symbols-outlined">skip_next</span></button>
+<button class="text-text-secondary hover:text-text-base"><span class="material-symbols-outlined">repeat</span></button>
+</div>
+<div class="flex items-center gap-sm w-full max-w-[400px]">
+<span class="font-micro text-micro text-text-secondary">0:00</span>
+<div class="h-[4px] bg-border-muted rounded-full flex-grow relative group cursor-pointer">
+<div class="absolute left-0 top-0 h-full bg-text-base group-hover:bg-spotify-green rounded-full w-[30%]"></div>
+</div>
+<span class="font-micro text-micro text-text-secondary">3:42</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-sm w-1/3 text-text-secondary">
+<button class="hover:text-text-base"><span class="material-symbols-outlined">mic</span></button>
+<button class="hover:text-text-base"><span class="material-symbols-outlined">queue_music</span></button>
+<button class="hover:text-text-base"><span class="material-symbols-outlined">speaker_group</span></button>
+<div class="flex items-center gap-xs ml-sm">
+<span class="material-symbols-outlined text-[18px]">volume_up</span>
+<div class="h-[4px] bg-border-muted rounded-full w-[80px] relative group cursor-pointer">
+<div class="absolute left-0 top-0 h-full bg-text-base group-hover:bg-spotify-green rounded-full w-[70%]"></div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

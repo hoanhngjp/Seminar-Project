@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Creator Song Table</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#003913",
+                        "mid-dark": "#1f1f1f",
+                        "surface-container-low": "#151e15",
+                        "on-background": "#dce5d8",
+                        "error": "#ffb4ab",
+                        "outline-variant": "#3c4a3c",
+                        "dark-surface": "#181818",
+                        "text-near-white": "#cbcbcb",
+                        "on-error": "#690005",
+                        "tertiary": "#ffccbb",
+                        "primary": "#4cf479",
+                        "surface-container-lowest": "#081008",
+                        "border-muted": "#4d4d4d",
+                        "tertiary-container": "#ffa585",
+                        "primary-fixed-dim": "#34e36a",
+                        "outline": "#859583",
+                        "surface-container": "#192219",
+                        "secondary-container": "#4a4949",
+                        "surface-tint": "#34e36a",
+                        "surface-bright": "#333b32",
+                        "on-surface": "#dce5d8",
+                        "text-base": "#ffffff",
+                        "mid-card": "#272727",
+                        "surface-container-high": "#232c23",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-primary-fixed": "#002108",
+                        "primary-fixed": "#69ff89",
+                        "error-container": "#93000a",
+                        "surface-dim": "#0d150d",
+                        "on-primary-container": "#005721",
+                        "surface-container-highest": "#2e372e",
+                        "on-secondary-container": "#bab8b7",
+                        "negative": "#f3727f",
+                        "announcement": "#539df5",
+                        "dark-card": "#252525",
+                        "border-pill": "#7c7c7c",
+                        "surface": "#0d150d",
+                        "spotify-green": "#1ed760",
+                        "secondary": "#c8c6c5",
+                        "on-secondary": "#313030",
+                        "on-tertiary-container": "#793820",
+                        "warning": "#ffa42b",
+                        "inverse-on-surface": "#2a3329",
+                        "background": "#0d150d",
+                        "near-black": "#121212",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "text-emphasis": "#fdfdfd",
+                        "on-secondary-fixed-variant": "#474646",
+                        "on-primary-fixed-variant": "#00531f",
+                        "primary-container": "#1ed760",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "surface-variant": "#2e372e",
+                        "secondary-fixed": "#e5e2e1",
+                        "text-secondary": "#b3b3b3",
+                        "inverse-surface": "#dce5d8",
+                        "inverse-primary": "#006e2c",
+                        "on-surface-variant": "#bbcbb8",
+                        "tertiary-fixed": "#ffdbcf",
+                        "on-tertiary": "#571f08",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "secondary-fixed-dim": "#c8c6c5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px",
+                        "card": "8px",
+                        "album": "4px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "feature-heading": ["plusJakartaSans"],
+                        "body-regular": ["plusJakartaSans"],
+                        "body-bold": ["plusJakartaSans"],
+                        "nav-link": ["plusJakartaSans"],
+                        "caption": ["plusJakartaSans"],
+                        "small-bold": ["plusJakartaSans"],
+                        "button-uppercase": ["plusJakartaSans"],
+                        "micro": ["plusJakartaSans"],
+                        "section-title": ["plusJakartaSans"]
+                    },
+                    "fontSize": {
+                        "feature-heading": ["18px", {"lineHeight": "1.3", "letterSpacing": "normal", "fontWeight": "600"}],
+                        "body-regular": ["16px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400"}],
+                        "body-bold": ["16px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700"}],
+                        "nav-link": ["14px", {"lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400"}],
+                        "caption": ["14px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400"}],
+                        "small-bold": ["12px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700"}],
+                        "button-uppercase": ["14px", {"lineHeight": "1.0", "letterSpacing": "1.4px", "fontWeight": "700"}],
+                        "micro": ["10px", {"lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400"}],
+                        "section-title": ["24px", {"lineHeight": "1.2", "letterSpacing": "normal", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-near-black min-h-screen text-text-base p-lg font-body-regular">
+<!-- Populated Table State -->
+<div class="bg-dark-surface rounded-[8px] flex flex-col mb-xl w-full max-w-6xl mx-auto overflow-hidden">
+<!-- Header Section -->
+<div class="flex items-center justify-between p-[20px] bg-dark-surface">
+<h2 class="text-[18px] font-bold text-text-base">Bài hát của tôi</h2>
+<button class="bg-spotify-green text-near-black rounded-full px-lg py-sm text-[13px] font-bold uppercase tracking-[1.4px] hover:scale-105 transition-transform duration-200">
+                TẢI LÊN BÀI MỚI
+            </button>
+</div>
+<!-- Table Container -->
+<div class="w-full overflow-x-auto">
+<table class="w-full min-w-[800px] text-left border-collapse">
+<!-- Column Headers -->
+<thead class="bg-near-black border-b border-near-black">
+<tr class="h-[40px] text-text-secondary text-[12px] font-bold uppercase tracking-[1.4px]">
+<th class="px-md font-normal w-12 text-center">#</th>
+<th class="px-md font-normal group cursor-pointer hover:text-text-base transition-colors">
+<div class="flex items-center gap-xs">
+                                BÀI HÁT
+                                <span class="material-symbols-outlined text-[14px]">unfold_more</span>
+</div>
+</th>
+<th class="px-md font-normal">NGÀY UPLOAD</th>
+<th class="px-md font-normal text-right group cursor-pointer hover:text-text-base transition-colors">
+<div class="flex items-center justify-end gap-xs">
+                                LƯỢT NGHE
+                                <span class="material-symbols-outlined text-[14px]">unfold_more</span>
+</div>
+</th>
+<th class="px-md font-normal text-right">NGƯỜI NGHE</th>
+<th class="px-md font-normal group cursor-pointer hover:text-text-base transition-colors">
+<div class="flex items-center gap-xs">
+                                HOÀN THÀNH %
+                                <span class="material-symbols-outlined text-[14px]">unfold_more</span>
+</div>
+</th>
+<th class="px-md font-normal"></th>
+</tr>
+</thead>
+<!-- Data Rows -->
+<tbody class="text-[14px]">
+<!-- Row 1 -->
+<tr class="h-[64px] border-b border-transparent hover:bg-mid-dark transition-colors duration-200 group">
+<td class="px-md text-text-secondary text-center">1</td>
+<td class="px-md">
+<div class="flex items-center gap-md">
+<img alt="Album Art" class="w-[40px] h-[40px] rounded-[4px] object-cover bg-mid-dark" data-alt="A moody, high-contrast abstract digital art piece serving as album art, featuring swirling waves of deep neon green against a pitch-black void. The image evokes an intense, electronic music aesthetic with a sleek, modern, and premium dark mode sensibility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLFnml9F5bZw9giS0Pe2KgHS7FIemQ3vZixTpS0sijZYkAQ-iz4KgTc26_6_h7wJrd0KKqGe8MzCro48jz5HsZZAUVv3Soy2Iniy2wNfgR0TB3xQ-w3YWGETPrr959EjiqnWh4Y2z-1Fnis4cCNOaBlzYIMlysWOXKAN_IDityNQtOh-h2BRgyC_bKw7OXIFUKDz8kg88oZRvDkM6BxGVIG_Gr43J5iDN9TgabKuIzpyvdkiccL8-xS_8kwbRAAfux2r2b7CDQgW8"/>
+<div class="flex flex-col justify-center">
+<span class="text-text-base font-bold truncate max-w-[200px]">Ánh Sáng Nơi Cuối Con Đường</span>
+<span class="text-text-secondary text-[12px] truncate max-w-[200px]">Electronic Pop • Single</span>
+</div>
+</div>
+</td>
+<td class="px-md text-text-secondary">24 Thg 10, 2023</td>
+<td class="px-md text-text-base text-right font-feature-heading text-feature-heading">125,430</td>
+<td class="px-md text-text-base text-right font-feature-heading text-feature-heading">42,100</td>
+<td class="px-md">
+<div class="flex items-center gap-sm">
+<div class="w-[60px] h-xs bg-[#282828] rounded-full overflow-hidden">
+<div class="h-full bg-spotify-green rounded-full" style="width: 100%;"></div>
+</div>
+<span class="text-text-base text-[12px]">100%</span>
+</div>
+</td>
+<td class="px-md text-right">
+<button class="px-sm py-xs rounded-full border border-border-muted text-text-secondary text-[12px] hover:text-text-base hover:border-text-base transition-colors duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100">
+                                Xem phân tích →
+                            </button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="h-[64px] border-b border-transparent hover:bg-mid-dark transition-colors duration-200 group">
+<td class="px-md text-text-secondary text-center">2</td>
+<td class="px-md">
+<div class="flex items-center gap-md">
+<img alt="Album Art" class="w-[40px] h-[40px] rounded-[4px] object-cover bg-mid-dark" data-alt="A striking minimal graphic design depicting a glowing, abstract vinyl record in neon green lines on an intensely dark background. The lighting is focused and dramatic, evoking a late-night music studio session in a premium dark mode environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6rrHMKCwBp1awO3WgOfLddVpKiM9do6ebWUa7k7MFDZHNj20tI8n7XEy7VOjDYysHMAk2ZP8PHWUbTgaA7QOuXAMXSE7_nqI8jXzzRX08FUts9d61b8UL1ikJ8Te6QwaGIJjZqmXI5M7bMDMR1SjcDxXtbZ-nUSdGd8ObLsLbyOpw9Fh9yNhkK__fgObBl2SB_pSr1V8gmKKN1Os38h6ufTtkECTbBw8AqFu1cZ-gMzRekPWwKB7_pKetos7aDgYBUJlBUiWVD28"/>
+<div class="flex flex-col justify-center">
+<span class="text-text-base font-bold truncate max-w-[200px]">Đêm Trắng Tại Sài Gòn</span>
+<span class="text-text-secondary text-[12px] truncate max-w-[200px]">Lofi Hip Hop • EP</span>
+</div>
+</div>
+</td>
+<td class="px-md text-text-secondary">15 Thg 10, 2023</td>
+<td class="px-md text-text-base text-right font-feature-heading text-feature-heading">89,200</td>
+<td class="px-md text-text-base text-right font-feature-heading text-feature-heading">28,500</td>
+<td class="px-md">
+<div class="flex items-center gap-sm">
+<div class="w-[60px] h-xs bg-[#282828] rounded-full overflow-hidden">
+<div class="h-full bg-spotify-green rounded-full" style="width: 72%;"></div>
+</div>
+<span class="text-text-base text-[12px]">72%</span>
+</div>
+</td>
+<td class="px-md text-right">
+<button class="px-sm py-xs rounded-full border border-border-muted text-text-secondary text-[12px] hover:text-text-base hover:border-text-base transition-colors duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100">
+                                Xem phân tích →
+                            </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-end gap-md p-md bg-dark-surface border-t border-near-black">
+<span class="text-[12px] text-text-secondary">Trang 1 / 5</span>
+<div class="flex items-center gap-sm">
+<button class="px-md py-xs rounded-full bg-mid-dark text-text-base text-[12px] opacity-40 cursor-not-allowed">
+                    Trước
+                </button>
+<button class="px-md py-xs rounded-full bg-mid-dark text-text-base text-[12px] hover:bg-dark-card transition-colors">
+                    Sau
+                </button>
+</div>
+</div>
+</div>
+<!-- Empty State Variant -->
+<div class="bg-dark-surface rounded-[8px] flex flex-col w-full max-w-6xl mx-auto overflow-hidden mt-xl">
+<div class="flex items-center justify-between p-[20px] border-b border-near-black">
+<h2 class="text-[18px] font-bold text-text-base">Bài hát của tôi</h2>
+</div>
+<div class="flex flex-col items-center justify-center py-xl min-h-[300px]">
+<span class="material-symbols-outlined text-border-muted text-[40px] mb-md">upload</span>
+<p class="text-[14px] text-text-secondary mb-lg">Bạn chưa upload bài hát nào</p>
+<button class="bg-spotify-green text-near-black rounded-full px-lg py-sm font-bold uppercase tracking-[1.4px] hover:scale-105 transition-transform duration-200">
+                Tải lên ngay
+            </button>
+</div>
+</div>
+</body></html>

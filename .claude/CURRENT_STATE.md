@@ -117,6 +117,19 @@
 - [X] Track A+B W9: usePartyWebSocket hook (SignalR thật, @microsoft/signalr) — 14/14 tests xanh
 - [ ] Checkpoint W9: 2-tab test — Host Play → Member sync < 500ms
 
+### Frontend Phase 2 — New Pages & Components (Stitch designs)
+
+- [ ] Phase 0: Types (SongDetail, Artist, CreatorSongRow) + mock data vào `mocks/data.ts`
+- [ ] Phase 1: EmptyState, SongContextMenu, UserMenuDropdown
+- [ ] Phase 2: TimeRangeSelector, SongStatsCard, DailyListenersChart, HeatmapChart, CreatorSongTable
+- [ ] Phase 3: ContextSelector, RecommendationFeedRow
+- [ ] Phase 4: QueueDrawer + extend playerStore
+- [ ] Phase 5: SongDetailPage, ArtistPage, CreatorSongAnalyticsPage, ProfilePage, PreferencesPage
+- [ ] Phase 6: Enhance HomePage, SearchPage, CreatorDashboardPage
+- [ ] Phase 7: Sidebar + MobileNav updates
+- [ ] Phase 8: Route registration (App.tsx) — 5 routes mới
+- [ ] Phase 9: BottomPlayerBar QueueDrawer integration
+
 ### Frontend Redesign — Spotify Design System (Stitch-based, full refactor)
 
 - [X] Phase 0: Tailwind CSS v4 + @tailwindcss/vite cài đặt thành công
@@ -160,11 +173,11 @@
 
 ## Đang làm
 
-- **Service/Task:** CSS Audit HOÀN THÀNH (6 phases, 44 files) — Tiếp theo: AC checklist W11
-- **File plan cần đọc:** `.claude/plan/tr-c-khi-th-c-task-prancy-lovelace.md`
+- **Service/Task:** Frontend Phase 2 — New Pages & Components (từ Stitch designs)
+- **File plan cần đọc:** `.claude/plan/frontend-phase2-new-pages-components.md`
 - **Checkpoint gần nhất đã pass:** CSS Audit Phase 6 — 314/314 tests xanh (2026-05-14)
 - **Ngày làm việc gần nhất:** 2026-05-14
-- **Tiếp theo:** AC checklist W11 — chạy `infra/verify_ac.sh`, fix FAILs, verify thủ công SKIPs
+- **Tiếp theo:** Implement theo plan Phase 2 — bắt đầu từ Phase 0 (types + mock data)
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |
@@ -232,4 +245,4 @@ _(Format: [service]: vấn đề — workaround: ...)_
 
 - Bug history & decisions: `.claude/DEVLOG.md`
 - Lịch sử milestone: `CHANGELOG.md`
-- Plan chi tiết tuần này: `.claude/plan/week5_6_search_analytics_notification.md`
+- Plan chi tiết hiện tại: `.claude/plan/frontend-phase2-new-pages-components.md`

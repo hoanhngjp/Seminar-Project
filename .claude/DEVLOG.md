@@ -1,5 +1,39 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-14] [FRONTEND / PHASE 2 PLANNING — NEW PAGES & COMPONENTS] [PLANNED]
+
+**Task:** Lên plan implement 5 trang mới và ~14 components mới từ Stitch designs (`design/phase2/`).
+
+**Design assets:** 10 folder trong `design/phase2/`, mỗi folder có `code.html` + `screen.png`. Map:
+- `chi_ti_t_b_i_h_t_soundwave/` → SongDetailPage (`/songs/:songId`)
+- `h_s_ngh_s_soundwave/` → ArtistPage (`/artists/:artistId`)
+- `analytics_chi_ti_t_b_i_h_t_soundwave_creator/` → CreatorSongAnalyticsPage (`/dashboard/songs/:songId`)
+- `h_s_ng_i_d_ng_soundwave/` → ProfilePage (`/profile`)
+- `c_p_nh_t_s_th_ch_soundwave/` → PreferencesPage (`/settings/preferences`)
+- `th_nh_ph_n_trang_ch_soundwave/` → ContextSelector + RecommendationFeedRow (HomePage enhancements)
+- `k_t_qu_t_m_ki_m_t_t_c_soundwave/` → SearchFilters + ArtistCard (SearchPage enhancements)
+- `kh_ng_t_m_th_y_k_t_qu_soundwave/` → EmptyState component
+- `danh_s_ch_b_i_h_t_creator_dashboard/` → CreatorSongTable (CreatorDashboardPage enhancement)
+- `th_nh_ph_n_ti_n_ch_soundwave/` → QueueDrawer + SongContextMenu + UserMenuDropdown
+
+**Strategy:** Dùng mock data hoàn toàn — không gọi API thật. Tích hợp BE ở giai đoạn sau.
+
+**Reuse:**
+- `<GenreGrid>` (onboarding) tái dùng cho PreferencesPage
+- `KpiCard`, `LineChart`, `SkipHeatmap` extract từ CreatorDashboardPage thành components riêng
+- `SkeletonRow` (ui) tái dùng cho CreatorSongTable loading state
+- `HorizontalSection` (HomePage pattern) tái dùng cho SongDetailPage related songs
+- `CreateRoomModal` tái dùng từ SongDetailPage "Add to Party" action
+
+**Pitfalls đã note:**
+- ArtistPage không có API endpoint riêng → dùng `artistId` như search query
+- PreferencesPage sticky save bar phải `bottom-[72px] lg:bottom-0` (trên BottomPlayerBar)
+- Chart helpers (`formatSeconds`) phải co-locate với component khi extract
+
+**Plan file:** `.claude/plan/frontend-phase2-new-pages-components.md`
+**Tổng:** 16 files mới + 11 files sửa, 9 phases.
+
+---
 [2026-05-14] [FRONTEND / CSS AUDIT PHASE 6 — NOTIFICATIONS & CREATOR FEATURES] [DONE]
 
 **Task:** Audit và fix 4 files cuối cùng theo DESIGN_STITCH.md rules — hoàn tất toàn bộ CSS Audit (44 files).

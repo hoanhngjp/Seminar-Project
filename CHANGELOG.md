@@ -14,6 +14,15 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Added
+
+**Frontend — Phase 2 Design Assets (2026-05-14)**
+- `design/phase2/` — 10 Stitch design folders, mỗi folder có `code.html` (HTML prototype) và `screen.png` (screenshot)
+- Covers 5 trang mới: SongDetailPage, ArtistPage, CreatorSongAnalyticsPage, ProfilePage, PreferencesPage
+- Covers 3 trang nâng cấp: HomePage (ContextSelector + feed row), SearchPage (filters + ArtistCard), CreatorDashboardPage (song table)
+- Covers shared components: EmptyState, SongContextMenu, UserMenuDropdown, QueueDrawer, analytics charts
+- Implementation plan: `.claude/plan/frontend-phase2-new-pages-components.md` (9 phases, 16 files mới, 11 files sửa, mock data strategy)
+
 ### Changed
 
 **Frontend — CSS Audit Phase Plan (2026-05-14)**

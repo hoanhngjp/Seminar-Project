@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Song Analytics - Creator Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary": "#c8c6c5",
+                        "on-surface": "#dce5d8",
+                        "text-near-white": "#cbcbcb",
+                        "on-primary-container": "#005721",
+                        "surface-container-highest": "#2e372e",
+                        "mid-dark": "#1f1f1f",
+                        "negative": "#f3727f",
+                        "error": "#ffb4ab",
+                        "border-muted": "#4d4d4d",
+                        "primary-fixed-dim": "#34e36a",
+                        "on-surface-variant": "#bbcbb8",
+                        "surface-container-low": "#151e15",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "border-pill": "#7c7c7c",
+                        "tertiary-container": "#ffa585",
+                        "text-secondary": "#b3b3b3",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-error": "#690005",
+                        "on-tertiary-container": "#793820",
+                        "on-tertiary": "#571f08",
+                        "mid-card": "#272727",
+                        "tertiary": "#ffccbb",
+                        "on-secondary-fixed-variant": "#474646",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "inverse-surface": "#dce5d8",
+                        "on-secondary": "#313030",
+                        "surface-container-high": "#232c23",
+                        "inverse-primary": "#006e2c",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "primary-container": "#1ed760",
+                        "on-background": "#dce5d8",
+                        "primary": "#4cf479",
+                        "spotify-green": "#1ed760",
+                        "on-primary-fixed": "#002108",
+                        "announcement": "#539df5",
+                        "surface-bright": "#333b32",
+                        "outline-variant": "#3c4a3c",
+                        "on-primary": "#003913",
+                        "surface-container": "#192219",
+                        "text-base": "#ffffff",
+                        "dark-surface": "#181818",
+                        "warning": "#ffa42b",
+                        "outline": "#859583",
+                        "text-emphasis": "#fdfdfd",
+                        "surface-container-lowest": "#081008",
+                        "on-secondary-container": "#bab8b7",
+                        "inverse-on-surface": "#2a3329",
+                        "secondary-container": "#4a4949",
+                        "near-black": "#121212",
+                        "tertiary-fixed": "#ffdbcf",
+                        "on-primary-fixed-variant": "#00531f",
+                        "primary-fixed": "#69ff89",
+                        "dark-card": "#252525",
+                        "surface": "#0d150d",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-variant": "#2e372e",
+                        "surface-tint": "#34e36a",
+                        "background": "#0d150d",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface-dim": "#0d150d",
+                        "secondary-fixed-dim": "#c8c6c5"
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        lg: "2rem",
+                        xl: "3rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        "sidebar-width": "280px",
+                        xs: "4px",
+                        lg: "24px",
+                        sm: "8px",
+                        base: "8px",
+                        xl: "32px",
+                        md: "16px",
+                        gutter: "16px"
+                    },
+                    fontFamily: {
+                        caption: ["plusJakartaSans"],
+                        "feature-heading": ["plusJakartaSans"],
+                        "nav-link": ["plusJakartaSans"],
+                        "button-uppercase": ["plusJakartaSans"],
+                        micro: ["plusJakartaSans"],
+                        "section-title": ["plusJakartaSans"],
+                        "body-regular": ["plusJakartaSans"],
+                        "body-bold": ["plusJakartaSans"],
+                        "small-bold": ["plusJakartaSans"]
+                    },
+                    fontSize: {
+                        caption: ["14px", { lineHeight: "1.5", letterSpacing: "normal", fontWeight: "400" }],
+                        "feature-heading": ["18px", { lineHeight: "1.3", letterSpacing: "normal", fontWeight: "600" }],
+                        "nav-link": ["14px", { lineHeight: "normal", letterSpacing: "normal", fontWeight: "400" }],
+                        "button-uppercase": ["14px", { lineHeight: "1.0", letterSpacing: "1.4px", fontWeight: "700" }],
+                        micro: ["10px", { lineHeight: "normal", letterSpacing: "normal", fontWeight: "400" }],
+                        "section-title": ["24px", { lineHeight: "1.2", letterSpacing: "normal", fontWeight: "700" }],
+                        "body-regular": ["16px", { lineHeight: "1.5", letterSpacing: "normal", fontWeight: "400" }],
+                        "body-bold": ["16px", { lineHeight: "1.5", letterSpacing: "normal", fontWeight: "700" }],
+                        "small-bold": ["12px", { lineHeight: "1.5", letterSpacing: "normal", fontWeight: "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4d4d4d;
+        }
+    </style>
+</head>
+<body class="bg-near-black text-text-base font-body-regular antialiased h-screen overflow-hidden flex">
+<!-- SideNavBar Component -->
+<nav class="w-sidebar-width h-screen fixed left-0 top-0 bg-near-black dark:bg-near-black flex flex-col p-md z-50 border-r border-[#282828]">
+<!-- Brand Header -->
+<div class="flex items-center gap-sm mb-xl">
+<div class="w-10 h-10 rounded-full bg-mid-dark overflow-hidden shrink-0">
+<img alt="Creator Profile Avatar" class="w-full h-full object-cover" data-alt="A close-up portrait of a young male music producer in a dimly lit, neon-accented studio. He has a serious expression, wearing dark headphones and a minimalist black hoodie. The lighting is moody, with subtle hints of vibrant Spotify green and deep shadows, reflecting a professional, high-end audio aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6VCzfiX6FE7XXuoySpbvpXSeqppLy_jPzVYo5F1_8ASoBMFNrGM7GNjNGBLos8EtizD0c4rqaNZXgLSfhrgo6jehGvmJ8sA6hTlGb7EmELFRAlyfq-5ummyZZJii1Bnlhr-lAQPFUQCMpgHGFCWae5vcZ3DqQNDdxyl1Z7BcA6DkoO_RG-gx-OtkXOsqt1GVFcw9iZWpt8zYje8Ssk9Y1h5DVJNtfHVhYgfFigdE2rIp4LBu1X34ywzeAW-eCnnVBncFFzjIXXDc"/>
+</div>
+<div class="flex flex-col">
+<span class="text-section-title font-section-title text-text-base dark:text-text-base">Creator Studio</span>
+<span class="font-caption text-caption text-text-secondary flex items-center gap-[2px]">
+                    Verified Artist
+                    <span class="material-symbols-outlined fill text-spotify-green text-[14px]">verified</span>
+</span>
+</div>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm rounded-[4px] text-text-secondary font-normal hover:text-text-base transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-nav-link text-nav-link">Home</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-[4px] text-text-secondary font-normal hover:text-text-base transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-nav-link text-nav-link">Search</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-[4px] text-text-secondary font-normal hover:text-text-base transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">library_music</span>
+<span class="font-nav-link text-nav-link">Your Library</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-[4px] text-text-secondary font-normal hover:text-text-base transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">upload</span>
+<span class="font-nav-link text-nav-link">Upload</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-[4px] text-text-base font-bold bg-mid-dark/50 scale-100 opacity-100" href="#">
+<span class="material-symbols-outlined fill">analytics</span>
+<span class="font-nav-link text-nav-link">Analytics</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="mb-md">
+<button class="w-full bg-spotify-green text-[#000000] font-button-uppercase text-button-uppercase py-md rounded-full hover:scale-105 transition-transform duration-200 flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined">podcasts</span>
+                Go Live
+            </button>
+</div>
+<!-- Footer Navigation -->
+<div class="flex flex-col gap-xs pt-md border-t border-[#282828]">
+<a class="flex items-center gap-md px-md py-sm rounded-[4px] text-text-secondary font-normal hover:text-text-base transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-nav-link text-nav-link">Settings</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-[4px] text-text-secondary font-normal hover:text-text-base transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-nav-link text-nav-link">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width flex-1 h-screen overflow-y-auto bg-near-black">
+<div class="max-w-[1200px] mx-auto p-lg pb-[100px] flex flex-col gap-lg">
+<!-- Top Header & Breadcrumbs -->
+<div class="flex items-center justify-between mt-md">
+<nav class="flex items-center gap-xs font-caption text-caption">
+<a class="text-text-secondary hover:text-text-base transition-colors" href="#">Dashboard</a>
+<span class="text-text-secondary material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="text-text-secondary hover:text-text-base transition-colors" href="#">Bài hát của tôi</a>
+<span class="text-text-secondary material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-text-base font-bold">Nơi Này Có Anh</span>
+</nav>
+<!-- Time Range Selector -->
+<div class="flex bg-mid-dark p-xs rounded-full border border-border-muted/30">
+<button class="px-md py-sm bg-spotify-green text-[#000000] rounded-full font-small-bold text-small-bold transition-all shadow-[0_2px_8px_rgba(0,0,0,0.3)]">
+                        7 ngày
+                    </button>
+<button class="px-md py-sm text-text-secondary hover:text-text-base rounded-full font-small-bold text-small-bold transition-all">
+                        30 ngày
+                    </button>
+</div>
+</div>
+<!-- Song Info Card -->
+<div class="bg-dark-surface rounded-[8px] p-md flex flex-wrap lg:flex-nowrap items-center gap-lg shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
+<div class="w-[80px] h-[80px] rounded-[6px] overflow-hidden shrink-0 shadow-[0_4px_8px_rgba(0,0,0,0.5)]">
+<img alt="Song Cover Art" class="w-full h-full object-cover" data-alt="Abstract album cover art featuring a moody, low-lit scene. Deep black background with a prominent, glowing neon green geometric wave shape traversing diagonally. The lighting is cinematic and high-contrast, perfectly aligning with a premium, dark-mode electronic music aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJw_lX0WKt2yOp1qTfV4qSROhwbnA7tpow0Dacv22IdYMaEtOJjkDHPMYHj73BKR4LxV9rwkeGBEhFr19Zf3kskQWAo8foGYFUKlYkQcaqXmtBr4DZjfnUhWiLj1kZqPWUqDbynWOcS632iAMWFX3QckcBN_6le79i6nAirlwxv8LiXxstdmtze7JoOnMT2w7cdJDoE0KrI13wTviqV_eWmQIZM8we9Fj3CpEHVenO9PpG2bHJTuYcIHf5vvDqXeBmUMIGwzE0XzE"/>
+</div>
+<div class="flex flex-col flex-1 min-w-[200px]">
+<h1 class="font-section-title text-section-title text-text-base mb-1">Nơi Này Có Anh</h1>
+<span class="font-caption text-caption text-text-secondary">Đã tải lên: 14/02/2017</span>
+</div>
+<div class="flex flex-wrap gap-md shrink-0 w-full lg:w-auto mt-4 lg:mt-0">
+<div class="bg-mid-dark px-md py-sm rounded-[6px] flex flex-col border border-border-muted/20">
+<span class="font-micro text-micro text-text-secondary uppercase tracking-wider mb-1">Total Plays</span>
+<span class="font-feature-heading text-feature-heading text-spotify-green">1.2M</span>
+</div>
+<div class="bg-mid-dark px-md py-sm rounded-[6px] flex flex-col border border-border-muted/20">
+<span class="font-micro text-micro text-text-secondary uppercase tracking-wider mb-1">Unique Listeners</span>
+<span class="font-feature-heading text-feature-heading text-spotify-green">845K</span>
+</div>
+<div class="bg-mid-dark px-md py-sm rounded-[6px] flex flex-col border border-border-muted/20">
+<span class="font-micro text-micro text-text-secondary uppercase tracking-wider mb-1">Avg. Completion Rate</span>
+<span class="font-feature-heading text-feature-heading text-spotify-green">76%</span>
+</div>
+</div>
+</div>
+<!-- Charts Section: Daily Listeners & Drop-off Heatmap -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+<!-- Daily Listeners Chart (Visual Representation) -->
+<div class="bg-dark-surface rounded-[8px] p-lg flex flex-col h-[350px] shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:bg-[#282828] transition-colors duration-300 group">
+<div class="flex items-center justify-between mb-md">
+<h2 class="font-body-bold text-body-bold text-text-base">Daily Listeners</h2>
+<span class="material-symbols-outlined text-text-secondary hover:text-text-base cursor-pointer">more_horiz</span>
+</div>
+<div class="flex-1 relative mt-md flex items-end">
+<!-- Y-Axis Labels -->
+<div class="absolute left-0 top-0 bottom-6 flex flex-col justify-between font-micro text-micro text-text-secondary pr-sm">
+<span>50K</span>
+<span>25K</span>
+<span>0</span>
+</div>
+<!-- Grid Lines -->
+<div class="absolute left-8 right-0 top-0 bottom-6 flex flex-col justify-between z-0">
+<div class="w-full h-px bg-[#333333]"></div>
+<div class="w-full h-px bg-[#333333]"></div>
+<div class="w-full h-px bg-[#333333]"></div>
+</div>
+<!-- Chart Area (Mockup) -->
+<div class="relative w-full h-[calc(100%-24px)] ml-8 z-10 flex items-end">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<!-- Area Fill -->
+<path d="M0,80 Q20,40 40,60 T80,20 L100,10 L100,100 L0,100 Z" fill="#1ed760" fill-opacity="0.15"></path>
+<!-- Line -->
+<path d="M0,80 Q20,40 40,60 T80,20 L100,10" fill="none" stroke="#1ed760" stroke-width="2"></path>
+</svg>
+<!-- Data Dots -->
+<div class="absolute w-2 h-2 rounded-full bg-text-base border-2 border-spotify-green top-[20%] left-[20%] transform -translate-x-1/2 -translate-y-1/2"></div>
+<div class="absolute w-2 h-2 rounded-full bg-text-base border-2 border-spotify-green top-[60%] left-[40%] transform -translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform">
+<!-- Tooltip Mock -->
+<div class="hidden group-hover:flex absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-mid-card px-sm py-xs rounded-[4px] font-caption text-caption text-text-base whitespace-nowrap shadow-[0_4px_8px_rgba(0,0,0,0.5)] z-20">
+                                    Oct 15: 32,450
+                                </div>
+</div>
+<div class="absolute w-2 h-2 rounded-full bg-text-base border-2 border-spotify-green top-[20%] left-[80%] transform -translate-x-1/2 -translate-y-1/2"></div>
+</div>
+<!-- X-Axis Labels -->
+<div class="absolute left-8 right-0 bottom-0 flex justify-between font-micro text-micro text-text-secondary mt-xs">
+<span>Mon</span>
+<span>Wed</span>
+<span>Fri</span>
+<span>Sun</span>
+</div>
+</div>
+</div>
+<!-- Drop-off Heatmap Chart -->
+<div class="bg-dark-surface rounded-[8px] p-lg flex flex-col h-[350px] shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:bg-[#282828] transition-colors duration-300">
+<div class="flex items-center justify-between mb-md">
+<div class="flex flex-col">
+<h2 class="font-body-bold text-body-bold text-text-base">Audience Retention (Skips)</h2>
+<span class="font-micro text-micro text-text-secondary">Track timeline vs. Drop-off rate</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary hover:text-text-base cursor-pointer">more_horiz</span>
+</div>
+<div class="flex-1 relative mt-md pt-6 flex items-end">
+<!-- Threshold Line -->
+<div class="absolute left-0 right-0 top-[40%] h-px border-t border-dashed border-[#b3b3b3] z-0 flex items-center">
+<span class="absolute -top-5 right-0 font-micro text-micro text-text-secondary">30% Threshold</span>
+</div>
+<!-- Heatmap Bars -->
+<div class="w-full h-[calc(100%-24px)] flex items-end gap-[2px] z-10">
+<!-- Green (Low Skips) -->
+<div class="flex-1 bg-spotify-green h-[10%] rounded-t-[2px] hover:bg-opacity-80 cursor-pointer relative group"></div>
+<div class="flex-1 bg-spotify-green h-[12%] rounded-t-[2px] hover:bg-opacity-80 cursor-pointer"></div>
+<div class="flex-1 bg-spotify-green h-[15%] rounded-t-[2px] hover:bg-opacity-80 cursor-pointer"></div>
+<!-- Yellow (Medium Skips) -->
+<div class="flex-1 bg-warning h-[35%] rounded-t-[2px] hover:bg-opacity-80 cursor-pointer"></div>
+<div class="flex-1 bg-warning h-[45%] rounded-t-[2px] hover:bg-opacity-80 cursor-pointer relative group">
+<div class="hidden group-hover:flex absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-mid-card px-sm py-xs rounded-[4px] font-caption text-caption text-text-base whitespace-nowrap shadow-[0_4px_8px_rgba(0,0,0,0.5)] z-20">
+                                    45 lượt bỏ tại 2:00
+                                </div>
+</div>
+<!-- Red (High Skips) -->
+<div class="flex-1 bg-negative h-[80%] rounded-t-[2px] hover:bg-opacity-80 cursor-pointer"></div>
+<div class="flex-1 bg-negative h-[75%] rounded-t-[2px] hover:bg-opacity-80 cursor-pointer"></div>
+<!-- Green Recovery -->
+<div class="flex-1 bg-spotify-green h-[20%] rounded-t-[2px] hover:bg-opacity-80 cursor-pointer"></div>
+<div class="flex-1 bg-spotify-green h-[18%] rounded-t-[2px] hover:bg-opacity-80 cursor-pointer"></div>
+<div class="flex-1 bg-spotify-green h-[10%] rounded-t-[2px] hover:bg-opacity-80 cursor-pointer"></div>
+</div>
+<!-- Timeline X-Axis -->
+<div class="absolute left-0 right-0 bottom-0 flex justify-between font-micro text-micro text-text-secondary mt-xs border-t border-[#333333] pt-xs">
+<span>0:00</span>
+<span>1:30</span>
+<span>3:00</span>
+<span>4:15</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Summary Stat Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg mt-sm">
+<!-- Stat Card 1 -->
+<div class="bg-dark-surface rounded-[8px] p-lg flex flex-col gap-sm shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:bg-[#282828] transition-colors duration-200">
+<span class="material-symbols-outlined text-text-secondary mb-2">schedule</span>
+<span class="font-section-title text-section-title text-text-base">20:00 - 22:00</span>
+<span class="font-caption text-caption text-text-secondary">Khung giờ nghe nhiều nhất</span>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-dark-surface rounded-[8px] p-lg flex flex-col gap-sm shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:bg-[#282828] transition-colors duration-200">
+<span class="material-symbols-outlined text-text-secondary mb-2">fast_forward</span>
+<span class="font-section-title text-section-title text-text-base">2:15 - 2:45</span>
+<span class="font-caption text-caption text-text-secondary">Đoạn bị bỏ nhiều nhất</span>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-dark-surface rounded-[8px] p-lg flex flex-col gap-sm shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:bg-[#282828] transition-colors duration-200">
+<span class="material-symbols-outlined text-text-secondary mb-2">done_all</span>
+<span class="font-section-title text-section-title text-text-base">76.4%</span>
+<span class="font-caption text-caption text-text-secondary">Tỉ lệ hoàn thành</span>
+</div>
+</div>
+</div>
+</main>
+</body></html>

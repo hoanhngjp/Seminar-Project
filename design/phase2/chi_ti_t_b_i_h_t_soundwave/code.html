@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Song Detail - SonicPulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "spotify-green": "#1ed760",
+                        "border-pill": "#7c7c7c",
+                        "mid-dark": "#1f1f1f",
+                        "on-error": "#690005",
+                        "on-tertiary": "#571f08",
+                        "on-primary-fixed": "#002108",
+                        "background": "#0d150d",
+                        "error": "#ffb4ab",
+                        "mid-card": "#272727",
+                        "secondary": "#c8c6c5",
+                        "tertiary": "#ffccbb",
+                        "outline-variant": "#3c4a3c",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "surface-container": "#192219",
+                        "surface-container-low": "#151e15",
+                        "on-surface-variant": "#bbcbb8",
+                        "on-secondary-fixed-variant": "#474646",
+                        "primary-fixed": "#69ff89",
+                        "on-tertiary-fixed": "#380d00",
+                        "near-black": "#121212",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "inverse-surface": "#dce5d8",
+                        "text-secondary": "#b3b3b3",
+                        "secondary-container": "#4a4949",
+                        "border-muted": "#4d4d4d",
+                        "on-tertiary-fixed-variant": "#73341c",
+                        "tertiary-container": "#ffa585",
+                        "error-container": "#93000a",
+                        "dark-card": "#252525",
+                        "inverse-primary": "#006e2c",
+                        "primary-container": "#1ed760",
+                        "announcement": "#539df5",
+                        "on-secondary": "#313030",
+                        "on-background": "#dce5d8",
+                        "on-primary-fixed-variant": "#00531f",
+                        "surface-variant": "#2e372e",
+                        "on-surface": "#dce5d8",
+                        "primary-fixed-dim": "#34e36a",
+                        "surface-container-highest": "#2e372e",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "tertiary-fixed": "#ffdbcf",
+                        "surface-bright": "#333b32",
+                        "secondary-fixed": "#e5e2e1",
+                        "text-near-white": "#cbcbcb",
+                        "surface-dim": "#0d150d",
+                        "dark-surface": "#181818",
+                        "on-primary-container": "#005721",
+                        "on-primary": "#003913",
+                        "primary": "#4cf479",
+                        "surface-container-high": "#232c23",
+                        "surface-tint": "#34e36a",
+                        "negative": "#f3727f",
+                        "surface-container-lowest": "#081008",
+                        "warning": "#ffa42b",
+                        "text-emphasis": "#fdfdfd",
+                        "on-error-container": "#ffdad6",
+                        "text-base": "#ffffff",
+                        "inverse-on-surface": "#2a3329",
+                        "on-secondary-container": "#bab8b7",
+                        "on-tertiary-container": "#793820",
+                        "surface": "#0d150d",
+                        "outline": "#859583"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "sidebar-width": "280px",
+                        "base": "8px",
+                        "md": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "button-uppercase": ["plusJakartaSans"],
+                        "caption": ["plusJakartaSans"],
+                        "nav-link": ["plusJakartaSans"],
+                        "section-title": ["plusJakartaSans"],
+                        "feature-heading": ["plusJakartaSans"],
+                        "body-regular": ["plusJakartaSans"],
+                        "body-bold": ["plusJakartaSans"],
+                        "small-bold": ["plusJakartaSans"],
+                        "micro": ["plusJakartaSans"]
+                    },
+                    "fontSize": {
+                        "button-uppercase": ["14px", { "lineHeight": "1.0", "letterSpacing": "1.4px", "fontWeight": "700" }],
+                        "caption": ["14px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "nav-link": ["14px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "section-title": ["24px", { "lineHeight": "1.2", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "feature-heading": ["18px", { "lineHeight": "1.3", "letterSpacing": "normal", "fontWeight": "600" }],
+                        "body-regular": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "body-bold": ["16px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "small-bold": ["12px", { "lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "micro": ["10px", { "lineHeight": "normal", "letterSpacing": "normal", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-near-black text-text-base font-body-regular min-h-screen flex flex-col md:flex-row pb-[72px] md:pb-0">
+<!-- SideNavBar (Hidden on Mobile) -->
+<nav class="fixed left-0 top-0 h-full w-[240px] flex flex-col bg-near-black shadow-[rgba(0,0,0,0.5)_0px_8px_24px] hidden lg:flex flex-col h-full bg-near-black pt-xl z-40">
+<div class="px-lg mb-8">
+<h1 class="font-section-title text-section-title text-text-emphasis tracking-tight">SonicPulse</h1>
+<p class="text-text-secondary font-caption text-caption">Premium Audio</p>
+</div>
+<div class="flex flex-col gap-2 flex-grow">
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">home</span>
+<span>Home</span>
+</a>
+<a class="text-text-base font-body-bold flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">search</span>
+<span>Search</span>
+</a>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span>Notifications</span>
+</a>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span>Listening Party</span>
+</a>
+<a class="text-text-secondary font-body-regular flex items-center gap-4 py-3 px-4 hover:text-text-base transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">library_music</span>
+<span>Your Library</span>
+</a>
+</div>
+<div class="px-4 py-6">
+<button class="w-full py-3 rounded-full bg-spotify-green text-near-black font-button-uppercase text-button-uppercase hover:scale-105 transition-transform mb-4">
+                Create Playlist
+            </button>
+<div class="flex gap-4 text-text-secondary font-micro text-micro justify-center">
+<a class="flex items-center gap-1 hover:text-text-base transition-colors" href="#">
+<span class="material-symbols-outlined text-[14px]">cookie</span> Cookies
+                </a>
+<a class="flex items-center gap-1 hover:text-text-base transition-colors" href="#">
+<span class="material-symbols-outlined text-[14px]">policy</span> Privacy
+                </a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 w-full lg:ml-[240px] relative min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md flex justify-between items-center h-16 px-lg">
+<div class="flex gap-6">
+<button class="p-2 rounded-full bg-near-black text-text-base hover:bg-mid-dark transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-4 py-1.5 rounded-full bg-text-base text-near-black font-small-bold text-small-bold hover:scale-105 transition-transform">
+                    Upgrade
+                </button>
+<button class="text-text-base hover:text-text-emphasis transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-text-base hover:text-text-emphasis transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a young person in dramatic, moody lighting typical of premium audio app profiles. The background is completely dark, matching the near-black aesthetic of the UI. The subject has a subtle expression, illuminated by a soft, directional white light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAi7FozwJv-Xm7SHvnkldBKePeRqmJqQB4ldAReiiODvABDvJeShvaXBh_Sw-kuPRg9069bGNnnjJhr6dIHhYqBfkItPuOm_U4ZEy2hYBbckgNAlSrrXE_1PuGSkyOsDoDY4cy2Aj_lAFrapkWC8Jf4Am-bXi_9_QQqukZ1ujq9g7K8dy3s63kxwUZGgVaBSXxedbM-lbZC9qpUpfvWJ63M0UQWLIM5SHwNXD-S5KV9DtK4YAHxhKrg-ZcXBRmIh1p0j7PpnC8qptU"/>
+</div>
+</div>
+</header>
+<!-- Dynamic Blur Background -->
+<div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#4a5568]/40 to-near-black -z-10 pointer-events-none"></div>
+<!-- Hero Section -->
+<section class="px-lg lg:px-xl pt-12 pb-8 flex flex-col md:flex-row gap-8 items-end">
+<div class="w-[300px] h-[300px] rounded-[8px] overflow-hidden shadow-[rgba(0,0,0,0.5)_0px_8px_24px] flex-shrink-0">
+<img alt="Album Cover" class="w-full h-full object-cover" data-alt="A stylized, moody album cover featuring a solitary figure silhouetted against a vibrant, hazy sunset over a calm ocean. The colors are deeply saturated with rich oranges and deep purples, contrasting with the stark black silhouette. The aesthetic feels romantic and slightly melancholic, perfect for a Pop Ballad track in a dark-themed UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyNH89l6uwnpic2Hs_xdAfh9oqcSdf8oNOfzDKM090pbZ5QLuT0KlVaMGwurjET1ZkBgkaK-CnaJqMhZ5KxI7eVvBjk4qI2v9v0Jd4b70nnFf0ymAPuGld2I-UPrF6VfhGsxfzv7mpo8mBfqQrfcDOF5Ej1w2e9yXiNhAmstnjqs2fi6q7VFSebd0Pby212p28WC4xd_zhRSOK4TOTMoQDNxLZTy2EzXvFo8xpD6RCv1P7EAjv7fnEEmcuax-3u_TvVUwI58AGYeo"/>
+</div>
+<div class="flex flex-col gap-3 pb-2">
+<p class="font-small-bold text-small-bold text-text-emphasis uppercase tracking-widest">Song</p>
+<h2 class="font-section-title text-[48px] md:text-[72px] leading-tight font-bold text-text-base tracking-tighter">Nơi Này Có Anh</h2>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="px-1.5 py-0.5 rounded-[2px] bg-border-muted text-text-base font-micro text-micro font-bold">E</span>
+<a class="font-body-bold text-body-bold text-text-base hover:underline" href="#">Sơn Tùng M-TP</a>
+<span class="text-text-secondary">•</span>
+<a class="font-body-regular text-body-regular text-text-secondary hover:underline" href="#">Nơi Này Có Anh (Single)</a>
+<span class="text-text-secondary">•</span>
+<span class="font-body-regular text-body-regular text-text-secondary">2017</span>
+<span class="text-text-secondary">•</span>
+<span class="font-body-regular text-body-regular text-text-secondary">3:45</span>
+</div>
+</div>
+</section>
+<!-- Action Row -->
+<section class="px-lg lg:px-xl py-6 flex items-center gap-6">
+<button class="w-[56px] h-[56px] rounded-full bg-spotify-green flex items-center justify-center hover:scale-105 transition-transform shadow-[rgba(0,0,0,0.3)_0px_8px_8px]">
+<span class="material-symbols-outlined text-near-black text-[32px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="px-6 py-2 rounded-full border border-border-pill text-text-base font-button-uppercase text-button-uppercase hover:border-text-base transition-colors">
+                Thêm vào Listening Party
+            </button>
+<button class="w-10 h-10 rounded-full bg-mid-dark flex items-center justify-center text-text-secondary hover:text-text-base hover:bg-mid-card transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</section>
+<div class="px-lg lg:px-xl grid grid-cols-1 md:grid-cols-3 gap-8 pb-12">
+<!-- Metadata Area (Left) -->
+<div class="col-span-2 flex flex-col gap-6">
+<!-- Suggestion Card -->
+<div class="bg-dark-surface rounded-[8px] p-4 flex items-start gap-4 shadow-[rgba(0,0,0,0.3)_0px_8px_8px]">
+<div class="text-spotify-green pt-1">
+<span class="material-symbols-outlined">lightbulb</span>
+</div>
+<div>
+<h4 class="font-body-bold text-body-bold text-text-base mb-1">Gợi ý buổi sáng</h4>
+<p class="font-caption text-caption text-text-secondary">Gợi ý buổi sáng vì bạn hay nghe Pop Ballad</p>
+</div>
+</div>
+<!-- Tags & Details -->
+<div class="grid grid-cols-2 gap-4">
+<div>
+<h5 class="font-small-bold text-small-bold text-text-secondary mb-3">GENRES</h5>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-mid-card text-text-secondary font-caption text-caption hover:bg-border-muted transition-colors cursor-pointer">Pop</span>
+<span class="px-3 py-1 rounded-full bg-mid-card text-text-secondary font-caption text-caption hover:bg-border-muted transition-colors cursor-pointer">Ballad</span>
+</div>
+</div>
+<div>
+<h5 class="font-small-bold text-small-bold text-text-secondary mb-3">MOODS</h5>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-mid-card text-text-secondary font-caption text-caption hover:bg-border-muted transition-colors cursor-pointer">Vui vẻ</span>
+<span class="px-3 py-1 rounded-full bg-mid-card text-text-secondary font-caption text-caption hover:bg-border-muted transition-colors cursor-pointer">Lãng mạn</span>
+</div>
+</div>
+<div class="col-span-2 mt-4 flex gap-8">
+<div>
+<h5 class="font-small-bold text-small-bold text-text-secondary mb-1">LANGUAGE</h5>
+<p class="font-body-regular text-body-regular text-text-base">Tiếng Việt</p>
+</div>
+<div>
+<h5 class="font-small-bold text-small-bold text-text-secondary mb-1">RELEASE DATE</h5>
+<p class="font-body-regular text-body-regular text-text-base">14/02/2017</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Lyrics Snippet Placeholder (Right) -->
+<div class="bg-mid-card rounded-[8px] p-6 shadow-[rgba(0,0,0,0.3)_0px_8px_8px] overflow-hidden relative group">
+<div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-mid-card z-10 pointer-events-none"></div>
+<h4 class="font-body-bold text-body-bold text-text-base mb-4">Lyrics Snippet</h4>
+<div class="font-section-title text-[24px] text-text-secondary font-bold leading-relaxed opacity-80">
+                    Cầm tay anh, dựa vai anh<br/>
+                    Kề bên anh nơi này có anh<br/>
+                    Gió mang câu tình ca<br/>
+                    Ngàn ánh sao vụt qua nhẹ ôm lấy em...
+                </div>
+</div>
+</div>
+<!-- Related Songs (Horizontal Scroll) -->
+<section class="px-lg lg:px-xl pb-16">
+<h3 class="font-section-title text-section-title text-text-base mb-6">Bài hát liên quan</h3>
+<div class="flex overflow-x-auto gap-6 pb-6 snap-x -mx-lg px-lg lg:mx-0 lg:px-0 hide-scrollbar">
+<!-- Song Card 1 -->
+<div class="w-[160px] flex-shrink-0 bg-dark-surface p-4 rounded-[8px] hover:bg-mid-card transition-colors group cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_8px_8px] snap-start">
+<div class="w-[128px] h-[128px] rounded-[4px] overflow-hidden mb-4 relative shadow-[rgba(0,0,0,0.5)_0px_8px_24px]">
+<img alt="Lạc Trôi Cover" class="w-full h-full object-cover" data-alt="A visually striking album cover showing a stylized, mystical mountain landscape at dusk. The scene is bathed in cool blues and deep purples, creating an atmospheric, cinematic mood that fits perfectly within a dark-mode premium audio interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZaWRNFcYWI0TrQNsfkMpeDJhVg_eOfLQ0WoCVkM_oIwbI8AoNWeAzGE0qChVkqoKpKy_1sagDEZ53Zmr4RUXFJb0c3P09ZUKab0JHLAy4NJQo7LQyQMexiPG-Py_7AvtPcVCWeZ9wadWwZwUy-CQafENkYdeM3uhecIHhON193_0jN0_w6ou0bdYkI9QLs8elFmb8eJEKq34mKJhlVoXPuAdshgk1uX2rgynICNzVLlBWVQsdGehKSPnzSbIMDjcSv-D_Nmk5Fow"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 rounded-full bg-spotify-green flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl">
+<span class="material-symbols-outlined text-near-black" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h5 class="font-body-bold text-body-bold text-text-base truncate mb-1">Lạc Trôi</h5>
+<p class="font-caption text-caption text-text-secondary truncate">Sơn Tùng M-TP</p>
+</div>
+<!-- Song Card 2 -->
+<div class="w-[160px] flex-shrink-0 bg-dark-surface p-4 rounded-[8px] hover:bg-mid-card transition-colors group cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_8px_8px] snap-start">
+<div class="w-[128px] h-[128px] rounded-[4px] overflow-hidden mb-4 relative shadow-[rgba(0,0,0,0.5)_0px_8px_24px]">
+<img alt="Âm Thầm Bên Em Cover" class="w-full h-full object-cover" data-alt="An abstract, moody composition featuring soft, out-of-focus light leaks in warm orange and red tones against a pitch-black background. The imagery feels intimate and secretive, suitable for a romantic pop track displayed in a high-end dark theme app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfmizx0U5GRG9qwCi4XLS5H9NPMUSvy7qPCfGj3HocTGLa9-Izad5khE7JhUNH2lPtLV702bNpEXSU4DJ9iJNBNsH_DOua3A5zEQ4K7Uh3HmO-Wrmyt3iCYXnO2zh0AsIdBw6wr6qZaB8g0XJVzWe5dy-2xkAXC-t0V3JA6U7I3HToZnwAcaFbQqEkDN-EyksgDywTA5O4oeRFlm1RcWz8rEdFzkgsVnxf5_ohnuSDZ_V5yluzzQEe6ozErHUIGkkpDxJEB5qk4cc"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 rounded-full bg-spotify-green flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl">
+<span class="material-symbols-outlined text-near-black" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h5 class="font-body-bold text-body-bold text-text-base truncate mb-1">Âm Thầm Bên Em</h5>
+<p class="font-caption text-caption text-text-secondary truncate">Sơn Tùng M-TP</p>
+</div>
+<!-- Song Card 3 -->
+<div class="w-[160px] flex-shrink-0 bg-dark-surface p-4 rounded-[8px] hover:bg-mid-card transition-colors group cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_8px_8px] snap-start">
+<div class="w-[128px] h-[128px] rounded-[4px] overflow-hidden mb-4 relative shadow-[rgba(0,0,0,0.5)_0px_8px_24px]">
+<img alt="Chạy Ngay Đi Cover" class="w-full h-full object-cover" data-alt="A high-contrast, edgy photograph showing shattered glass fragments illuminated by stark crimson light against deep shadow. The aesthetic is aggressive and modern, fitting the 'content-first darkness' design philosophy of the UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5GX3DmFTj5sv_eWebcyLOJ6DrZRHW6Ci9Aw-IRr6E8lgshYiO9_-vgbc0IbRasjdGfDAxOmPqdjHQBK56w-Fk_FflC_LeKpiAsfDVke60lXzYuuqYD3vGGY4oCqcDZTnr8kR_FvDgAsuqiJMj1LFwGdRu6wx3UFnef8HH9__URYSKA5bjK-lAvREdwZtxG0lj4hRMm9-k7jslDsLXtnHSeEssrhF2ZQJ2cB-ac9k9OlNP1VyDB70eWKfszP2hqcpLhvq_2Jnrhpo"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 rounded-full bg-spotify-green flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl">
+<span class="material-symbols-outlined text-near-black" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h5 class="font-body-bold text-body-bold text-text-base truncate mb-1">Chạy Ngay Đi</h5>
+<p class="font-caption text-caption text-text-secondary truncate">Sơn Tùng M-TP</p>
+</div>
+<!-- Song Card 4 -->
+<div class="w-[160px] flex-shrink-0 bg-dark-surface p-4 rounded-[8px] hover:bg-mid-card transition-colors group cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_8px_8px] snap-start">
+<div class="w-[128px] h-[128px] rounded-[4px] overflow-hidden mb-4 relative shadow-[rgba(0,0,0,0.5)_0px_8px_24px]">
+<img alt="Muộn Rồi Mà Sao Còn Cover" class="w-full h-full object-cover" data-alt="A cinematic shot of a neon sign reflecting in a puddle on a dark, wet city street at night. The colors are muted except for a striking streak of electric blue, capturing a late-night, contemplative mood perfect for an urban pop ballad." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPyD7N8CVrOsgjO-G0_EuyB5ulTqtdyxSWDp9tQvf5QRz-sbVxiBNXhsrQIR4v4aMq_s4d9ornpjXgHkBDda3_0O-Lo-RUCwIoRUsS-S_wqVlmL5AXGlhvPjIJ7M2czXQEc_IB_h8f5SyahUwxoifUlB8bnd5N0OdpWBgFRU27Egmc7ciVTY7BVynissuQ7dERwo4l2EcoU7StuxNnkXuqNrLyUfT8Jvd6_9byiXN99TkmQX_EpIKvVla2csRyTQxMIY966mQqYx0"/>
+<button class="absolute bottom-2 right-2 w-10 h-10 rounded-full bg-spotify-green flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl">
+<span class="material-symbols-outlined text-near-black" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<h5 class="font-body-bold text-body-bold text-text-base truncate mb-1">Muộn Rồi Mà Sao Còn</h5>
+<p class="font-caption text-caption text-text-secondary truncate">Sơn Tùng M-TP</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-[80px] z-50 bg-dark-surface shadow-[0_-4px_12px_rgba(0,0,0,0.5)] flex items-center justify-between px-md w-full border-t border-border-muted shadow-2xl md:h-[90px] md:px-6">
+<!-- Now Playing Info -->
+<div class="flex items-center gap-3 w-[30%] min-w-[180px]">
+<div class="w-12 h-12 md:w-14 md:h-14 rounded-[4px] overflow-hidden flex-shrink-0 shadow-[rgba(0,0,0,0.3)_0px_4px_8px]">
+<img alt="Current Track" class="w-full h-full object-cover" data-alt="A miniature thumbnail version of the moody sunset over the ocean album cover, serving as the 'now playing' art in a dark audio player interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ_Y1sKHU4Hp6eRV6NI_Npw0W1nDccgapeRlYeTk6IehW6F9lbYuMu7blQJF1MSDNnpadGJ9F9CIqupz0c4im68kKcs5vOsbQVeCUEJmg7d3EMUvmTS72SLI0IccP3EOwmcqj3syWNvqQ7UDDxNWx70a1r86iIW1dTvT7cEMMNd66LYBDfZZeLwnKQngRmYm3sjLpFyAEZ_RrpZ0xhhYA8NLZ9Qh3eveKi39eikDMWOpAwGnuFVJeCMqafnPQ6GgVcWxbsGzu1CcY"/>
+</div>
+<div class="flex flex-col overflow-hidden">
+<a class="font-body-regular md:font-body-bold text-body-regular md:text-body-bold text-text-base hover:underline truncate" href="#">Nơi Này Có Anh</a>
+<a class="font-micro md:font-caption text-micro md:text-caption text-text-secondary hover:underline truncate" href="#">Sơn Tùng M-TP</a>
+</div>
+<button class="text-text-secondary hover:text-text-base transition-colors ml-2 hidden sm:block">
+<span class="material-symbols-outlined text-[20px]">favorite_border</span>
+</button>
+</div>
+<!-- Controls (Center) -->
+<div class="flex flex-col items-center justify-center w-[40%] max-w-[500px]">
+<div class="flex items-center gap-4 md:gap-6">
+<button class="text-text-secondary hover:text-text-base transition-colors hidden md:block">
+<span class="material-symbols-outlined">shuffle</span>
+</button>
+<button class="text-text-secondary hover:text-text-base transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">skip_previous</span>
+</button>
+<button class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-text-base flex items-center justify-center hover:scale-105 transition-transform text-near-black">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+<button class="text-text-secondary hover:text-text-base transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">skip_next</span>
+</button>
+<button class="text-text-secondary hover:text-text-base transition-colors hidden md:block">
+<span class="material-symbols-outlined">repeat</span>
+</button>
+</div>
+<div class="w-full flex items-center gap-2 mt-2 hidden md:flex">
+<span class="font-micro text-micro text-text-secondary">1:24</span>
+<div class="h-1 bg-border-muted rounded-full flex-1 relative group cursor-pointer">
+<div class="absolute top-0 left-0 h-full bg-text-base rounded-full w-[35%] group-hover:bg-spotify-green transition-colors"></div>
+<div class="absolute top-1/2 left-[35%] -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-text-base rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md"></div>
+</div>
+<span class="font-micro text-micro text-text-secondary">3:45</span>
+</div>
+</div>
+<!-- Volume/Extra Actions (Right) -->
+<div class="flex items-center justify-end gap-3 w-[30%] min-w-[150px] hidden md:flex">
+<button class="text-text-secondary hover:text-text-base transition-colors">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+<button class="text-text-secondary hover:text-text-base transition-colors">
+<span class="material-symbols-outlined text-[20px]">queue_music</span>
+</button>
+<button class="text-text-secondary hover:text-text-base transition-colors">
+<span class="material-symbols-outlined text-[20px]">devices</span>
+</button>
+<div class="flex items-center gap-2 w-24 group">
+<button class="text-text-secondary hover:text-text-base transition-colors">
+<span class="material-symbols-outlined text-[20px]">volume_up</span>
+</button>
+<div class="h-1 bg-border-muted rounded-full flex-1 relative cursor-pointer">
+<div class="absolute top-0 left-0 h-full bg-text-base rounded-full w-[70%] group-hover:bg-spotify-green transition-colors"></div>
+</div>
+</div>
+</div>
+<!-- Mobile specific bottom nav items (Overrides desktop controls on small screens) -->
+<div class="flex items-center justify-end gap-4 w-[40%] md:hidden pr-2">
+<button class="text-text-base hover:text-spotify-green hover:scale-110 transition-transform active:scale-90 flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-[24px]">devices</span>
+</button>
+</div>
+</nav>
+</body></html>
