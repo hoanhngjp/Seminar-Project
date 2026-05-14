@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-interface CurrentSong {
+export interface CurrentSong {
   songId:    string;
   title:     string;
   artist:    string;
@@ -8,16 +8,25 @@ interface CurrentSong {
 }
 
 interface PlayerState {
-  currentSong: CurrentSong | null;
-  setSong:     (song: CurrentSong) => void;
+  currentSong:      CurrentSong | null;
+  queue:            CurrentSong[];
+  setSong:          (song: CurrentSong) => void;
   /** Alias for setSong — preferred in new components */
-  playSong:    (song: CurrentSong) => void;
-  clearSong:   () => void;
+  playSong:         (song: CurrentSong) => void;
+  clearSong:        () => void;
+  addToQueue:       (song: CurrentSong) => void;
+  removeFromQueue:  (index: number) => void;
+  clearQueue:       () => void;
 }
 
 export const usePlayerStore = create<PlayerState>((set) => ({
   currentSong: null,
+  queue:       [],
   setSong:  (song) => set({ currentSong: song }),
   playSong: (song) => set({ currentSong: song }),
   clearSong: () => set({ currentSong: null }),
+  addToQueue: (song) => set((s) => ({ queue: [...s.queue, song] })),
+  removeFromQueue: (index) =>
+    set((s) => ({ queue: s.queue.filter((_, i) => i !== index) })),
+  clearQueue: () => set({ queue: [] }),
 }));

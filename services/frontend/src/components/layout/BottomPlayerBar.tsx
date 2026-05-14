@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { usePlayerStore } from '../../store/playerStore';
 import { apiClient } from '../../services/api';
 import NowPlayingOverlay from '../../features/player/components/NowPlayingOverlay';
+import QueueDrawer from '../../features/player/components/QueueDrawer';
 
 interface StreamingUrlData {
   url:       string;
@@ -33,6 +34,7 @@ export default function BottomPlayerBar() {
   const [loading,      setLoading]      = useState(false);
   const [urlError,     setUrlError]     = useState<string | null>(null);
   const [showOverlay,  setShowOverlay]  = useState(false);
+  const [showQueue,    setShowQueue]    = useState(false);
 
   const fetchStreamUrl = useCallback(async (songId: string) => {
     setUrlError(null);
@@ -122,6 +124,8 @@ export default function BottomPlayerBar() {
   return (
     <>
       {/* NowPlayingOverlay — fullscreen */}
+      {showQueue && <QueueDrawer isOpen={showQueue} onClose={() => setShowQueue(false)} />}
+
       {showOverlay && (
         <NowPlayingOverlay
           currentSong={currentSong}
@@ -258,7 +262,12 @@ export default function BottomPlayerBar() {
             <span className="material-symbols-outlined text-[18px]">open_in_full</span>
           </button>
 
-          <button className="hover:text-text-base transition-colors" aria-label="Hàng chờ">
+          <button
+            onClick={() => setShowQueue(true)}
+            className="hover:text-text-base transition-colors"
+            aria-label="Hàng chờ"
+            data-testid="open-queue-btn"
+          >
             <span className="material-symbols-outlined text-[18px]">queue_music</span>
           </button>
 

@@ -1,5 +1,30 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / PHASE 2 — PHASE 4: QUEUEDRAWER + PLAYERSTORE QUEUE] [DONE]
+
+**Task:** Phase 4 — extend `playerStore` với queue state, tạo `QueueDrawer` component, wire vào `BottomPlayerBar`.
+
+**Files đã tạo:**
+- `store/playerStore.ts` — thêm `queue: CurrentSong[]`, `addToQueue`, `removeFromQueue`, `clearQueue`; export `CurrentSong` interface
+- `features/player/components/QueueDrawer.tsx` — slide-in panel right 360px: now-playing row (ring-spotify-green), queue items (drag handle visual, remove button opacity-0 → hover), empty states (2 variants), "Xóa tất cả" button, backdrop click-to-close; `queue ?? []` defensive fallback
+- `tests/features/player/QueueDrawer.test.tsx` — 30 tests
+
+**Files đã sửa:**
+- `components/layout/BottomPlayerBar.tsx` — import QueueDrawer, `showQueue` state, wire nút `queue_music`, conditional mount `{showQueue && <QueueDrawer />}` (tránh duplicate DOM khi closed)
+
+**Key decisions:**
+- `CurrentSong` interface giờ exported từ `playerStore` — dùng được bởi QueueDrawer và các component khác
+- `queue ?? []` fallback trong QueueDrawer — defensive guard khi Party tests / test contexts khác set store state không đầy đủ
+- `{showQueue && <QueueDrawer />}` thay vì luôn mount — tránh text duplicate trong BottomPlayerBar tests (currentSong title sẽ xuất hiện cả ở player bar lẫn now-playing row của drawer)
+- Slide-in animation dùng `translate-x-full` / `translate-x-0` + `transition-transform duration-300` — enter animation mượt, exit là instant pop (acceptable cho MVP)
+
+**Bugs fixed:**
+- `TypeError: queue.map is not a function` trong Party tests (PartyRoomPage, PartyLandingPage): các tests này render `AppShell` → `BottomPlayerBar` → `QueueDrawer`, store state trong test context không có `queue` field → fixed với `?? []` fallback
+- `Found multiple elements with text: Chuyến Xe` trong BottomPlayerBar test: QueueDrawer luôn mount render cả now-playing row → fixed với conditional mount
+
+**Tests:** 30/30 QueueDrawer tests xanh, 543/543 toàn bộ test suite xanh — không regression.
+
+---
 [2026-05-15] [FRONTEND / PHASE 2 — PHASE 3: RECOMMENDATION COMPONENTS] [DONE]
 
 **Task:** Tạo 2 Recommendation components cho Phase 3: ContextSelector và RecommendationFeedRow.

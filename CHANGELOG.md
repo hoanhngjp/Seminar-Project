@@ -16,6 +16,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — Phase 2 Phase 4: QueueDrawer + playerStore Queue (2026-05-15)**
+- `store/playerStore.ts` — thêm `queue: CurrentSong[]`, actions `addToQueue` / `removeFromQueue` / `clearQueue`; export `CurrentSong` interface
+- `features/player/components/QueueDrawer.tsx` — drawer 360px slide-in từ phải: now-playing row (ring-spotify-green), danh sách queue với drag handle (visual) + remove button hover, empty states, "Xóa tất cả"
+- `BottomPlayerBar.tsx` — wire nút queue_music → mở/đóng QueueDrawer; conditional mount tránh DOM duplicate
+- 30 tests mới — 543/543 toàn bộ suite xanh
+
 **Frontend — Phase 2 Phase 3: Recommendation Components (2026-05-15)**
 - `features/recommendation/components/ContextSelector.tsx` — 5 chips lọc theo thời điểm (Tất cả / Sáng / Chiều / Tối / Khuya); active chip `bg-spotify-green text-near-black font-bold`; `aria-pressed` + `role="group"` accessible
 - `features/recommendation/components/RecommendationFeedRow.tsx` — row 64px: index ↔ play icon swap on hover, cover 56px, title (navigate `/songs/:id`), reason badge, artist, duration; helper `formatDuration` co-located

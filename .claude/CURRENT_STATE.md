@@ -123,7 +123,7 @@
 - [X] Phase 1: EmptyState, SongContextMenu, UserMenuDropdown — 42 tests mới, 377/377 xanh (2026-05-15)
 - [X] Phase 2: TimeRangeSelector, SongStatsCard, DailyListenersChart, HeatmapChart, CreatorSongTable — 94 tests mới, 471/471 xanh (2026-05-15)
 - [X] Phase 3: ContextSelector, RecommendationFeedRow — 42 tests mới, 513/513 xanh (2026-05-15)
-- [ ] Phase 4: QueueDrawer + extend playerStore
+- [X] Phase 4: QueueDrawer + extend playerStore — 30 tests mới, 543/543 xanh (2026-05-15)
 - [ ] Phase 5: SongDetailPage, ArtistPage, CreatorSongAnalyticsPage, ProfilePage, PreferencesPage
 - [ ] Phase 6: Enhance HomePage, SearchPage, CreatorDashboardPage
 - [ ] Phase 7: Sidebar + MobileNav updates
@@ -175,9 +175,9 @@
 
 - **Service/Task:** Frontend Phase 2 — New Pages & Components (từ Stitch designs)
 - **File plan cần đọc:** `.claude/plan/frontend-phase2-new-pages-components.md`
-- **Checkpoint gần nhất đã pass:** Phase 3 — 513/513 tests xanh (2026-05-15)
+- **Checkpoint gần nhất đã pass:** Phase 4 — 543/543 tests xanh (2026-05-15)
 - **Ngày làm việc gần nhất:** 2026-05-15
-- **Tiếp theo:** Phase 4 — QueueDrawer + playerStore queue
+- **Tiếp theo:** Phase 5 — 5 trang mới (SongDetailPage, ArtistPage, CreatorSongAnalyticsPage, ProfilePage, PreferencesPage)
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |
