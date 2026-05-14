@@ -16,6 +16,24 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend Phase 8 — Notifications + Polish (2026-05-14)**
+- `src/contexts/ToastContext.tsx` — `ToastProvider` (global context) + `useToast()` hook: one-at-a-time toast, cross-page (mounted ở root trong App.tsx), `show(message, variant)` / `hide()` API
+- `src/pages/NotificationsPage.tsx` — trang thông báo tại `/notifications`: header + "Đánh dấu tất cả đã đọc" button, FilterPills, danh sách NotificationRow, skeleton loading, empty state, error state, toast confirm sau mark-all-read
+- `src/features/notifications/components/NotificationRow.tsx` — row item: icon (music_note/notifications theo type), message, time-ago helper, green dot khi unread, click → mark as read (optimistic update)
+- `src/features/notifications/components/FilterPills.tsx` — 3 pills: "Tất cả" / "Chưa đọc" (với badge count) / "Bài hát mới", `aria-pressed` cho active state
+- `src/features/notifications/hooks/useNotifications.ts` — fetch + local state management: `filter`, `filteredNotifications`, `unreadCount`, `markRead` (optimistic + rollback), `markAllRead` (optimistic + rollback)
+- `src/components/layout/MobileNav.tsx` — mobile bottom nav (`fixed bottom-0 lg:hidden z-[60]`): 4 items (Home/Search/Notifications/Party), notification dot, party modal integration
+- `src/types/domain.ts` — thêm `NotificationType = 'new_release' | 'system'`, optional `type?` field vào `Notification`
+- App.tsx — wrap toàn app trong `<ToastProvider>`, thêm route `/notifications`
+- `AppShell.tsx` — thêm `<MobileNav />`, mobile padding `pb-[128px] lg:pb-[72px]`
+- `BottomPlayerBar.tsx` — đổi `bottom-0` → `bottom-14 lg:bottom-0` (nhường chỗ cho MobileNav trên mobile)
+- `mocks/data.ts` — thêm `type` field cho tất cả MOCK_NOTIFICATIONS, thêm `notif-005`
+- `mocks/handlers.ts` — handler `GET /notifications/unread` trả ALL items + `totalUnread` count
+- Tests: 67 tests mới — ToastContext (7), NotificationRow (9), FilterPills (11), useNotifications (14), NotificationsPage (18), MobileNav (8)
+- **Total: 314/314 tests xanh**
+
+### Added
+
 **Frontend Phase 7 — UploadPage + Creator Screens (2026-05-14)**
 - `src/pages/creator/UploadPage.tsx` — trang tải nhạc lên tại `/upload`: no-sidebar layout (theo Stitch design `t_i_nh_c_l_n_soundwave_creator`), RoleGuard Creator+Admin, form tải file + metadata + preview card + success/error screen
 - `src/features/creator/components/FileDropzone.tsx` — drag-and-drop dropzone với validation MIME type (mp3/wav/ogg) + size ≤50MB, hiện file name + size sau khi chọn, error alert

@@ -137,7 +137,7 @@ export default function BottomPlayerBar() {
 
       <footer
         data-testid="bottom-player-bar"
-        className="fixed bottom-0 left-0 w-full h-[72px] bg-dark-surface border-t border-border-muted z-50 flex items-center justify-between px-md shadow-[0_-4px_12px_rgba(0,0,0,0.5)]"
+        className="fixed bottom-14 lg:bottom-0 left-0 w-full h-[72px] bg-dark-surface border-t border-border-muted z-50 flex items-center justify-between px-md shadow-[0_-4px_12px_rgba(0,0,0,0.5)]"
       >
         {/* Hidden audio element */}
         {streamUrl && (

@@ -149,9 +149,9 @@ let _notifications = MOCK_NOTIFICATIONS.map((n) => ({ ...n }));
 
 const getNotificationsHandler = http.get('*/api/v1/notifications/unread', async () => {
   await delay(LATENCY);
-  const unread = _notifications.filter((n) => !n.read);
+  const totalUnread = _notifications.filter((n) => !n.read).length;
   return ok(
-    { items: unread, hasMore: false },
+    { items: _notifications, hasMore: false, totalUnread },
     { pagination: { hasMore: false, nextCursor: null } },
   );
 });

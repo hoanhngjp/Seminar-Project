@@ -140,7 +140,7 @@
 - [X] Phase 6: Listening Party — PartyLandingPage, PartyRoomPage, CreateRoomModal, JoinRoomModal, MemberList, HostControls, RoomPlayer, useListeningParty — 78/78 tests xanh (2026-05-14)
 - [X] Phase 6 bugfix: WS proxy (ws:// → http://), RoomPlayer layout (max-w-md removed), Sidebar /party → modal flow, CreateRoomModal onSwitchToJoin — 232/232 xanh (2026-05-14)
 - [X] Phase 7: Creator Screens (UploadPage) — 15/15 tests xanh (2026-05-14)
-- [ ] Phase 8: Notifications + Polish
+- [X] Phase 8: Notifications + Polish — NotificationsPage, NotificationRow, FilterPills, useNotifications, ToastProvider (global), MobileNav (mobile bottom nav), BottomPlayerBar mobile offset — 314/314 tests xanh (2026-05-14)
 
 ### Week 10–12 — Polish + Demo
 
@@ -160,11 +160,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Frontend Refactor — Spotify Design System (Stitch-based, 13 screens)
+- **Service/Task:** Frontend Refactor — Spotify Design System (Stitch-based, 13 screens) — **HOÀN THÀNH tất cả 8 phases**
 - **File plan cần đọc:** `.claude/plan/t-t-b-y-gi-m-nh-curried-platypus.md`
-- **Checkpoint gần nhất đã pass:** Phase 7 hoàn thành — UploadPage — 247/247 tests xanh (2026-05-14)
+- **Checkpoint gần nhất đã pass:** Phase 8 hoàn thành — Notifications + Polish — 314/314 tests xanh (2026-05-14)
 - **Ngày làm việc gần nhất:** 2026-05-14
-- **Tiếp theo:** Phase 8 — Notifications + Polish
+- **Tiếp theo:** AC checklist W11 — chạy verify_ac.sh, fix FAILs, verify thủ công SKIPs còn lại
 
 ---
 
@@ -194,6 +194,9 @@
 | 2026-05-12 | User Service | Đổi `PreferredLanguages` thành `PreferredArtists` trong `UserPreferences`, và trả về `hasCompletedOnboarding` từ `GET /users/me` để FE redirect đúng. |
 | 2026-05-14 | Frontend | Vite WS proxy phải dùng `http://` target (không phải `ws://`) — `ws: true` flag đủ để handle WebSocket upgrade. |
 | 2026-05-14 | Frontend | Sidebar giờ render CreateRoomModal/JoinRoomModal trực tiếp (không navigate `/party`). `/party` route + PartyLandingPage vẫn còn trong App.tsx cho backward compat với tests. |
+| 2026-05-14 | Frontend | ToastProvider wrap toàn bộ app trong App.tsx — bất kỳ component nào cũng gọi `useToast().show()` cross-page. One-at-a-time toast (replace pattern). |
+| 2026-05-14 | Frontend | MobileNav `fixed bottom-0 lg:hidden z-[60]`. BottomPlayerBar đổi sang `bottom-14 lg:bottom-0` để nhường chỗ cho MobileNav trên mobile. AppShell main padding: `pb-[128px] lg:pb-[72px]`. |
+| 2026-05-14 | Frontend | Mock handler `GET /api/v1/notifications/unread` giờ trả ALL notifications (read + unread) + `totalUnread` count. NotificationsPage dùng toàn bộ items; Sidebar dùng `totalUnread` cho dot indicator. |
 
 ---
 

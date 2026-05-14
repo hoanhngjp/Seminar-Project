@@ -237,25 +237,36 @@ export const MOCK_NOTIFICATIONS = [
     notificationId: 'notif-001',
     message: 'Sơn Tùng M-TP vừa phát hành bài hát mới: "Waiting For You"',
     read: false,
+    type: 'new_release' as const,
     createdAt: new Date(Date.now() - 1000 * 60 * 10).toISOString(), // 10 min ago
   },
   {
     notificationId: 'notif-002',
     message: 'Ngọt vừa phát hành album mới: "Nước Bọt Vol. 2"',
     read: false,
+    type: 'new_release' as const,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
   },
   {
     notificationId: 'notif-003',
     message: 'Đen Vâu ft. Linh Cáo — "Đưa Nhau Đi Trốn" đã vượt 10 triệu view!',
     read: true,
+    type: 'system' as const,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
   },
   {
     notificationId: 'notif-004',
     message: 'Chillies vừa thêm bài hát mới vào thư viện',
     read: true,
+    type: 'new_release' as const,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
+  },
+  {
+    notificationId: 'notif-005',
+    message: 'Vũ. vừa phát hành single mới: "Từ Hôm Nay"',
+    read: true,
+    type: 'new_release' as const,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago
   },
 ];
 

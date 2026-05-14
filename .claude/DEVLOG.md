@@ -1,5 +1,20 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-14] [FRONTEND / PHASE 8 — NOTIFICATIONS + POLISH] [DECISION × 3]
+
+**Decision 1 — ToastProvider (global context vs. local state)**
+Chọn `ToastProvider` bọc toàn app (trong `App.tsx`) thay vì local `useState` trong từng page. Lý do: nhiều async actions xảy ra cross-page (upload xong → navigate về Home → toast vẫn hiện). Pattern: one-at-a-time toast (replace, không queue). `useToast().show(message, variant)` gọi được từ bất kỳ component nào trong cây.
+**Lesson / Warning:** `useToast` phải được gọi bên trong `ToastProvider`. Test cần wrap render với `<ToastProvider>`. Nếu quên wrap → throw "useToast must be used within ToastProvider".
+
+**Decision 2 — Mock handler trả ALL notifications**
+Handler `GET /api/v1/notifications/unread` đổi từ trả filtered (chỉ unread) → trả ALL items + `totalUnread` count. Lý do: `NotificationsPage` cần hiển thị cả read và unread trong tab "Tất cả". API Design V2 chỉ có 1 endpoint — không thêm endpoint mới. Sidebar vẫn đọc đúng `totalUnread` field.
+**Lesson / Warning:** Đây là hành vi mock mode — real backend vẫn trả unread-only. Nếu wire real API sau này, cần tách `fetchAllNotifications` riêng hoặc thêm endpoint.
+
+**Decision 3 — MobileNav + BottomPlayerBar stacking**
+`MobileNav`: `fixed bottom-0 lg:hidden z-[60]`, `h-14` (56px). `BottomPlayerBar`: đổi từ `bottom-0` → `bottom-14 lg:bottom-0` (56px trên mobile, 0 trên desktop). `AppShell` main: `pb-[128px] lg:pb-[72px]`. Khi không có song phát: padding-bottom dư 72px trên mobile — acceptable cho demo.
+**Lesson / Warning:** BottomPlayerBar test không check CSS positioning class → đổi safe. Nếu cần zero waste padding khi không có song: `MobileNav` đọc `playerStore.currentSong` để biết BottomPlayerBar có visible không và tự adjust position.
+
+---
 [2026-05-14] [FRONTEND / PHASE 7 — UPLOAD PAGE] [BUG]
 
 **Problem:** 4/15 tests thất bại: "shows error for invalid MIME", "shows success screen", "shows error on failure", "resets form". Tất cả timeout ở ~1042ms.

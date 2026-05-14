@@ -41,11 +41,14 @@ export interface SearchResult {
   duration?: number;      // seconds, only for type=song
 }
 
+export type NotificationType = 'new_release' | 'system';
+
 export interface Notification {
   notificationId: string;
   message: string;
   read: boolean;
   createdAt: string;      // ISO 8601
+  type?: NotificationType;
 }
 
 export interface Party {
