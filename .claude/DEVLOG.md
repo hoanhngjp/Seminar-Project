@@ -1,5 +1,26 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / PHASE 2 — PHASE 3: RECOMMENDATION COMPONENTS] [DONE]
+
+**Task:** Tạo 2 Recommendation components cho Phase 3: ContextSelector và RecommendationFeedRow.
+
+**Files đã tạo:**
+- `features/recommendation/components/ContextSelector.tsx` — 5 chips (none/morning/afternoon/evening/night), active = bg-spotify-green, aria-pressed per chip, role="group" accessible label
+- `features/recommendation/components/RecommendationFeedRow.tsx` — row 64px với hover state (index → play button), cover 56px, title navigate `/songs/:id`, reason badge ẩn nếu text rỗng, formatDuration helper co-located
+- `tests/features/recommendation/ContextSelector.test.tsx` — 20 tests
+- `tests/features/recommendation/RecommendationFeedRow.test.tsx` — 22 tests
+
+**Key decisions:**
+- `ContextSelector` dùng `role="group"` + `aria-label` thay vì `role="radiogroup"` — chips không phải mutually exclusive theo semantics (có thể toggle về none)
+- `RecommendationFeedRow` hover swap: `useState(hovered)` + `onMouseEnter/Leave` trên row container — play button chỉ mount khi hovered (không dùng CSS opacity để tránh click vô tình)
+- `formatDuration` đặt trong component file — không export vì chỉ dùng ở đây
+- Reason badge ẩn bằng conditional render (không render `<span>` khi `text` rỗng) — tránh empty DOM node
+
+**Fix trong tests:** `queryByText('')` gây `Found multiple elements` error — đổi sang `container.querySelector('span.bg-mid-dark.rounded')` để kiểm tra badge vắng mặt.
+
+**Tests:** 42/42 Phase 3 tests xanh, 513/513 toàn bộ test suite xanh — không regression.
+
+---
 [2026-05-15] [FRONTEND / PHASE 2 — PHASE 2: CREATOR COMPONENTS] [DONE]
 
 **Task:** Tạo 5 Creator components từ Stitch designs, extract từ `CreatorDashboardPage`, cập nhật page dùng components mới.

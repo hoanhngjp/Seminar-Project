@@ -16,6 +16,11 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — Phase 2 Phase 3: Recommendation Components (2026-05-15)**
+- `features/recommendation/components/ContextSelector.tsx` — 5 chips lọc theo thời điểm (Tất cả / Sáng / Chiều / Tối / Khuya); active chip `bg-spotify-green text-near-black font-bold`; `aria-pressed` + `role="group"` accessible
+- `features/recommendation/components/RecommendationFeedRow.tsx` — row 64px: index ↔ play icon swap on hover, cover 56px, title (navigate `/songs/:id`), reason badge, artist, duration; helper `formatDuration` co-located
+- 42 tests mới (20 ContextSelector + 22 RecommendationFeedRow) — 513/513 toàn bộ suite xanh
+
 **Frontend — Phase 2 Phase 2: Creator Components (2026-05-15)**
 - `features/creator/components/TimeRangeSelector.tsx` — pill toggle 7d/30d, extract từ `CreatorDashboardPage`, aria-pressed
 - `features/creator/components/SongStatsCard.tsx` — KPI card với Material Symbol icon, trend badge optional (positive/negative)
