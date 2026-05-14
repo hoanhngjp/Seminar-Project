@@ -164,6 +164,7 @@ const config: Config = {
         'level-2':     'rgba(0,0,0,0.3) 0px 8px 8px',
         'level-3':     'rgba(0,0,0,0.5) 0px 8px 24px',
         'input-inset': 'rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset',
+        'footer':      'rgba(0,0,0,0.5) 0px -4px 12px 0px',
         'glow-green':  'rgba(30,215,96,0.2) 0px 0px 80px 20px',
       },
 

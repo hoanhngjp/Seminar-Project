@@ -51,7 +51,7 @@ export default function MobileNav() {
       <nav
         aria-label="Điều hướng mobile"
         data-testid="mobile-nav"
-        className="fixed bottom-0 left-0 right-0 h-14 bg-dark-surface border-t border-border-muted/30 flex lg:hidden z-[60] shadow-[0_-4px_12px_rgba(0,0,0,0.4)]"
+        className="fixed bottom-0 left-0 right-0 h-14 bg-dark-surface border-t border-border-muted/30 flex lg:hidden z-[60] shadow-footer"
       >
         {NAV_ITEMS.map((item) => {
           const active   = isActive(item.to);
@@ -60,7 +60,7 @@ export default function MobileNav() {
 
           const btnClass = [
             'flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors duration-150',
-            active ? 'text-white' : 'text-text-secondary',
+            active ? 'text-text-base' : 'text-text-secondary',
           ].join(' ');
 
           const iconEl = (

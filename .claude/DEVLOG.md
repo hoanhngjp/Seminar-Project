@@ -1,5 +1,44 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-14] [FRONTEND / CSS AUDIT — PHASE PLAN] [DECISION]
+
+**Task:** Chia 29 files còn lại của CSS Audit thành 5 phases, mỗi phase cần xác nhận trước khi tiến hành.
+**Lý do:** 29 files là số lượng lớn — chia nhỏ để dễ review, tránh regression khó trace khi fix nhiều files cùng lúc.
+
+| Phase | Files | Nội dung |
+|-------|-------|----------|
+| Phase 2 | 7 | Foundation Components: Button, Input, Toast, SkeletonRow, Spinner, BottomPlayerBar, MobileNav |
+| Phase 3 | 7 | Auth & Onboarding: LoginPage, RegisterPage, OnboardingPage, LoginForm, RegisterForm, GenreGrid, ArtistGrid |
+| Phase 4 | 5 | Core App Pages: HomePage, NotificationsPage, CreatorDashboardPage, UploadPage, NowPlayingOverlay |
+| Phase 5 | 6 | Listening Party: PartyLandingPage, PartyRoomPage, CreateRoomModal, RoomPlayer, HostControls, MemberList |
+| Phase 6 | 4 | Notifications & Creator Features: NotificationRow, FilterPills, FileDropzone, MetadataForm |
+
+**Mỗi phase kết thúc:** `npm run test -- --run` (314 xanh) + báo cáo violations → user confirm → phase tiếp.
+
+---
+[2026-05-14] [FRONTEND / CSS AUDIT PHASE 2 — FOUNDATION COMPONENTS] [DONE]
+
+**Task:** Audit và fix 7 Foundation Components theo DESIGN_STITCH.md rules.
+**Plan file:** `.claude/plan/tr-c-khi-th-c-task-prancy-lovelace.md`
+
+**Clean (không cần sửa):** Button.tsx ✅, Spinner.tsx ✅, Toast.tsx ✅ (`bg-announcement` = `#539df5` là token hợp lệ trong tailwind.config.ts).
+
+**Violations đã fix (7):**
+1. `Input.tsx` — `input-inset` (custom CSS) → `shadow-input-inset` (Tailwind token) ✅
+2. `tailwind.config.ts` — thêm `shadow-footer: rgba(0,0,0,0.5) 0px -4px 12px 0px` (token mới cho upward footer shadow) ✅
+3. `BottomPlayerBar.tsx` — arbitrary shadow → `shadow-footer` ✅
+4. `BottomPlayerBar.tsx` — cover art `rounded` (4px) → `rounded-[6px]` (×2 instances) ✅
+5. `BottomPlayerBar.tsx` — `hover:text-white` → `hover:text-text-base` (×3 instances) ✅
+6. `MobileNav.tsx` — arbitrary shadow → `shadow-footer` ✅
+7. `MobileNav.tsx` — `text-white` → `text-text-base` (active nav text) ✅
+8. `SkeletonRow.tsx` — cover art `rounded` (4px) → `rounded-[6px]` ✅
+
+**Decision:** `input-inset` trong index.css line 160 và `shadow-input-inset` Tailwind token có cùng giá trị — nhưng dùng token để đồng nhất design system approach.
+
+**Tests:** 314/314 xanh — không regression.
+**Tiếp theo:** CSS Audit Phase 3 — Auth & Onboarding (7 files).
+
+---
 [2026-05-14] [FRONTEND / CSS AUDIT PHASE 1 — 6 CONFIRMED VIOLATIONS] [DONE]
 
 **Task:** Fix 6 violations đã xác nhận trước khi audit toàn bộ 44 files.

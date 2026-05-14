@@ -43,7 +43,7 @@ export default function Input({
           className={[
             'w-full bg-mid-dark rounded-full py-3 px-5',
             'text-text-base placeholder:text-text-secondary',
-            'input-inset border-none',
+            'shadow-input-inset border-none',
             'focus:bg-dark-card focus:outline-none',
             'transition-colors duration-200',
             error ? 'ring-1 ring-negative' : '',

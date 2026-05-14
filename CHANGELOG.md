@@ -14,7 +14,27 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Changed
+
+**Frontend — CSS Audit Phase Plan (2026-05-14)**
+- Toàn bộ CSS audit chia thành 6 phases (Phase 1 đã xong, Phase 2–6 pending):
+  - Phase 2: Foundation Components (7 files — Button, Input, Toast, SkeletonRow, Spinner, BottomPlayerBar, MobileNav)
+  - Phase 3: Auth & Onboarding (7 files — LoginPage, RegisterPage, OnboardingPage, LoginForm, RegisterForm, GenreGrid, ArtistGrid)
+  - Phase 4: Core App Pages (5 files — HomePage, NotificationsPage, CreatorDashboardPage, UploadPage, NowPlayingOverlay)
+  - Phase 5: Listening Party (6 files — PartyLandingPage, PartyRoomPage, CreateRoomModal, RoomPlayer, HostControls, MemberList)
+  - Phase 6: Notifications & Creator Features (4 files — NotificationRow, FilterPills, FileDropzone, MetadataForm)
+- Mỗi phase yêu cầu xác nhận thủ công + 314/314 tests xanh trước khi tiến hành phase tiếp theo
+
 ### Fixed
+
+**Frontend — CSS Audit Phase 2: Foundation Components (2026-05-14)**
+- `tailwind.config.ts` — thêm token `shadow-footer: rgba(0,0,0,0.5) 0px -4px 12px 0px` cho upward shadow của footer/nav bar
+- `Input.tsx` — `input-inset` (custom CSS class) → `shadow-input-inset` (Tailwind token) cho consistency với design system
+- `BottomPlayerBar.tsx` — arbitrary `shadow-[0_-4px_12px_rgba(0,0,0,0.5)]` → `shadow-footer`; cover art `rounded` (4px) → `rounded-[6px]`; `hover:text-white` (×3) → `hover:text-text-base`
+- `MobileNav.tsx` — arbitrary `shadow-[0_-4px_12px_rgba(0,0,0,0.4)]` → `shadow-footer`; active nav `text-white` → `text-text-base`
+- `SkeletonRow.tsx` — cover art placeholder `rounded` (4px) → `rounded-[6px]`
+- `Button.tsx`, `Spinner.tsx`, `Toast.tsx` — verified clean, không có violation
+- **Total: 314/314 tests xanh, không regression**
 
 **Frontend — CSS Audit Phase 1: 6 Confirmed Violations (2026-05-14)**
 - `Sidebar.tsx` — sidebar width `w-[240px]` → `w-[280px]` per DESIGN_STITCH.md spec

@@ -137,7 +137,7 @@ export default function BottomPlayerBar() {
 
       <footer
         data-testid="bottom-player-bar"
-        className="fixed bottom-14 lg:bottom-0 left-0 w-full h-[72px] bg-dark-surface border-t border-border-muted z-50 flex items-center justify-between px-md shadow-[0_-4px_12px_rgba(0,0,0,0.5)]"
+        className="fixed bottom-14 lg:bottom-0 left-0 w-full h-[72px] bg-dark-surface border-t border-border-muted z-50 flex items-center justify-between px-md shadow-footer"
       >
         {/* Hidden audio element */}
         {streamUrl && (
@@ -163,10 +163,10 @@ export default function BottomPlayerBar() {
             <img
               src={currentSong.coverUrl}
               alt={currentSong.title}
-              className="w-14 h-14 rounded bg-mid-dark object-cover flex-shrink-0 group-hover:opacity-90 transition-opacity"
+              className="w-14 h-14 rounded-[6px] bg-mid-dark object-cover flex-shrink-0 group-hover:opacity-90 transition-opacity"
             />
           ) : (
-            <div className="w-14 h-14 rounded bg-mid-dark flex-shrink-0 flex items-center justify-center text-text-secondary">
+            <div className="w-14 h-14 rounded-[6px] bg-mid-dark flex-shrink-0 flex items-center justify-center text-text-secondary">
               <span className="material-symbols-outlined text-[20px]">music_note</span>
             </div>
           )}
@@ -182,7 +182,7 @@ export default function BottomPlayerBar() {
         <div className="flex flex-col items-center max-w-[40%] w-full gap-1">
           <div className="flex items-center gap-4">
             <button
-              className="text-text-secondary hover:text-white transition-colors"
+              className="text-text-secondary hover:text-text-base transition-colors"
               aria-label="Bài trước"
             >
               <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -206,7 +206,7 @@ export default function BottomPlayerBar() {
             </button>
 
             <button
-              className="text-text-secondary hover:text-white transition-colors"
+              className="text-text-secondary hover:text-text-base transition-colors"
               aria-label="Bài tiếp"
             >
               <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -253,12 +253,12 @@ export default function BottomPlayerBar() {
             onClick={() => setShowOverlay(true)}
             aria-label="Mở Now Playing"
             data-testid="open-overlay-btn"
-            className="hover:text-white transition-colors"
+            className="hover:text-text-base transition-colors"
           >
             <span className="material-symbols-outlined text-[18px]">open_in_full</span>
           </button>
 
-          <button className="hover:text-white transition-colors" aria-label="Hàng chờ">
+          <button className="hover:text-text-base transition-colors" aria-label="Hàng chờ">
             <span className="material-symbols-outlined text-[18px]">queue_music</span>
           </button>
 
@@ -285,7 +285,7 @@ export default function BottomPlayerBar() {
           <button
             onClick={clearSong}
             aria-label="Đóng player"
-            className="hover:text-white transition-colors ml-1"
+            className="hover:text-text-base transition-colors ml-1"
           >
             <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
