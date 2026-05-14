@@ -48,7 +48,7 @@ export default function Modal({ open, onClose, title, children, maxWidth = 'max-
         className={[
           'relative z-10 w-full',
           maxWidth,
-          'bg-dark-card rounded-lg shadow-level-3',
+          'bg-dark-card rounded-[8px] shadow-level-3',
           'p-6 flex flex-col gap-4',
         ].join(' ')}
       >

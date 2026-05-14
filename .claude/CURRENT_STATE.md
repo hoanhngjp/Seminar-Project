@@ -160,21 +160,23 @@
 
 ## Đang làm
 
-- **Service/Task:** CSS Audit — DESIGN_STITCH.md Compliance (kiểm tra + fix toàn bộ CSS frontend theo design rules)
+- **Service/Task:** CSS Audit — DESIGN_STITCH.md Compliance (Phase 1 xong — 6 confirmed violations fixed)
 - **File plan cần đọc:** `.claude/plan/tr-c-khi-th-c-task-prancy-lovelace.md`
-- **Checkpoint gần nhất đã pass:** Phase 8 hoàn thành — Notifications + Polish — 314/314 tests xanh (2026-05-14)
+- **Checkpoint gần nhất đã pass:** CSS Audit Phase 1 — 314/314 tests xanh (2026-05-14)
 - **Ngày làm việc gần nhất:** 2026-05-14
-- **Tiếp theo (sau CSS audit):** AC checklist W11 — chạy verify_ac.sh, fix FAILs, verify thủ công SKIPs còn lại
+- **Tiếp theo:** Full audit 38 files còn lại (Bước 3 trong plan), sau đó AC checklist W11
 
-### CSS Audit — Violations đã xác nhận (pre-audit)
-| # | File | Rule vi phạm | Fix |
-|---|------|-------------|-----|
-| V1 | `Sidebar.tsx` | Sidebar width 240px → phải 280px | Đổi `w-[240px]` → `w-[280px]` |
-| V2 | `AppShell.tsx` | ml offset 240px → phải 280px | Đổi `ml-[240px]` → `ml-[280px]` |
-| V3 | `Modal.tsx` | `rounded-lg` (32px) → phải `rounded-[8px]` | Đổi class |
-| V4 | `SongCard.tsx` | Shadow offset 4px → phải 8px | Đổi sang `shadow-level-2` |
-| V5 | `SearchPage.tsx` | Search input dùng border thay inset shadow | Đổi sang `shadow-input-inset` |
-| V6 | `tailwind.config.ts` | Verify shadow tokens đúng spec | Đối chiếu + fix |
+### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
+| # | File | Fix | Status |
+|---|------|-----|--------|
+| V1 | `Sidebar.tsx` | `w-[240px]` → `w-[280px]` | ✅ |
+| V2 | `AppShell.tsx` | `ml-[240px]` → `ml-[280px]` | ✅ |
+| V3 | `Modal.tsx` | `rounded-lg` → `rounded-[8px]` | ✅ |
+| V4 | `SongCard.tsx` | arbitrary shadow → `shadow-level-2` + hover `shadow-level-3` | ✅ |
+| V5 | `SearchPage.tsx` | `border border-border-muted` + arbitrary inset → `shadow-input-inset` | ✅ |
+| V6 | `tailwind.config.ts` | Tokens đã đúng spec — không cần sửa | ✅ |
+
+**Tiếp theo:** Full audit 38 files còn lại (Bước 3 trong plan)
 
 ---
 

@@ -77,7 +77,7 @@ export default function Sidebar() {
     <>
     <nav
       aria-label="Điều hướng chính"
-      className="hidden lg:flex flex-col h-full bg-near-black pt-xl fixed left-0 top-0 w-[240px] shadow-[rgba(0,0,0,0.5)_0px_8px_24px] z-50 pb-[72px]"
+      className="hidden lg:flex flex-col h-full bg-near-black pt-xl fixed left-0 top-0 w-[280px] shadow-[rgba(0,0,0,0.5)_0px_8px_24px] z-50 pb-[72px]"
     >
       {/* ── Logo ── */}
       <div className="px-lg mb-8">

@@ -13,7 +13,7 @@ export default function SongCard({ song, onPlay }: SongCardProps) {
       aria-label={`Phát ${song.title} — ${song.artist}`}
       onClick={() => onPlay(song)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onPlay(song); }}
-      className="w-[160px] flex-shrink-0 bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_4px_8px] hover:shadow-[rgba(0,0,0,0.5)_0px_8px_16px] snap-start"
+      className="w-[160px] flex-shrink-0 bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-level-2 hover:shadow-level-3 snap-start"
     >
       {/* Cover art */}
       <div className="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden">

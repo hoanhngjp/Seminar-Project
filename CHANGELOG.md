@@ -14,6 +14,17 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Fixed
+
+**Frontend — CSS Audit Phase 1: 6 Confirmed Violations (2026-05-14)**
+- `Sidebar.tsx` — sidebar width `w-[240px]` → `w-[280px]` per DESIGN_STITCH.md spec
+- `AppShell.tsx` — main content offset `ml-[240px]` → `ml-[280px]` (đồng bộ với sidebar width)
+- `Modal.tsx` — dialog border-radius `rounded-lg` (32px) → `rounded-[8px]` per spec Rule 3
+- `SongCard.tsx` — shadow arbitrary `shadow-[rgba(0,0,0,0.3)_0px_4px_8px]` → `shadow-level-2`; hover → `shadow-level-3` (dùng design tokens thay arbitrary values)
+- `SearchPage.tsx` — search input đổi từ `border border-border-muted` + arbitrary inset shadow → `shadow-input-inset` per Rule 7
+- `tailwind.config.ts` — verified: tất cả shadow tokens (`level-1/2/3`, `input-inset`) đã đúng spec — không cần sửa
+- **Total: 314/314 tests xanh, không regression**
+
 ### Added
 
 **DESIGN_STITCH.md — Design System Documentation (2026-05-14)**

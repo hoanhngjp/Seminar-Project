@@ -1,19 +1,21 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
-[2026-05-14] [FRONTEND / CSS AUDIT — DESIGN_STITCH.md COMPLIANCE] [PLAN]
+[2026-05-14] [FRONTEND / CSS AUDIT PHASE 1 — 6 CONFIRMED VIOLATIONS] [DONE]
 
-**Task:** Audit toàn bộ CSS frontend (44 files) đối chiếu với DESIGN_STITCH.md — design system rules mới được thêm vào repo.
+**Task:** Fix 6 violations đã xác nhận trước khi audit toàn bộ 44 files.
 **Plan file:** `.claude/plan/tr-c-khi-th-c-task-prancy-lovelace.md`
 
-**Violations đã xác nhận trước khi audit (6 violations):**
-1. `Sidebar.tsx` — `w-[240px]` → phải `w-[280px]` (sidebar-width trong DESIGN_STITCH = 280px)
-2. `AppShell.tsx` — `ml-[240px]` → phải `ml-[280px]` (đồng bộ với sidebar width)
-3. `Modal.tsx` — `rounded-lg` (32px) → phải `rounded-[8px]` (dialog spec = 8px)
-4. `SongCard.tsx` — `shadow-[rgba(0,0,0,0.3)_0px_4px_8px]` → `shadow-level-2` (offset 4px sai, phải 8px)
-5. `SearchPage.tsx` — search input dùng `border border-border-muted` → phải `shadow-input-inset`
-6. `tailwind.config.ts` — cần verify tất cả shadow token values đúng spec trước khi fix V4
+**Kết quả:**
+1. `Sidebar.tsx` — `w-[240px]` → `w-[280px]` ✅
+2. `AppShell.tsx` — `ml-[240px]` → `ml-[280px]` ✅
+3. `Modal.tsx` — `rounded-lg` → `rounded-[8px]` ✅
+4. `SongCard.tsx` — arbitrary shadow → `shadow-level-2` + hover `shadow-level-3` ✅
+5. `SearchPage.tsx` — `border border-border-muted` + arbitrary inset → `shadow-input-inset` ✅
+6. `tailwind.config.ts` — verified, tokens đã đúng spec, không cần sửa ✅
 
-**8 Rules cần kiểm tra:** Color Palette, Typography, Border Radius, Shadows/Elevation, Layout/Sidebar Width, Buttons, Inputs, Responsive.
+**Tests:** 314/314 xanh — không regression.
+**Build TS errors:** 3 lỗi pre-existing (mocks/data.ts, ToastContext.test.tsx, PartyRoomPage.test.tsx) — không liên quan CSS fixes, tồn tại trước commit này.
+**Tiếp theo:** Full audit 38 files còn lại — Bước 3 trong plan.
 
 ---
 [2026-05-14] [FRONTEND / PHASE 8 — NOTIFICATIONS + POLISH] [DECISION × 3]

@@ -6,7 +6,8 @@
       "Bash(dotnet test *)",
       "Bash(npm install *)",
       "Bash(npm test *)",
-      "Bash(npx vitest *)"
+      "Bash(npx vitest *)",
+      "Bash(npm run *)"
     ]
   }
 }

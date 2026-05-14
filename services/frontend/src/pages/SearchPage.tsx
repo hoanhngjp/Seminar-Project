@@ -52,7 +52,7 @@ function SearchInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder="Bài hát, nghệ sĩ, thể loại…"
         aria-label="Tìm kiếm"
-        className="w-full h-12 bg-mid-dark rounded-full pl-12 pr-12 font-body-regular text-[16px] text-text-base border border-border-muted placeholder:text-text-secondary shadow-[inset_0px_1px_3px_rgba(0,0,0,0.5)] focus:outline-none focus:border-text-secondary transition-all duration-200"
+        className="w-full h-12 bg-mid-dark rounded-full pl-12 pr-12 font-body-regular text-[16px] text-text-base placeholder:text-text-secondary shadow-input-inset focus:outline-none transition-all duration-200"
       />
       {value && (
         <button
