@@ -1,5 +1,27 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / PHASE 2 — PHASE 1: SHARED UI COMPONENTS] [DONE]
+
+**Task:** Tạo 3 shared UI components mới cho Phase 2: EmptyState, SongContextMenu, UserMenuDropdown.
+
+**Files đã tạo:**
+- `components/ui/EmptyState.tsx` — 4 variants (music/search/bell/group), icon circle 80px, optional CTA pill
+- `components/ui/SongContextMenu.tsx` — dropdown 200px, 5 items, đóng khi click ngoài (mousedown listener)
+- `components/ui/UserMenuDropdown.tsx` — popover 220px, avatar initial + tên + email, 3 menu items, Logout gọi `clearAuth()` + navigate `/login`
+- `tests/components/ui/EmptyState.test.tsx` — 14 tests
+- `tests/components/ui/SongContextMenu.test.tsx` — 15 tests
+- `tests/components/ui/UserMenuDropdown.test.tsx` — 13 tests
+
+**Key decisions:**
+- CTA button trong EmptyState chỉ render khi **cả hai** `ctaLabel` và `onCta` đều được truyền — tránh dead button
+- Click-outside pattern dùng `mousedown` (không phải `click`) — nhất quán với `CreatorDashboardPage.dropdownRef`
+- `UserMenuDropdown` dùng `useAuthStore` trực tiếp (không nhận `onLogout` prop) — đơn giản hơn, không cần caller wire thêm
+
+**Tests:** 42 tests mới, 377/377 toàn bộ test suite xanh — không regression.
+
+**Chưa visible trên UI:** 3 components chưa được wire vào trang nào. Sẽ xuất hiện ở Phase 5/6/7.
+
+---
 [2026-05-15] [FRONTEND / PHASE 2 — PHASE 0: TYPES & MOCK DATA] [DONE]
 
 **Task:** Thêm types mới cho Phase 2 (Artist, SongDetail, CreatorSongRow), mở rộng UserProfile, thêm mock data cho 5 trang mới, và cập nhật `useRecommendations` để hỗ trợ `externalContext`.

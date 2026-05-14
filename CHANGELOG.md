@@ -16,6 +16,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — Phase 2 Phase 1: Shared UI Components (2026-05-15)**
+- `components/ui/EmptyState.tsx` — component mới, 4 variants: `music` / `search` / `bell` / `group`; icon circle 80px, optional CTA pill `bg-spotify-green`
+- `components/ui/SongContextMenu.tsx` — dropdown 200px, 5 items (Phát ngay, Queue, Party, Nghệ sĩ, Chia sẻ), đóng khi click ngoài
+- `components/ui/UserMenuDropdown.tsx` — popover 220px, header avatar + tên + email, menu Profile / Preferences / Logout; Logout gọi `clearAuth()` + navigate `/login`
+- 42 tests mới (14 + 15 + 13) — 377/377 toàn bộ suite xanh
+
 **Frontend — Phase 2 Phase 0: Types & Mock Data (2026-05-15)**
 - `types/domain.ts` — thêm 3 interface mới: `Artist`, `SongDetail extends Song`, `CreatorSongRow`
 - `services/userService.ts` — `UserProfile` có thêm `avatarUrl?`, `preferredGenres?`, `preferredArtists?`
