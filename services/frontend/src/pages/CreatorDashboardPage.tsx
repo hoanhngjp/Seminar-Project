@@ -87,7 +87,7 @@ function KpiCard({
   valueClass?: string;
 }) {
   return (
-    <div className="bg-dark-surface rounded-[8px] p-[20px] pb-[24px] hover:bg-[#282828] hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all duration-200 flex flex-col justify-between h-full">
+    <div className="bg-dark-surface rounded-[8px] p-[20px] pb-[24px] hover:bg-mid-card hover:shadow-level-2 transition-all duration-200 flex flex-col justify-between h-full">
       <div className="flex justify-between items-start mb-2">
         <div className="text-[12px] font-bold uppercase text-text-secondary tracking-[1.4px]">
           {label}
@@ -114,7 +114,7 @@ function SkipHeatmap({ data }: { data: HeatmapDropOff[] }) {
   const peakPct = (peakIdx / (data.length - 1)) * 100;
 
   return (
-    <div className="bg-dark-surface rounded-[8px] p-lg hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all duration-200">
+    <div className="bg-dark-surface rounded-[8px] p-lg hover:shadow-level-2 transition-all duration-200">
       <div className="mb-6">
         <h2 className="text-[16px] font-bold text-text-base">Heatmap tỷ lệ bỏ qua (skip)</h2>
         <p className="text-[12px] text-text-secondary mt-1">Điểm người nghe hay bỏ qua nhất</p>
@@ -140,7 +140,7 @@ function SkipHeatmap({ data }: { data: HeatmapDropOff[] }) {
               ].join(' ')}
             >
               {isPeak && (
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 hidden group-hover:block bg-dark-card rounded-[8px] px-3 py-2 shadow-[rgba(0,0,0,0.5)_0px_8px_24px] z-10 whitespace-nowrap">
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 hidden group-hover:block bg-dark-card rounded-[8px] px-3 py-2 shadow-level-3 z-10 whitespace-nowrap">
                   <div className="text-[12px] font-bold text-text-base">
                     {formatSeconds(point.second)}: {point.count} lượt bỏ qua
                   </div>
@@ -216,7 +216,7 @@ function LineChart({
     });
 
   return (
-    <div className="bg-dark-surface rounded-[8px] p-lg hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all duration-200">
+    <div className="bg-dark-surface rounded-[8px] p-lg hover:shadow-level-2 transition-all duration-200">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-[16px] font-bold text-text-base">Lượt nghe theo ngày</h2>
         <span className="bg-mid-dark text-text-secondary text-[12px] font-bold rounded-full px-3 py-1 border border-border-muted/30">
@@ -272,7 +272,7 @@ function BarChart({ data }: { data: { date: string; count: number }[] }) {
   });
 
   return (
-    <div className="bg-dark-surface rounded-[8px] p-lg hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all duration-200 h-[300px] flex flex-col">
+    <div className="bg-dark-surface rounded-[8px] p-lg hover:shadow-level-2 transition-all duration-200 h-[300px] flex flex-col">
       <h2 className="text-[16px] font-bold text-text-base mb-6">Người nghe theo ngày</h2>
       <div className="flex-1 flex items-end justify-between gap-1 pb-6 relative">
         {display.map((d) => {
@@ -280,7 +280,7 @@ function BarChart({ data }: { data: { date: string; count: number }[] }) {
           return (
             <div
               key={d.date}
-              className="flex-1 bg-spotify-green rounded-t-[4px] hover:bg-[#1db954] transition-colors cursor-pointer"
+              className="flex-1 bg-spotify-green rounded-t-[4px] hover:bg-accent-border transition-colors cursor-pointer"
               style={{ height: `${heightPct}%` }}
               title={`${d.date}: ${d.count.toLocaleString()} lượt`}
             />
@@ -301,7 +301,7 @@ function DonutChart({ completionRate }: { completionRate: number }) {
   const pct = Math.round(completionRate * 100);
 
   return (
-    <div className="bg-dark-surface rounded-[8px] p-lg hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px] transition-all duration-200 h-[300px] flex flex-col items-center justify-center relative">
+    <div className="bg-dark-surface rounded-[8px] p-lg hover:shadow-level-2 transition-all duration-200 h-[300px] flex flex-col items-center justify-center relative">
       <div className="absolute top-lg left-lg">
         <h2 className="text-[16px] font-bold text-text-base">Tỷ lệ nghe đủ bài</h2>
       </div>

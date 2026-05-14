@@ -110,10 +110,10 @@ export default function HomePage() {
           {CONTEXT_LABEL[context] ?? 'Chào mừng trở lại'} 👋
         </h2>
         <div className="flex items-center gap-4">
-          <button className="bg-white text-black font-bold px-4 py-1.5 rounded-full hover:scale-105 transition-transform text-xs tracking-wider">
+          <button className="bg-white text-near-black font-bold px-4 py-1.5 rounded-full hover:scale-105 transition-transform text-xs tracking-wider">
             Nâng cấp
           </button>
-          <span className="material-symbols-outlined text-text-secondary hover:text-white cursor-pointer transition-colors">
+          <span className="material-symbols-outlined text-text-secondary hover:text-text-base cursor-pointer transition-colors">
             settings
           </span>
         </div>
@@ -146,7 +146,7 @@ export default function HomePage() {
             <p className="text-negative">{error}</p>
             <button
               onClick={reload}
-              className="px-6 py-2.5 bg-spotify-green text-black font-bold rounded-full hover:scale-105 transition-transform text-sm tracking-wider"
+              className="px-6 py-2.5 bg-spotify-green text-near-black font-bold rounded-full hover:scale-105 transition-transform text-sm tracking-wider"
             >
               Thử lại
             </button>

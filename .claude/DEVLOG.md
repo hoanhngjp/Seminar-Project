@@ -1,5 +1,34 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-14] [FRONTEND / CSS AUDIT PHASE 4 — CORE APP PAGES] [DONE]
+
+**Task:** Audit và fix 5 Core App Pages theo DESIGN_STITCH.md rules.
+
+**Clean (không cần sửa):** NotificationsPage.tsx ✅
+
+**Violations đã fix (13):**
+1. `HomePage.tsx` — "Nâng cấp" button: `text-black` → `text-near-black` ✅
+2. `HomePage.tsx` — settings icon: `hover:text-white` → `hover:text-text-base` ✅
+3. `HomePage.tsx` — retry button: `text-black` → `text-near-black` ✅
+4. `CreatorDashboardPage.tsx` — KpiCard hover bg: `hover:bg-[#282828]` → `hover:bg-mid-card` ✅
+5. `CreatorDashboardPage.tsx` — KpiCard hover shadow: `hover:shadow-[...]` → `hover:shadow-level-2` ✅
+6. `CreatorDashboardPage.tsx` — SkipHeatmap card hover shadow: `hover:shadow-[...]` → `hover:shadow-level-2` ✅
+7. `CreatorDashboardPage.tsx` — Heatmap tooltip: `shadow-[rgba(0,0,0,0.5)_0px_8px_24px]` → `shadow-level-3` ✅
+8. `CreatorDashboardPage.tsx` — LineChart card hover shadow: `hover:shadow-[...]` → `hover:shadow-level-2` ✅
+9. `CreatorDashboardPage.tsx` — BarChart card hover shadow: `hover:shadow-[...]` → `hover:shadow-level-2` ✅
+10. `CreatorDashboardPage.tsx` — BarChart bar hover: `hover:bg-[#1db954]` → `hover:bg-accent-border` ✅
+11. `CreatorDashboardPage.tsx` — DonutChart card hover shadow: `hover:shadow-[...]` → `hover:shadow-level-2` ✅
+12. `UploadPage.tsx` — Preview section: `shadow-[rgba(0,0,0,0.3)_0px_8px_8px]` → `shadow-level-2` ✅
+13. `UploadPage.tsx` — Cover art placeholder: `bg-[#2a2a2a]` → `bg-mid-card` ✅
+14. `NowPlayingOverlay.tsx` — Album art glow: `style={{ boxShadow: '...' }}` → `shadow-glow-green` (token tồn tại!) ✅
+15. `NowPlayingOverlay.tsx` — Play button: `hover:text-white` → `hover:text-text-base` ✅
+
+**Notable:** `glow-green` shadow token (`rgba(30,215,96,0.2) 0px 0px 80px 20px`) đã có trong config từ Phase 0 nhưng chưa được dùng — đây là lần đầu tiên được áp dụng.
+
+**Tests:** 314/314 xanh — không regression.
+**Tiếp theo:** CSS Audit Phase 5 — Listening Party (6 files).
+
+---
 [2026-05-14] [FRONTEND / CSS AUDIT PHASE 3 — AUTH & ONBOARDING] [DONE]
 
 **Task:** Audit và fix 7 Auth & Onboarding files theo DESIGN_STITCH.md rules.

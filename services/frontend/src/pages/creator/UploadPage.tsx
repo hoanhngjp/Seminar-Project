@@ -98,11 +98,11 @@ function UploadPageContent() {
           />
 
           {/* SECTION 3 - Preview */}
-          <section className="bg-dark-card rounded-[8px] p-md shadow-[rgba(0,0,0,0.3)_0px_8px_8px]">
+          <section className="bg-dark-card rounded-[8px] p-md shadow-level-2">
             <div className="font-micro text-micro text-text-secondary mb-md tracking-widest">XEM TRƯỚC</div>
             <div className="flex items-center justify-between bg-mid-dark rounded-[8px] p-sm">
               <div className="flex items-center gap-md">
-                <div className="w-12 h-12 bg-[#2a2a2a] rounded-[4px] flex items-center justify-center overflow-hidden">
+                <div className="w-12 h-12 bg-mid-card rounded-[4px] flex items-center justify-center overflow-hidden">
                   {coverPreview ? (
                     <img src={coverPreview} alt="Bìa" className="w-full h-full object-cover" />
                   ) : (

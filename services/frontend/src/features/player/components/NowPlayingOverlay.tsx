@@ -73,8 +73,7 @@ export default function NowPlayingOverlay({
           {/* Left: Album art */}
           <div className="flex-1 flex items-center justify-center lg:justify-end shrink-0 w-full lg:w-1/2">
             <div
-              className="relative w-full max-w-[320px] aspect-square rounded-[8px]"
-              style={{ boxShadow: 'rgba(30,215,96,0.2) 0px 0px 80px 20px' }}
+              className="relative w-full max-w-[320px] aspect-square rounded-[8px] shadow-glow-green"
             >
               {currentSong.coverUrl ? (
                 <img
@@ -172,7 +171,7 @@ export default function NowPlayingOverlay({
                 disabled={loading}
                 aria-label={isPlaying ? 'Dừng' : 'Phát'}
                 data-testid="overlay-play-btn"
-                className="w-14 h-14 rounded-full flex items-center justify-center text-text-secondary hover:text-white hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                className="w-14 h-14 rounded-full flex items-center justify-center text-text-secondary hover:text-text-base hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
               >
                 {loading ? (
                   <span className="material-symbols-outlined text-[24px] animate-spin">
