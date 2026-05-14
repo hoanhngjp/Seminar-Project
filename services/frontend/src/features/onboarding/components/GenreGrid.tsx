@@ -33,7 +33,7 @@ export function GenreGrid({ selectedGenres, toggleGenre }: GenreGridProps) {
             key={genre.id}
             type="button"
             onClick={() => toggleGenre(genre.id)}
-            className={`relative h-[100px] w-full rounded-DEFAULT overflow-hidden text-left border-2 transform hover:scale-[1.02] transition-all shadow-[rgba(0,0,0,0.3)_0px_8px_8px] focus:outline-none ${
+            className={`relative h-[100px] w-full rounded-[8px] overflow-hidden text-left border-2 transform hover:scale-[1.02] transition-all shadow-level-2 focus:outline-none ${
               isSelected ? 'border-spotify-green' : 'border-transparent hover:border-border-muted'
             }`}
           >

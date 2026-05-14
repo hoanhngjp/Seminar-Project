@@ -1,5 +1,33 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-14] [FRONTEND / CSS AUDIT PHASE 3 — AUTH & ONBOARDING] [DONE]
+
+**Task:** Audit và fix 7 Auth & Onboarding files theo DESIGN_STITCH.md rules.
+
+**Clean (không cần sửa):** LoginPage.tsx ✅, RegisterPage.tsx ✅ (chỉ là wrappers đơn giản).
+
+**Violations đã fix (13):**
+1. `LoginForm.tsx` — locked state email input: arbitrary shadow → `shadow-input-inset` ✅
+2. `LoginForm.tsx` — locked state password input: arbitrary shadow → `shadow-input-inset` ✅
+3. `LoginForm.tsx` — normal username input: arbitrary shadow → `shadow-input-inset`; error ring đổi từ `border-2 border-negative` → `ring-2 ring-negative` (không conflict với inset shadow) ✅
+4. `LoginForm.tsx` — normal password input: arbitrary shadow → `shadow-input-inset` ✅
+5. `RegisterForm.tsx` — card container: `rounded-card` (undefined token) → `rounded-[8px]` ✅
+6. `RegisterForm.tsx` — card container: `shadow-[rgba(0,0,0,0.5)_0px_8px_24px]` → `shadow-level-3` ✅
+7. `RegisterForm.tsx` — tất cả 4 inputs: arbitrary shadow → `shadow-input-inset` (×4, replace_all) ✅
+8. `GenreGrid.tsx` — genre card: `rounded-DEFAULT` (16px, quá lớn) → `rounded-[8px]` ✅
+9. `GenreGrid.tsx` — genre card: `shadow-[rgba(0,0,0,0.3)_0px_8px_8px]` → `shadow-level-2` ✅
+10. `ArtistGrid.tsx` — artist image selected: `shadow-[rgba(0,0,0,0.5)_0px_8px_24px]` → `shadow-level-3` ✅
+11. `ArtistGrid.tsx` — artist image hover: `group-hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px]` → `group-hover:shadow-level-2` ✅
+12. `OnboardingPage.tsx` — step 3 checkmark circle: `shadow-lg` + inline style → `shadow-level-3` ✅
+13. `OnboardingPage.tsx` — step 3 CTA button: `text-[#000000]` → `text-near-black`; `shadow-md` + inline style → `shadow-level-2` ✅
+14. `OnboardingPage.tsx` — step 1 CTA button: `shadow-[rgba(0,0,0,0.3)_0px_4px_12px]` → `shadow-level-2` ✅
+15. `OnboardingPage.tsx` — step 2 fixed bottom bar: `shadow-[rgba(0,0,0,0.5)_0px_-8px_24px]` → `shadow-footer` ✅
+16. `OnboardingPage.tsx` — step 2 CTA button: `text-[#000000]` → `text-near-black`; `shadow-[...]` → `shadow-level-2` ✅
+
+**Tests:** 314/314 xanh — không regression.
+**Tiếp theo:** CSS Audit Phase 4 — Core App Pages (5 files).
+
+---
 [2026-05-14] [FRONTEND / CSS AUDIT — PHASE PLAN] [DECISION]
 
 **Task:** Chia 29 files còn lại của CSS Audit thành 5 phases, mỗi phase cần xác nhận trước khi tiến hành.

@@ -42,7 +42,7 @@ export function ArtistGrid({ selectedArtists, toggleArtist }: ArtistGridProps) {
                 src={artist.imageUrl} 
                 alt={artist.name} 
                 className={`w-24 h-24 rounded-full object-cover ${
-                  isSelected ? 'shadow-[rgba(0,0,0,0.5)_0px_8px_24px]' : 'shadow-none group-hover:shadow-[rgba(0,0,0,0.3)_0px_8px_8px]'
+                  isSelected ? 'shadow-level-3' : 'shadow-none group-hover:shadow-level-2'
                 }`}
               />
               {isSelected && (

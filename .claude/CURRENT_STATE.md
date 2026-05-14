@@ -160,11 +160,11 @@
 
 ## Đang làm
 
-- **Service/Task:** CSS Audit — DESIGN_STITCH.md Compliance (Phase 2 xong — 7 violations fixed; Phase 3–6 audit 22 files còn lại, mỗi phase cần xác nhận trước khi tiếp)
+- **Service/Task:** CSS Audit — DESIGN_STITCH.md Compliance (Phase 3 xong — Auth & Onboarding 7 files; Phase 4–6 audit 15 files còn lại, mỗi phase cần xác nhận trước khi tiếp)
 - **File plan cần đọc:** `.claude/plan/tr-c-khi-th-c-task-prancy-lovelace.md`
-- **Checkpoint gần nhất đã pass:** CSS Audit Phase 2 — 314/314 tests xanh (2026-05-14)
+- **Checkpoint gần nhất đã pass:** CSS Audit Phase 3 — 314/314 tests xanh (2026-05-14)
 - **Ngày làm việc gần nhất:** 2026-05-14
-- **Tiếp theo:** CSS Audit Phase 3 — Auth & Onboarding (7 files), sau đó AC checklist W11
+- **Tiếp theo:** CSS Audit Phase 4 — Core App Pages (5 files), sau đó AC checklist W11
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |
@@ -181,7 +181,7 @@
 | Phase | Files | Nội dung | Status |
 |-------|-------|----------|--------|
 | Phase 2 | 7 | Foundation Components: `Button`, `Input`, `Toast`, `SkeletonRow`, `Spinner`, `BottomPlayerBar`, `MobileNav` | ✅ Hoàn thành (2026-05-14) |
-| Phase 3 | 7 | Auth & Onboarding: `LoginPage`, `RegisterPage`, `OnboardingPage`, `LoginForm`, `RegisterForm`, `GenreGrid`, `ArtistGrid` | ⏳ Chờ Phase 2 |
+| Phase 3 | 7 | Auth & Onboarding: `LoginPage`, `RegisterPage`, `OnboardingPage`, `LoginForm`, `RegisterForm`, `GenreGrid`, `ArtistGrid` | ✅ Hoàn thành (2026-05-14) |
 | Phase 4 | 5 | Core App Pages: `HomePage`, `NotificationsPage`, `CreatorDashboardPage`, `UploadPage`, `NowPlayingOverlay` | ⏳ Chờ Phase 3 |
 | Phase 5 | 6 | Listening Party: `PartyLandingPage`, `PartyRoomPage`, `CreateRoomModal`, `RoomPlayer`, `HostControls`, `MemberList` | ⏳ Chờ Phase 4 |
 | Phase 6 | 4 | Notifications & Creator Features: `NotificationRow`, `FilterPills`, `FileDropzone`, `MetadataForm` | ⏳ Chờ Phase 5 |

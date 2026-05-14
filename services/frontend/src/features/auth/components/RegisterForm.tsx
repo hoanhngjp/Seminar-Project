@@ -31,7 +31,7 @@ export const RegisterForm: React.FC = () => {
   const passwordsMatch = password && confirmPassword && password === confirmPassword;
 
   return (
-    <div className="bg-dark-surface rounded-card p-[48px] w-full max-w-[480px] shadow-[rgba(0,0,0,0.5)_0px_8px_24px] flex flex-col gap-[32px]">
+    <div className="bg-dark-surface rounded-[8px] p-[48px] w-full max-w-[480px] shadow-level-3 flex flex-col gap-[32px]">
       {/* Header */}
       <header className="flex flex-col items-center">
         <div className="flex items-center gap-sm text-text-base">
@@ -47,7 +47,7 @@ export const RegisterForm: React.FC = () => {
         <div className="flex flex-col gap-xs">
           <label className="font-body-bold text-[14px] text-text-base" htmlFor="fullname">Họ và tên</label>
           <input 
-            className="bg-mid-dark rounded-full py-[12px] px-lg text-text-base placeholder:text-text-secondary w-full focus:outline-none shadow-[inset_0px_1px_0px_rgb(18,18,18),inset_0px_0px_0px_1px_rgb(124,124,124)] font-body-regular text-body-regular border-none focus:ring-2 focus:ring-spotify-green" 
+            className="bg-mid-dark rounded-full py-[12px] px-lg text-text-base placeholder:text-text-secondary w-full focus:outline-none shadow-input-inset font-body-regular text-body-regular border-none focus:ring-2 focus:ring-spotify-green" 
             id="fullname" 
             placeholder="Nguyễn Văn A" 
             type="text" 
@@ -61,7 +61,7 @@ export const RegisterForm: React.FC = () => {
         <div className="flex flex-col gap-xs">
           <label className="font-body-bold text-[14px] text-text-base" htmlFor="email">Email</label>
           <input 
-            className="bg-mid-dark rounded-full py-[12px] px-lg text-text-base placeholder:text-text-secondary w-full focus:outline-none shadow-[inset_0px_1px_0px_rgb(18,18,18),inset_0px_0px_0px_1px_rgb(124,124,124)] font-body-regular text-body-regular border-none focus:ring-2 focus:ring-spotify-green" 
+            className="bg-mid-dark rounded-full py-[12px] px-lg text-text-base placeholder:text-text-secondary w-full focus:outline-none shadow-input-inset font-body-regular text-body-regular border-none focus:ring-2 focus:ring-spotify-green" 
             id="email" 
             placeholder="email@example.com" 
             type="email" 
@@ -76,7 +76,7 @@ export const RegisterForm: React.FC = () => {
           <label className="font-body-bold text-[14px] text-text-base" htmlFor="password">Mật khẩu</label>
           <div className="relative w-full">
             <input 
-              className="bg-mid-dark rounded-full py-[12px] pl-lg pr-[48px] text-text-base placeholder:text-text-secondary w-full focus:outline-none shadow-[inset_0px_1px_0px_rgb(18,18,18),inset_0px_0px_0px_1px_rgb(124,124,124)] font-body-regular text-body-regular border-none focus:ring-2 focus:ring-spotify-green" 
+              className="bg-mid-dark rounded-full py-[12px] pl-lg pr-[48px] text-text-base placeholder:text-text-secondary w-full focus:outline-none shadow-input-inset font-body-regular text-body-regular border-none focus:ring-2 focus:ring-spotify-green" 
               id="password" 
               placeholder="Tối thiểu 8 ký tự" 
               type={showPassword ? 'text' : 'password'}
@@ -101,7 +101,7 @@ export const RegisterForm: React.FC = () => {
           <label className="font-body-bold text-[14px] text-text-base" htmlFor="confirm-password">Xác nhận mật khẩu</label>
           <div className="relative w-full">
             <input 
-              className="bg-mid-dark rounded-full py-[12px] pl-lg pr-[48px] text-text-base placeholder:text-text-secondary w-full focus:outline-none shadow-[inset_0px_1px_0px_rgb(18,18,18),inset_0px_0px_0px_1px_rgb(124,124,124)] font-body-regular text-body-regular border-none focus:ring-2 focus:ring-spotify-green" 
+              className="bg-mid-dark rounded-full py-[12px] pl-lg pr-[48px] text-text-base placeholder:text-text-secondary w-full focus:outline-none shadow-input-inset font-body-regular text-body-regular border-none focus:ring-2 focus:ring-spotify-green" 
               id="confirm-password" 
               placeholder="Nhập lại mật khẩu" 
               type="password" 
@@ -120,14 +120,14 @@ export const RegisterForm: React.FC = () => {
           <label className="font-body-bold text-[14px] text-text-base">Bạn là:</label>
           <div className="flex gap-sm w-full">
             <button 
-              className={`flex-1 font-body-bold text-[14px] py-[10px] rounded-full flex items-center justify-center gap-xs transition-colors ${role === 'Listener' ? 'bg-spotify-green text-near-black' : 'bg-mid-dark text-text-secondary shadow-[inset_0px_1px_0px_rgb(18,18,18),inset_0px_0px_0px_1px_rgb(124,124,124)] hover:text-text-base'}`} 
+              className={`flex-1 font-body-bold text-[14px] py-[10px] rounded-full flex items-center justify-center gap-xs transition-colors ${role === 'Listener' ? 'bg-spotify-green text-near-black' : 'bg-mid-dark text-text-secondary shadow-input-inset hover:text-text-base'}`} 
               type="button"
               onClick={() => setRole('Listener')}
             >
               🎧 Người nghe
             </button>
             <button 
-              className={`flex-1 font-body-bold text-[14px] py-[10px] rounded-full flex items-center justify-center gap-xs transition-colors ${role === 'Creator' ? 'bg-spotify-green text-near-black' : 'bg-mid-dark text-text-secondary shadow-[inset_0px_1px_0px_rgb(18,18,18),inset_0px_0px_0px_1px_rgb(124,124,124)] hover:text-text-base'}`} 
+              className={`flex-1 font-body-bold text-[14px] py-[10px] rounded-full flex items-center justify-center gap-xs transition-colors ${role === 'Creator' ? 'bg-spotify-green text-near-black' : 'bg-mid-dark text-text-secondary shadow-input-inset hover:text-text-base'}`} 
               type="button"
               onClick={() => setRole('Creator')}
             >

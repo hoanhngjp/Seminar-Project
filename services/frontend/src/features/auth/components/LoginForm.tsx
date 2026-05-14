@@ -35,8 +35,8 @@ export const LoginForm: React.FC = () => {
           <div className="space-y-xs">
             <label className="block font-small-bold text-small-bold text-text-base" htmlFor="emailLocked">Email or username</label>
             <input 
-              className="w-full bg-mid-dark text-text-base font-body-regular text-body-regular rounded-full py-md px-lg focus:outline-none focus:ring-2 focus:ring-spotify-green shadow-[inset_0px_1px_0px_rgb(18,18,18),inset_0px_0px_0px_1px_rgb(124,124,124)] border-none placeholder:text-text-secondary disabled:opacity-50" 
-              disabled 
+              className="w-full bg-mid-dark text-text-base font-body-regular text-body-regular rounded-full py-md px-lg focus:outline-none focus:ring-2 focus:ring-spotify-green shadow-input-inset border-none placeholder:text-text-secondary disabled:opacity-50"
+              disabled
               id="emailLocked" 
               placeholder="Email or username" 
               type="email" 
@@ -45,8 +45,8 @@ export const LoginForm: React.FC = () => {
           <div className="space-y-xs">
             <label className="block font-small-bold text-small-bold text-text-base" htmlFor="passwordLocked">Password</label>
             <input 
-              className="w-full bg-mid-dark text-text-base font-body-regular text-body-regular rounded-full py-md px-lg focus:outline-none focus:ring-2 focus:ring-spotify-green shadow-[inset_0px_1px_0px_rgb(18,18,18),inset_0px_0px_0px_1px_rgb(124,124,124)] border-none placeholder:text-text-secondary disabled:opacity-50" 
-              disabled 
+              className="w-full bg-mid-dark text-text-base font-body-regular text-body-regular rounded-full py-md px-lg focus:outline-none focus:ring-2 focus:ring-spotify-green shadow-input-inset border-none placeholder:text-text-secondary disabled:opacity-50"
+              disabled
               id="passwordLocked" 
               placeholder="Password" 
               type="password" 
@@ -107,7 +107,7 @@ export const LoginForm: React.FC = () => {
             <label className="font-body-bold text-body-bold text-text-base" htmlFor="username">Email hoặc tên người dùng</label>
             <div className="relative">
               <input 
-                className={`w-full bg-mid-dark text-text-base rounded-full py-[12px] px-[20px] shadow-[inset_0px_1px_0px_rgb(18,18,18),inset_0px_0px_0px_1px_rgb(124,124,124)] border-none focus:ring-0 focus:outline-none placeholder:text-text-secondary font-body-regular text-body-regular transition-colors duration-200 focus:bg-dark-card ${errorMsg ? 'border-2 border-negative' : ''}`}
+                className={`w-full bg-mid-dark text-text-base rounded-full py-[12px] px-[20px] shadow-input-inset border-none focus:ring-0 focus:outline-none placeholder:text-text-secondary font-body-regular text-body-regular transition-colors duration-200 focus:bg-dark-card ${errorMsg ? 'ring-2 ring-negative' : ''}`}
                 id="username" 
                 placeholder="email@example.com" 
                 type="text" 
@@ -130,7 +130,7 @@ export const LoginForm: React.FC = () => {
               <label className="font-body-bold text-body-bold text-text-base" htmlFor="password">Mật khẩu</label>
               <div className="relative w-full">
                 <input 
-                  className="w-full bg-mid-dark text-text-base rounded-full py-[12px] pl-[20px] pr-[48px] shadow-[inset_0px_1px_0px_rgb(18,18,18),inset_0px_0px_0px_1px_rgb(124,124,124)] border-none focus:ring-0 focus:outline-none placeholder:text-text-secondary font-body-regular text-body-regular transition-colors duration-200 focus:bg-dark-card" 
+                  className="w-full bg-mid-dark text-text-base rounded-full py-[12px] pl-[20px] pr-[48px] shadow-input-inset border-none focus:ring-0 focus:outline-none placeholder:text-text-secondary font-body-regular text-body-regular transition-colors duration-200 focus:bg-dark-card" 
                   id="password" 
                   placeholder="Nhập mật khẩu" 
                   type={showPassword ? 'text' : 'password'}

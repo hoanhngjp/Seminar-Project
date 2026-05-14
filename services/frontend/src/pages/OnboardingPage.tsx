@@ -97,7 +97,7 @@ export default function OnboardingPage() {
           {/* Completion Content */}
           <div className="flex flex-col items-center text-center mt-xl mb-xl">
             {/* Large Checkmark Icon */}
-            <div className="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center mb-lg shadow-lg" style={{ boxShadow: 'rgba(0,0,0,0.5) 0px 8px 24px' }}>
+            <div className="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center mb-lg shadow-level-3">
               <span className="material-symbols-outlined text-spotify-green" style={{ fontSize: '64px' }}>check_circle</span>
             </div>
             {/* Titles */}
@@ -109,8 +109,7 @@ export default function OnboardingPage() {
           <div className="w-full mt-lg">
             <button 
               onClick={handleExplore}
-              className="w-full bg-spotify-green text-[#000000] font-button-uppercase text-button-uppercase py-md rounded-full hover:scale-105 active:scale-95 transition-transform shadow-md" 
-              style={{ boxShadow: 'rgba(0,0,0,0.3) 0px 8px 8px' }}
+              className="w-full bg-spotify-green text-near-black font-button-uppercase text-button-uppercase py-md rounded-full hover:scale-105 active:scale-95 transition-transform shadow-level-2"
             >
               KHÁM PHÁ NGAY
             </button>
@@ -172,7 +171,7 @@ export default function OnboardingPage() {
               disabled={selectedGenres.length < 3}
               className={`w-full py-md rounded-full font-button-uppercase text-button-uppercase mb-md transition-all ${
                 selectedGenres.length >= 3 
-                  ? 'bg-spotify-green text-[#000000] hover:scale-105 active:scale-95 cursor-pointer shadow-[rgba(0,0,0,0.3)_0px_4px_12px]' 
+                  ? 'bg-spotify-green text-near-black hover:scale-105 active:scale-95 cursor-pointer shadow-level-2'
                   : 'bg-border-muted text-text-secondary cursor-not-allowed'
               }`}
             >
@@ -211,7 +210,7 @@ export default function OnboardingPage() {
         </main>
 
         {/* Fixed Bottom Action Bar */}
-        <div className="fixed bottom-0 left-0 w-full bg-dark-surface z-50 shadow-[rgba(0,0,0,0.5)_0px_-8px_24px]">
+        <div className="fixed bottom-0 left-0 w-full bg-dark-surface z-50 shadow-footer">
           {/* Progress Indicator */}
           <div className="w-full h-1 bg-mid-dark">
             <div 
@@ -231,9 +230,9 @@ export default function OnboardingPage() {
             <button 
               onClick={handleFinishStep2}
               disabled={selectedArtists.length < 3 || loading}
-              className={`px-lg py-sm rounded-full font-button-uppercase text-button-uppercase transition-transform shadow-[rgba(0,0,0,0.3)_0px_4px_12px] flex items-center gap-xs ${
+              className={`px-lg py-sm rounded-full font-button-uppercase text-button-uppercase transition-transform shadow-level-2 flex items-center gap-xs ${
                 selectedArtists.length >= 3 && !loading
-                  ? 'bg-spotify-green text-[#000000] hover:scale-105 active:scale-95 cursor-pointer'
+                  ? 'bg-spotify-green text-near-black hover:scale-105 active:scale-95 cursor-pointer'
                   : 'bg-border-muted text-text-secondary cursor-not-allowed'
               }`}
             >
