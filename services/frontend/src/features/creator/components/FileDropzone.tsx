@@ -29,7 +29,7 @@ export default function FileDropzone({ audioFile, fileError, onFileSelect }: Pro
         aria-label="Khu vực tải file nhạc"
         tabIndex={0}
         className={`border-2 border-dashed rounded-[8px] p-[48px] flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${
-          dragging ? 'border-spotify-green bg-[#1f1f1f]' : 'border-border-muted hover:bg-[#1f1f1f]'
+          dragging ? 'border-spotify-green bg-mid-dark' : 'border-border-muted hover:bg-mid-dark'
         }`}
         onClick={() => inputRef.current?.click()}
         onKeyDown={(e) => e.key === 'Enter' && inputRef.current?.click()}

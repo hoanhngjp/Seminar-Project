@@ -160,11 +160,11 @@
 
 ## Đang làm
 
-- **Service/Task:** CSS Audit — DESIGN_STITCH.md Compliance (Phase 5 xong — Listening Party 6 files; Phase 6 audit 4 files còn lại, cần xác nhận trước khi tiếp)
+- **Service/Task:** CSS Audit HOÀN THÀNH (6 phases, 44 files) — Tiếp theo: AC checklist W11
 - **File plan cần đọc:** `.claude/plan/tr-c-khi-th-c-task-prancy-lovelace.md`
-- **Checkpoint gần nhất đã pass:** CSS Audit Phase 5 — 314/314 tests xanh (2026-05-14)
+- **Checkpoint gần nhất đã pass:** CSS Audit Phase 6 — 314/314 tests xanh (2026-05-14)
 - **Ngày làm việc gần nhất:** 2026-05-14
-- **Tiếp theo:** CSS Audit Phase 6 — Notifications & Creator Features (4 files: NotificationRow, FilterPills, FileDropzone, MetadataForm), sau đó AC checklist W11
+- **Tiếp theo:** AC checklist W11 — chạy `infra/verify_ac.sh`, fix FAILs, verify thủ công SKIPs
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |
@@ -184,7 +184,7 @@
 | Phase 3 | 7 | Auth & Onboarding: `LoginPage`, `RegisterPage`, `OnboardingPage`, `LoginForm`, `RegisterForm`, `GenreGrid`, `ArtistGrid` | ✅ Hoàn thành (2026-05-14) |
 | Phase 4 | 5 | Core App Pages: `HomePage`, `NotificationsPage`, `CreatorDashboardPage`, `UploadPage`, `NowPlayingOverlay` | ✅ Hoàn thành (2026-05-14) |
 | Phase 5 | 6 | Listening Party: `PartyLandingPage`, `PartyRoomPage`, `CreateRoomModal`, `RoomPlayer`, `HostControls`, `MemberList` | ✅ Hoàn thành (2026-05-14) |
-| Phase 6 | 4 | Notifications & Creator Features: `NotificationRow`, `FilterPills`, `FileDropzone`, `MetadataForm` | ⏳ Chờ Phase 5 |
+| Phase 6 | 4 | Notifications & Creator Features: `NotificationRow`, `FilterPills`, `FileDropzone`, `MetadataForm` | ✅ Hoàn thành (2026-05-14) |
 
 ---
 

@@ -27,6 +27,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**Frontend — CSS Audit Phase 6: Notifications & Creator Features (2026-05-14) — CSS Audit HOÀN THÀNH**
+- `NotificationRow.tsx` — verified clean, không có violation
+- `FilterPills.tsx` — active pill: inline style `#ffffff/#121212` → Tailwind `bg-white text-near-black`; active badge: inline style → `bg-near-black text-text-base`; inactive badge `text-[#121212]` → `text-near-black`
+- `FileDropzone.tsx` — dragging/hover `bg-[#1f1f1f]` (×2) → `bg-mid-dark`
+- `MetadataForm.tsx` — `inset-input-shadow` custom class (×4) → `shadow-input-inset` Tailwind token; cover art `hover:bg-[#1f1f1f]` → `hover:bg-mid-dark`
+- **CSS Audit hoàn tất: 44/44 files, 42 violations đã fix qua 6 phases — 314/314 tests xanh**
+
 **Frontend — CSS Audit Phase 5: Listening Party (2026-05-14)**
 - `CreateRoomModal.tsx` — modal container shadow arbitrary → `shadow-level-3`; song row `hover:bg-[#282828]` → `hover:bg-mid-card`; CTA `hover:bg-[#34e36a]` → `hover:brightness-110`
 - `RoomPlayer.tsx` — album art shadow arbitrary → `shadow-level-3`; LIVE badge `text-[9px]` (below 10px min) → `text-micro`

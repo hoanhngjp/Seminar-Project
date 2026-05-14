@@ -18,7 +18,7 @@ export default function MetadataForm({ form, coverPreview, onChange, onCoverSele
             placeholder="Nhập tên bài hát"
             value={form.title}
             onChange={(e) => onChange({ title: e.target.value })}
-            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base inset-input-shadow border-none focus:ring-0 focus:outline-none"
+            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base shadow-input-inset border-none focus:ring-0 focus:outline-none"
             aria-label="Tên bài hát"
           />
         </div>
@@ -30,7 +30,7 @@ export default function MetadataForm({ form, coverPreview, onChange, onCoverSele
             placeholder="VD: Pop, Rock, Rap"
             value={form.genre}
             onChange={(e) => onChange({ genre: e.target.value })}
-            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base inset-input-shadow border-none focus:ring-0 focus:outline-none"
+            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base shadow-input-inset border-none focus:ring-0 focus:outline-none"
             aria-label="Thể loại"
           />
         </div>
@@ -42,7 +42,7 @@ export default function MetadataForm({ form, coverPreview, onChange, onCoverSele
             placeholder="Vui vẻ, Buồn, Sôi động"
             value={form.mood}
             onChange={(e) => onChange({ mood: e.target.value })}
-            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base inset-input-shadow border-none focus:ring-0 focus:outline-none"
+            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base shadow-input-inset border-none focus:ring-0 focus:outline-none"
             aria-label="Tâm trạng"
           />
         </div>
@@ -54,7 +54,7 @@ export default function MetadataForm({ form, coverPreview, onChange, onCoverSele
             placeholder="Tiếng Việt"
             value={form.language}
             onChange={(e) => onChange({ language: e.target.value })}
-            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base inset-input-shadow border-none focus:ring-0 focus:outline-none"
+            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base shadow-input-inset border-none focus:ring-0 focus:outline-none"
             aria-label="Ngôn ngữ"
           />
         </div>
@@ -64,7 +64,7 @@ export default function MetadataForm({ form, coverPreview, onChange, onCoverSele
         <div className="flex flex-col gap-sm w-auto">
           <label className="font-small-bold text-small-bold text-text-secondary">Bìa album</label>
           <label
-            className="w-[120px] h-[120px] border-2 border-dashed border-border-muted rounded-[8px] flex items-center justify-center hover:bg-[#1f1f1f] cursor-pointer transition-colors bg-mid-dark overflow-hidden"
+            className="w-[120px] h-[120px] border-2 border-dashed border-border-muted rounded-[8px] flex items-center justify-center hover:bg-mid-dark cursor-pointer transition-colors bg-mid-dark overflow-hidden"
             aria-label="Chọn ảnh bìa album"
           >
             {coverPreview ? (

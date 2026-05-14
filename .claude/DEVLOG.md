@@ -1,5 +1,25 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-14] [FRONTEND / CSS AUDIT PHASE 6 — NOTIFICATIONS & CREATOR FEATURES] [DONE]
+
+**Task:** Audit và fix 4 files cuối cùng theo DESIGN_STITCH.md rules — hoàn tất toàn bộ CSS Audit (44 files).
+
+**Clean (không cần sửa):** NotificationRow.tsx ✅
+
+**Violations đã fix (6):**
+1. `FilterPills.tsx` — active pill: inline `style={{ backgroundColor: '#ffffff', color: '#121212' }}` → Tailwind `bg-white text-near-black` ✅
+2. `FilterPills.tsx` — active badge: inline `style={{ backgroundColor: '#121212', color: '#ffffff' }}` → `bg-near-black text-text-base` ✅
+3. `FilterPills.tsx` — inactive badge: `text-[#121212]` → `text-near-black` ✅
+4. `FileDropzone.tsx` — dragging + hover bg: `bg-[#1f1f1f]` (×2) → `bg-mid-dark` ✅
+5. `MetadataForm.tsx` — all 4 inputs: `inset-input-shadow` (custom CSS class) → `shadow-input-inset` (Tailwind token) ✅
+6. `MetadataForm.tsx` — cover art hover: `hover:bg-[#1f1f1f]` → `hover:bg-mid-dark` ✅
+
+**Notable:** `FilterPills` dùng inline style thay vì Tailwind class để tránh specificity conflict — nhưng violate design system rule (không dùng hex hardcoded). Fix bằng cách chuyển sang conditional Tailwind class thay hoàn toàn inline style.
+
+**Tests:** 314/314 xanh — không regression.
+**CSS Audit:** HOÀN THÀNH — 44/44 files audited, tổng 42 violations đã fix qua 6 phases.
+
+---
 [2026-05-14] [FRONTEND / CSS AUDIT PHASE 5 — LISTENING PARTY] [DONE]
 
 **Task:** Audit và fix 6 Listening Party files theo DESIGN_STITCH.md rules.
