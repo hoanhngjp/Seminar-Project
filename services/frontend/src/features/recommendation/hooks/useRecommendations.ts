@@ -9,28 +9,31 @@ interface RecommendationGroups {
   preferenceItems: RecommendedSong[];   // reason.type === 'PREFERENCE'
   loading: boolean;
   error: string | null;
-  context: TimeContext;
+  context: TimeContext | 'none';
   reload: () => void;
 }
 
-export function useRecommendations(): RecommendationGroups {
+export function useRecommendations(externalContext?: TimeContext | 'none'): RecommendationGroups {
   const [items,   setItems]   = useState<RecommendedSong[]>([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState<string | null>(null);
-  const [context] = useState<TimeContext>(() => getTimeContext());
+  const [autoContext] = useState<TimeContext>(() => getTimeContext());
+
+  const context: TimeContext | 'none' = externalContext !== undefined ? externalContext : autoContext;
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchRecommendations(context);
+      const fetchCtx = context === 'none' ? autoContext : context;
+      const data = await fetchRecommendations(fetchCtx);
       setItems(data);
     } catch {
       setError('Không thể tải gợi ý. Thử lại.');
     } finally {
       setLoading(false);
     }
-  }, [context]);
+  }, [context, autoContext]);
 
   useEffect(() => { load(); }, [load]);
 

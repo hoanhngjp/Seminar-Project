@@ -16,6 +16,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — Phase 2 Phase 0: Types & Mock Data (2026-05-15)**
+- `types/domain.ts` — thêm 3 interface mới: `Artist`, `SongDetail extends Song`, `CreatorSongRow`
+- `services/userService.ts` — `UserProfile` có thêm `avatarUrl?`, `preferredGenres?`, `preferredArtists?`
+- `mocks/data.ts` — thêm `MOCK_SONG_DETAIL`, `MOCK_ARTIST`, `MOCK_RELATED_SONGS` (8 bài), `MOCK_CREATOR_SONG_ROWS` (7 hàng), `MOCK_PROFILE`
+- `features/recommendation/hooks/useRecommendations.ts` — hỗ trợ optional `externalContext?: TimeContext | 'none'` (backward compat)
+- `tests/phase0/` — 21 tests mới covering types, mock data shape, và hook behavior
+
 **Frontend — Phase 2 Design Assets (2026-05-14)**
 - `design/phase2/` — 10 Stitch design folders, mỗi folder có `code.html` (HTML prototype) và `screen.png` (screenshot)
 - Covers 5 trang mới: SongDetailPage, ArtistPage, CreatorSongAnalyticsPage, ProfilePage, PreferencesPage

@@ -119,7 +119,7 @@
 
 ### Frontend Phase 2 — New Pages & Components (Stitch designs)
 
-- [ ] Phase 0: Types (SongDetail, Artist, CreatorSongRow) + mock data vào `mocks/data.ts`
+- [X] Phase 0: Types (SongDetail, Artist, CreatorSongRow) + mock data vào `mocks/data.ts` — 21/21 tests xanh (2026-05-15)
 - [ ] Phase 1: EmptyState, SongContextMenu, UserMenuDropdown
 - [ ] Phase 2: TimeRangeSelector, SongStatsCard, DailyListenersChart, HeatmapChart, CreatorSongTable
 - [ ] Phase 3: ContextSelector, RecommendationFeedRow
@@ -175,9 +175,9 @@
 
 - **Service/Task:** Frontend Phase 2 — New Pages & Components (từ Stitch designs)
 - **File plan cần đọc:** `.claude/plan/frontend-phase2-new-pages-components.md`
-- **Checkpoint gần nhất đã pass:** CSS Audit Phase 6 — 314/314 tests xanh (2026-05-14)
-- **Ngày làm việc gần nhất:** 2026-05-14
-- **Tiếp theo:** Implement theo plan Phase 2 — bắt đầu từ Phase 0 (types + mock data)
+- **Checkpoint gần nhất đã pass:** Phase 0 — 335/335 tests xanh (2026-05-15)
+- **Ngày làm việc gần nhất:** 2026-05-15
+- **Tiếp theo:** Phase 1 — Shared UI components (EmptyState, SongContextMenu, UserMenuDropdown)
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

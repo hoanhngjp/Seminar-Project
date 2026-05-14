@@ -13,6 +13,9 @@ export interface UserProfile {
   displayName: string;
   role: string;
   hasCompletedOnboarding: boolean;
+  avatarUrl?: string;
+  preferredGenres?: string[];
+  preferredArtists?: string[];
 }
 
 export const userService = {

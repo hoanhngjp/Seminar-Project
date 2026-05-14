@@ -1,5 +1,23 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / PHASE 2 — PHASE 0: TYPES & MOCK DATA] [DONE]
+
+**Task:** Thêm types mới cho Phase 2 (Artist, SongDetail, CreatorSongRow), mở rộng UserProfile, thêm mock data cho 5 trang mới, và cập nhật `useRecommendations` để hỗ trợ `externalContext`.
+
+**Files đã sửa:**
+- `types/domain.ts` — thêm `Artist`, `SongDetail extends Song`, `CreatorSongRow`
+- `services/userService.ts` — thêm `avatarUrl?`, `preferredGenres?`, `preferredArtists?` vào `UserProfile`
+- `mocks/data.ts` — thêm `MOCK_SONG_DETAIL`, `MOCK_ARTIST`, `MOCK_RELATED_SONGS` (8 items), `MOCK_CREATOR_SONG_ROWS` (7 rows), `MOCK_PROFILE`
+- `features/recommendation/hooks/useRecommendations.ts` — thêm optional `externalContext?: TimeContext | 'none'` parameter; backward compat giữ nguyên
+
+**Key decisions:**
+- `MOCK_SONG_DETAIL.id = 'song-001'` — nhất quán với MOCK_SONGS để navigate giữa pages hoạt động
+- `useRecommendations('none')` → dùng `autoContext` để fetch nhưng trả `context = 'none'` cho UI (ContextSelector "Tất cả")
+- Import types vào `mocks/data.ts` để TypeScript enforce shape
+
+**Tests:** 21/21 Phase 0 tests xanh, 335/335 toàn bộ test suite xanh — không regression.
+
+---
 [2026-05-14] [FRONTEND / PHASE 2 PLANNING — NEW PAGES & COMPONENTS] [PLANNED]
 
 **Task:** Lên plan implement 5 trang mới và ~14 components mới từ Stitch designs (`design/phase2/`).

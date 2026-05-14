@@ -78,3 +78,32 @@ export interface HeatmapDropOff {
   second: number;
   count: number;
 }
+
+export interface Artist {
+  id: string;
+  name: string;
+  avatarUrl?: string;
+  followerCount?: number;
+  songCount?: number;
+  totalPlays?: number;
+}
+
+export interface SongDetail extends Song {
+  releaseDate?: string;
+  language?: string;
+  genreName?: string;
+  moodName?: string;
+  playCount?: number;
+  explainText?: string;
+}
+
+export interface CreatorSongRow {
+  songId: string;
+  title: string;
+  coverUrl?: string;
+  genre?: string;
+  uploadedAt: string;
+  totalPlays: number;
+  uniqueListeners: number;
+  completionRate: number; // 0–1
+}

@@ -1,5 +1,7 @@
 // Mock data — Vietnamese music platform demo data
 // Used exclusively by MSW handlers in mock mode (VITE_MOCK=true)
+import type { SongDetail, Artist, CreatorSongRow, RecommendedSong } from '../types/domain';
+import type { UserProfile } from '../services/userService';
 
 // ─────────────────────────────────────────────
 // Users
@@ -341,6 +343,144 @@ const SILENT_MP3_B64 =
 export function getSilentAudioDataUri() {
   return `data:audio/mpeg;base64,${SILENT_MP3_B64}`;
 }
+
+// ─────────────────────────────────────────────
+// Phase 2 — New Pages mock data
+// ─────────────────────────────────────────────
+
+export const MOCK_SONG_DETAIL: SongDetail = {
+  id: 'song-001',
+  title: 'Lạc Trôi',
+  artist: 'Sơn Tùng M-TP',
+  album: 'M-TP Collection',
+  duration: 245,
+  coverUrl: 'https://picsum.photos/seed/lactroi/300/300',
+  isExplicit: false,
+  genreId: 'genre-vpop',
+  mood: 'chill',
+  genreName: 'V-Pop',
+  moodName: 'Lãng mạn',
+  language: 'Tiếng Việt',
+  releaseDate: '2017-01-01',
+  playCount: 150000000,
+  explainText: 'Gợi ý vì bạn hay nghe V-Pop buổi tối',
+};
+
+export const MOCK_ARTIST: Artist = {
+  id: 'artist-001',
+  name: 'Sơn Tùng M-TP',
+  avatarUrl: 'https://picsum.photos/seed/sontung/400/400',
+  followerCount: 5200000,
+  songCount: 42,
+  totalPlays: 800000000,
+};
+
+export const MOCK_RELATED_SONGS: RecommendedSong[] = [
+  {
+    id: 'song-002', title: 'Có Chắc Yêu Là Đây', artist: 'Sơn Tùng M-TP',
+    album: 'Sky Tour', duration: 228, coverUrl: 'https://picsum.photos/seed/cochac/300/300',
+    isExplicit: false, genreId: 'genre-vpop', mood: 'energetic',
+    reason: { type: 'PREFERENCE', text: 'Cùng nghệ sĩ' },
+  },
+  {
+    id: 'song-004', title: 'Từ Hôm Nay', artist: 'Vũ.',
+    album: 'Vũ. Collection', duration: 255, coverUrl: 'https://picsum.photos/seed/tuhomnay/300/300',
+    isExplicit: false, genreId: 'genre-indie', mood: 'romantic',
+    reason: { type: 'CONTEXT', text: 'Bạn sẽ thích' },
+  },
+  {
+    id: 'song-003', title: 'Chuyến Xe', artist: 'Ngọt',
+    album: 'Nước Bọt', duration: 210, coverUrl: 'https://picsum.photos/seed/chuyenxe/300/300',
+    isExplicit: false, genreId: 'genre-indie', mood: 'melancholic',
+    reason: { type: 'TRENDING', text: 'Đang thịnh hành' },
+  },
+  {
+    id: 'song-005', title: 'Ngày Mai', artist: 'Vũ.',
+    album: 'Vũ. Collection', duration: 198, coverUrl: 'https://picsum.photos/seed/ngaymai/300/300',
+    isExplicit: false, genreId: 'genre-indie', mood: 'hopeful',
+    reason: { type: 'PREFERENCE', text: 'Vì bạn nghe Indie' },
+  },
+  {
+    id: 'song-006', title: 'Đưa Nhau Đi Trốn', artist: 'Đen Vâu ft. Linh Cáo',
+    album: 'Đi Trốn EP', duration: 267, coverUrl: 'https://picsum.photos/seed/ditrong/300/300',
+    isExplicit: false, genreId: 'genre-rap', mood: 'chill',
+    reason: { type: 'TRENDING', text: 'Hot trên mạng xã hội' },
+  },
+  {
+    id: 'song-007', title: 'Mang Tiền Về Cho Mẹ', artist: 'Đen Vâu ft. Nguyên Thảo',
+    album: 'Black Is King', duration: 290, coverUrl: 'https://picsum.photos/seed/mangtienvemee/300/300',
+    isExplicit: false, genreId: 'genre-rap', mood: 'emotional',
+    reason: { type: 'TRENDING', text: 'Top bảng xếp hạng' },
+  },
+  {
+    id: 'song-008', title: 'Là Ai', artist: 'Chillies',
+    album: 'The Mekong Stories', duration: 220, coverUrl: 'https://picsum.photos/seed/laai/300/300',
+    isExplicit: false, genreId: 'genre-indie', mood: 'chill',
+    reason: { type: 'CONTEXT', text: 'Phù hợp buổi tối' },
+  },
+  {
+    id: 'song-001', title: 'Lạc Trôi', artist: 'Sơn Tùng M-TP',
+    album: 'M-TP Collection', duration: 245, coverUrl: 'https://picsum.photos/seed/lactroi/300/300',
+    isExplicit: false, genreId: 'genre-vpop', mood: 'chill',
+    reason: { type: 'PREFERENCE', text: 'Gợi ý từ V-Pop' },
+  },
+];
+
+export const MOCK_CREATOR_SONG_ROWS: CreatorSongRow[] = [
+  {
+    songId: 'song-001', title: 'Lạc Trôi',
+    coverUrl: 'https://picsum.photos/seed/lactroi/300/300',
+    genre: 'V-Pop', uploadedAt: '2024-01-15',
+    totalPlays: 15420, uniqueListeners: 8930, completionRate: 0.72,
+  },
+  {
+    songId: 'song-002', title: 'Có Chắc Yêu Là Đây',
+    coverUrl: 'https://picsum.photos/seed/cochac/300/300',
+    genre: 'V-Pop', uploadedAt: '2024-02-20',
+    totalPlays: 12300, uniqueListeners: 7210, completionRate: 0.68,
+  },
+  {
+    songId: 'song-003', title: 'Chuyến Xe',
+    coverUrl: 'https://picsum.photos/seed/chuyenxe/300/300',
+    genre: 'Indie', uploadedAt: '2024-03-05',
+    totalPlays: 9870, uniqueListeners: 6540, completionRate: 0.81,
+  },
+  {
+    songId: 'song-004', title: 'Từ Hôm Nay',
+    coverUrl: 'https://picsum.photos/seed/tuhomnay/300/300',
+    genre: 'Indie', uploadedAt: '2024-04-10',
+    totalPlays: 7650, uniqueListeners: 5120, completionRate: 0.75,
+  },
+  {
+    songId: 'song-005', title: 'Ngày Mai',
+    coverUrl: 'https://picsum.photos/seed/ngaymai/300/300',
+    genre: 'Indie', uploadedAt: '2024-05-18',
+    totalPlays: 5430, uniqueListeners: 3890, completionRate: 0.63,
+  },
+  {
+    songId: 'song-006', title: 'Đưa Nhau Đi Trốn',
+    coverUrl: 'https://picsum.photos/seed/ditrong/300/300',
+    genre: 'Rap', uploadedAt: '2024-06-22',
+    totalPlays: 4210, uniqueListeners: 3100, completionRate: 0.58,
+  },
+  {
+    songId: 'song-007', title: 'Mang Tiền Về Cho Mẹ',
+    coverUrl: 'https://picsum.photos/seed/mangtienvemee/300/300',
+    genre: 'Rap', uploadedAt: '2024-07-30',
+    totalPlays: 3980, uniqueListeners: 2870, completionRate: 0.77,
+  },
+];
+
+export const MOCK_PROFILE: UserProfile = {
+  userId: 'user-listener-001',
+  displayName: 'Nguyễn Thành Nghiệp',
+  email: 'nghieplasieunhan@gmail.com',
+  role: 'Listener',
+  hasCompletedOnboarding: true,
+  avatarUrl: 'https://picsum.photos/seed/user001/200/200',
+  preferredGenres: ['V-Pop', 'Acoustic', 'Indie'],
+  preferredArtists: ['Sơn Tùng M-TP', 'Hòa Minzy'],
+};
 
 // ─────────────────────────────────────────────
 // Party
