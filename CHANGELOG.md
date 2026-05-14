@@ -16,6 +16,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**DESIGN_STITCH.md — Design System Documentation (2026-05-14)**
+- `DESIGN_STITCH.md` — tài liệu design system đầy đủ: color palette (65 tokens), typography hierarchy (14 roles), border-radius scale, shadow/elevation levels, layout principles, responsive breakpoints, component styling rules (buttons, cards, inputs, navigation), Do's and Don'ts
+- Plan CSS audit: `.claude/plan/tr-c-khi-th-c-task-prancy-lovelace.md` — kế hoạch audit toàn bộ 44 files frontend đối chiếu với DESIGN_STITCH.md, đã xác nhận 6 violations pre-audit (sidebar width, modal radius, card shadow, search input border)
+
+### Added
+
 **Frontend Phase 8 — Notifications + Polish (2026-05-14)**
 - `src/contexts/ToastContext.tsx` — `ToastProvider` (global context) + `useToast()` hook: one-at-a-time toast, cross-page (mounted ở root trong App.tsx), `show(message, variant)` / `hide()` API
 - `src/pages/NotificationsPage.tsx` — trang thông báo tại `/notifications`: header + "Đánh dấu tất cả đã đọc" button, FilterPills, danh sách NotificationRow, skeleton loading, empty state, error state, toast confirm sau mark-all-read

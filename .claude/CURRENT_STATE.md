@@ -160,11 +160,21 @@
 
 ## Đang làm
 
-- **Service/Task:** Frontend Refactor — Spotify Design System (Stitch-based, 13 screens) — **HOÀN THÀNH tất cả 8 phases**
-- **File plan cần đọc:** `.claude/plan/t-t-b-y-gi-m-nh-curried-platypus.md`
+- **Service/Task:** CSS Audit — DESIGN_STITCH.md Compliance (kiểm tra + fix toàn bộ CSS frontend theo design rules)
+- **File plan cần đọc:** `.claude/plan/tr-c-khi-th-c-task-prancy-lovelace.md`
 - **Checkpoint gần nhất đã pass:** Phase 8 hoàn thành — Notifications + Polish — 314/314 tests xanh (2026-05-14)
 - **Ngày làm việc gần nhất:** 2026-05-14
-- **Tiếp theo:** AC checklist W11 — chạy verify_ac.sh, fix FAILs, verify thủ công SKIPs còn lại
+- **Tiếp theo (sau CSS audit):** AC checklist W11 — chạy verify_ac.sh, fix FAILs, verify thủ công SKIPs còn lại
+
+### CSS Audit — Violations đã xác nhận (pre-audit)
+| # | File | Rule vi phạm | Fix |
+|---|------|-------------|-----|
+| V1 | `Sidebar.tsx` | Sidebar width 240px → phải 280px | Đổi `w-[240px]` → `w-[280px]` |
+| V2 | `AppShell.tsx` | ml offset 240px → phải 280px | Đổi `ml-[240px]` → `ml-[280px]` |
+| V3 | `Modal.tsx` | `rounded-lg` (32px) → phải `rounded-[8px]` | Đổi class |
+| V4 | `SongCard.tsx` | Shadow offset 4px → phải 8px | Đổi sang `shadow-level-2` |
+| V5 | `SearchPage.tsx` | Search input dùng border thay inset shadow | Đổi sang `shadow-input-inset` |
+| V6 | `tailwind.config.ts` | Verify shadow tokens đúng spec | Đối chiếu + fix |
 
 ---
 
