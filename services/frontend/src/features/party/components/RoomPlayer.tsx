@@ -39,7 +39,7 @@ export default function RoomPlayer({
         <img
           src={song.coverUrl ?? `https://picsum.photos/seed/${song.id}/280/280`}
           alt={`Ảnh bìa ${song.title}`}
-          className="w-[280px] h-[280px] object-cover rounded-[8px] shadow-[rgba(0,0,0,0.5)_0px_8px_24px] relative z-10 transition-transform duration-300 group-hover:scale-[1.02]"
+          className="w-[280px] h-[280px] object-cover rounded-[8px] shadow-level-3 relative z-10 transition-transform duration-300 group-hover:scale-[1.02]"
         />
       </div>
 
@@ -79,7 +79,7 @@ export default function RoomPlayer({
 
         {/* LIVE badge */}
         <div className="absolute -right-2 top-0 -translate-y-full pb-1">
-          <span className="bg-negative text-near-black text-[9px] font-bold px-1.5 py-0.5 rounded-sm tracking-widest uppercase animate-pulse">
+          <span className="bg-negative text-near-black text-micro font-bold px-1.5 py-0.5 rounded-sm tracking-widest uppercase animate-pulse">
             LIVE
           </span>
         </div>

@@ -64,7 +64,7 @@ export default function CreateRoomModal({ onClose, onCreated, onSwitchToJoin }: 
       aria-label="Tạo phòng nghe nhạc"
     >
       {/* Modal container */}
-      <div className="w-full max-w-[480px] bg-dark-surface rounded-[8px] shadow-[rgba(0,0,0,0.5)_0px_8px_24px] flex flex-col relative overflow-hidden z-50">
+      <div className="w-full max-w-[480px] bg-dark-surface rounded-[8px] shadow-level-3 flex flex-col relative overflow-hidden z-50">
 
         {/* Header */}
         <div className="flex items-center justify-between p-lg pb-md border-b border-border-muted/30">
@@ -130,7 +130,7 @@ export default function CreateRoomModal({ onClose, onCreated, onSwitchToJoin }: 
                     role="option"
                     aria-selected={false}
                     onClick={() => setSelectedSong(song)}
-                    className="flex items-center gap-md p-sm rounded-[4px] hover:bg-[#282828] transition-colors w-full text-left group"
+                    className="flex items-center gap-md p-sm rounded-[4px] hover:bg-mid-card transition-colors w-full text-left group"
                   >
                     <span className="font-micro text-micro text-text-secondary w-4 text-center">
                       {idx + 1}
@@ -165,7 +165,7 @@ export default function CreateRoomModal({ onClose, onCreated, onSwitchToJoin }: 
           <button
             onClick={handleCreate}
             disabled={loading}
-            className="w-full h-12 bg-spotify-green text-near-black rounded-full font-button-uppercase text-button-uppercase hover:bg-[#34e36a] transition-colors flex items-center justify-center tracking-[1.4px] disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full h-12 bg-spotify-green text-near-black rounded-full font-button-uppercase text-button-uppercase hover:brightness-110 transition-all flex items-center justify-center tracking-[1.4px] disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="material-symbols-outlined animate-spin text-[20px]">refresh</span>

@@ -1,5 +1,26 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-14] [FRONTEND / CSS AUDIT PHASE 5 — LISTENING PARTY] [DONE]
+
+**Task:** Audit và fix 6 Listening Party files theo DESIGN_STITCH.md rules.
+
+**Clean (không cần sửa):** PartyLandingPage.tsx ✅, PartyRoomPage.tsx ✅
+
+**Violations đã fix (7):**
+1. `CreateRoomModal.tsx` — modal shadow: `shadow-[rgba(0,0,0,0.5)_0px_8px_24px]` → `shadow-level-3` ✅
+2. `CreateRoomModal.tsx` — song row hover: `hover:bg-[#282828]` → `hover:bg-mid-card` ✅
+3. `CreateRoomModal.tsx` — CTA button hover: `hover:bg-[#34e36a]` → `hover:brightness-110` ✅
+4. `RoomPlayer.tsx` — album art shadow: `shadow-[rgba(0,0,0,0.5)_0px_8px_24px]` → `shadow-level-3` ✅
+5. `RoomPlayer.tsx` — LIVE badge: `text-[9px]` (below 10px minimum) → `text-micro` ✅
+6. `HostControls.tsx` — play button shadow: `shadow-[rgba(0,0,0,0.3)_0px_8px_8px]` → `shadow-level-2` ✅
+7. `MemberList.tsx` — container shadow: `shadow-[rgba(0,0,0,0.3)_0px_8px_8px]` → `shadow-level-2` ✅
+
+**Notable:** LIVE badge `text-[9px]` was below the 10px minimum font size rule — replaced with `text-micro` token (10px).
+
+**Tests:** 314/314 xanh — không regression.
+**Tiếp theo:** CSS Audit Phase 6 — Notifications & Creator Features (4 files).
+
+---
 [2026-05-14] [FRONTEND / CSS AUDIT PHASE 4 — CORE APP PAGES] [DONE]
 
 **Task:** Audit và fix 5 Core App Pages theo DESIGN_STITCH.md rules.

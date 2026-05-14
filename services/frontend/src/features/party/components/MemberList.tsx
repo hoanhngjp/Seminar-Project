@@ -11,7 +11,7 @@ export default function MemberList({ members, currentUserId, onInvite }: Props) 
   const others  = members.filter((m) => !m.isHost);
 
   return (
-    <div className="bg-dark-surface rounded-[8px] p-6 shadow-[rgba(0,0,0,0.3)_0px_8px_8px] border border-transparent h-full flex flex-col relative overflow-hidden">
+    <div className="bg-dark-surface rounded-[8px] p-6 shadow-level-2 border border-transparent h-full flex flex-col relative overflow-hidden">
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-dark-surface to-near-black opacity-50 z-0 pointer-events-none" />
 

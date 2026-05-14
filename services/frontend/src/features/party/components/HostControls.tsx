@@ -36,7 +36,7 @@ export default function HostControls({ isHost, isPlaying, onPlay, onPause, onNex
           aria-label={isPlaying ? 'Tạm dừng' : 'Phát'}
           onClick={handlePlayPause}
           disabled={!isHost}
-          className="w-[56px] h-[56px] rounded-full bg-spotify-green flex items-center justify-center hover:scale-105 transition-transform shadow-[rgba(0,0,0,0.3)_0px_8px_8px] disabled:opacity-40 disabled:cursor-default disabled:hover:scale-100"
+          className="w-[56px] h-[56px] rounded-full bg-spotify-green flex items-center justify-center hover:scale-105 transition-transform shadow-level-2 disabled:opacity-40 disabled:cursor-default disabled:hover:scale-100"
         >
           <span
             className="material-symbols-outlined text-[36px] text-near-black"

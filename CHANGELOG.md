@@ -27,6 +27,14 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**Frontend — CSS Audit Phase 5: Listening Party (2026-05-14)**
+- `CreateRoomModal.tsx` — modal container shadow arbitrary → `shadow-level-3`; song row `hover:bg-[#282828]` → `hover:bg-mid-card`; CTA `hover:bg-[#34e36a]` → `hover:brightness-110`
+- `RoomPlayer.tsx` — album art shadow arbitrary → `shadow-level-3`; LIVE badge `text-[9px]` (below 10px min) → `text-micro`
+- `HostControls.tsx` — play button shadow arbitrary → `shadow-level-2`
+- `MemberList.tsx` — container shadow arbitrary → `shadow-level-2`
+- `PartyLandingPage.tsx`, `PartyRoomPage.tsx` — verified clean, không có violation
+- **Total: 314/314 tests xanh, không regression**
+
 **Frontend — CSS Audit Phase 2: Foundation Components (2026-05-14)**
 - `tailwind.config.ts` — thêm token `shadow-footer: rgba(0,0,0,0.5) 0px -4px 12px 0px` cho upward shadow của footer/nav bar
 - `Input.tsx` — `input-inset` (custom CSS class) → `shadow-input-inset` (Tailwind token) cho consistency với design system
