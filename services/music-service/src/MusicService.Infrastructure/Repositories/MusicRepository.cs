@@ -35,7 +35,7 @@ public class MusicRepository : IMusicRepository
         => await _context.Songs
             .Include(s => s.Artist)
             .Include(s => s.Album)
-            .Include(s => s.SongGenres)
+            .Include(s => s.SongGenres).ThenInclude(sg => sg.Genre)
             .FirstOrDefaultAsync(s => s.Id == songId, cancellationToken);
 
     public async Task<List<Song>> GetSongsByIdsAsync(IEnumerable<Guid> songIds, CancellationToken cancellationToken = default)

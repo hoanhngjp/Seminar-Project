@@ -163,7 +163,12 @@ public class SongService : ISongService
         song.DurationSec,
         song.CoverImageUrl,
         song.IsExplicit,
-        song.CreatedAt
+        song.CreatedAt,
+        song.SongGenres.FirstOrDefault()?.Genre?.Name,
+        song.Mood,
+        song.Language,
+        song.Album?.ReleaseDate,
+        song.PlayCount
     );
 
     private static void ValidateFile(Stream stream, long length, string contentType)

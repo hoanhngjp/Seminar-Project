@@ -1,5 +1,43 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [BACKEND / PHASE 3 — MUSIC SERVICE ALIGNMENT] [DONE]
+
+**Task:** Enrich Music Service để FE nhận đủ fields: `genreName`, `moodName`, `language`, `releaseDate`, `playCount`.
+
+**Changes:**
+- `Song.cs` — thêm `Mood` property (`string?`)
+- `MusicDbContext.cs` — `entity.Property(e => e.Mood).HasMaxLength(50)`
+- Migration `20260516000000_AddMoodToSongs` — `ALTER TABLE songs ADD COLUMN "Mood" VARCHAR(50)` + Designer.cs
+- `MusicDbContextModelSnapshot.cs` — update snapshot để khớp migration mới
+- `SongResponseDto.cs` — thêm 5 fields: `GenreName`, `MoodName`, `Language`, `ReleaseDate`, `PlayCount`
+- `MusicRepository.cs` — `GetSongByIdAsync`: thêm `.ThenInclude(sg => sg.Genre)` để load genre name (trước đây `sg.Genre` luôn null)
+- `SongService.cs` — `MapToResponseDto` map 5 fields mới từ entity sang DTO
+- `SongServiceGetTests.cs` — fix `BuildSongDto` (thêm 5 null/0 args), thêm 3 tests: `GetSong_WhenSongHasGenreAndMood_MapsFieldsCorrectly`, `GetSong_WhenSongHasAlbumWithReleaseDate_MapsReleaseDateFromAlbum`, `GetSong_WhenSongHasNoGenres_GenreNameIsNull`
+- `infra/seed/seed.sh` — update header comment ghi rõ prerequisite Phase 2B + 3 phải done trước khi chạy
+
+**Results:** 10/10 unit tests xanh (7 cũ + 3 mới). Migration đã apply thành công vào music_db (confirmed từ seed.sh output).
+
+---
+[2026-05-16] [INFRA / DOCKER COMPOSE CONNECTION STRING KEY MISMATCH] [DONE]
+
+**Task:** Fix `Npgsql.NpgsqlException: Failed to connect to 127.0.0.1:5434` trong smartmusic-music-service (và tiềm năng auth-service, user-service).
+
+**Root cause:** docker-compose.yml pass env var với key sai — ASP.NET Core không nhận ra → fallback về `appsettings.Development.json` (có `localhost:5434`) → container dùng localhost thay vì Docker internal hostname `postgres`.
+
+| Service | Code đọc | docker-compose cũ | docker-compose mới |
+|---|---|---|---|
+| auth-service | `ConnectionStrings:AuthDb` | `ConnectionStrings__PostgreSQL` | `ConnectionStrings__AuthDb` |
+| user-service | `ConnectionStrings:Postgres` | `ConnectionStrings__PostgreSQL` | `ConnectionStrings__Postgres` |
+| music-service | `ConnectionStrings:DefaultConnection` | `ConnectionStrings__PostgreSQL` | `ConnectionStrings__DefaultConnection` |
+
+**Fix:** `infra/docker-compose.yml` — đổi 3 key env vars cho 3 services trên.
+
+**Kết quả:** Services trong Docker sẽ đọc `Host=postgres;Port=5432` từ env var thay vì `localhost:5434` từ appsettings.
+
+**Side fix:** `appsettings.Development.json` của auth, user, music service — đổi từ `Port=5432;Username=postgres;Password=4L27hN04@` → `Port=5434;Username=smartmusic;Password=changeme_local` để `dotnet ef` và `seed.sh` chạy từ host connect được.
+- `infra/.env` và `infra/.env.example` — thêm `POSTGRES_PORT=5434` để seed.sh psql health check dùng đúng port.
+
+---
 [2026-05-16] [INFRA / POSTGRES PORT CONFLICT] [DONE]
 
 **Task:** Fix pgAdmin không kết nối được PostgreSQL Docker container.

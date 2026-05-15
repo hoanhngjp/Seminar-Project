@@ -69,6 +69,7 @@ public class MusicDbContext : DbContext
             entity.Property(e => e.Title).IsRequired().HasMaxLength(255);
             entity.Property(e => e.S3AudioKey).IsRequired();
             entity.Property(e => e.Language).HasMaxLength(10);
+            entity.Property(e => e.Mood).HasMaxLength(50);
             
             entity.HasOne(e => e.Artist)
                 .WithMany(a => a.Songs)

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# Smart Music Platform — Master Seed Script (Phase 1)
+# Smart Music Platform — Master Seed Script
 # ============================================================
 # Chạy từ repo root:
 #   bash infra/seed/seed.sh
@@ -9,11 +9,14 @@
 #   - Docker Compose đang up (infra containers healthy)
 #   - dotnet CLI có trên PATH (để chạy EF migrations)
 #   - psql CLI có trên PATH hoặc chạy qua docker exec
+#   - Phase 2A+2B (Auth/User) và Phase 3 (Music) đã build xong
+#     (các migrations mới phải được compile vào dll trước khi chạy)
 #
 # Thứ tự:
 #   1. Wait for PostgreSQL healthy
-#   2. Run EF migrations (auth, user, music, streaming,
-#      listening-party, notification services)
+#   2. Run EF migrations (auth, user, music)
+#      — bao gồm: FixOAuthAndPreferencesSchema (Phase 2B)
+#                  AddMoodToSongs (Phase 3)
 #   3. Seed music_db + user_db data (SeedData.sql)
 #   4. Seed Elasticsearch index + documents
 #   5. Seed Redis trending data

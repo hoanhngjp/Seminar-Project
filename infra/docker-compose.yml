@@ -260,7 +260,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=80
-      - ConnectionStrings__PostgreSQL=${AUTH_DB_CONNECTION}
+      - ConnectionStrings__AuthDb=${AUTH_DB_CONNECTION}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Jwt__SecretKey=${JWT_SECRET}
       - Jwt__AccessTokenExpiry=${JWT_ACCESS_TOKEN_EXPIRY}
@@ -290,7 +290,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=80
-      - ConnectionStrings__PostgreSQL=${USER_DB_CONNECTION}
+      - ConnectionStrings__Postgres=${USER_DB_CONNECTION}
       - ConnectionStrings__MongoDB=${MONGO_URI}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
@@ -321,7 +321,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=80
-      - ConnectionStrings__PostgreSQL=${MUSIC_DB_CONNECTION}
+      - ConnectionStrings__DefaultConnection=${MUSIC_DB_CONNECTION}
       - ConnectionStrings__MongoDB=${MONGO_URI}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}

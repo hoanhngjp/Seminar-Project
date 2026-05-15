@@ -209,6 +209,96 @@ public class SongServiceGetTests
         180,
         null,
         false,
-        DateTimeOffset.UtcNow
+        DateTimeOffset.UtcNow,
+        null,
+        null,
+        null,
+        null,
+        0
     );
+
+    // ----------------------------------------------------------------
+    // MapToResponseDto — new fields (GenreName, MoodName, Language, ReleaseDate, PlayCount)
+    // ----------------------------------------------------------------
+
+    [Fact]
+    public async Task GetSong_WhenSongHasGenreAndMood_MapsFieldsCorrectly()
+    {
+        // Arrange: song with genre "Pop", mood "Acoustic", language "vi", playCount 42
+        var songId = Guid.NewGuid();
+        var genreId = Guid.NewGuid();
+        var song = BuildSong(songId);
+        song.Mood = "Acoustic";
+        song.Language = "vi";
+        song.PlayCount = 42;
+        song.SongGenres = new List<SongGenre>
+        {
+            new() { SongId = songId, GenreId = genreId, Genre = new Genre { Id = genreId, Name = "Pop", Slug = "pop" } }
+        };
+
+        _cacheMock.Setup(c => c.GetAsync(songId, It.IsAny<CancellationToken>()))
+                  .ReturnsAsync((SongResponseDto?)null);
+        _repoMock.Setup(r => r.GetSongByIdAsync(songId, It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(song);
+
+        // Act
+        var (result, _) = await _sut.GetSongAsync(songId);
+
+        // Assert: all new fields are correctly mapped
+        result.GenreName.Should().Be("Pop");
+        result.MoodName.Should().Be("Acoustic");
+        result.Language.Should().Be("vi");
+        result.PlayCount.Should().Be(42);
+        result.ReleaseDate.Should().BeNull(); // no album
+    }
+
+    [Fact]
+    public async Task GetSong_WhenSongHasAlbumWithReleaseDate_MapsReleaseDateFromAlbum()
+    {
+        // Arrange: song with album that has a release date
+        var songId = Guid.NewGuid();
+        var albumId = Guid.NewGuid();
+        var releaseDate = new DateOnly(2024, 3, 15);
+        var song = BuildSong(songId);
+        song.AlbumId = albumId;
+        song.Album = new Album
+        {
+            Id = albumId,
+            ArtistId = song.ArtistId,
+            Title = "Test Album",
+            ReleaseDate = releaseDate
+        };
+
+        _cacheMock.Setup(c => c.GetAsync(songId, It.IsAny<CancellationToken>()))
+                  .ReturnsAsync((SongResponseDto?)null);
+        _repoMock.Setup(r => r.GetSongByIdAsync(songId, It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(song);
+
+        // Act
+        var (result, _) = await _sut.GetSongAsync(songId);
+
+        // Assert
+        result.ReleaseDate.Should().Be(releaseDate);
+    }
+
+    [Fact]
+    public async Task GetSong_WhenSongHasNoGenres_GenreNameIsNull()
+    {
+        // Arrange: song with empty SongGenres
+        var songId = Guid.NewGuid();
+        var song = BuildSong(songId);
+        song.SongGenres = new List<SongGenre>();
+
+        _cacheMock.Setup(c => c.GetAsync(songId, It.IsAny<CancellationToken>()))
+                  .ReturnsAsync((SongResponseDto?)null);
+        _repoMock.Setup(r => r.GetSongByIdAsync(songId, It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(song);
+
+        // Act
+        var (result, _) = await _sut.GetSongAsync(songId);
+
+        // Assert
+        result.GenreName.Should().BeNull();
+        result.PlayCount.Should().Be(0);
+    }
 }

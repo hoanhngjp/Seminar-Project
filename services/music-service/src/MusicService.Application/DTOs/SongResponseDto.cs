@@ -11,7 +11,12 @@ public record SongResponseDto(
     int DurationSec,
     string? CoverUrl,
     bool IsExplicit,
-    DateTimeOffset CreatedAt
+    DateTimeOffset CreatedAt,
+    string? GenreName,
+    string? MoodName,
+    string? Language,
+    DateOnly? ReleaseDate,
+    long PlayCount
 );
 
 public record ArtistSummaryDto(Guid Id, string StageName);

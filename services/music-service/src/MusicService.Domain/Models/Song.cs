@@ -17,6 +17,7 @@ public class Song
     public string? CoverImageUrl { get; set; }
     public string? Lyrics { get; set; }
     public string? Language { get; set; }
+    public string? Mood { get; set; }
     public bool IsExplicit { get; set; } = false;
     public bool IsPublished { get; set; } = false;
     public long PlayCount { get; set; } = 0;

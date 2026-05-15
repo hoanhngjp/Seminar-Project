@@ -160,7 +160,7 @@
 - [X] Phase 1: Infrastructure setup — postgres init script, SeedData.sql, seed.sh, docker-compose GCS env vars, music-service auto-migrate (2026-05-15)
 - [X] Phase 2A: Auth Service — accept `email` field + Google OAuth (`POST /api/v1/auth/google`, `Google.Apis.Auth` verify, auto-register)
 - [X] Phase 2B: User Service — migration (preferred_artists nullable password_hash) + update DTOs + JOIN preferences
-- [ ] Phase 3: Music Service — migration (mood column) + enrich SongResponseDto + GCS verify
+- [X] Phase 3: Music Service — migration (mood column) + enrich SongResponseDto + GCS verify
 - [ ] Phase 4: Streaming Service — verify GCS pre-signed URL + field name alignment
 - [ ] Phase 5: Search Service — verify SearchResult DTO + seed Elasticsearch
 - [ ] Phase 6: Analytics Service — HeatmapDTO `skipRate`→`count`, StatsDTO `DailyPlays`→`DailyListeners`
@@ -186,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Backend API Alignment — Phase 3 (Music) + Phase 6 (Analytics) + Phase 7 (Notification) + Phase 8 (Party)
+- **Service/Task:** Backend API Alignment — Phase 6 (Analytics) + Phase 7 (Notification) + Phase 8 (Party)
 - **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
-- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 2A+2B hoàn thành (2026-05-15) — Auth service build OK, 14/14 unit tests xanh, frontend 698/698 xanh
-- **Ngày làm việc gần nhất:** 2026-05-15
-- **Tiếp theo:** Group A song song — Phase 3 (Music mood column + SongResponseDto), Phase 6 (Analytics DTO fix), Phase 7 (Notification DTO fix), Phase 8 (Party WS alias)
+- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 3 hoàn thành (2026-05-16) — Music Service 10/10 tests xanh, migration AddMoodToSongs applied, docker-compose connection string keys fixed
+- **Ngày làm việc gần nhất:** 2026-05-16
+- **Tiếp theo:** Phase 6 (Analytics DTO fix), Phase 7 (Notification DTO fix), Phase 8 (Party WS alias) — chạy song song
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |
@@ -245,6 +245,8 @@
 | 2026-05-14 | Frontend | MobileNav `fixed bottom-0 lg:hidden z-[60]`. BottomPlayerBar đổi sang `bottom-14 lg:bottom-0` để nhường chỗ cho MobileNav trên mobile. AppShell main padding: `pb-[128px] lg:pb-[72px]`. |
 | 2026-05-14 | Frontend | Mock handler `GET /api/v1/notifications/unread` giờ trả ALL notifications (read + unread) + `totalUnread` count. NotificationsPage dùng toàn bộ items; Sidebar dùng `totalUnread` cho dot indicator. |
 | 2026-05-16 | Infra | `docker-compose.yml` postgres port đổi từ `5432` → `5434` (host) vì native Windows PostgreSQL chiếm cả 5432 lẫn 5433. pgAdmin kết nối: `localhost:5434`. C# services không bị ảnh hưởng (dùng Docker internal network). |
+| 2026-05-16 | docker-compose | Connection string env var key phải khớp với key C# đọc: `ConnectionStrings__AuthDb` (auth), `ConnectionStrings__Postgres` (user), `ConnectionStrings__DefaultConnection` (music). Dùng sai key → service fallback về appsettings.Development.json → connect localhost thay vì Docker internal host. |
+| 2026-05-16 | appsettings.Development.json | Credentials cho local dev (dotnet ef, seed.sh): `Host=localhost;Port=5434;Username=smartmusic;Password=changeme_local`. Credentials này CHỈ dùng khi chạy từ host — Docker services đọc từ env var docker-compose. |
 
 ---
 

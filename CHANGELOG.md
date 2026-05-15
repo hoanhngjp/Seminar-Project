@@ -16,6 +16,21 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Backend — API Alignment Phase 3: Music Service (2026-05-16)**
+- `Song.cs` — thêm `Mood` property (`string?`, max 50 chars)
+- Migration `20260516000000_AddMoodToSongs` — thêm cột `mood VARCHAR(50)` vào bảng `songs`
+- `SongResponseDto` — thêm 5 fields mới: `GenreName`, `MoodName`, `Language`, `ReleaseDate`, `PlayCount` để FE nhận đủ data hiển thị song card
+- `MusicRepository.GetSongByIdAsync` — thêm `.ThenInclude(sg => sg.Genre)` để load tên genre thực sự (trước đây luôn null)
+- 3 unit tests mới cho `MapToResponseDto`: genre/mood mapping, album release date, no-genre fallback — **10/10 xanh**
+
+### Changed
+
+**Infra — Fix docker-compose connection string key mismatch (2026-05-16)**
+- `infra/docker-compose.yml` — đổi env var key cho 3 services để khớp với key code C# đang đọc: `ConnectionStrings__AuthDb` (auth), `ConnectionStrings__Postgres` (user), `ConnectionStrings__DefaultConnection` (music). Trước đây cả 3 đều dùng `ConnectionStrings__PostgreSQL` dẫn đến services fallback về `appsettings.Development.json` với `localhost:5434` → connection refused trong Docker
+- `appsettings.Development.json` (auth, user, music) — đổi credentials từ `postgres/4L27hN04@:5432` → `smartmusic/changeme_local:5434` để `dotnet ef` và `seed.sh` từ host connect đúng vào Docker postgres
+- `infra/.env` + `infra/.env.example` — thêm `POSTGRES_PORT=5434` để seed.sh psql health check dùng đúng host port
+- `infra/seed/seed.sh` — update header comment ghi rõ prerequisite phases phải done trước khi chạy
+
 **Backend — API Alignment Phase 1: Infrastructure Setup (2026-05-15)**
 - `infra/postgres/init/01_create_databases.sql` — tự động tạo 7 databases khi postgres container khởi động lần đầu (auth_db, user_db, music_db, streaming_db, listening_party_db, analytics_db, notification_db)
 - `infra/seed/SeedData.sql` — seed 9 genres, 1 artist, 8 songs với GCS audio keys, listener preferences cho music_db + user_db
