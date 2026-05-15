@@ -1,5 +1,19 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [BACKEND / PHASE 7 — NOTIFICATION SERVICE DTO ALIGNMENT] [DONE]
+
+**Task:** Remap `NotificationDto` để FE nhận đúng schema `{notificationId, message, read, createdAt, type?}`.
+
+**Root cause:** BE trả `{Id, Type, Status, Title, Body, ThumbnailUrl, ArtistId, SongId}` — FE chỉ cần 5 fields với tên khác hoàn toàn.
+
+**Changes:**
+- `NotificationDto.cs` — đổi record sang 5 fields: `NotificationId`, `Message`, `Read` (bool), `CreatedAt`, `Type` (nullable string)
+- `NotificationService.cs` — cập nhật mapper: `Read = n.Status == NotificationStatus.Read`; `Type` switch `NewRelease`→`"new_release"`, `System`→`"system"`
+- `NotificationServiceTests.cs` — fix assertions `Id`→`NotificationId`, `Status`→`Read`, `NEWRELEASE`→`"new_release"`, thêm assert `Message`
+
+**Results:** 18/18 unit tests xanh.
+
+---
 [2026-05-16] [BACKEND / PHASE 6 — ANALYTICS SERVICE DTO ALIGNMENT] [DONE]
 
 **Task:** Align Analytics Service DTOs với schema FE cần: `count` thay `skipRate`, `dailyListeners` thay `dailyPlays`.

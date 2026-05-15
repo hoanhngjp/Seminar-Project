@@ -22,15 +22,16 @@ public class NotificationService(
         var (items, nextCursor) = await repo.GetUnreadAsync(userId, limit, cursor, ct);
 
         var dtos = items.Select(n => new NotificationDto(
-            Id: n.Id,
-            Type: n.Type.ToString().ToUpperInvariant(),
-            Status: n.Status.ToString().ToUpperInvariant(),
-            Title: n.Title,
-            Body: n.Body,
-            ThumbnailUrl: n.ThumbnailUrl,
-            ArtistId: n.ArtistId?.ToString(),
-            SongId: n.SongId?.ToString(),
-            CreatedAt: n.CreatedAt
+            NotificationId: n.Id,
+            Message: n.Body,
+            Read: n.Status == NotificationStatus.Read,
+            CreatedAt: n.CreatedAt,
+            Type: n.Type switch
+            {
+                NotificationType.NewRelease => "new_release",
+                NotificationType.System => "system",
+                _ => null
+            }
         )).ToList();
 
         return new GetUnreadResponse(dtos, nextCursor, nextCursor is not null);

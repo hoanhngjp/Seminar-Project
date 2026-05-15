@@ -1,15 +1,11 @@
 namespace NotificationService.Application.DTOs;
 
 public record NotificationDto(
-    string Id,
-    string Type,
-    string Status,
-    string Title,
-    string Body,
-    string? ThumbnailUrl,
-    string? ArtistId,
-    string? SongId,
-    DateTime CreatedAt
+    string NotificationId,
+    string Message,
+    bool Read,
+    DateTime CreatedAt,
+    string? Type
 );
 
 public record GetUnreadResponse(

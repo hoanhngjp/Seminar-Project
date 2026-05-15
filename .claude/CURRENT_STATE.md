@@ -164,7 +164,7 @@
 - [ ] Phase 4: Streaming Service — verify GCS pre-signed URL + field name alignment
 - [ ] Phase 5: Search Service — verify SearchResult DTO + seed Elasticsearch
 - [X] Phase 6: Analytics Service — HeatmapDTO `skipRate`→`count`, StatsDTO `DailyPlays`→`DailyListeners` — 32/32 tests xanh (2026-05-16)
-- [ ] Phase 7: Notification Service — remap NotificationDto fields
+- [X] Phase 7: Notification Service — remap NotificationDto fields — 18/18 tests xanh (2026-05-16)
 - [ ] Phase 8: Listening Party — API Gateway WS route alias + verify SignalR events
 - [ ] Phase 9: Recommendation Service — seed Redis trending + verify internal Music call
 
@@ -186,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Backend API Alignment — Phase 7 (Notification) + Phase 8 (Party WS)
+- **Service/Task:** Backend API Alignment — Phase 8 (Party WS)
 - **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
-- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 6 hoàn thành (2026-05-16) — Analytics Service 32/32 tests xanh
+- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 7 hoàn thành (2026-05-16) — Notification Service 18/18 tests xanh
 - **Ngày làm việc gần nhất:** 2026-05-16
-- **Tiếp theo:** Phase 7 (Notification DTO fix), Phase 8 (Party WS — Option B: update FE useListeningParty URL)
+- **Tiếp theo:** Phase 8 (Party WS — Option B: update FE useListeningParty URL)
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

@@ -52,9 +52,10 @@ public class NotificationServiceTests
         var result = await _sut.GetUnreadAsync(userId, 10, null, CancellationToken.None);
 
         result.Items.Should().HaveCount(1);
-        result.Items[0].Id.Should().Be("507f1f77bcf86cd799439011");
-        result.Items[0].Type.Should().Be("NEWRELEASE");
-        result.Items[0].Status.Should().Be("DELIVERED");
+        result.Items[0].NotificationId.Should().Be("507f1f77bcf86cd799439011");
+        result.Items[0].Message.Should().Be("Test Body");
+        result.Items[0].Type.Should().Be("new_release");
+        result.Items[0].Read.Should().BeFalse();
         result.HasMore.Should().BeFalse();
         result.NextCursor.Should().BeNull();
     }

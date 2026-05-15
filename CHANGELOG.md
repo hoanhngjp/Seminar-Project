@@ -16,6 +16,11 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Backend — API Alignment Phase 7: Notification Service DTO Fix (2026-05-16)**
+- `NotificationDto` — remap hoàn toàn để khớp FE schema `{notificationId, message, read, createdAt, type?}`: `Id`→`NotificationId`, `Body`→`Message`, `Status==Read`→`Read` (bool), `Type` enum → `"new_release"`/`"system"` lowercase; bỏ `Title`, `ThumbnailUrl`, `ArtistId`, `SongId` (FE không dùng)
+- `NotificationService.GetUnreadAsync` — cập nhật mapper theo DTO mới; `type` dùng switch expression chuẩn lowercase
+- **18/18 unit tests xanh** (1 test assertion cập nhật: `Id`→`NotificationId`, `Status`→`Read`, `Type`→`"new_release"`)
+
 **Backend — API Alignment Phase 6: Analytics Service DTO Fix (2026-05-16)**
 - `HeatmapPoint` — đổi `SkipRate: double` → `Count: int` để khớp FE type `{second, count}`
 - `DailyPlay` → `DailyListenerPoint`, field `Plays: long` → `Count: int`; `StatsResponse.DailyPlays` → `DailyListeners` để khớp FE type `dailyListeners[]{date, count}`
