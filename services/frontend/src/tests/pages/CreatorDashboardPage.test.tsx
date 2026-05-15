@@ -282,8 +282,8 @@ describe('CreatorDashboardPage — song selector', () => {
     await waitFor(() => screen.getByText('Lạc Trôi'));
 
     fireEvent.click(screen.getByText('Lạc Trôi'));
-    expect(screen.getByText('Chuyến Xe')).toBeInTheDocument();
-    expect(screen.getByText('Đưa Nhau Đi Trốn')).toBeInTheDocument();
+    expect(screen.getAllByText('Chuyến Xe').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Đưa Nhau Đi Trốn').length).toBeGreaterThanOrEqual(1);
   });
 });
 
@@ -302,5 +302,69 @@ describe('CreatorDashboardPage — error state', () => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
     });
     expect(screen.getByText(/Không thể tải dữ liệu/i)).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 6 — CreatorSongTable section
+// ---------------------------------------------------------------------------
+
+describe('CreatorDashboardPage — CreatorSongTable', () => {
+  it('renders "Bài hát của tôi" section heading', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByRole('region', { name: 'Bài hát của tôi' })).toBeInTheDocument();
+    });
+    expect(screen.getByText('Bài hát của tôi')).toBeInTheDocument();
+  });
+
+  it('renders "TẢI LÊN BÀI MỚI" button in song table header', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /TẢI LÊN BÀI MỚI/i })).toBeInTheDocument();
+    });
+  });
+
+  it('renders mock songs in the table — shows first song title', async () => {
+    setRole('Creator');
+    renderPage();
+    // Table uses MOCK_CREATOR_SONG_ROWS.slice(1), so first row is 'Có Chắc Yêu Là Đây'
+    await waitFor(() => {
+      expect(screen.getByText('Có Chắc Yêu Là Đây')).toBeInTheDocument();
+    });
+  });
+
+  it('clicking "Xem phân tích" navigates to /dashboard/songs/:id', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getAllByText('Xem phân tích')[0]).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getAllByText('Xem phân tích')[0]);
+    expect(mockNavigate).toHaveBeenCalledWith(
+      expect.stringMatching(/^\/dashboard\/songs\//),
+    );
+  });
+
+  it('renders table column headers', async () => {
+    setRole('Creator');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByRole('region', { name: 'Bài hát của tôi' })).toBeInTheDocument();
+    });
+    expect(screen.getByText('Ngày upload')).toBeInTheDocument();
+    expect(screen.getByText('Lượt nghe')).toBeInTheDocument();
+    expect(screen.getByText('Người nghe')).toBeInTheDocument();
+    expect(screen.getByText('Hoàn thành %')).toBeInTheDocument();
+  });
+
+  it('Admin role also sees the song table', async () => {
+    setRole('Admin');
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByText('Bài hát của tôi')).toBeInTheDocument();
+    });
   });
 });

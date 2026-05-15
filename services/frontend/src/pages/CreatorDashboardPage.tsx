@@ -8,6 +8,8 @@ import TimeRangeSelector from '../features/creator/components/TimeRangeSelector'
 import SongStatsCard from '../features/creator/components/SongStatsCard';
 import DailyListenersChart from '../features/creator/components/DailyListenersChart';
 import HeatmapChart from '../features/creator/components/HeatmapChart';
+import CreatorSongTable from '../features/creator/components/CreatorSongTable';
+import { MOCK_CREATOR_SONG_ROWS } from '../mocks/data';
 
 // ─── Song options (Creator picks which song to inspect) ──────────────────────
 
@@ -277,12 +279,30 @@ export default function CreatorDashboardPage() {
             <DailyListenersChart data={stats.dailyListeners} />
 
             {/* Bar + Donut */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <BarChart data={stats.dailyListeners} />
               <DonutChart completionRate={completionRate} />
             </div>
           </>
         )}
+
+        {/* ── Song Table — always visible for Creator/Admin ── */}
+        <section aria-label="Bài hát của tôi" className="pb-12">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[18px] font-bold text-text-base">Bài hát của tôi</h2>
+            <button
+              onClick={() => navigate('/upload')}
+              className="bg-spotify-green text-near-black rounded-full px-5 py-2 text-[13px] font-bold uppercase tracking-[1.4px] hover:scale-105 transition-transform duration-200"
+            >
+              TẢI LÊN BÀI MỚI
+            </button>
+          </div>
+          <CreatorSongTable
+            rows={MOCK_CREATOR_SONG_ROWS.slice(1)}
+            onViewAnalytics={(id) => navigate(`/dashboard/songs/${id}`)}
+            onUpload={() => navigate('/upload')}
+          />
+        </section>
       </div>
     </AppShell>
   );

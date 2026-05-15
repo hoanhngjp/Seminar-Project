@@ -16,6 +16,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — Phase 2 Phase 6: Enhance HomePage + SearchPage + CreatorDashboardPage (2026-05-15)**
+- `features/search/components/ArtistCard.tsx` (mới) — card nghệ sĩ tròn 100px, floating play button với stopPropagation, click/keyboard → `/artists/:id`, `aria-label` đầy đủ
+- `pages/HomePage.tsx` — tích hợp `ContextSelector` (chip filter sáng/chiều/tối/khuya) + `ContextFeedSection` (danh sách `RecommendationFeedRow`); section feed chỉ hiện khi user chọn context cụ thể
+- `pages/SearchPage.tsx` — thêm filter tabs (Tất cả / Bài hát / Nghệ sĩ) với tablist ARIA, ArtistsRow giờ dùng `ArtistCard`, no-results dùng `EmptyState`
+- `pages/CreatorDashboardPage.tsx` — section "Bài hát của tôi" với `CreatorSongTable` + nút "TẢI LÊN BÀI MỚI" → `/upload`, "Xem phân tích" → `/dashboard/songs/:id`
+- 37 tests mới — **672/672** toàn bộ suite xanh
+
 **Frontend — Phase 2 Phase 5: 5 trang mới (2026-05-15)**
 - `pages/SongDetailPage.tsx` — hero blurred background + gradient overlay, cover art 160px, artist link, actions (Play / Queue / More), metadata grid (genre/mood/language/year/playCount), explainText suggestion card, related songs horizontal scroll
 - `pages/ArtistPage.tsx` — hero banner với circular avatar 120px, stats bar (bài hát/lượt nghe/followers), follow toggle (useState), popular tracks list, Fans Also Like horizontal scroll

@@ -350,3 +350,112 @@ describe('getTimeContext', () => {
     expect(getTimeContext()).toBe('night');
   });
 });
+
+// ---------------------------------------------------------------------------
+// Phase 6 — ContextSelector integration
+// ---------------------------------------------------------------------------
+
+describe('HomePage — ContextSelector', () => {
+  it('renders ContextSelector with "Tất cả" chip', async () => {
+    renderAuthenticated();
+    // ContextSelector renders immediately (no loading dependency)
+    expect(screen.getByRole('button', { name: /🎵 Tất cả/i })).toBeInTheDocument();
+  });
+
+  it('"Tất cả" chip is active by default (aria-pressed=true)', async () => {
+    renderAuthenticated();
+    const chip = screen.getByRole('button', { name: /🎵 Tất cả/i });
+    expect(chip).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('renders all 5 context chips', async () => {
+    renderAuthenticated();
+    const chips = ['🎵 Tất cả', '🌅 Sáng', '☀️ Chiều', '🌙 Tối', '🌃 Khuya'];
+    for (const label of chips) {
+      expect(screen.getByRole('button', { name: label })).toBeInTheDocument();
+    }
+  });
+
+  it('clicking a chip sets it as active (aria-pressed=true)', async () => {
+    renderAuthenticated();
+    const sanghChip = screen.getByRole('button', { name: /🌅 Sáng/i });
+    fireEvent.click(sanghChip);
+    expect(sanghChip).toHaveAttribute('aria-pressed', 'true');
+    // "Tất cả" should no longer be active
+    expect(screen.getByRole('button', { name: /🎵 Tất cả/i })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('only one chip is active at a time', async () => {
+    renderAuthenticated();
+    const toiChip = screen.getByRole('button', { name: /🌙 Tối/i });
+    fireEvent.click(toiChip);
+    const activeChips = screen.getAllByRole('button').filter(
+      (btn) => btn.getAttribute('aria-pressed') === 'true',
+    );
+    // Only chips inside ContextSelector have aria-pressed; filter to those with emoji labels
+    const contextChips = activeChips.filter((btn) =>
+      /[🎵🌅☀️🌙🌃]/.test(btn.textContent ?? ''),
+    );
+    expect(contextChips).toHaveLength(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 6 — Context Feed Row section
+// ---------------------------------------------------------------------------
+
+describe('HomePage — context feed row section', () => {
+  it('renders "Gợi ý cho bạn" section heading after data loads', async () => {
+    renderAuthenticated();
+    // Context feed is only visible after selecting a non-"all" context chip
+    await waitFor(() => screen.getByRole('button', { name: /🌅 Sáng/i }));
+    fireEvent.click(screen.getByRole('button', { name: /🌅 Sáng/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('region', { name: 'Gợi ý theo bối cảnh' })).toBeInTheDocument();
+    });
+    expect(screen.getByText('Gợi ý cho bạn')).toBeInTheDocument();
+  });
+
+  it('renders refresh button in context feed section', async () => {
+    renderAuthenticated();
+    await waitFor(() => screen.getByRole('button', { name: /🌅 Sáng/i }));
+    fireEvent.click(screen.getByRole('button', { name: /🌅 Sáng/i }));
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /Làm mới gợi ý/i })).toBeInTheDocument(),
+    );
+  });
+
+  it('songs appear in context feed as rows', async () => {
+    renderAuthenticated();
+    await waitFor(() => screen.getByRole('button', { name: /🌅 Sáng/i }));
+    fireEvent.click(screen.getByRole('button', { name: /🌅 Sáng/i }));
+    await waitFor(() => {
+      expect(screen.getAllByText('Lạc Trôi').length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('clicking refresh button triggers reload', async () => {
+    let callCount = 0;
+    server.use(
+      http.get(RECOMMENDATIONS_URL, () => {
+        callCount += 1;
+        return HttpResponse.json({
+          success: true,
+          data: { items: mockItems },
+          meta: { apiVersion: 'v1', requestId: `r${callCount}`, timestamp: '' },
+          error: null,
+        });
+      }),
+    );
+
+    renderAuthenticated();
+    await waitFor(() => screen.getByRole('button', { name: /🌅 Sáng/i }));
+    fireEvent.click(screen.getByRole('button', { name: /🌅 Sáng/i }));
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /Làm mới gợi ý/i })).toBeInTheDocument(),
+    );
+    const initialCount = callCount;
+    fireEvent.click(screen.getByRole('button', { name: /Làm mới gợi ý/i }));
+    await waitFor(() => expect(callCount).toBeGreaterThan(initialCount));
+  });
+});

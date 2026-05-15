@@ -1,12 +1,14 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppShell from '../components/layout/AppShell';
 import { usePlayerStore } from '../store/playerStore';
 import { useAuthStore } from '../store/authStore';
 import { useRecommendations } from '../features/recommendation/hooks/useRecommendations';
 import SongCard from '../features/recommendation/components/SongCard';
+import ContextSelector from '../features/recommendation/components/ContextSelector';
+import RecommendationFeedRow from '../features/recommendation/components/RecommendationFeedRow';
 import SkeletonRow from '../components/ui/SkeletonRow';
-import type { RecommendedSong } from '../types/domain';
+import type { RecommendedSong, TimeContext } from '../types/domain';
 
 const CONTEXT_LABEL: Record<string, string> = {
   morning:   'Gợi ý cho bạn sáng nay',
@@ -82,17 +84,62 @@ function GridSection({
   );
 }
 
+// ── Context Feed (row layout) ─────────────────────────────────────────────────
+
+function ContextFeedSection({
+  items,
+  onPlay,
+  onReload,
+}: {
+  items: RecommendedSong[];
+  onPlay: (song: RecommendedSong) => void;
+  onReload: () => void;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <section aria-label="Gợi ý theo bối cảnh">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-[18px] font-[600] leading-[1.3] text-text-base">Gợi ý cho bạn</h3>
+        <button
+          aria-label="Làm mới gợi ý"
+          onClick={onReload}
+          className="w-10 h-10 rounded-full bg-mid-dark flex items-center justify-center hover:bg-[#2a2a2a] transition-colors"
+        >
+          <span className="material-symbols-outlined text-text-secondary">refresh</span>
+        </button>
+      </div>
+      <div className="flex flex-col" role="list">
+        {items.map((song, idx) => (
+          <RecommendationFeedRow
+            key={song.id}
+            song={song}
+            index={idx}
+            onPlay={onPlay}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
+
 export default function HomePage() {
   const navigate    = useNavigate();
   const accessToken = useAuthStore((s) => s.accessToken);
   const setSong     = usePlayerStore((s) => s.setSong);
+
+  const [selectedContext, setSelectedContext] = useState<TimeContext | 'none'>('none');
 
   useEffect(() => {
     if (!accessToken) navigate('/login', { replace: true });
   }, [accessToken, navigate]);
 
   const { contextItems, trendingItems, preferenceItems, loading, error, context, reload } =
-    useRecommendations();
+    useRecommendations(selectedContext);
+
+  // All items for the row-layout context feed (shown together for quick access)
+  const allItems = [...contextItems, ...trendingItems, ...preferenceItems];
 
   const handlePlay = (song: RecommendedSong) => {
     setSong({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl });
@@ -121,6 +168,12 @@ export default function HomePage() {
 
       {/* ── Content ── */}
       <div className="p-lg space-y-10">
+
+        {/* ── Context Selector ── */}
+        <div>
+          <ContextSelector value={selectedContext} onChange={setSelectedContext} />
+        </div>
+
         {/* Loading skeletons */}
         {loading && (
           <div aria-label="Đang tải danh sách nhạc" className="space-y-10">
@@ -163,6 +216,16 @@ export default function HomePage() {
         {/* Sections */}
         {!loading && !error && (
           <>
+            {/* Row-layout feed — only when a specific context is selected */}
+            {selectedContext !== 'none' && (
+              <ContextFeedSection
+                items={allItems}
+                onPlay={handlePlay}
+                onReload={reload}
+              />
+            )}
+
+            {/* Card sections — discovery layout */}
             <HorizontalSection
               title={CONTEXT_LABEL[context] ?? 'Gợi ý cho bạn'}
               subtitle={CONTEXT_SUB[context]}

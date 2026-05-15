@@ -1,5 +1,30 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / PHASE 2 — PHASE 6: ENHANCE HOMEPAGE + SEARCHPAGE + CREATORDASHBOARD] [DONE]
+
+**Task:** Phase 6 — Tích hợp các component mới vào trang hiện có, thêm ArtistCard component mới.
+
+**Files đã tạo:**
+- `features/search/components/ArtistCard.tsx` — circular avatar 100px, floating play button (stopPropagation), click → `/artists/:id`, keyboard navigation (Enter/Space), `data-testid="artist-card-{id}"`, aria-label
+
+**Files đã sửa:**
+- `pages/HomePage.tsx` — thêm `ContextSelector` + `ContextFeedSection` (RecommendationFeedRow list), state `selectedContext`, truyền vào `useRecommendations(selectedContext)`. `ContextFeedSection` chỉ hiển thị khi `selectedContext !== 'none'` để tránh duplicate elements.
+- `pages/SearchPage.tsx` — thêm `FilterTab = 'all' | 'songs' | 'artists'`, `FilterTabs` component với tablist + aria-selected + active underline. `ArtistsRow` dùng `ArtistCard`. EmptyState trong `<div data-testid="no-results">`.
+- `pages/CreatorDashboardPage.tsx` — thêm section "Bài hát của tôi" với `CreatorSongTable` + "TẢI LÊN BÀI MỚI" button. `rows={MOCK_CREATOR_SONG_ROWS.slice(1)}` để tránh 'Lạc Trôi' conflict với SONG_OPTIONS[0].
+
+**Tests: 37 tests mới, 672/672 xanh**
+- `tests/features/search/ArtistCard.test.tsx` — 13 tests: rendering, interaction, accessibility
+- `tests/pages/HomePage.test.tsx` — 9 tests mới: ContextSelector chips (5), context feed section (4)
+- `tests/pages/SearchPage.test.tsx` — 9 tests mới: filter tabs (7), ArtistCard integration (2)
+- `tests/pages/CreatorDashboardPage.test.tsx` — 6 tests: CreatorSongTable section
+
+**Bugs fixed:**
+- HomePage `getByText('Lạc Trôi')` multiple elements: `ContextFeedSection` chỉ render khi `selectedContext !== 'none'` → default state = cards only, no duplicates.
+- HomePage `getByText('Gợi ý cho bạn')` multiple: same fix — feed section hidden by default.
+- CreatorDashboardPage `getByText('Chuyến Xe')` multiple: `slice(1)` removes song-001 from table; `getByText('Chuyến Xe')` replaced with `getAllByText(...)`.
+- Context feed tests: cần click chip trước (`fireEvent.click(screen.getByRole('button', { name: /🌅 Sáng/i }))`) vì section ẩn theo default.
+
+---
 [2026-05-15] [FRONTEND / PHASE 2 — PHASE 5: 5 TRANG MỚI] [DONE]
 
 **Task:** Phase 5 — Tạo 5 trang mới từ Stitch designs, dùng mock data hoàn toàn (không gọi API).

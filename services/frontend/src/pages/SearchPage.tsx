@@ -1,6 +1,8 @@
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import AppShell from '../components/layout/AppShell';
 import Spinner from '../components/ui/Spinner';
+import EmptyState from '../components/ui/EmptyState';
+import ArtistCard from '../features/search/components/ArtistCard';
 import { useSearch } from '../features/search/hooks/useSearch';
 import { usePlayerStore } from '../store/playerStore';
 import type { SearchResult } from '../types/domain';
@@ -18,6 +20,10 @@ const GENRES = [
   { name: 'Acoustic',   gradient: 'from-green-500 to-emerald-700' },
   { name: 'Indie',      gradient: 'from-purple-400 to-fuchsia-600' },
 ];
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+type FilterTab = 'all' | 'songs' | 'artists';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -94,6 +100,51 @@ function GenreGrid() {
         ))}
       </div>
     </section>
+  );
+}
+
+// ── Filter Tabs ───────────────────────────────────────────────────────────────
+
+function FilterTabs({
+  activeTab,
+  onChange,
+}: {
+  activeTab: FilterTab;
+  onChange: (tab: FilterTab) => void;
+}) {
+  const tabs: { key: FilterTab; label: string }[] = [
+    { key: 'all',     label: 'Tất cả'  },
+    { key: 'songs',   label: 'Bài hát' },
+    { key: 'artists', label: 'Nghệ sĩ' },
+  ];
+
+  return (
+    <div
+      className="flex items-center gap-4 mb-6 border-b border-border-muted/40"
+      role="tablist"
+      aria-label="Lọc kết quả tìm kiếm"
+    >
+      {tabs.map(({ key, label }) => (
+        <button
+          key={key}
+          role="tab"
+          aria-selected={activeTab === key}
+          data-testid={`filter-tab-${key}`}
+          onClick={() => onChange(key)}
+          className={[
+            'relative px-2 pb-3 text-[16px] transition-colors',
+            activeTab === key
+              ? 'font-bold text-text-emphasis'
+              : 'font-normal text-text-secondary hover:text-text-emphasis',
+          ].join(' ')}
+        >
+          {label}
+          {activeTab === key && (
+            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-spotify-green" />
+          )}
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -200,42 +251,16 @@ function SongsList({
   );
 }
 
-// ── Artists row ───────────────────────────────────────────────────────────────
+// ── Artists row — upgraded to ArtistCard ─────────────────────────────────────
 
 function ArtistsRow({ artists }: { artists: SearchResult[] }) {
   if (!artists.length) return null;
   return (
     <section data-testid="artists-section">
       <h2 className="font-[600] text-[18px] leading-[1.3] text-text-base mb-4">Nghệ sĩ</h2>
-      <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {artists.map((a) => (
-          <div
-            key={a.id}
-            className="flex flex-col items-center gap-3 min-w-[140px] snap-start group cursor-pointer"
-            data-testid={`artist-card-${a.id}`}
-          >
-            <div className="w-[120px] h-[120px] rounded-full overflow-hidden shadow-lg relative bg-mid-dark flex-shrink-0">
-              {a.coverUrl ? (
-                <img
-                  src={a.coverUrl}
-                  alt={a.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-text-secondary">
-                  <span className="material-symbols-outlined text-[48px]">person</span>
-                </div>
-              )}
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <span className="material-symbols-outlined text-text-base text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  play_arrow
-                </span>
-              </div>
-            </div>
-            <span className="font-[700] text-[16px] leading-[1.5] text-text-base text-center hover:underline">
-              {a.name}
-            </span>
-          </div>
+          <ArtistCard key={a.id} artist={a} />
         ))}
       </div>
     </section>
@@ -303,6 +328,8 @@ export default function SearchPage() {
   const { query, setQuery, results, loading, clearQuery } = useSearch();
   const playSong = usePlayerStore((s) => s.playSong);
 
+  const [filterTab, setFilterTab] = useState<FilterTab>('all');
+
   const hasQuery  = query.trim().length > 0;
   const songs     = results.filter((r) => r.type === 'song');
   const artists   = results.filter((r) => r.type === 'artist');
@@ -311,6 +338,11 @@ export default function SearchPage() {
     null,
   );
   const relatedSongs = songs.filter((s) => s.id !== topResult?.id).slice(0, 5);
+
+  // Apply filter tab
+  const showSongs   = filterTab === 'all' || filterTab === 'songs';
+  const showArtists = filterTab === 'all' || filterTab === 'artists';
+  const showTopResult = filterTab === 'all' && topResult !== null;
 
   function handlePlay(r: SearchResult) {
     if (r.type === 'song') {
@@ -323,8 +355,19 @@ export default function SearchPage() {
     }
   }
 
+  // Reset filter tab when query changes
+  function handleQueryChange(v: string) {
+    setQuery(v);
+    setFilterTab('all');
+  }
+
+  function handleClear() {
+    clearQuery();
+    setFilterTab('all');
+  }
+
   const searchInput = (
-    <SearchInput value={query} onChange={setQuery} onClear={clearQuery} inputRef={inputRef} />
+    <SearchInput value={query} onChange={handleQueryChange} onClear={handleClear} inputRef={inputRef} />
   );
 
   return (
@@ -347,39 +390,47 @@ export default function SearchPage() {
           </div>
         )}
 
-        {/* Empty state */}
+        {/* Empty state — no query */}
         {!hasQuery && !loading && <GenreGrid />}
 
         {/* No results */}
         {hasQuery && !loading && results.length === 0 && (
-          <div className="flex flex-col items-center py-24 gap-4" data-testid="no-results">
-            <span className="material-symbols-outlined text-[64px] text-text-secondary">search_off</span>
-            <p className="font-[600] text-[18px] text-text-base">Không tìm thấy kết quả</p>
-            <p className="text-[14px] text-text-secondary">
-              Không có kết quả nào cho &ldquo;{query}&rdquo;
-            </p>
+          <div data-testid="no-results">
+            <EmptyState
+              variant="search"
+              title="Không tìm thấy kết quả"
+              description={`Không có kết quả nào cho "${query}"`}
+            />
           </div>
         )}
 
         {/* Results */}
         {hasQuery && !loading && results.length > 0 && (
           <div className="flex flex-col gap-10" data-testid="search-results">
-            {(topResult || songs.length > 0) && (
+            {/* Filter tabs */}
+            <FilterTabs activeTab={filterTab} onChange={setFilterTab} />
+
+            {/* Top result + songs grid */}
+            {(showTopResult || (showSongs && songs.length > 0)) && (
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                {topResult && (
+                {showTopResult && topResult && (
                   <div className="lg:col-span-2">
                     <TopResultCard result={topResult} onPlay={handlePlay} />
                   </div>
                 )}
-                {songs.length > 0 && (
-                  <div className={topResult ? 'lg:col-span-3' : 'lg:col-span-5'}>
+                {showSongs && songs.length > 0 && (
+                  <div className={showTopResult ? 'lg:col-span-3' : 'lg:col-span-5'}>
                     <SongsList songs={songs.slice(0, 4)} onPlay={handlePlay} />
                   </div>
                 )}
               </div>
             )}
-            <ArtistsRow artists={artists} />
-            <RelatedSongsGrid songs={relatedSongs} onPlay={handlePlay} />
+
+            {/* Artists */}
+            {showArtists && <ArtistsRow artists={artists} />}
+
+            {/* Related songs — only in 'all' tab */}
+            {filterTab === 'all' && <RelatedSongsGrid songs={relatedSongs} onPlay={handlePlay} />}
           </div>
         )}
       </div>
