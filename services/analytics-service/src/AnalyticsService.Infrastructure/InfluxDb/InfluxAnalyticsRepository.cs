@@ -71,9 +71,8 @@ public class InfluxAnalyticsRepository(
                 foreach (var record in table.Records)
                 {
                     var second = Convert.ToInt32(record.GetValueByKey("_value") ?? 0);
-                    var count = Convert.ToInt64(record.GetValue() ?? 0L);
-                    // Simplified: skipRate approximated from count at this second
-                    points.Add(new HeatmapPoint(second, count > 0 ? 0.1 : 0));
+                    var count = Convert.ToInt32(record.GetValue() ?? 0L);
+                    points.Add(new HeatmapPoint(second, count));
                 }
             }
 
@@ -126,7 +125,7 @@ public class InfluxAnalyticsRepository(
                 TotalSkips: 0,          // populated by Song_Skipped consumer (Phase 2 detail)
                 UniqueListeners: 0,     // requires HyperLogLog or distinct count (Phase 2)
                 AvgListenPercent: avgPercent,
-                DailyPlays: []
+                DailyListeners: []
             );
         }
         catch (Exception ex) when (ex is not OperationCanceledException)

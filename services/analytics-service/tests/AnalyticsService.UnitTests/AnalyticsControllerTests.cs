@@ -117,7 +117,7 @@ public class AnalyticsControllerTests
         SetUser(Guid.NewGuid(), "Admin");
 
         _serviceMock.Setup(s => s.GetHeatmapAsync(songId, "7d", It.IsAny<CancellationToken>()))
-            .ReturnsAsync((new HeatmapResponse([new HeatmapPoint(30, 0.25)]), false));
+            .ReturnsAsync((new HeatmapResponse([new HeatmapPoint(30, 5)]), false));
 
         var result = await _sut.GetHeatmap(songId);
 
@@ -140,7 +140,7 @@ public class AnalyticsControllerTests
             .ReturnsAsync(true);
 
         _serviceMock.Setup(s => s.GetHeatmapAsync(songId, "7d", It.IsAny<CancellationToken>()))
-            .ReturnsAsync((new HeatmapResponse([new HeatmapPoint(30, 0.25)]), false));
+            .ReturnsAsync((new HeatmapResponse([new HeatmapPoint(30, 5)]), false));
 
         var result = await _sut.GetHeatmap(songId);
 

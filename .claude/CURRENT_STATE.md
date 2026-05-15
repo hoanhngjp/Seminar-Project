@@ -163,7 +163,7 @@
 - [X] Phase 3: Music Service — migration (mood column) + enrich SongResponseDto + GCS verify
 - [ ] Phase 4: Streaming Service — verify GCS pre-signed URL + field name alignment
 - [ ] Phase 5: Search Service — verify SearchResult DTO + seed Elasticsearch
-- [ ] Phase 6: Analytics Service — HeatmapDTO `skipRate`→`count`, StatsDTO `DailyPlays`→`DailyListeners`
+- [X] Phase 6: Analytics Service — HeatmapDTO `skipRate`→`count`, StatsDTO `DailyPlays`→`DailyListeners` — 32/32 tests xanh (2026-05-16)
 - [ ] Phase 7: Notification Service — remap NotificationDto fields
 - [ ] Phase 8: Listening Party — API Gateway WS route alias + verify SignalR events
 - [ ] Phase 9: Recommendation Service — seed Redis trending + verify internal Music call
@@ -186,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Backend API Alignment — Phase 6 (Analytics) + Phase 7 (Notification) + Phase 8 (Party)
+- **Service/Task:** Backend API Alignment — Phase 7 (Notification) + Phase 8 (Party WS)
 - **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
-- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 3 hoàn thành (2026-05-16) — Music Service 10/10 tests xanh, migration AddMoodToSongs applied, docker-compose connection string keys fixed
+- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 6 hoàn thành (2026-05-16) — Analytics Service 32/32 tests xanh
 - **Ngày làm việc gần nhất:** 2026-05-16
-- **Tiếp theo:** Phase 6 (Analytics DTO fix), Phase 7 (Notification DTO fix), Phase 8 (Party WS alias) — chạy song song
+- **Tiếp theo:** Phase 7 (Notification DTO fix), Phase 8 (Party WS — Option B: update FE useListeningParty URL)
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

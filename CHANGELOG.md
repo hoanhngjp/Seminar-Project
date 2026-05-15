@@ -16,6 +16,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Backend — API Alignment Phase 6: Analytics Service DTO Fix (2026-05-16)**
+- `HeatmapPoint` — đổi `SkipRate: double` → `Count: int` để khớp FE type `{second, count}`
+- `DailyPlay` → `DailyListenerPoint`, field `Plays: long` → `Count: int`; `StatsResponse.DailyPlays` → `DailyListeners` để khớp FE type `dailyListeners[]{date, count}`
+- `AnalyticsController.GetStats` — đổi JSON key `dailyPlays` → `dailyListeners` trong response
+- `InfluxAnalyticsRepository` — `HeatmapPoint` giờ dùng `count` thực từ InfluxDB thay vì giá trị cứng `0.1`
+- **32/32 unit tests xanh** (2 tests cũ cập nhật argument kiểu int)
+
 **Backend — API Alignment Phase 3: Music Service (2026-05-16)**
 - `Song.cs` — thêm `Mood` property (`string?`, max 50 chars)
 - Migration `20260516000000_AddMoodToSongs` — thêm cột `mood VARCHAR(50)` vào bảng `songs`

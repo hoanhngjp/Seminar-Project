@@ -130,7 +130,7 @@ public class AnalyticsController(IAnalyticsService analyticsService)
             totalSkips = data.TotalSkips,
             uniqueListeners = data.UniqueListeners,
             avgListenPercent = data.AvgListenPercent,
-            dailyPlays = data.DailyPlays
+            dailyListeners = data.DailyListeners
         }, requestId, cache: cacheHit ? "HIT" : "MISS"));
     }
 

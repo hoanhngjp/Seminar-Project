@@ -1,5 +1,20 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [BACKEND / PHASE 6 — ANALYTICS SERVICE DTO ALIGNMENT] [DONE]
+
+**Task:** Align Analytics Service DTOs với schema FE cần: `count` thay `skipRate`, `dailyListeners` thay `dailyPlays`.
+
+**Changes:**
+- `HeatmapResponse.cs` — `HeatmapPoint(int Second, double SkipRate)` → `HeatmapPoint(int Second, int Count)`; `DailyPlay(string Date, long Plays)` → `DailyListenerPoint(string Date, int Count)`; `StatsResponse.DailyPlays` → `DailyListeners`
+- `InfluxAnalyticsRepository.cs` — build `HeatmapPoint` dùng `count` thực từ InfluxDB (thay vì giá trị cứng `0.1`); `DailyPlays: []` → `DailyListeners: []`
+- `AnalyticsController.cs` — JSON key `dailyPlays` → `dailyListeners` trong response body
+- Tests (2 files) — fix 2 `HeatmapPoint(30, 0.25)` → `HeatmapPoint(30, 5)`
+
+**Results:** 32/32 unit tests xanh (build + test pass).
+
+**Decision:** Phase 8 Party WS — chọn Option B (update FE `useListeningParty.ts` URL trực tiếp thay vì custom YARP transform).
+
+---
 [2026-05-16] [INFRA / CONNECTION STRING — SINGLE KEY + APPSETTINGS CLEANUP] [DONE]
 
 **Task:** Đảm bảo các C# services đọc connection string từ docker-compose env var (không fallback về appsettings.json `localhost`).

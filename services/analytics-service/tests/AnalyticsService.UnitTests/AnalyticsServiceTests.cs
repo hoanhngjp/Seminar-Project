@@ -97,7 +97,7 @@ public class AnalyticsServiceTests
     {
         // AC4.2.4: cache hit returns fast
         var songId = Guid.NewGuid();
-        var cached = new HeatmapResponse([new HeatmapPoint(30, 0.25)]);
+        var cached = new HeatmapResponse([new HeatmapPoint(30, 5)]);
         _cache.Setup(c => c.GetHeatmapAsync(songId, "7d", It.IsAny<CancellationToken>()))
             .ReturnsAsync(cached);
 
@@ -116,7 +116,7 @@ public class AnalyticsServiceTests
         _cache.Setup(c => c.GetHeatmapAsync(songId, "7d", It.IsAny<CancellationToken>()))
             .ReturnsAsync((HeatmapResponse?)null);
 
-        var influxResult = new HeatmapResponse([new HeatmapPoint(45, 0.3)]);
+        var influxResult = new HeatmapResponse([new HeatmapPoint(45, 3)]);
         _analyticsRepo.Setup(r => r.GetHeatmapAsync(songId, "7d", It.IsAny<CancellationToken>()))
             .ReturnsAsync(influxResult);
 
