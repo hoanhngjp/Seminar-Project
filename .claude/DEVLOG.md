@@ -1,5 +1,23 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / PHASE 2 — PHASE 8: ROUTE REGISTRATION] [DONE]
+
+**Task:** Phase 8 — Đăng ký 5 routes mới trong App.tsx + viết test coverage.
+
+**Phát hiện:** App.tsx đã có đủ 5 routes từ trước (implement cùng lúc với pages Phase 5). Phase 8 chỉ còn thiếu test file.
+
+**Files đã tạo:**
+- `tests/App.test.tsx` — 14 tests: mock tất cả page components, dùng `window.history.pushState` để set URL, verify đúng page render theo route. Cover: 5 routes mới, route specificity (`/dashboard/songs/:id` vs `/dashboard`), dynamic segments với arbitrary param values, ToastProvider wrap.
+
+**Tests: 14 tests mới, 694/694 xanh**
+
+**Key decisions:**
+- Dùng `window.history.pushState` thay vì MemoryRouter vì App.tsx dùng BrowserRouter internally — không thể inject MemoryRouter từ ngoài.
+- Mock tất cả page components thành stub đơn giản (`data-testid="page-X"`) để test routing thuần, không bị ảnh hưởng bởi internals của từng page.
+- Test route specificity: `/dashboard/songs/song-001` chỉ render `page-song-analytics`, không render `page-dashboard` — verify React Router resolve đúng thứ tự.
+
+---
+
 [2026-05-15] [FRONTEND / PHASE 2 — PHASE 7: SIDEBAR + MOBILENAV UPDATES] [DONE]
 
 **Task:** Phase 7 — Tích hợp UserMenuDropdown vào Sidebar, thêm `/profile` link vào MobileNav.

@@ -16,6 +16,11 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — Phase 2 Phase 8: Route registration (2026-05-15)**
+- `App.tsx` — đăng ký 5 routes mới: `/songs/:songId` → `SongDetailPage`, `/artists/:artistId` → `ArtistPage`, `/profile` → `ProfilePage`, `/settings/preferences` → `PreferencesPage`, `/dashboard/songs/:songId` → `CreatorSongAnalyticsPage`
+- `tests/App.test.tsx` (mới) — 14 tests: smoke check existing routes, 5 routes mới render đúng page, route specificity (`/dashboard/songs/:id` không conflict với `/dashboard`), dynamic segments, ToastProvider wrap
+- 14 tests mới — **694/694** toàn bộ suite xanh
+
 **Frontend — Phase 2 Phase 7: Sidebar + MobileNav updates (2026-05-15)**
 - `Sidebar.tsx` — user bottom section giờ là button toggle: click mở `UserMenuDropdown` với options Profile / Preferences / Logout; click ngoài đóng menu; dropdown xuất hiện phía trên trigger (`bottom-full`)
 - `MobileNav.tsx` — thêm tab "Hồ sơ" (icon `person`, link `/profile`) làm item thứ 5 trong bottom nav mobile
