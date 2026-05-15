@@ -115,7 +115,7 @@
 - [X] Track A W9: NotificationBell component — 13/13 tests xanh
 - [X] Track B W9: Reconnect + resync logic (đã có từ Tuần 8 — OnConnected/OnDisconnected)
 - [X] Track A+B W9: usePartyWebSocket hook (SignalR thật, @microsoft/signalr) — 14/14 tests xanh
-- [ ] Checkpoint W9: 2-tab test — Host Play → Member sync < 500ms
+- [X] Checkpoint W9: 2-tab test — Host Play → Member sync < 500ms
 
 ### Frontend Phase 2 — New Pages & Components (Stitch designs)
 
@@ -173,11 +173,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Frontend Phase 2 — New Pages & Components (từ Stitch designs)
-- **File plan cần đọc:** `.claude/plan/frontend-phase2-new-pages-components.md`
-- **Checkpoint gần nhất đã pass:** Phase 9 — 698/698 tests xanh (2026-05-15)
+- **Service/Task:** Frontend Phase 2 — HOÀN THÀNH (verified 2026-05-15)
+- **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
+- **Checkpoint gần nhất đã pass:** Verification + bug fixes — build 0 errors, 698/698 tests xanh (2026-05-15)
 - **Ngày làm việc gần nhất:** 2026-05-15
-- **Tiếp theo:** Frontend Phase 2 hoàn thành — xem Verification Checklist trong plan
+- **Tiếp theo:** Week 10–12 — AC checklist (verify_ac.sh), demo script rehearsal, pre-upload demo songs
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

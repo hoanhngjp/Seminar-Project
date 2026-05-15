@@ -14,6 +14,14 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Fixed
+
+**Frontend — Verification + UI bug fixes (2026-05-15)**
+- `Sidebar.tsx` — "Analytics" nav link đổi từ `/analytics` (không tồn tại) → `/dashboard`
+- `Sidebar.tsx` — UserMenuDropdown move ra ngoài `<nav>` stacking context; dùng `position: fixed` + `getBoundingClientRect()` + `zIndex: 60`; dropdown giờ hiển thị trên BottomPlayerBar đúng cách
+- `FilterPills.tsx` — active pill active state đổi `bg-[#ffffff]` → `!bg-[#ffffff]`; root cause: `index.css` `button { background: none; }` là unlayered CSS, thắng `@layer utilities` của Tailwind v4, khiến mọi `bg-*` class trên button bị vô hiệu
+- 15 TypeScript errors trong 8 files (unused imports, type mismatches, literal type inference) — build giờ pass 0 errors
+
 ### Added
 
 **Frontend — Phase 2 Phase 9: BottomPlayerBar QueueDrawer integration (2026-05-15)**

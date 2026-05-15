@@ -1,5 +1,34 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / VERIFICATION + BUG FIXES — TSC, BUILD, 3 UI BUGS] [DONE]
+
+**Task:** Chạy Verification Checklist sau khi hoàn thành Frontend Phase 2 (Phase 0–9). Fix lỗi TypeScript build + 3 UI bugs phát hiện khi verify thủ công.
+
+**TypeScript build fixes (15 errors / 8 files):**
+- `EmptyState.tsx`, `PartyRoomPage.test.tsx` — xóa unused `import React`
+- `QueueDrawer.tsx` — xóa `formatDuration` declared nhưng không dùng
+- `mocks/data.ts` — `CURRENT_MOCK_USER` infer là Listener-only type, không assign được Creator → thêm explicit union type
+- `ToastContext.test.tsx` — `ShowToastButton` variant prop lock vào `'success'` literal → khai báo tường minh `ToastVariant`
+- `HeatmapChart.test.tsx` — 6 `const { container }` destructure nhưng không dùng → đổi thành `render()` plain
+- `RecommendationFeedRow.test.tsx`, `useRecommendations.test.tsx` — xóa unused `beforeEach` import
+- `useRecommendations.test.tsx` — `initialProps: { ctx: 'morning' as const }` lock type literal, `rerender({ ctx: 'evening' })` fail → đổi `as const` → `as 'morning' | 'evening' | 'none'`
+
+**UI Bug fixes (3 bugs):**
+
+Bug 1 — Sidebar "Analytics" link trỏ `/analytics` (không có route) → đổi thành `/dashboard`.
+
+Bug 2 — UserMenuDropdown bị BottomPlayerBar che:
+- Root cause: Dropdown nằm bên trong `<nav>` (stacking context z-50). Child dù có z-[100] cũng bị paint trong layer z-50 của nav → BottomPlayerBar (cũng z-50, render sau) đè lên.
+- Nâng Sidebar lên z-[55] chỉ chuyển vấn đề: Sidebar đè phần trái BottomPlayerBar.
+- Fix đúng: Move dropdown ra ngoài `<nav>` (cùng pattern party modals đã có). Dùng `position: fixed` với tọa độ từ `getBoundingClientRect()` của anchor ref + `zIndex: 60`.
+
+Bug 3 — FilterPills active state chữ bị che đen:
+- Root cause cuối cùng: `index.css` có `button { background: none; }` **ngoài `@layer`**. Trong CSS Cascade Layers, unlayered styles thắng layered styles kể cả khi class có specificity cao hơn. Tailwind v4 đặt toàn bộ utilities vào `@layer utilities` → `bg-white`, `bg-text-base`, `bg-[#ffffff]` đều bị override.
+- Fix: dùng `!bg-[#ffffff]` (Tailwind important modifier) — escape cascade layer priority.
+
+**Tests: 698/698 xanh (không thay đổi)**
+
+---
 [2026-05-15] [FRONTEND / PHASE 2 — PHASE 9: BOTTOMPLAYERBAR QUEUEDRAWER INTEGRATION] [DONE]
 
 **Task:** Phase 9 — Wire QueueDrawer vào BottomPlayerBar + test coverage.

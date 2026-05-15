@@ -1,5 +1,5 @@
 // Tests for Phase 0 — useRecommendations externalContext support
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useRecommendations } from '../../features/recommendation/hooks/useRecommendations';
 
@@ -72,7 +72,7 @@ describe('useRecommendations — externalContext override', () => {
 
     const { rerender } = renderHook(
       ({ ctx }: { ctx: 'morning' | 'evening' | 'none' }) => useRecommendations(ctx),
-      { initialProps: { ctx: 'morning' as const } },
+      { initialProps: { ctx: 'morning' as 'morning' | 'evening' | 'none' } },
     );
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));

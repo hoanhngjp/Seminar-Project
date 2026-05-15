@@ -27,7 +27,7 @@ export default function FilterPills({ active, unreadCount, onChange }: Props) {
               'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium',
               'whitespace-nowrap transition-colors duration-150',
               isActive
-                ? 'bg-white text-near-black'
+                ? '!bg-[#ffffff] text-near-black'
                 : 'bg-mid-dark text-text-secondary hover:text-text-base hover:bg-dark-surface',
             ].join(' ')}
           >

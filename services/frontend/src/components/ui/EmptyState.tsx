@@ -1,4 +1,3 @@
-import React from 'react';
 
 const ICON_MAP: Record<EmptyStateVariant, string> = {
   music: 'music_note',

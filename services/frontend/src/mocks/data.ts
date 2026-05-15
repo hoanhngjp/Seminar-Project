@@ -28,7 +28,7 @@ export const MOCK_CREATOR = {
 };
 
 // Default logged-in user (can toggle via login)
-export let CURRENT_MOCK_USER = MOCK_LISTENER;
+export let CURRENT_MOCK_USER: typeof MOCK_LISTENER | typeof MOCK_CREATOR = MOCK_LISTENER;
 
 export function setMockUser(email: string) {
   CURRENT_MOCK_USER = email.includes('creator') ? MOCK_CREATOR : MOCK_LISTENER;

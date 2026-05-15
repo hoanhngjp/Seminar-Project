@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ToastProvider, useToast } from '../../contexts/ToastContext';
+import type { ToastVariant } from '../../components/ui/Toast';
 
 // Helper component that calls useToast inside the provider
-function ShowToastButton({ message = 'Test message', variant = 'success' as const }) {
+function ShowToastButton({ message = 'Test message', variant = 'success' as ToastVariant }: { message?: string; variant?: ToastVariant }) {
   const { show } = useToast();
   return (
     <button onClick={() => show(message, variant)} data-testid="trigger">

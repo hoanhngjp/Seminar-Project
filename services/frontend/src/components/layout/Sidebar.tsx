@@ -22,7 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/notifications', label: 'Thông báo',    icon: 'notifications' },
   { to: '/party',       label: 'Listening Party', icon: 'groups'        },
   { to: '/upload',      label: 'Tải nhạc lên',   icon: 'upload',       roles: ['Creator', 'Admin'] },
-  { to: '/analytics',   label: 'Analytics',      icon: 'analytics',    roles: ['Creator', 'Admin'] },
+  { to: '/dashboard',   label: 'Analytics',      icon: 'analytics',    roles: ['Creator', 'Admin'] },
 ];
 
 // Static library items — no playlist API in MVP
@@ -194,46 +194,56 @@ export default function Sidebar() {
 
       {/* ── User bottom section ── */}
       <div className="p-4 mt-auto">
-        <div className="relative">
-          <button
-            ref={userMenuAnchorRef}
-            data-testid="user-menu-trigger"
-            aria-label="Mở menu người dùng"
-            onClick={() => setShowUserMenu((v) => !v)}
-            className="w-full bg-dark-surface rounded-lg p-3 flex items-center gap-3 hover:bg-mid-dark transition-colors cursor-pointer group"
-          >
-            <div className="w-10 h-10 rounded-full border border-border-muted bg-mid-dark flex items-center justify-center flex-shrink-0">
-              <span className="material-symbols-outlined text-text-secondary text-[18px]">person</span>
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span
-                data-testid="sidebar-username"
-                className="font-bold text-sm group-hover:text-white transition-colors truncate"
-              >
-                {profile?.displayName ?? '···'}
-              </span>
-              <span className="text-xs text-text-secondary truncate">
-                {role === 'Creator' ? 'Creator' : role === 'Admin' ? 'Admin' : 'Listener'}
-              </span>
-            </div>
-          </button>
-          {showUserMenu && (
-            <div className="absolute bottom-full left-0 mb-2">
-              <UserMenuDropdown
-                profile={
-                  profile
-                    ? { displayName: profile.displayName, email: profile.email, role: role ?? '' }
-                    : null
-                }
-                isOpen={showUserMenu}
-                onClose={() => setShowUserMenu(false)}
-                anchorRef={userMenuAnchorRef as React.RefObject<HTMLElement>}
-              />
-            </div>
-          )}
-        </div>
+        <button
+          ref={userMenuAnchorRef}
+          data-testid="user-menu-trigger"
+          aria-label="Mở menu người dùng"
+          onClick={() => setShowUserMenu((v) => !v)}
+          className="w-full bg-dark-surface rounded-lg p-3 flex items-center gap-3 hover:bg-mid-dark transition-colors cursor-pointer group"
+        >
+          <div className="w-10 h-10 rounded-full border border-border-muted bg-mid-dark flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-text-secondary text-[18px]">person</span>
+          </div>
+          <div className="flex flex-col min-w-0">
+            <span
+              data-testid="sidebar-username"
+              className="font-bold text-sm group-hover:text-white transition-colors truncate"
+            >
+              {profile?.displayName ?? '···'}
+            </span>
+            <span className="text-xs text-text-secondary truncate">
+              {role === 'Creator' ? 'Creator' : role === 'Admin' ? 'Admin' : 'Listener'}
+            </span>
+          </div>
+        </button>
       </div>
     </nav>
+
+    {/* UserMenuDropdown — rendered outside nav to avoid z-index clipping with BottomPlayerBar */}
+    {showUserMenu && userMenuAnchorRef.current && (() => {
+      const rect = userMenuAnchorRef.current!.getBoundingClientRect();
+      return (
+        <div
+          style={{
+            position: 'fixed',
+            left: rect.left,
+            bottom: window.innerHeight - rect.top + 8,
+            zIndex: 60,
+          }}
+        >
+          <UserMenuDropdown
+            profile={
+              profile
+                ? { displayName: profile.displayName, email: profile.email, role: role ?? '' }
+                : null
+            }
+            isOpen={showUserMenu}
+            onClose={() => setShowUserMenu(false)}
+            anchorRef={userMenuAnchorRef as React.RefObject<HTMLElement>}
+          />
+        </div>
+      );
+    })()}
 
     {/* Party modals — rendered outside nav to avoid z-index clipping */}
     {partyModal === 'create' && (

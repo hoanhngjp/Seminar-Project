@@ -48,7 +48,7 @@ describe('HeatmapChart', () => {
   });
 
   it('renders correct number of heatmap segments', () => {
-    const { container } = render(<HeatmapChart data={SAMPLE_HEATMAP} />);
+    render(<HeatmapChart data={SAMPLE_HEATMAP} />);
     const bar = screen.getByRole('img', { name: 'Heatmap bỏ qua theo giây' });
     // Each segment is a div.flex-1 inside the bar (excluding the dashed marker divs)
     const segments = bar.querySelectorAll('.flex-1');
@@ -103,7 +103,7 @@ describe('HeatmapChart', () => {
   });
 
   it('peak segment has cursor-pointer class', () => {
-    const { container } = render(<HeatmapChart data={SAMPLE_HEATMAP} />);
+    render(<HeatmapChart data={SAMPLE_HEATMAP} />);
     const bar = screen.getByRole('img', { name: 'Heatmap bỏ qua theo giây' });
     const segments = bar.querySelectorAll('.flex-1');
     // Peak is at index 9 (count=90)
@@ -111,14 +111,14 @@ describe('HeatmapChart', () => {
   });
 
   it('non-peak segments do not have cursor-pointer', () => {
-    const { container } = render(<HeatmapChart data={SAMPLE_HEATMAP} />);
+    render(<HeatmapChart data={SAMPLE_HEATMAP} />);
     const bar = screen.getByRole('img', { name: 'Heatmap bỏ qua theo giây' });
     const segments = bar.querySelectorAll('.flex-1');
     expect(segments[0].className).not.toContain('cursor-pointer');
   });
 
   it('segment titles include time and count', () => {
-    const { container } = render(<HeatmapChart data={SAMPLE_HEATMAP} />);
+    render(<HeatmapChart data={SAMPLE_HEATMAP} />);
     const bar = screen.getByRole('img', { name: 'Heatmap bỏ qua theo giây' });
     const segments = bar.querySelectorAll('.flex-1');
     const firstTitle = segments[0].getAttribute('title');
@@ -127,7 +127,7 @@ describe('HeatmapChart', () => {
   });
 
   it('peak segment title includes peak count', () => {
-    const { container } = render(<HeatmapChart data={SAMPLE_HEATMAP} />);
+    render(<HeatmapChart data={SAMPLE_HEATMAP} />);
     const bar = screen.getByRole('img', { name: 'Heatmap bỏ qua theo giây' });
     const segments = bar.querySelectorAll('.flex-1');
     const peakTitle = segments[9].getAttribute('title');
@@ -140,7 +140,7 @@ describe('HeatmapChart', () => {
   });
 
   it('has two marker lines inside the bar (peak + threshold)', () => {
-    const { container } = render(<HeatmapChart data={SAMPLE_HEATMAP} />);
+    render(<HeatmapChart data={SAMPLE_HEATMAP} />);
     const bar = screen.getByRole('img', { name: 'Heatmap bỏ qua theo giây' });
     const markers = bar.querySelectorAll('[class*="border-dashed"]');
     expect(markers.length).toBe(2);
