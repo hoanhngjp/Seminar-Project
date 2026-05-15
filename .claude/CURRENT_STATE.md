@@ -128,7 +128,7 @@
 - [X] Phase 6: ArtistCard + Enhance HomePage (ContextSelector/FeedRow) + SearchPage (filter tabs + ArtistCard + EmptyState) + CreatorDashboardPage (CreatorSongTable) — 37 tests mới, 672/672 xanh (2026-05-15)
 - [X] Phase 7: Sidebar + MobileNav updates — 8 tests mới, 680/680 xanh (2026-05-15)
 - [X] Phase 8: Route registration (App.tsx) — 14 tests mới, 694/694 xanh (2026-05-15)
-- [ ] Phase 9: BottomPlayerBar QueueDrawer integration
+- [X] Phase 9: BottomPlayerBar QueueDrawer integration — 4 tests mới, 698/698 xanh (2026-05-15)
 
 ### Frontend Redesign — Spotify Design System (Stitch-based, full refactor)
 
@@ -175,9 +175,9 @@
 
 - **Service/Task:** Frontend Phase 2 — New Pages & Components (từ Stitch designs)
 - **File plan cần đọc:** `.claude/plan/frontend-phase2-new-pages-components.md`
-- **Checkpoint gần nhất đã pass:** Phase 8 — 694/694 tests xanh (2026-05-15)
+- **Checkpoint gần nhất đã pass:** Phase 9 — 698/698 tests xanh (2026-05-15)
 - **Ngày làm việc gần nhất:** 2026-05-15
-- **Tiếp theo:** Phase 9 — BottomPlayerBar QueueDrawer integration
+- **Tiếp theo:** Frontend Phase 2 hoàn thành — xem Verification Checklist trong plan
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

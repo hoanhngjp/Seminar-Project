@@ -1,5 +1,22 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / PHASE 2 — PHASE 9: BOTTOMPLAYERBAR QUEUEDRAWER INTEGRATION] [DONE]
+
+**Task:** Phase 9 — Wire QueueDrawer vào BottomPlayerBar + test coverage.
+
+**Phát hiện:** BottomPlayerBar.tsx đã implement đủ Phase 9 từ trước: `showQueue` state, nút `open-queue-btn`, `QueueDrawer` render khi `showQueue=true`. Z-index đúng: QueueDrawer `z-[59]`/`z-[60]`, NowPlayingOverlay `z-[100]`. Chỉ thiếu test coverage.
+
+**Files đã sửa:**
+- `tests/components/layout/BottomPlayerBar.test.tsx` — thêm `vi.mock` cho QueueDrawer (stub đơn giản với `data-testid="queue-drawer"` + close button). 4 tests mới: queue button render, hidden by default, click opens, onClose closes.
+
+**Tests: 4 tests mới, 698/698 xanh**
+
+**Key decisions:**
+- Mock QueueDrawer trong BottomPlayerBar test — tránh phụ thuộc vào playerStore queue internals và animation. Test chỉ verify integration wiring, không test QueueDrawer behavior (đã có `QueueDrawer.test.tsx` riêng).
+- Stub dùng `isOpen` prop để conditionally render — verify cả 2 trạng thái open/closed.
+
+---
+
 [2026-05-15] [FRONTEND / PHASE 2 — PHASE 8: ROUTE REGISTRATION] [DONE]
 
 **Task:** Phase 8 — Đăng ký 5 routes mới trong App.tsx + viết test coverage.

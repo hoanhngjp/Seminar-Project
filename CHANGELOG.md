@@ -16,6 +16,11 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — Phase 2 Phase 9: BottomPlayerBar QueueDrawer integration (2026-05-15)**
+- `BottomPlayerBar.tsx` — nút `queue_music` (`data-testid="open-queue-btn"`) toggle `showQueue` state; `QueueDrawer` render khi `showQueue=true`, đóng qua `onClose`; z-index: QueueDrawer backdrop `z-[59]` / panel `z-[60]`, NowPlayingOverlay `z-[100]`
+- `tests/components/layout/BottomPlayerBar.test.tsx` — 4 tests mới: queue button render khi có song, hidden by default, click opens drawer, onClose closes drawer; QueueDrawer mocked để isolate integration
+- 4 tests mới — **698/698** toàn bộ suite xanh
+
 **Frontend — Phase 2 Phase 8: Route registration (2026-05-15)**
 - `App.tsx` — đăng ký 5 routes mới: `/songs/:songId` → `SongDetailPage`, `/artists/:artistId` → `ArtistPage`, `/profile` → `ProfilePage`, `/settings/preferences` → `PreferencesPage`, `/dashboard/songs/:songId` → `CreatorSongAnalyticsPage`
 - `tests/App.test.tsx` (mới) — 14 tests: smoke check existing routes, 5 routes mới render đúng page, route specificity (`/dashboard/songs/:id` không conflict với `/dashboard`), dynamic segments, ToastProvider wrap

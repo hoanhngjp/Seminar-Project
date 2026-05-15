@@ -1,9 +1,18 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterEach, afterAll, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import BottomPlayerBar from '../../../components/layout/BottomPlayerBar';
 import { usePlayerStore } from '../../../store/playerStore';
+
+vi.mock('../../../features/player/components/QueueDrawer', () => ({
+  default: ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) =>
+    isOpen ? (
+      <div data-testid="queue-drawer">
+        <button onClick={onClose} data-testid="queue-close-btn">Close</button>
+      </div>
+    ) : null,
+}));
 
 const SONG = { songId: 'song-001', title: 'Chuyến Xe', artist: 'Ngọt' };
 const STREAMING_HANDLER = http.get(
@@ -86,5 +95,44 @@ describe('BottomPlayerBar', () => {
     await waitFor(() =>
       expect(screen.getByText('Không thể tải bài hát.')).toBeInTheDocument(),
     );
+  });
+
+  // ── Phase 9 — QueueDrawer integration ────────────────────────────────────
+
+  it('renders queue button when song is playing', async () => {
+    usePlayerStore.getState().playSong(SONG);
+    renderBar();
+    await waitFor(() =>
+      expect(screen.getByTestId('open-queue-btn')).toBeInTheDocument(),
+    );
+  });
+
+  it('QueueDrawer is hidden by default', async () => {
+    usePlayerStore.getState().playSong(SONG);
+    renderBar();
+    await waitFor(() => expect(screen.getByTestId('bottom-player-bar')).toBeInTheDocument());
+    expect(screen.queryByTestId('queue-drawer')).not.toBeInTheDocument();
+  });
+
+  it('clicking queue button opens QueueDrawer', async () => {
+    usePlayerStore.getState().playSong(SONG);
+    renderBar();
+    await waitFor(() => expect(screen.getByTestId('open-queue-btn')).toBeInTheDocument());
+
+    fireEvent.click(screen.getByTestId('open-queue-btn'));
+
+    expect(screen.getByTestId('queue-drawer')).toBeInTheDocument();
+  });
+
+  it('QueueDrawer closes when onClose is called', async () => {
+    usePlayerStore.getState().playSong(SONG);
+    renderBar();
+    await waitFor(() => expect(screen.getByTestId('open-queue-btn')).toBeInTheDocument());
+
+    fireEvent.click(screen.getByTestId('open-queue-btn'));
+    expect(screen.getByTestId('queue-drawer')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('queue-close-btn'));
+    expect(screen.queryByTestId('queue-drawer')).not.toBeInTheDocument();
   });
 });
