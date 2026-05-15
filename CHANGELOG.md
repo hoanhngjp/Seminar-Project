@@ -16,6 +16,17 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Backend — API Alignment Phase 1: Infrastructure Setup (2026-05-15)**
+- `infra/postgres/init/01_create_databases.sql` — tự động tạo 7 databases khi postgres container khởi động lần đầu (auth_db, user_db, music_db, streaming_db, listening_party_db, analytics_db, notification_db)
+- `infra/seed/SeedData.sql` — seed 9 genres, 1 artist, 8 songs với GCS audio keys, listener preferences cho music_db + user_db
+- `infra/seed/seed.sh` — master seed script: wait postgres → EF migrations → SQL seed → Elasticsearch seed → Redis seed
+- `services/music-service/src/MusicService.Api/Program.cs` — auto-migrate music_db tại startup (pattern giống user-service)
+
+### Changed
+
+**Backend — docker-compose GCS migration (2026-05-15)**
+- `infra/docker-compose.yml` — music-service + streaming-service: thay AWS S3/MinIO env vars bằng GCS env vars (`GCP__ProjectId`, `GCP__BucketName`, `GOOGLE_APPLICATION_CREDENTIALS`) + Cloudinary env vars cho music-service; auth-service thêm `Google__ClientId`; secrets volume mount `/app/secrets/` cho cả 2 services
+
 **Backend — API Alignment Plan + Google OAuth (2026-05-15)**
 - `.claude/plan/backend-api-alignment-frontend.md` — kế hoạch 9 phases align toàn bộ BE APIs với FE schema, sau khi Frontend UI hoàn thành 698/698 tests xanh
 - Khảo sát thực tế xác định 8 gaps: Auth LoginRequest field name, User DTO thiếu preferences + onboarding flag, Music DTO thiếu genreName/moodName/language/playCount, Analytics heatmap field rename, Notification DTO remap hoàn toàn, Streaming field name verify, Listening Party WS path mismatch, Infrastructure trống (seed data, Elasticsearch index, InfluxDB bucket)

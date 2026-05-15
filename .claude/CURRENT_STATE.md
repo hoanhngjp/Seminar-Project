@@ -157,7 +157,7 @@
 
 ### Backend API Alignment — FE ↔ BE Integration
 
-- [ ] Phase 1: Docker Compose up + EF Core migrations + InfluxDB bucket + Elasticsearch index + seed data
+- [X] Phase 1: Infrastructure setup — postgres init script, SeedData.sql, seed.sh, docker-compose GCS env vars, music-service auto-migrate (2026-05-15)
 - [ ] Phase 2A: Auth Service — accept `email` field + Google OAuth (`POST /api/v1/auth/google`, `Google.Apis.Auth` verify, auto-register)
 - [ ] Phase 2B: User Service — migration (preferred_artists, has_completed_onboarding) + update DTOs + JOIN preferences
 - [ ] Phase 3: Music Service — migration (mood column) + enrich SongResponseDto + GCS verify
@@ -186,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Backend API Alignment — Phase 1 (Infrastructure Setup) → bắt đầu implement
+- **Service/Task:** Backend API Alignment — Phase 2A (Auth Service: email field + Google OAuth)
 - **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
-- **Checkpoint gần nhất đã pass:** Frontend Phase 2 hoàn thành — build 0 errors, 698/698 tests xanh (2026-05-15)
+- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 1 hoàn thành (2026-05-15)
 - **Ngày làm việc gần nhất:** 2026-05-15
-- **Tiếp theo:** Phase 1 (docker compose, migrations, seed) → song song Phase 2–4, 6–8 → Phase 5, 9
+- **Tiếp theo:** Phase 2A (Auth) + Phase 2B (User) → song song Phase 3 (Music), 6 (Analytics), 7 (Notification), 8 (Party) → Phase 5 (Search), 9 (Recommendation)
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

@@ -1,5 +1,25 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [BACKEND / PHASE 1 — INFRASTRUCTURE SETUP] [DONE]
+
+**Task:** Tạo toàn bộ infrastructure setup cho Backend API Alignment: postgres init script, seed data, seed orchestrator, docker-compose update.
+
+**Files tạo mới:**
+- `infra/postgres/init/01_create_databases.sql` — tạo 7 databases (auth_db, user_db, music_db, streaming_db, listening_party_db, analytics_db, notification_db) khi postgres container khởi động lần đầu. Dùng `\connect postgres` + `CREATE DATABASE` + `GRANT`. Idempotent với docker volume.
+- `infra/seed/SeedData.sql` — seed music_db: 9 genres (Pop/Rock/R&B/Jazz/Classical/Electronic/Hip-Hop/Acoustic/Indie), 1 artist (`aa111111-bbbb-cccc-dddd-eeeeeeeeeeee` linked to creator@ user), 8 songs với GCS audio keys dạng `songs/{id}/audio.mp3`, 8 song_genres links. Seed user_db: listener preferences với `preferred_genres` = [Pop, Rock]. Tất cả dùng `ON CONFLICT DO NOTHING` — idempotent.
+- `infra/seed/seed.sh` — orchestrator chạy theo thứ tự: wait postgres healthy → EF migrations cho 3 services (auth/user/music) via `dotnet ef database update` → SeedData.sql → elasticsearch_seed.sh → redis_seed.sh. Đọc `.env` tự động.
+- `infra/secrets/.gitkeep` — thư mục chứa `google-cloud-key.json` (gitignored), được mount vào containers.
+
+**Files sửa:**
+- `infra/docker-compose.yml` — music-service: bỏ Aws__* env vars, thêm GCP__ProjectId + GCP__BucketName + GOOGLE_APPLICATION_CREDENTIALS + Cloudinary__* + secrets volume. streaming-service: tương tự, chỉ GCS (không cần Cloudinary). auth-service: thêm `Google__ClientId`.
+- `services/music-service/src/MusicService.Api/Program.cs` — thêm `db.Database.MigrateAsync()` tại startup (pattern giống user-service DbInitializer).
+
+**Key decisions:**
+- Song UUIDs dùng pattern `11111111-0000-0000-0000-00000000000X` — dễ nhớ, nhất quán giữa PostgreSQL và elasticsearch.
+- `seed.sh` KHÔNG chạy ngay sau Phase 1 — phải chờ Phase 2B (user migration) và Phase 3 (music mood migration) xong mới chạy 1 lần duy nhất.
+- `google-cloud-key.json` mount qua Docker volume `/app/secrets/`, không bake vào Docker image (security rule compliance).
+
+---
 [2026-05-15] [AUTH SERVICE / GOOGLE OAUTH — THÊM VÀO PLAN] [PLANNED]
 
 **Task:** Bổ sung Google OAuth login vào plan backend alignment. Env vars `GOOGLE_CLIENT_ID` và `GOOGLE_CLIENT_SECRET` đã được thêm vào `.env`.

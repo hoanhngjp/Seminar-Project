@@ -2,10 +2,12 @@ using System;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using MusicService.Api.Auth;
 using MusicService.Api.Middleware;
 using MusicService.Application;
 using MusicService.Infrastructure;
+using MusicService.Infrastructure.Data;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +38,13 @@ builder.Services.AddRateLimiter(options =>
 });
 
 var app = builder.Build();
+
+// Run EF migrations at startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<MusicDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {

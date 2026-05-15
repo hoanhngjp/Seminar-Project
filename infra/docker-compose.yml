@@ -267,6 +267,7 @@ services:
       - Jwt__RefreshTokenExpiry=${JWT_REFRESH_TOKEN_EXPIRY}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
       - Grpc__UserService=http://user-service:5300
+      - Google__ClientId=${GOOGLE_CLIENT_ID}
     depends_on:
       postgres:
         condition: service_healthy
@@ -324,11 +325,15 @@ services:
       - ConnectionStrings__MongoDB=${MONGO_URI}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
-      - Aws__AccessKeyId=${AWS_ACCESS_KEY_ID}
-      - Aws__SecretAccessKey=${AWS_SECRET_ACCESS_KEY}
-      - Aws__S3Bucket=${AWS_S3_BUCKET}
-      - Aws__S3Endpoint=${AWS_S3_ENDPOINT}
       - Elasticsearch__Url=${ELASTICSEARCH_URL}
+      - GCP__ProjectId=${GCP_PROJECT_ID}
+      - GCP__BucketName=${GCP_BUCKET_NAME}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/secrets/google-cloud-key.json
+      - Cloudinary__CloudName=${CLOUDINARY_CLOUD_NAME}
+      - Cloudinary__ApiKey=${CLOUDINARY_API_KEY}
+      - Cloudinary__ApiSecret=${CLOUDINARY_API_SECRET}
+    volumes:
+      - ../infra/secrets:/app/secrets:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -357,10 +362,11 @@ services:
       - ConnectionStrings__PostgreSQL=${STREAMING_DB_CONNECTION}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
-      - Aws__AccessKeyId=${AWS_ACCESS_KEY_ID}
-      - Aws__SecretAccessKey=${AWS_SECRET_ACCESS_KEY}
-      - Aws__S3Bucket=${AWS_S3_BUCKET}
-      - Aws__S3Endpoint=${AWS_S3_ENDPOINT}
+      - GCP__ProjectId=${GCP_PROJECT_ID}
+      - GCP__BucketName=${GCP_BUCKET_NAME}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/secrets/google-cloud-key.json
+    volumes:
+      - ../infra/secrets:/app/secrets:ro
     depends_on:
       postgres:
         condition: service_healthy
