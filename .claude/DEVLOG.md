@@ -1,5 +1,34 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [BACKEND / PHASE 9 — RECOMMENDATION SERVICE ALIGNMENT] [DONE]
+
+**Task:** Align Recommendation Service với FE schema + seed đúng data.
+
+**4 mismatches phát hiện và fix:**
+
+**M1 — redis_seed.sh fake IDs:** Script cũ seed `"song-001"`…`"song-050"` (fake IDs không tồn tại trong PostgreSQL). Fix: thay bằng 8 real UUIDs từ SeedData.sql với play_count thật làm score. TTL bị xóa vì local dev không có live Kafka events để refresh.
+
+**M2 — SongItem camelCase:** BE serialize `song_id` (snake_case), FE đọc `item.songId` → `undefined`. Fix: thêm `model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)` vào `SongItem` + `RecommendationData`, dùng `model_dump(by_alias=True)` ở route.
+
+**M3 — Music Service internal call stub:** `_trending_ids_to_candidates` chỉ là stub (comment "In a real system..."), trả empty title/artist. Fix: tạo `MusicServiceClient` (httpx, 200ms timeout, graceful degradation) + refactor `RecommendationService._build_candidates()`. Client khởi tạo trong lifespan, inject qua `app.state.music_client`.
+
+**M4 — Không có GCS audio files:** `s3_seed.sh` cũ upload vào MinIO với path sai, SeedData.sql reference GCS paths chưa tồn tại → Streaming Service tạo pre-signed URL trỏ file không có. Fix: tạo `infra/seed/gcs_seed.sh` upload placeholder mp3 cho 8 songs; thêm bước vào `seed.sh` (conditional — skip nếu không có gsutil hoặc GCP_BUCKET_NAME).
+
+**Changes:**
+- `infra/seed/redis_seed.sh` — 8 real UUIDs thay 50 fake IDs
+- `services/recommendation-service/src/recommendation_service/schemas/response.py` — `SongItem` + `RecommendationData` thêm `ConfigDict(alias_generator=to_camel)`
+- `services/recommendation-service/src/recommendation_service/api/routes/recommendations.py` — `model_dump(by_alias=True)`
+- `services/recommendation-service/src/recommendation_service/infrastructure/music_service_client.py` — mới: HTTP client gọi `/internal/songs/batch`
+- `services/recommendation-service/src/recommendation_service/services/recommendation_service.py` — `_build_candidates()` thay stub, nhận `MusicServiceClient`
+- `services/recommendation-service/src/recommendation_service/core/dependencies.py` — inject `music_client` từ `app.state`
+- `services/recommendation-service/src/recommendation_service/main.py` — khởi tạo `httpx.AsyncClient` + `MusicServiceClient` trong lifespan
+- `infra/seed/gcs_seed.sh` — mới: upload 8 placeholder audio files lên GCS
+- `infra/seed/seed.sh` — thêm bước 4 gọi `gcs_seed.sh`
+- `tests/integration/test_recommendations_api.py` — fix 1 assertion `song_id` → `songId`
+
+**Results:** 42/42 tests xanh.
+
+---
 [2026-05-16] [BACKEND / PHASE 5 — SEARCH SERVICE DTO ALIGNMENT] [DONE]
 
 **Task:** Align `SearchItem` DTO với FE schema `{id, name, type, score, coverUrl, artist?, duration?}`.

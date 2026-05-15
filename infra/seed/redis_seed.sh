@@ -1,5 +1,5 @@
 #!/bin/bash
-# Seed Redis với 50 trending songs cho Recommendation Service
+# Seed Redis với trending songs cho Recommendation Service
 # Dùng redis-cli qua docker exec
 #
 # Usage (từ repo root):
@@ -7,6 +7,9 @@
 #
 # Prerequisites:
 #   docker compose -f infra/docker-compose.yml up redis -d
+#
+# Song UUIDs phải khớp với SeedData.sql (music_db.songs).
+# Score = play_count từ SeedData.sql để Rule Engine scoring có ý nghĩa.
 
 set -e
 
@@ -21,30 +24,22 @@ redis_cmd() {
   docker exec "$CONTAINER" redis-cli -a "$REDIS_PASSWORD" --no-auth-warning "$@"
 }
 
-# Populate trending sorted set (score = play count proxy)
-echo "Seeding rec:trending:global with 50 songs..."
+# Populate trending sorted set (score = play_count từ SeedData.sql)
+# UUIDs khớp chính xác với SeedData.sql INSERT INTO songs
+echo "Seeding rec:trending:global with 8 seeded songs..."
 
 redis_cmd ZADD rec:trending:global \
-  9500 "song-001" 8200 "song-002" 7100 "song-003" \
-  6800 "song-004" 6500 "song-005" 6200 "song-006" \
-  5900 "song-007" 4500 "song-008" 4200 "song-009" \
-  3800 "song-010" 3600 "song-011" 3400 "song-012" \
-  3200 "song-013" 3000 "song-014" 2800 "song-015" \
-  2600 "song-016" 2400 "song-017" 2200 "song-018" \
-  2000 "song-019" 1900 "song-020" 1800 "song-021" \
-  1700 "song-022" 1600 "song-023" 1500 "song-024" \
-  1400 "song-025" 1300 "song-026" 1200 "song-027" \
-  1100 "song-028" 1000 "song-029" 950  "song-030" \
-  900  "song-031" 850  "song-032" 800  "song-033" \
-  750  "song-034" 700  "song-035" 650  "song-036" \
-  600  "song-037" 550  "song-038" 500  "song-039" \
-  480  "song-040" 460  "song-041" 440  "song-042" \
-  420  "song-043" 400  "song-044" 380  "song-045" \
-  360  "song-046" 340  "song-047" 320  "song-048" \
-  300  "song-049" 280  "song-050" > /dev/null
+  12000000 "11111111-0000-0000-0000-000000000002" \
+  8500000  "11111111-0000-0000-0000-000000000001" \
+  3500000  "11111111-0000-0000-0000-000000000008" \
+  3200000  "11111111-0000-0000-0000-000000000003" \
+  2700000  "11111111-0000-0000-0000-000000000007" \
+  2100000  "11111111-0000-0000-0000-000000000005" \
+  1800000  "11111111-0000-0000-0000-000000000004" \
+  980000   "11111111-0000-0000-0000-000000000006" > /dev/null
 
-# TTL: 1 hour
-redis_cmd EXPIRE rec:trending:global 3600 > /dev/null
+# No TTL — trending list is refreshed by Kafka Song_Played events at runtime.
+# During local dev without live events, we keep it indefinitely.
 
 COUNT=$(redis_cmd ZCARD rec:trending:global)
 echo "✅ rec:trending:global: $COUNT songs"

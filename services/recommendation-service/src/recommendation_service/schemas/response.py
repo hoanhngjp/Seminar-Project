@@ -1,7 +1,8 @@
 import datetime
 from typing import Any, Generic, Literal, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 T = TypeVar("T")
 
@@ -56,6 +57,8 @@ class ReasonItem(BaseModel):
 
 
 class SongItem(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     song_id: str
     title: str
     artist: str
@@ -64,4 +67,6 @@ class SongItem(BaseModel):
 
 
 class RecommendationData(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     items: list[SongItem]

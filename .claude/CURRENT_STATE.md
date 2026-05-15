@@ -166,7 +166,7 @@
 - [X] Phase 6: Analytics Service — HeatmapDTO `skipRate`→`count`, StatsDTO `DailyPlays`→`DailyListeners` — 32/32 tests xanh (2026-05-16)
 - [X] Phase 7: Notification Service — remap NotificationDto fields — 18/18 tests xanh (2026-05-16)
 - [X] Phase 8: Listening Party — Option B: FE hub URL `/hubs/party?roomId=` + vite `/hubs` proxy + MemberJoinMessage DisplayName/AvatarUrl — 14/14 FE tests xanh, 10/10 BE tests xanh (2026-05-16)
-- [ ] Phase 9: Recommendation Service — seed Redis trending + verify internal Music call
+- [X] Phase 9: Recommendation Service — seed Redis trending + verify internal Music call (2026-05-16)
 
 ### Week 10–12 — Polish + Demo
 
@@ -186,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Backend API Alignment — Phase 9 (Recommendation)
+- **Service/Task:** Backend API Alignment — **HOÀN THÀNH** (Phase 1–9)
 - **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
-- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 5 hoàn thành (2026-05-16) — Search DTO aligned
+- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 9 hoàn thành (2026-05-16) — Recommendation aligned
 - **Ngày làm việc gần nhất:** 2026-05-16
-- **Tiếp theo:** Phase 9 (Recommendation seed Redis trending + verify internal Music call)
+- **Tiếp theo:** AC checklist W11 (chạy verify_ac.sh, fix FAILs) + Demo script rehearsal
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

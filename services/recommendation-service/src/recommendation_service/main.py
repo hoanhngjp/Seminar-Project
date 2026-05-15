@@ -2,6 +2,7 @@ import datetime
 import logging
 from contextlib import asynccontextmanager
 
+import httpx
 import redis.asyncio as aioredis
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -10,6 +11,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from recommendation_service.api.routes import health, recommendations
 from recommendation_service.core.config import settings
 from recommendation_service.exceptions.domain_exceptions import DomainException
+from recommendation_service.infrastructure.music_service_client import MusicServiceClient
 from recommendation_service.kafka.consumer import start_consumer, stop_consumer
 from recommendation_service.middleware.correlation_id import CorrelationIdMiddleware
 
@@ -33,6 +35,11 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.warning("redis_not_available error=%s", str(exc))
 
+    # Startup — HTTP client for Music Service internal calls
+    http_client = httpx.AsyncClient()
+    app.state.music_client = MusicServiceClient(http_client)
+    logger.info("music_client_initialized base_url=%s", settings.music_service_base_url)
+
     # Startup — Kafka consumer (background task)
     consumer_task = await start_consumer(app)
     logger.info("kafka_consumer_started service=%s", settings.service_name)
@@ -41,6 +48,7 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     await stop_consumer(consumer_task)
+    await http_client.aclose()
     await redis_client.aclose()
     logger.info("shutdown_complete service=%s", settings.service_name)
 

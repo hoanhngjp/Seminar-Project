@@ -61,7 +61,7 @@ async def get_recommendations(
     )
 
     data = RecommendationData(items=items)
-    response = ApiResponse.ok(data.model_dump(), correlation_id, cache=cache_status)
+    response = ApiResponse.ok(data.model_dump(by_alias=True), correlation_id, cache=cache_status)
     return JSONResponse(content=response.model_dump(), status_code=200)
 
 

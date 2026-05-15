@@ -18,8 +18,9 @@
 #      — bao gồm: FixOAuthAndPreferencesSchema (Phase 2B)
 #                  AddMoodToSongs (Phase 3)
 #   3. Seed music_db + user_db data (SeedData.sql)
-#   4. Seed Elasticsearch index + documents
-#   5. Seed Redis trending data
+#   4. Seed GCS audio files (placeholder mp3 for 8 songs)
+#   5. Seed Elasticsearch index + documents
+#   6. Seed Redis trending data
 # ============================================================
 
 set -e
@@ -115,14 +116,24 @@ PGPASSWORD="$PG_PASS" psql \
 
 echo "  PostgreSQL seed done."
 
-# ---- 4. Seed Elasticsearch ----
+# ---- 4. Seed GCS audio files ----
 echo ""
-echo "[4/5] Seeding Elasticsearch..."
+echo "[4/6] Seeding GCS audio files (placeholder mp3 for 8 songs)..."
+if command -v gsutil &> /dev/null && [[ -n "${GCP_BUCKET_NAME:-}" ]]; then
+  bash "$SEED_DIR/gcs_seed.sh"
+else
+  echo "  ⚠️  gsutil not found or GCP_BUCKET_NAME not set — skipping GCS seed."
+  echo "      Run manually: bash infra/seed/gcs_seed.sh"
+fi
+
+# ---- 5. Seed Elasticsearch ----
+echo ""
+echo "[5/6] Seeding Elasticsearch..."
 bash "$SEED_DIR/elasticsearch_seed.sh"
 
-# ---- 5. Seed Redis trending ----
+# ---- 6. Seed Redis trending ----
 echo ""
-echo "[5/5] Seeding Redis trending data..."
+echo "[6/6] Seeding Redis trending data..."
 bash "$SEED_DIR/redis_seed.sh"
 
 echo ""

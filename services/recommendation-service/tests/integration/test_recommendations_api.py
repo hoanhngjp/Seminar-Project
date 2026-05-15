@@ -85,7 +85,7 @@ async def test_get_recommendations_cache_hit(client, fake_redis):
     assert response.status_code == 200
     body = response.json()
     assert body["meta"]["cache"] == "HIT"
-    assert body["data"]["items"][0]["song_id"] == "cached-song-1"
+    assert body["data"]["items"][0]["songId"] == "cached-song-1"
 
 
 @pytest.mark.asyncio
