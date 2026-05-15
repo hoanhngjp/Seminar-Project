@@ -1,5 +1,33 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / PHASE 2 — PHASE 5: 5 TRANG MỚI] [DONE]
+
+**Task:** Phase 5 — Tạo 5 trang mới từ Stitch designs, dùng mock data hoàn toàn (không gọi API).
+
+**Files đã tạo:**
+- `pages/SongDetailPage.tsx` — Hero blurred bg + gradient, cover 160px, artist link, play/queue/context actions, metadata grid (genre/mood/language/year/playCount), explainText card, related songs horizontal scroll
+- `pages/ArtistPage.tsx` — Hero banner + circular avatar 120px, stats bar (songs/plays/followers), follow toggle, popular tracks list, Fans Also Like horizontal scroll
+- `pages/creator/CreatorSongAnalyticsPage.tsx` — Role guard (Listener → redirect `/`), breadcrumb, song info card, TimeRangeSelector, 3 SongStatsCard KPIs, DailyListenersChart, HeatmapChart
+- `pages/ProfilePage.tsx` — Avatar with hover overlay + file input local preview, click-to-edit display name, email + lock icon (read-only), role badge, genre/artist chips, edit preferences link, logout
+- `pages/PreferencesPage.tsx` — GenreGrid reuse từ onboarding, artist search + filter dropdown + selected chips, sticky save bar, validation (< 3 genres → disabled + warning), save → toast (no API call)
+- Tests: 5 files, 92 tests tổng
+
+**Mock data đã thêm:**
+- `mocks/data.ts`: `MOCK_HEATMAP` (20 data points), `MOCK_DAILY_STATS` (7 ngày)
+
+**Bugs fixed trong tests:**
+- `SongDetailPage "renders hero section with song title"`: `getByText('Lạc Trôi')` ném `Found multiple elements` vì title xuất hiện cả ở hero H1 lẫn SongCard `song-001` trong related → fix dùng `getByRole('heading', { level: 1 })`
+- `PreferencesPage` 3 tests: `MOCK_PROFILE.preferredGenres = ['V-Pop', 'Acoustic', 'Indie']` (3 items) → `canSave=true` ngay từ đầu, không phải disabled. `artistSearch 'Sơn'` bị filter ra vì 'Sơn Tùng M-TP' đã selected → đổi search sang 'Vũ'. Sửa assertions để match actual behavior.
+
+**Key decisions:**
+- `CreatorSongAnalyticsPage` role guard dùng `<Navigate to="/" replace />` — redirect ngay khi render, không mount AppShell
+- `ProfilePage` avatar edit: `URL.createObjectURL(file)` cho local preview — không upload, không gọi API
+- `PreferencesPage` init genres từ `MOCK_PROFILE.preferredGenres` (UX tốt: user thấy sở thích cũ) — nên save button enabled ngay từ đầu nếu user đã có ≥ 3 genres
+- `PreferencesPage` sticky bar: `bottom-[72px] lg:bottom-0` — nhường chỗ cho MobileNav trên mobile
+
+**Tests:** 92 tests mới. 635/635 toàn bộ test suite xanh — không regression.
+
+---
 [2026-05-15] [FRONTEND / PHASE 2 — PHASE 4: QUEUEDRAWER + PLAYERSTORE QUEUE] [DONE]
 
 **Task:** Phase 4 — extend `playerStore` với queue state, tạo `QueueDrawer` component, wire vào `BottomPlayerBar`.

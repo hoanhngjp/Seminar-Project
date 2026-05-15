@@ -10,6 +10,11 @@ import NotificationsPage from './pages/NotificationsPage';
 import PartyLandingPage from './pages/party/PartyLandingPage';
 import PartyRoomPage from './pages/party/PartyRoomPage';
 import UploadPage from './pages/creator/UploadPage';
+import SongDetailPage from './pages/SongDetailPage';
+import ArtistPage from './pages/ArtistPage';
+import ProfilePage from './pages/ProfilePage';
+import PreferencesPage from './pages/PreferencesPage';
+import CreatorSongAnalyticsPage from './pages/creator/CreatorSongAnalyticsPage';
 
 function App() {
   return (
@@ -26,6 +31,11 @@ function App() {
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/party" element={<PartyLandingPage />} />
           <Route path="/party/:roomId" element={<PartyRoomPage />} />
+          <Route path="/songs/:songId" element={<SongDetailPage />} />
+          <Route path="/artists/:artistId" element={<ArtistPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings/preferences" element={<PreferencesPage />} />
+          <Route path="/dashboard/songs/:songId" element={<CreatorSongAnalyticsPage />} />
         </Routes>
       </BrowserRouter>
     </ToastProvider>

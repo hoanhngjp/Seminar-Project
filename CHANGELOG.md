@@ -16,6 +16,15 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — Phase 2 Phase 5: 5 trang mới (2026-05-15)**
+- `pages/SongDetailPage.tsx` — hero blurred background + gradient overlay, cover art 160px, artist link, actions (Play / Queue / More), metadata grid (genre/mood/language/year/playCount), explainText suggestion card, related songs horizontal scroll
+- `pages/ArtistPage.tsx` — hero banner với circular avatar 120px, stats bar (bài hát/lượt nghe/followers), follow toggle (useState), popular tracks list, Fans Also Like horizontal scroll
+- `pages/creator/CreatorSongAnalyticsPage.tsx` — role guard (Listener → redirect `/`), breadcrumb `Dashboard › {title}`, song info card, TimeRangeSelector, 3 KPI SongStatsCard, DailyListenersChart, HeatmapChart; dùng `MOCK_HEATMAP` + `MOCK_DAILY_STATS`
+- `pages/ProfilePage.tsx` — avatar với hover overlay + local preview (URL.createObjectURL), click-to-edit display name (inline input), email read-only + lock icon, role badge, genre/artist chips, link đến PreferencesPage, logout gọi `clearAuth()` + navigate `/login`
+- `pages/PreferencesPage.tsx` — GenreGrid reuse từ onboarding, artist search input + filter dropdown, selected artist chips với remove ×, sticky save bar `bottom-[72px] lg:bottom-0`, validation (< 3 genres → disabled + warning), save → toast success (không gọi API)
+- `mocks/data.ts` — thêm `MOCK_HEATMAP` (20 điểm dữ liệu) và `MOCK_DAILY_STATS` (7 ngày)
+- 92 tests mới — **635/635** toàn bộ suite xanh
+
 **Frontend — Phase 2 Phase 4: QueueDrawer + playerStore Queue (2026-05-15)**
 - `store/playerStore.ts` — thêm `queue: CurrentSong[]`, actions `addToQueue` / `removeFromQueue` / `clearQueue`; export `CurrentSong` interface
 - `features/player/components/QueueDrawer.tsx` — drawer 360px slide-in từ phải: now-playing row (ring-spotify-green), danh sách queue với drag handle (visual) + remove button hover, empty states, "Xóa tất cả"

@@ -483,6 +483,30 @@ export const MOCK_PROFILE: UserProfile = {
 };
 
 // ─────────────────────────────────────────────
+// Creator Analytics
+// ─────────────────────────────────────────────
+
+export const MOCK_HEATMAP = [
+  { second: 0,   count: 8  }, { second: 12,  count: 12 }, { second: 24,  count: 18 },
+  { second: 36,  count: 25 }, { second: 48,  count: 38 }, { second: 60,  count: 52 },
+  { second: 72,  count: 65 }, { second: 84,  count: 78 }, { second: 96,  count: 88 },
+  { second: 108, count: 90 }, { second: 120, count: 82 }, { second: 132, count: 68 },
+  { second: 144, count: 52 }, { second: 156, count: 40 }, { second: 168, count: 32 },
+  { second: 180, count: 24 }, { second: 192, count: 18 }, { second: 204, count: 14 },
+  { second: 216, count: 10 }, { second: 228, count: 7  },
+];
+
+export const MOCK_DAILY_STATS = [
+  { date: '08/05', count: 230 },
+  { date: '09/05', count: 185 },
+  { date: '10/05', count: 310 },
+  { date: '11/05', count: 275 },
+  { date: '12/05', count: 420 },
+  { date: '13/05', count: 380 },
+  { date: '14/05', count: 290 },
+];
+
+// ─────────────────────────────────────────────
 // Party
 // ─────────────────────────────────────────────
 
