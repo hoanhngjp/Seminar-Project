@@ -16,10 +16,13 @@ public record SongResponseDto(
     string? MoodName,
     string? Language,
     DateOnly? ReleaseDate,
-    long PlayCount
+    long PlayCount,
+    List<FeaturedArtistDto> FeaturedArtists
 );
 
 public record ArtistSummaryDto(Guid Id, string StageName);
+
+public record FeaturedArtistDto(Guid? Id, string Name);
 
 public record AlbumSummaryDto(Guid Id, string Title);
 

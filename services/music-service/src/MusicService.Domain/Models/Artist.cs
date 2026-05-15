@@ -20,4 +20,5 @@ public class Artist
 
     public ICollection<Album> Albums { get; set; } = new List<Album>();
     public ICollection<Song> Songs { get; set; } = new List<Song>();
+    public ICollection<SongArtist> SongArtists { get; set; } = new List<SongArtist>();
 }

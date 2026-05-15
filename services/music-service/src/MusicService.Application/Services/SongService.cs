@@ -168,7 +168,12 @@ public class SongService : ISongService
         song.Mood,
         song.Language,
         song.Album?.ReleaseDate,
-        song.PlayCount
+        song.PlayCount,
+        song.SongArtists
+            .Where(sa => sa.Role == "featured")
+            .OrderBy(sa => sa.DisplayOrder)
+            .Select(sa => new FeaturedArtistDto(sa.ArtistId, sa.Artist?.StageName ?? sa.DisplayName ?? string.Empty))
+            .ToList()
     );
 
     private static void ValidateFile(Stream stream, long length, string contentType)

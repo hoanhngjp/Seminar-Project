@@ -1,6 +1,29 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
-[2026-05-16] [MUSIC SERVICE — song_artists TABLE + SEED 29 SONGS] [IN PROGRESS]
+[2026-05-16] [MUSIC SERVICE — song_artists TABLE + SEED 30 SONGS] [DONE]
+
+**Task:** Thêm `song_artists` junction table + seed 30 bài nhạc thật từ GCS bucket.
+
+**Changes:**
+- `MusicService.Domain/Models/SongArtist.cs` — mới: domain model (SongId, ArtistId?, DisplayName?, Role, DisplayOrder)
+- `Song.cs` — thêm `ICollection<SongArtist> SongArtists`
+- `Artist.cs` — thêm `ICollection<SongArtist> SongArtists`
+- `MusicDbContext.cs` — thêm `DbSet<SongArtist>` + Fluent config (composite PK, nullable FK, cascade/setNull)
+- `MusicDbContextFactory.cs` — mới: IDesignTimeDbContextFactory cho EF tools (không cần GCP env var khi chạy migrations)
+- `Migration: AddSongArtistsTable` — generated bởi `dotnet ef migrations add`
+- `SongResponseDto.cs` — thêm `FeaturedArtistDto(Guid? Id, string Name)` + `List<FeaturedArtistDto> FeaturedArtists`
+- `MusicRepository.cs` — GetSongByIdAsync thêm `.Include(s => s.SongArtists).ThenInclude(sa => sa.Artist)`
+- `SongService.cs` — MapToResponseDto map featured artists từ `SongArtists.Where(Role=="featured")`
+- `infra/seed/SeedData.sql` — rewrite: 16 artists (xóa cũ, thêm thật) + 30 songs + song_genres + song_artists
+- `infra/seed/redis_seed.sh` — 30 real UUIDs thay 8 cũ, score = play_count thật
+- `infra/seed/elasticsearch_seed.sh` — 30 documents thật thay 10 cũ (UUIDs match SeedData.sql)
+
+**Quyết định:**
+- 30 bài thay vì 29 vì GCS bucket có thêm `「真夜中のドア〜stay with me」_ 松原みき` (bài gốc Miki Matsubara) bên cạnh Night Tempo remix — cả hai đều được seed
+- Storage key = exact GCS object name (có dấu tiếng Việt, brackets, special chars) — không encode
+- `IDesignTimeDbContextFactory` connect `localhost:5434` (local dev) — KHÔNG commit secret thật vì đây là credentials local chỉ dùng cho `dotnet ef`
+
+**Results:** Build 0 errors, 14/14 unit tests xanh.
 
 **Task:** Thêm `song_artists` junction table để support collab songs (primary + featured artists). Seed 29 bài nhạc thật từ GCS bucket `smart-music-microservices`.
 

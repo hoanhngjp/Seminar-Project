@@ -7,7 +7,9 @@
       "Bash(npm install *)",
       "Bash(npm test *)",
       "Bash(npx vitest *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "PowerShell(& \"E:\\\\Google\\\\google-cloud-sdk\\\\bin\\\\gsutil.cmd\" ls gs://smart-music-microservices/songs/ 2>&1)",
+      "Bash(dotnet ef *)"
     ]
   }
 }

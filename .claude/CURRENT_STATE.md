@@ -167,6 +167,8 @@
 - [X] Phase 7: Notification Service — remap NotificationDto fields — 18/18 tests xanh (2026-05-16)
 - [X] Phase 8: Listening Party — Option B: FE hub URL `/hubs/party?roomId=` + vite `/hubs` proxy + MemberJoinMessage DisplayName/AvatarUrl — 14/14 FE tests xanh, 10/10 BE tests xanh (2026-05-16)
 - [X] Phase 9: Recommendation Service — seed Redis trending + verify internal Music call (2026-05-16)
+- [X] song_artists junction table (EF Core migration AddSongArtistsTable) — FeaturedArtists in SongResponseDto (2026-05-16)
+- [X] Seed 30 songs thật từ GCS + 16 artists + song_artists collab records (2026-05-16)
 
 ### Week 10–12 — Polish + Demo
 
@@ -186,11 +188,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Add `song_artists` table + Seed 29 bài nhạc thật từ GCS
-- **File plan cần đọc:** `.claude/plan/song-artists-seed-29-songs.md`
-- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 9 hoàn thành (2026-05-16)
+- **Service/Task:** AC checklist W11 — chạy verify_ac.sh, fix FAILs
+- **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
+- **Checkpoint gần nhất đã pass:** song_artists table + seed 30 songs hoàn thành (2026-05-16)
 - **Ngày làm việc gần nhất:** 2026-05-16
-- **Tiếp theo:** Implement migration + seed, sau đó AC checklist W11
+- **Tiếp theo:** Chạy `bash infra/verify_ac.sh` → fix FAILs → verify thủ công SKIPs
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

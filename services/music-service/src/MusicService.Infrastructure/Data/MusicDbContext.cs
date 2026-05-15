@@ -14,6 +14,7 @@ public class MusicDbContext : DbContext
     public DbSet<Album> Albums { get; set; } = null!;
     public DbSet<Song> Songs { get; set; } = null!;
     public DbSet<SongGenre> SongGenres { get; set; } = null!;
+    public DbSet<SongArtist> SongArtists { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -86,6 +87,30 @@ public class MusicDbContext : DbContext
             entity.HasIndex(e => e.S3AudioKey).IsUnique();
             entity.HasIndex(e => e.PlayCount);
             entity.HasIndex(e => e.IsExplicit);
+        });
+
+        // SongArtist Configuration
+        modelBuilder.Entity<SongArtist>(entity =>
+        {
+            entity.ToTable("song_artists");
+            entity.HasKey(e => new { e.SongId, e.DisplayOrder });
+
+            entity.Property(e => e.Role).IsRequired().HasMaxLength(20).HasDefaultValue("primary");
+            entity.Property(e => e.DisplayName).HasMaxLength(150);
+
+            entity.HasOne(e => e.Song)
+                .WithMany(s => s.SongArtists)
+                .HasForeignKey(e => e.SongId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Artist)
+                .WithMany(a => a.SongArtists)
+                .HasForeignKey(e => e.ArtistId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+            entity.HasIndex(e => e.SongId);
+            entity.HasIndex(e => e.ArtistId);
         });
 
         // SongGenre Configuration

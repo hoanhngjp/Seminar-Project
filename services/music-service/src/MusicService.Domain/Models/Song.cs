@@ -27,4 +27,5 @@ public class Song
     public Artist Artist { get; set; } = null!;
     public Album? Album { get; set; }
     public ICollection<SongGenre> SongGenres { get; set; } = new List<SongGenre>();
+    public ICollection<SongArtist> SongArtists { get; set; } = new List<SongArtist>();
 }
