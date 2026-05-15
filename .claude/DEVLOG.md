@@ -1,5 +1,21 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [INFRA / POSTGRES PORT CONFLICT] [DONE]
+
+**Task:** Fix pgAdmin không kết nối được PostgreSQL Docker container.
+
+**Root cause:** Máy Windows có 2 native PostgreSQL instances đang listen trên cả port 5432 và 5433 (process `postgres.exe`). pgAdmin kết nối vào native PostgreSQL thay vì Docker container → password `smartmusic/changeme_local` không tồn tại trong native instance → FATAL authentication failed.
+
+**Fix:**
+- `infra/docker-compose.yml` — đổi port mapping postgres từ `5432:5432` → `5434:5432`
+- Port 5434 chỉ có Docker backend + WSL relay, không có native postgres
+
+**Kết nối pgAdmin đúng (đã verify hoạt động):**
+- Host: `localhost`, Port: `5434`, Database: `smartmusic`, Username: `smartmusic`, Password: `changeme_local`, SSL: Disable
+
+**Lưu ý:** Services C# kết nối PostgreSQL qua Docker internal network (không qua host port) nên thay đổi này không ảnh hưởng runtime.
+
+---
 [2026-05-15] [BACKEND / PHASE 2A+2B — AUTH + USER SERVICE ALIGNMENT] [DONE]
 
 **Task:** Align Auth Service và User Service với schema FE cần. Google OAuth login, fix field names, fix DB schema.

@@ -244,6 +244,7 @@
 | 2026-05-14 | Frontend | ToastProvider wrap toàn bộ app trong App.tsx — bất kỳ component nào cũng gọi `useToast().show()` cross-page. One-at-a-time toast (replace pattern). |
 | 2026-05-14 | Frontend | MobileNav `fixed bottom-0 lg:hidden z-[60]`. BottomPlayerBar đổi sang `bottom-14 lg:bottom-0` để nhường chỗ cho MobileNav trên mobile. AppShell main padding: `pb-[128px] lg:pb-[72px]`. |
 | 2026-05-14 | Frontend | Mock handler `GET /api/v1/notifications/unread` giờ trả ALL notifications (read + unread) + `totalUnread` count. NotificationsPage dùng toàn bộ items; Sidebar dùng `totalUnread` cho dot indicator. |
+| 2026-05-16 | Infra | `docker-compose.yml` postgres port đổi từ `5432` → `5434` (host) vì native Windows PostgreSQL chiếm cả 5432 lẫn 5433. pgAdmin kết nối: `localhost:5434`. C# services không bị ảnh hưởng (dùng Docker internal network). |
 
 ---
 

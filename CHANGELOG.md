@@ -35,6 +35,10 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**Infra — PostgreSQL port conflict với native Windows PostgreSQL (2026-05-16)**
+- `infra/docker-compose.yml` — đổi port mapping postgres từ `5432:5432` → `5434:5432` để tránh conflict với 2 native PostgreSQL instances đang chiếm port 5432 và 5433 trên máy Windows
+- Kết nối pgAdmin: `localhost:5434`, user `smartmusic`, password `changeme_local`
+
 **Frontend — Verification + UI bug fixes (2026-05-15)**
 - `Sidebar.tsx` — "Analytics" nav link đổi từ `/analytics` (không tồn tại) → `/dashboard`
 - `Sidebar.tsx` — UserMenuDropdown move ra ngoài `<nav>` stacking context; dùng `position: fixed` + `getBoundingClientRect()` + `zIndex: 60`; dropdown giờ hiển thị trên BottomPlayerBar đúng cách
