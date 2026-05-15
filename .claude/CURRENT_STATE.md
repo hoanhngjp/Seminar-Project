@@ -186,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Backend API Alignment — **HOÀN THÀNH** (Phase 1–9)
-- **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
-- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 9 hoàn thành (2026-05-16) — Recommendation aligned
+- **Service/Task:** Add `song_artists` table + Seed 29 bài nhạc thật từ GCS
+- **File plan cần đọc:** `.claude/plan/song-artists-seed-29-songs.md`
+- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 9 hoàn thành (2026-05-16)
 - **Ngày làm việc gần nhất:** 2026-05-16
-- **Tiếp theo:** AC checklist W11 (chạy verify_ac.sh, fix FAILs) + Demo script rehearsal
+- **Tiếp theo:** Implement migration + seed, sau đó AC checklist W11
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

@@ -1,5 +1,18 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [MUSIC SERVICE — song_artists TABLE + SEED 29 SONGS] [IN PROGRESS]
+
+**Task:** Thêm `song_artists` junction table để support collab songs (primary + featured artists). Seed 29 bài nhạc thật từ GCS bucket `smart-music-microservices`.
+
+**Quyết định thiết kế:**
+- Giữ `songs.artist_id` (NOT NULL) làm primary artist denormalized — backward compat
+- `song_artists` có `artist_id` nullable + `display_name` để support external artists (nhưng trong seed này tất cả featured artists đều có Artist record)
+- Tất cả 16 artists (11 primary + 5 featured-only) được tạo Artist record với fake `user_id` UUID (không có trong user_db — application-enforced, không có DB FK constraint)
+- Storage key format: `songs/FILENAME.mp3` — trỏ thẳng vào GCS object name (không cần re-upload/rename)
+
+**Plan file:** `.claude/plan/song-artists-seed-29-songs.md`
+
+---
 [2026-05-16] [BACKEND / PHASE 9 — RECOMMENDATION SERVICE ALIGNMENT] [DONE]
 
 **Task:** Align Recommendation Service với FE schema + seed đúng data.

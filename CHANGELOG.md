@@ -16,6 +16,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Music Service — song_artists Table + Real Song Seed (2026-05-16)**
+- `song_artists` junction table: support primary + featured artist per song (SongId, ArtistId nullable, DisplayName, Role, DisplayOrder)
+- 16 Artist records: Vũ., Sơn Tùng M-TP, Ngọt, TaynguyenSound, The Aaron Smith Experience, Miki Matsubara, Low G, Thắng, Dick, Tùng TeA, PC, Trang, Dear Jane, Night Tempo, Tofu, NewoulZ
+- 29 bài nhạc thật seed vào `music_db` với storage_key trỏ thẳng GCS bucket `smart-music-microservices`
+- `SongResponseDto` — thêm `FeaturedArtists: List<FeaturedArtistDto>` (backward compat, default empty)
+- `redis_seed.sh` + `elasticsearch_seed.sh` cập nhật với 29 song UUIDs mới
+
 **Backend — API Alignment Phase 5: Search Service DTO Fix (2026-05-16)**
 - `SearchItem` — đổi `Title` → `Name`, bỏ `Album`/`Genre` (FE không dùng), thêm `CoverUrl` (string?) và `Duration` (int? seconds) để khớp FE type `{id, name, type, score, coverUrl, artist?, duration?}`
 - `ElasticsearchSongDocument` — thêm `CoverUrl`, `DurationSec` để map từ ES document
