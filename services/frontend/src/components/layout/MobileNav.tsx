@@ -10,10 +10,11 @@ import JoinRoomModal from '../../features/party/components/JoinRoomModal';
 type PartyModal = 'none' | 'create' | 'join';
 
 const NAV_ITEMS = [
-  { to: '/',             label: 'Trang chủ', icon: 'home'          },
-  { to: '/search',       label: 'Tìm kiếm',  icon: 'search'        },
+  { to: '/',              label: 'Trang chủ', icon: 'home'          },
+  { to: '/search',        label: 'Tìm kiếm',  icon: 'search'        },
   { to: '/notifications', label: 'Thông báo', icon: 'notifications' },
-  { to: '/party',        label: 'Party',      icon: 'groups'        },
+  { to: '/party',         label: 'Party',     icon: 'groups'        },
+  { to: '/profile',       label: 'Hồ sơ',     icon: 'person'        },
 ];
 
 export default function MobileNav() {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { userService, type UserProfile } from '../../services/userService';
@@ -7,6 +7,7 @@ import type { ApiResponse } from '../../types/api';
 import type { Party } from '../../types/domain';
 import CreateRoomModal from '../../features/party/components/CreateRoomModal';
 import JoinRoomModal from '../../features/party/components/JoinRoomModal';
+import UserMenuDropdown from '../ui/UserMenuDropdown';
 
 interface NavItem {
   to: string;
@@ -39,9 +40,11 @@ export default function Sidebar() {
   const accessToken = useAuthStore((s) => s.accessToken);
   const role        = useAuthStore((s) => s.role);
 
-  const [profile,     setProfile]     = useState<UserProfile | null>(null);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [partyModal,  setPartyModal]  = useState<PartyModal>('none');
+  const [profile,      setProfile]     = useState<UserProfile | null>(null);
+  const [unreadCount,  setUnreadCount] = useState(0);
+  const [partyModal,   setPartyModal]  = useState<PartyModal>('none');
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuAnchorRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -191,21 +194,43 @@ export default function Sidebar() {
 
       {/* ── User bottom section ── */}
       <div className="p-4 mt-auto">
-        <div className="bg-dark-surface rounded-lg p-3 flex items-center gap-3 hover:bg-mid-dark transition-colors cursor-pointer group">
-          <div className="w-10 h-10 rounded-full border border-border-muted bg-mid-dark flex items-center justify-center flex-shrink-0">
-            <span className="material-symbols-outlined text-text-secondary text-[18px]">person</span>
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span
-              data-testid="sidebar-username"
-              className="font-bold text-sm group-hover:text-white transition-colors truncate"
-            >
-              {profile?.displayName ?? '···'}
-            </span>
-            <span className="text-xs text-text-secondary truncate">
-              {role === 'Creator' ? 'Creator' : role === 'Admin' ? 'Admin' : 'Listener'}
-            </span>
-          </div>
+        <div className="relative">
+          <button
+            ref={userMenuAnchorRef}
+            data-testid="user-menu-trigger"
+            aria-label="Mở menu người dùng"
+            onClick={() => setShowUserMenu((v) => !v)}
+            className="w-full bg-dark-surface rounded-lg p-3 flex items-center gap-3 hover:bg-mid-dark transition-colors cursor-pointer group"
+          >
+            <div className="w-10 h-10 rounded-full border border-border-muted bg-mid-dark flex items-center justify-center flex-shrink-0">
+              <span className="material-symbols-outlined text-text-secondary text-[18px]">person</span>
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span
+                data-testid="sidebar-username"
+                className="font-bold text-sm group-hover:text-white transition-colors truncate"
+              >
+                {profile?.displayName ?? '···'}
+              </span>
+              <span className="text-xs text-text-secondary truncate">
+                {role === 'Creator' ? 'Creator' : role === 'Admin' ? 'Admin' : 'Listener'}
+              </span>
+            </div>
+          </button>
+          {showUserMenu && (
+            <div className="absolute bottom-full left-0 mb-2">
+              <UserMenuDropdown
+                profile={
+                  profile
+                    ? { displayName: profile.displayName, email: profile.email, role: role ?? '' }
+                    : null
+                }
+                isOpen={showUserMenu}
+                onClose={() => setShowUserMenu(false)}
+                anchorRef={userMenuAnchorRef as React.RefObject<HTMLElement>}
+              />
+            </div>
+          )}
         </div>
       </div>
     </nav>

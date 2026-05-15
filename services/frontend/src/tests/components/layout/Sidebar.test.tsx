@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -155,6 +155,47 @@ describe('Sidebar — user bottom section', () => {
   it('shows Creator label for Creator role', () => {
     renderAuthenticated('Creator');
     expect(screen.getByText('Creator')).toBeInTheDocument();
+  });
+});
+
+describe('Sidebar — user menu dropdown', () => {
+  it('user bottom section renders as a button', () => {
+    renderAuthenticated();
+    expect(screen.getByTestId('user-menu-trigger')).toBeInTheDocument();
+    expect(screen.getByTestId('user-menu-trigger').tagName).toBe('BUTTON');
+  });
+
+  it('UserMenuDropdown is hidden by default', () => {
+    renderAuthenticated();
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('clicking user-menu-trigger opens UserMenuDropdown', async () => {
+    renderAuthenticated();
+    fireEvent.click(screen.getByTestId('user-menu-trigger'));
+    await waitFor(() => {
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+    });
+  });
+
+  it('UserMenuDropdown shows Profile and Preferences options when open', async () => {
+    renderAuthenticated();
+    fireEvent.click(screen.getByTestId('user-menu-trigger'));
+    await waitFor(() => {
+      expect(screen.getByRole('menuitem', { name: 'Profile' })).toBeInTheDocument();
+      expect(screen.getByRole('menuitem', { name: 'Preferences' })).toBeInTheDocument();
+      expect(screen.getByRole('menuitem', { name: 'Logout' })).toBeInTheDocument();
+    });
+  });
+
+  it('clicking outside closes UserMenuDropdown', async () => {
+    renderAuthenticated();
+    fireEvent.click(screen.getByTestId('user-menu-trigger'));
+    await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+    fireEvent.mouseDown(document.body);
+    await waitFor(() => {
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
   });
 });
 

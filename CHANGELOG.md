@@ -16,6 +16,11 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Frontend — Phase 2 Phase 7: Sidebar + MobileNav updates (2026-05-15)**
+- `Sidebar.tsx` — user bottom section giờ là button toggle: click mở `UserMenuDropdown` với options Profile / Preferences / Logout; click ngoài đóng menu; dropdown xuất hiện phía trên trigger (`bottom-full`)
+- `MobileNav.tsx` — thêm tab "Hồ sơ" (icon `person`, link `/profile`) làm item thứ 5 trong bottom nav mobile
+- 8 tests mới — **680/680** toàn bộ suite xanh
+
 **Frontend — Phase 2 Phase 6: Enhance HomePage + SearchPage + CreatorDashboardPage (2026-05-15)**
 - `features/search/components/ArtistCard.tsx` (mới) — card nghệ sĩ tròn 100px, floating play button với stopPropagation, click/keyboard → `/artists/:id`, `aria-label` đầy đủ
 - `pages/HomePage.tsx` — tích hợp `ContextSelector` (chip filter sáng/chiều/tối/khuya) + `ContextFeedSection` (danh sách `RecommendationFeedRow`); section feed chỉ hiện khi user chọn context cụ thể

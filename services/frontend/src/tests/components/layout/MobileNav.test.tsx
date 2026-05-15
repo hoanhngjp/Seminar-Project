@@ -83,6 +83,11 @@ describe('MobileNav — nav items', () => {
     expect(screen.getByText('Party')).toBeInTheDocument();
   });
 
+  it('renders Hồ sơ item', () => {
+    renderNav();
+    expect(screen.getByText('Hồ sơ')).toBeInTheDocument();
+  });
+
   it('marks active link with aria-current=page', () => {
     renderNav('/search');
     const searchLink = screen.getByText('Tìm kiếm').closest('a');
@@ -93,6 +98,18 @@ describe('MobileNav — nav items', () => {
     renderNav('/');
     const homeLink = screen.getByText('Trang chủ').closest('a');
     expect(homeLink).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('profile link navigates to /profile', () => {
+    renderNav();
+    const profileLink = screen.getByText('Hồ sơ').closest('a');
+    expect(profileLink).toHaveAttribute('href', '/profile');
+  });
+
+  it('profile link is active on /profile route', () => {
+    renderNav('/profile');
+    const profileLink = screen.getByText('Hồ sơ').closest('a');
+    expect(profileLink).toHaveAttribute('aria-current', 'page');
   });
 });
 

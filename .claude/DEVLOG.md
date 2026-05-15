@@ -1,5 +1,23 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [FRONTEND / PHASE 2 — PHASE 7: SIDEBAR + MOBILENAV UPDATES] [DONE]
+
+**Task:** Phase 7 — Tích hợp UserMenuDropdown vào Sidebar, thêm `/profile` link vào MobileNav.
+
+**Files đã sửa:**
+- `components/layout/Sidebar.tsx` — chuyển user bottom section từ `div` sang `button` có `ref` + `data-testid="user-menu-trigger"`. Thêm `showUserMenu` state + `userMenuAnchorRef`. Render `UserMenuDropdown` conditionally trong wrapper `absolute bottom-full left-0 mb-2` khi `showUserMenu=true`. Click ngoài → `onClose` → `showUserMenu=false`.
+- `components/layout/MobileNav.tsx` — thêm `{ to: '/profile', label: 'Hồ sơ', icon: 'person' }` vào `NAV_ITEMS`. Item 5 trong bottom bar mobile.
+
+**Tests: 8 tests mới, 680/680 xanh**
+- `tests/components/layout/Sidebar.test.tsx` — 5 tests mới trong describe `Sidebar — user menu dropdown`: button render, hidden by default, click opens, shows Profile/Preferences/Logout, click outside closes.
+- `tests/components/layout/MobileNav.test.tsx` — 3 tests mới: renders Hồ sơ item, href=/profile, active on /profile route.
+
+**Key decisions:**
+- UserMenuDropdown đặt trong wrapper `absolute bottom-full left-0 mb-2` (xuất hiện phía trên trigger) thay vì bên dưới — phù hợp vị trí trigger ở đáy sidebar.
+- Chỉ render wrapper khi `showUserMenu=true` (không render hidden dropdown) — tránh DOM clutter và test `queryByRole('menu')` đơn giản hơn.
+- MobileNav label dùng "Hồ sơ" (2 chữ ngắn) thay vì "Profile" để nhất quán với tiếng Việt toàn app.
+
+---
 [2026-05-15] [FRONTEND / PHASE 2 — PHASE 6: ENHANCE HOMEPAGE + SEARCHPAGE + CREATORDASHBOARD] [DONE]
 
 **Task:** Phase 6 — Tích hợp các component mới vào trang hiện có, thêm ArtistCard component mới.
