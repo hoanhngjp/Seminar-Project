@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\StreamingService.Application\StreamingService.Application.csproj" />
     <ProjectReference Include="..\..\src\StreamingService.Domain\StreamingService.Domain.csproj" />
+    <ProjectReference Include="..\..\src\StreamingService.Infrastructure\StreamingService.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,8 @@
-using Amazon.S3;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StreamingService.Application.Interfaces;
-using StreamingService.Application.Services;
 using StreamingService.Infrastructure.Http;
 using StreamingService.Infrastructure.Storage;
 
@@ -12,32 +12,20 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // S3 / MinIO
-        services.AddSingleton<IAmazonS3>(_ =>
+        // GCS UrlSigner (uses GOOGLE_APPLICATION_CREDENTIALS env var automatically)
+        services.AddSingleton<UrlSigner>(_ =>
         {
-            var serviceUrl = configuration["S3:ServiceURL"];
-            var s3Config = new AmazonS3Config
-            {
-                ForcePathStyle = true
-            };
-            if (!string.IsNullOrWhiteSpace(serviceUrl))
-                s3Config.ServiceURL = serviceUrl;
-
-            var accessKey = configuration["S3:AccessKey"]
-                ?? throw new InvalidOperationException("S3:AccessKey is required.");
-            var secretKey = configuration["S3:SecretKey"]
-                ?? throw new InvalidOperationException("S3:SecretKey is required.");
-
-            return new AmazonS3Client(
-                new Amazon.Runtime.BasicAWSCredentials(accessKey, secretKey),
-                s3Config);
+            var credential = GoogleCredential.GetApplicationDefault()
+                .CreateScoped("https://www.googleapis.com/auth/devstorage.read_only");
+            return UrlSigner.FromCredential(credential);
         });
 
-        services.AddScoped<IStoragePresigner, S3StoragePresigner>();
+        // Typed HttpClient for GCS range requests (IStoragePresigner → GcsStoragePresigner)
+        services.AddHttpClient<IStoragePresigner, GcsStoragePresigner>();
 
         // Music Service HTTP client
         var musicServiceUrl = configuration["MusicService:BaseUrl"]
-            ?? "http://localhost:5003";
+            ?? "http://music-service:80";
 
         services.AddHttpClient<IMusicServiceClient, MusicServiceClient>(client =>
         {

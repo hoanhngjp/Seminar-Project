@@ -1,4 +1,4 @@
-using Amazon.S3;
+using Google.Cloud.Storage.V1;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,31 +16,24 @@ public static class DependencyInjection
     {
         services.AddDbContext<MusicDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-            
-        // S3 / MinIO Configuration
-        services.AddSingleton<IAmazonS3>(sp =>
-        {
-            var s3Config = new AmazonS3Config
-            {
-                ServiceURL = configuration["S3:ServiceURL"],
-                ForcePathStyle = true // Required for MinIO
-            };
-            var credentials = new Amazon.Runtime.BasicAWSCredentials(
-                configuration["S3:AccessKey"], 
-                configuration["S3:SecretKey"]);
-            return new AmazonS3Client(credentials, s3Config);
-        });
 
-        services.AddScoped<IStorageService, S3StorageService>();
+        // GCS Configuration (uses GOOGLE_APPLICATION_CREDENTIALS env var automatically)
+        var bucketName = configuration["GCP:BucketName"]
+            ?? throw new InvalidOperationException("GCP:BucketName is required.");
+
+        services.AddSingleton<StorageClient>(_ => StorageClient.Create());
+        services.AddSingleton<IStorageService>(sp =>
+            new GcsStorageService(sp.GetRequiredService<StorageClient>(), bucketName));
+
         services.AddSingleton<IEventPublisher, KafkaEventPublisher>();
         services.AddScoped<IMusicRepository, MusicRepository>();
         services.AddSingleton<ISongCache, RedisSongCache>();
 
         // Redis Configuration
-        services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp =>
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
-            var redisConnectionString = configuration.GetConnectionString("Redis") ?? "localhost:6379";
-            return StackExchange.Redis.ConnectionMultiplexer.Connect(redisConnectionString);
+            var redisConnectionString = configuration["Redis:ConnectionString"] ?? "localhost:6379";
+            return ConnectionMultiplexer.Connect(redisConnectionString);
         });
 
         return services;

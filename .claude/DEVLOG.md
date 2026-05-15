@@ -1,5 +1,29 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [BACKEND / PHASE 4 — STREAMING + MUSIC GCS MIGRATION] [DONE]
+
+**Task:** Migrate Music Service và Streaming Service từ AWS S3 → Google Cloud Storage để khớp với docker-compose env vars.
+
+**Root cause:** docker-compose đã đổi sang `GCP__ProjectId`/`GCP__BucketName` (ASP.NET Core đọc thành `GCP:BucketName`) nhưng code vẫn đọc `S3:BucketName`, `S3:AccessKey`, `S3:SecretKey` → cả hai services fail to start trong Docker.
+
+**Field name `url`:** FE đọc `res.data.data.url` — khớp với BE đang trả. Không cần sửa.
+
+**Changes:**
+- `MusicService.Infrastructure/Services/GcsStorageService.cs` — mới: `StorageClient.Create()` (ADC), implement `IStorageService`
+- `MusicService.Infrastructure/DependencyInjection.cs` — swap `IAmazonS3`/`S3StorageService` → `StorageClient`/`GcsStorageService`; đọc `GCP:BucketName`; Redis đọc `Redis:ConnectionString`
+- `MusicService.Infrastructure.csproj` — swap `AWSSDK.S3` → `Google.Cloud.Storage.V1 4.10.*`
+- `StreamingService.Infrastructure/Storage/GcsStoragePresigner.cs` — mới: internal test constructor nhận `Func<>` thay vì `UrlSigner`; `GetRangeAsync` dùng signed URL + HttpClient Range
+- `StreamingService.Infrastructure/DependencyInjection.cs` — swap S3 → `UrlSigner.FromCredential(GoogleCredential.GetApplicationDefault())`; typed `AddHttpClient<IStoragePresigner, GcsStoragePresigner>()`
+- `StreamingService.Infrastructure.csproj` — swap `AWSSDK.S3` → `Google.Cloud.Storage.V1 4.10.*` + `Google.Apis.Auth 1.68.*`
+- `GcsStorageServiceTests.cs` (mới, 4 tests), `GcsStoragePresignerTests.cs` (mới, 4 tests)
+- Deleted: `S3StorageService.cs`, `S3StoragePresigner.cs`
+- Added Infrastructure project ref vào cả 2 UnitTests .csproj
+
+**Results:** 14/14 MusicService.UnitTests xanh, 11/11 StreamingService.UnitTests xanh.
+
+**Decision:** `GcsStoragePresigner` dùng internal constructor + `[assembly: InternalsVisibleTo("StreamingService.UnitTests")]` cho testability mà không cần extract thêm interface.
+
+---
 [2026-05-16] [BACKEND / PHASE 7 — NOTIFICATION SERVICE DTO ALIGNMENT] [DONE]
 
 **Task:** Remap `NotificationDto` để FE nhận đúng schema `{notificationId, message, read, createdAt, type?}`.

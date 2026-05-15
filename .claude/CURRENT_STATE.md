@@ -161,7 +161,7 @@
 - [X] Phase 2A: Auth Service — accept `email` field + Google OAuth (`POST /api/v1/auth/google`, `Google.Apis.Auth` verify, auto-register)
 - [X] Phase 2B: User Service — migration (preferred_artists nullable password_hash) + update DTOs + JOIN preferences
 - [X] Phase 3: Music Service — migration (mood column) + enrich SongResponseDto + GCS verify
-- [ ] Phase 4: Streaming Service — verify GCS pre-signed URL + field name alignment
+- [X] Phase 4: Streaming Service — GCS migration (Music+Streaming S3→GCS, field `url` ✅ match) — 14/14 + 11/11 tests xanh (2026-05-16)
 - [ ] Phase 5: Search Service — verify SearchResult DTO + seed Elasticsearch
 - [X] Phase 6: Analytics Service — HeatmapDTO `skipRate`→`count`, StatsDTO `DailyPlays`→`DailyListeners` — 32/32 tests xanh (2026-05-16)
 - [X] Phase 7: Notification Service — remap NotificationDto fields — 18/18 tests xanh (2026-05-16)
@@ -186,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Backend API Alignment — Phase 9 (Recommendation)
+- **Service/Task:** Backend API Alignment — Phase 5 (Search) + Phase 9 (Recommendation)
 - **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
-- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 8 hoàn thành (2026-05-16) — Party WS URL fix
+- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 4 hoàn thành (2026-05-16) — Music+Streaming GCS migration
 - **Ngày làm việc gần nhất:** 2026-05-16
-- **Tiếp theo:** Phase 4 (Streaming verify) + Phase 5 (Search verify) + Phase 9 (Recommendation seed Redis)
+- **Tiếp theo:** Phase 5 (Search verify DTO + seed Elasticsearch) → Phase 9 (Recommendation seed Redis)
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

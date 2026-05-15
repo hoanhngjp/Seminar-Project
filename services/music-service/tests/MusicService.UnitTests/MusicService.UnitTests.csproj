@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\MusicService.Application\MusicService.Application.csproj" />
     <ProjectReference Include="..\..\src\MusicService.Domain\MusicService.Domain.csproj" />
+    <ProjectReference Include="..\..\src\MusicService.Infrastructure\MusicService.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
