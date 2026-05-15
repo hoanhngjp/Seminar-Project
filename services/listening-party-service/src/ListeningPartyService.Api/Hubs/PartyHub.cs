@@ -44,6 +44,8 @@ public class PartyHub(IPartyService partyService, ILogger<PartyHub> logger) : Hu
         // Notify existing members that someone joined
         await Clients.OthersInGroup(roomId).SendAsync("MEMBER_JOIN", new MemberJoinMessage(
             userId,
+            userId,   // DisplayName — fallback to userId; upgrade to User Service lookup in Phase 2
+            null,
             DateTime.UtcNow.ToString("O")));
 
         logger.LogInformation("User {UserId} connected to room {RoomId} (connId={ConnId})",

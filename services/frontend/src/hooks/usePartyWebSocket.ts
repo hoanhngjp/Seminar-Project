@@ -39,7 +39,7 @@ export function usePartyWebSocket({
   const [status, setStatus] = useState<ConnectionStatus>('connecting');
 
   useEffect(() => {
-    const hubUrl = `/ws/v1/parties/${roomId}`;
+    const hubUrl = `/hubs/party?roomId=${roomId}`;
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {

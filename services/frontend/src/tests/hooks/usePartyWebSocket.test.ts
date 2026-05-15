@@ -107,7 +107,7 @@ describe('usePartyWebSocket', () => {
       renderPartyHook({ roomId: 'room-123', isHost: false });
       await act(async () => {});
       expect(mockBuilder.withUrl).toHaveBeenCalledWith(
-        '/ws/v1/parties/room-123',
+        '/hubs/party?roomId=room-123',
         expect.objectContaining({ accessTokenFactory: expect.any(Function) }),
       );
     });

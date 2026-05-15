@@ -9,6 +9,7 @@ export default defineConfig({
     proxy: {
       '/api': { target: 'http://localhost:5000', changeOrigin: true },
       '/ws': { target: 'http://localhost:5005', ws: true, changeOrigin: true },
+      '/hubs': { target: 'http://localhost:5005', ws: true, changeOrigin: true },
     },
   },
 });

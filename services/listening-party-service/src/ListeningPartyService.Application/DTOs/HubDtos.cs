@@ -23,6 +23,8 @@ public record SyncStateMessage(
 // Broadcast when a new user connects to the room
 public record MemberJoinMessage(
     string UserId,
+    string DisplayName,   // fallback = UserId when User Service lookup unavailable
+    string? AvatarUrl,    // nullable — not all users have avatars
     string JoinedAt);     // ISO 8601
 
 // Broadcast when a user disconnects

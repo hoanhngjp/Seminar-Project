@@ -165,7 +165,7 @@
 - [ ] Phase 5: Search Service — verify SearchResult DTO + seed Elasticsearch
 - [X] Phase 6: Analytics Service — HeatmapDTO `skipRate`→`count`, StatsDTO `DailyPlays`→`DailyListeners` — 32/32 tests xanh (2026-05-16)
 - [X] Phase 7: Notification Service — remap NotificationDto fields — 18/18 tests xanh (2026-05-16)
-- [ ] Phase 8: Listening Party — API Gateway WS route alias + verify SignalR events
+- [X] Phase 8: Listening Party — Option B: FE hub URL `/hubs/party?roomId=` + vite `/hubs` proxy + MemberJoinMessage DisplayName/AvatarUrl — 14/14 FE tests xanh, 10/10 BE tests xanh (2026-05-16)
 - [ ] Phase 9: Recommendation Service — seed Redis trending + verify internal Music call
 
 ### Week 10–12 — Polish + Demo
@@ -186,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Backend API Alignment — Phase 8 (Party WS)
+- **Service/Task:** Backend API Alignment — Phase 9 (Recommendation)
 - **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
-- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 7 hoàn thành (2026-05-16) — Notification Service 18/18 tests xanh
+- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 8 hoàn thành (2026-05-16) — Party WS URL fix
 - **Ngày làm việc gần nhất:** 2026-05-16
-- **Tiếp theo:** Phase 8 (Party WS — Option B: update FE useListeningParty URL)
+- **Tiếp theo:** Phase 4 (Streaming verify) + Phase 5 (Search verify) + Phase 9 (Recommendation seed Redis)
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |
