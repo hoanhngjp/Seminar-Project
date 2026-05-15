@@ -3,10 +3,10 @@ namespace SearchService.Application.DTOs;
 public record SearchItem(
     string Id,
     string Type,
-    string Title,
-    string Artist,
-    string? Album,
-    string Genre,
+    string Name,
+    string? Artist,
+    string? CoverUrl,
+    int? Duration,
     double Score
 );
 

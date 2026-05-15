@@ -1,5 +1,20 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [BACKEND / PHASE 5 — SEARCH SERVICE DTO ALIGNMENT] [DONE]
+
+**Task:** Align `SearchItem` DTO với FE schema `{id, name, type, score, coverUrl, artist?, duration?}`.
+
+**Root cause:** BE trả `Title` (FE cần `name`), thiếu `CoverUrl` và `Duration`, thừa `Album`/`Genre` không cần.
+
+**Changes:**
+- `SearchResponse.cs` — `SearchItem`: `Title`→`Name`, bỏ `Album`/`Genre`, thêm `CoverUrl: string?` + `Duration: int?`
+- `ElasticsearchSearchRepository.cs` — cập nhật constructor call + `ElasticsearchSongDocument` thêm `CoverUrl`, `DurationSec`
+- `elasticsearch_seed.sh` — thêm `cover_url`/`duration_sec` vào index mapping và 10 seed documents
+- Tests — cập nhật 3 `SearchItem(...)` constructor calls + 1 `.Title`→`.Name` assertion
+
+**Results:** 20/20 unit tests xanh (build từ đầu, không có regression).
+
+---
 [2026-05-16] [BACKEND / PHASE 4 — STREAMING + MUSIC GCS MIGRATION] [DONE]
 
 **Task:** Migrate Music Service và Streaming Service từ AWS S3 → Google Cloud Storage để khớp với docker-compose env vars.

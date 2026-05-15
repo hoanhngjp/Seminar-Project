@@ -35,7 +35,7 @@ public class SearchControllerTests
     {
         // AC5.1.1: "son tug" → 200 with items
         var fakeResult = new SearchResponse(
-            [new SearchItem("song-001", "song", "Noi Nay Co Anh", "Son Tung M-TP", null, "V-Pop", 9.5)],
+            [new SearchItem("song-001", "song", "Noi Nay Co Anh", "Son Tung M-TP", null, null, 9.5)],
             null, false);
 
         _serviceMock.Setup(s => s.SearchAsync("son tug", "all", 10, null, It.IsAny<CancellationToken>()))
@@ -165,7 +165,7 @@ public class SearchControllerTests
         // AC5.1.4: nextCursor and hasMore present when more results exist
         var cursor = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("10"));
         var fakeResult = new SearchResponse(
-            [new SearchItem("song-001", "song", "Title", "Artist", null, "Genre", 5.0)],
+            [new SearchItem("song-001", "song", "Title", "Artist", null, null, 5.0)],
             cursor,
             true);
 

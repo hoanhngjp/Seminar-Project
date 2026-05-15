@@ -162,7 +162,7 @@
 - [X] Phase 2B: User Service — migration (preferred_artists nullable password_hash) + update DTOs + JOIN preferences
 - [X] Phase 3: Music Service — migration (mood column) + enrich SongResponseDto + GCS verify
 - [X] Phase 4: Streaming Service — GCS migration (Music+Streaming S3→GCS, field `url` ✅ match) — 14/14 + 11/11 tests xanh (2026-05-16)
-- [ ] Phase 5: Search Service — verify SearchResult DTO + seed Elasticsearch
+- [X] Phase 5: Search Service — SearchItem DTO aligned (`name`, `coverUrl`, `duration`), seed script updated — 20/20 tests xanh (2026-05-16)
 - [X] Phase 6: Analytics Service — HeatmapDTO `skipRate`→`count`, StatsDTO `DailyPlays`→`DailyListeners` — 32/32 tests xanh (2026-05-16)
 - [X] Phase 7: Notification Service — remap NotificationDto fields — 18/18 tests xanh (2026-05-16)
 - [X] Phase 8: Listening Party — Option B: FE hub URL `/hubs/party?roomId=` + vite `/hubs` proxy + MemberJoinMessage DisplayName/AvatarUrl — 14/14 FE tests xanh, 10/10 BE tests xanh (2026-05-16)
@@ -186,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Backend API Alignment — Phase 5 (Search) + Phase 9 (Recommendation)
+- **Service/Task:** Backend API Alignment — Phase 9 (Recommendation)
 - **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
-- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 4 hoàn thành (2026-05-16) — Music+Streaming GCS migration
+- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 5 hoàn thành (2026-05-16) — Search DTO aligned
 - **Ngày làm việc gần nhất:** 2026-05-16
-- **Tiếp theo:** Phase 5 (Search verify DTO + seed Elasticsearch) → Phase 9 (Recommendation seed Redis)
+- **Tiếp theo:** Phase 9 (Recommendation seed Redis trending + verify internal Music call)
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

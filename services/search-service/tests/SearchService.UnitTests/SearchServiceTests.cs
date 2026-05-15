@@ -31,7 +31,7 @@ public class SearchServiceTests
             .ReturnsAsync((null as SearchResponse, false));
 
         var fakeResult = new SearchResponse(
-            [new SearchItem("song-001", "song", "Noi Nay Co Anh", "Son Tung M-TP", null, "V-Pop", 9.5)],
+            [new SearchItem("song-001", "song", "Noi Nay Co Anh", "Son Tung M-TP", null, null, 9.5)],
             null, false);
 
         _repoMock.Setup(r => r.SearchAsync("son tug", "all", 10, 0, It.IsAny<CancellationToken>()))
@@ -44,7 +44,7 @@ public class SearchServiceTests
 
         cacheHit.Should().BeFalse();
         result.Items.Should().HaveCount(1);
-        result.Items[0].Title.Should().Be("Noi Nay Co Anh");
+        result.Items[0].Name.Should().Be("Noi Nay Co Anh");
         _repoMock.Verify(r => r.SearchAsync("son tug", "all", 10, 0, It.IsAny<CancellationToken>()), Times.Once);
         _cacheMock.Verify(c => c.SetAsync(It.IsAny<string>(), fakeResult, It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -54,7 +54,7 @@ public class SearchServiceTests
     {
         // AC5.1.2: cache hit avoids Elasticsearch call
         var cached = new SearchResponse(
-            [new SearchItem("song-002", "song", "Lac Troi", "Son Tung M-TP", null, "V-Pop", 8.0)],
+            [new SearchItem("song-002", "song", "Lac Troi", "Son Tung M-TP", null, null, 8.0)],
             null, false);
 
         _cacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))

@@ -16,6 +16,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Backend — API Alignment Phase 5: Search Service DTO Fix (2026-05-16)**
+- `SearchItem` — đổi `Title` → `Name`, bỏ `Album`/`Genre` (FE không dùng), thêm `CoverUrl` (string?) và `Duration` (int? seconds) để khớp FE type `{id, name, type, score, coverUrl, artist?, duration?}`
+- `ElasticsearchSongDocument` — thêm `CoverUrl`, `DurationSec` để map từ ES document
+- `elasticsearch_seed.sh` — thêm `cover_url` (keyword) và `duration_sec` (integer) vào index mapping và 10 seed documents
+- **20/20 unit tests xanh** (2 `SearchItem` constructor calls và 1 `.Title`→`.Name` assertion cập nhật)
+
 **Backend — API Alignment Phase 7: Notification Service DTO Fix (2026-05-16)**
 - `NotificationDto` — remap hoàn toàn để khớp FE schema `{notificationId, message, read, createdAt, type?}`: `Id`→`NotificationId`, `Body`→`Message`, `Status==Read`→`Read` (bool), `Type` enum → `"new_release"`/`"system"` lowercase; bỏ `Title`, `ThumbnailUrl`, `ArtistId`, `SongId` (FE không dùng)
 - `NotificationService.GetUnreadAsync` — cập nhật mapper theo DTO mới; `type` dùng switch expression chuẩn lowercase

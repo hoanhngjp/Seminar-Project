@@ -50,10 +50,10 @@ public class ElasticsearchSearchRepository(
             return new SearchItem(
                 Id: doc.Id,
                 Type: "song",
-                Title: doc.Title,
+                Name: doc.Title,
                 Artist: doc.Artist,
-                Album: doc.Album,
-                Genre: doc.Genre,
+                CoverUrl: doc.CoverUrl,
+                Duration: doc.DurationSec,
                 Score: h.Score ?? 0
             );
         }).ToList();
@@ -80,5 +80,7 @@ internal record ElasticsearchSongDocument(
     string? Language,
     bool IsExplicit,
     bool IsPublished,
-    long PlayCount
+    long PlayCount,
+    string? CoverUrl,
+    int? DurationSec
 );
