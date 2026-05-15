@@ -155,6 +155,19 @@
 - [X] Phase 7: Creator Screens (UploadPage) — 15/15 tests xanh (2026-05-14)
 - [X] Phase 8: Notifications + Polish — NotificationsPage, NotificationRow, FilterPills, useNotifications, ToastProvider (global), MobileNav (mobile bottom nav), BottomPlayerBar mobile offset — 314/314 tests xanh (2026-05-14)
 
+### Backend API Alignment — FE ↔ BE Integration
+
+- [ ] Phase 1: Docker Compose up + EF Core migrations + InfluxDB bucket + Elasticsearch index + seed data
+- [ ] Phase 2A: Auth Service — accept `email` field + Google OAuth (`POST /api/v1/auth/google`, `Google.Apis.Auth` verify, auto-register)
+- [ ] Phase 2B: User Service — migration (preferred_artists, has_completed_onboarding) + update DTOs + JOIN preferences
+- [ ] Phase 3: Music Service — migration (mood column) + enrich SongResponseDto + GCS verify
+- [ ] Phase 4: Streaming Service — verify GCS pre-signed URL + field name alignment
+- [ ] Phase 5: Search Service — verify SearchResult DTO + seed Elasticsearch
+- [ ] Phase 6: Analytics Service — HeatmapDTO `skipRate`→`count`, StatsDTO `DailyPlays`→`DailyListeners`
+- [ ] Phase 7: Notification Service — remap NotificationDto fields
+- [ ] Phase 8: Listening Party — API Gateway WS route alias + verify SignalR events
+- [ ] Phase 9: Recommendation Service — seed Redis trending + verify internal Music call
+
 ### Week 10–12 — Polish + Demo
 
 - [X] Prometheus metrics expose trên tất cả services (prometheus-net 8.2 + fastapi-instrumentator 6.1)
@@ -173,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Frontend Phase 2 — HOÀN THÀNH (verified 2026-05-15)
-- **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** Verification + bug fixes — build 0 errors, 698/698 tests xanh (2026-05-15)
+- **Service/Task:** Backend API Alignment — Phase 1 (Infrastructure Setup) → bắt đầu implement
+- **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
+- **Checkpoint gần nhất đã pass:** Frontend Phase 2 hoàn thành — build 0 errors, 698/698 tests xanh (2026-05-15)
 - **Ngày làm việc gần nhất:** 2026-05-15
-- **Tiếp theo:** Week 10–12 — AC checklist (verify_ac.sh), demo script rehearsal, pre-upload demo songs
+- **Tiếp theo:** Phase 1 (docker compose, migrations, seed) → song song Phase 2–4, 6–8 → Phase 5, 9
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |
@@ -225,6 +238,7 @@
 | 2026-05-10 | All Services | `using Prometheus;` phải thêm explicit vào Program.cs — không nằm trong implicit usings |
 | 2026-05-13 | Music / Streaming / Infra | Chuyển storage backend từ AWS S3/MinIO → Google Cloud Storage (audio .mp3) + Cloudinary (avatar, ảnh bìa). Env vars mới: `GCP_PROJECT_ID`, `GCP_BUCKET_NAME`, `GOOGLE_APPLICATION_CREDENTIALS`, `CLOUDINARY_*`. Service Account Key JSON tại `infra/secrets/google-cloud-key.json` (gitignored). |
 | 2026-05-12 | User Service | Đổi `PreferredLanguages` thành `PreferredArtists` trong `UserPreferences`, và trả về `hasCompletedOnboarding` từ `GET /users/me` để FE redirect đúng. |
+| 2026-05-15 | Auth Service | Google OAuth login: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` thêm vào `.env`. Flow: FE nhận Google `id_token` → `POST /api/v1/auth/google` → verify bằng `Google.Apis.Auth` → auto-register nếu user mới → phát JWT. `password_hash` trở thành nullable để support OAuth users không có password. |
 | 2026-05-14 | Frontend | Vite WS proxy phải dùng `http://` target (không phải `ws://`) — `ws: true` flag đủ để handle WebSocket upgrade. |
 | 2026-05-14 | Frontend | Sidebar giờ render CreateRoomModal/JoinRoomModal trực tiếp (không navigate `/party`). `/party` route + PartyLandingPage vẫn còn trong App.tsx cho backward compat với tests. |
 | 2026-05-14 | Frontend | ToastProvider wrap toàn bộ app trong App.tsx — bất kỳ component nào cũng gọi `useToast().show()` cross-page. One-at-a-time toast (replace pattern). |

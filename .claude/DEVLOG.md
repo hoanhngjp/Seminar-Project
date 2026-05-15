@@ -1,5 +1,56 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [AUTH SERVICE / GOOGLE OAUTH — THÊM VÀO PLAN] [PLANNED]
+
+**Task:** Bổ sung Google OAuth login vào plan backend alignment. Env vars `GOOGLE_CLIENT_ID` và `GOOGLE_CLIENT_SECRET` đã được thêm vào `.env`.
+
+**Thiết kế flow:**
+- FE dùng Google JS SDK (hoặc `@react-oauth/google`) → nhận `id_token` (JWT do Google ký)
+- FE gửi `POST /api/v1/auth/google` với `{ idToken }` — endpoint public (skip JWT middleware)
+- Auth Service dùng `Google.Apis.Auth` NuGet để verify `id_token` với `GOOGLE_CLIENT_ID` làm audience
+- Extract: `email`, `name`, `picture`, `sub` (Google unique ID) từ payload
+- Gọi User Service gRPC `GetUserByEmail` → nếu NOT_FOUND → tự động gọi `CreateUser` (auto-register)
+- Phát JWT access token + HTTP-only refresh cookie như login thường
+
+**Changes cần implement:**
+- `Google.Apis.Auth` NuGet → `GoogleJsonWebSignature.ValidateAsync(idToken, { Audience: CLIENT_ID })`
+- `POST /api/v1/auth/google` controller endpoint
+- `GoogleTokenVerifier.cs` infrastructure class
+- `proto/user.proto` — thêm `GetUserByEmail` RPC
+- User Service migration: `password_hash` → nullable (OAuth users không có password)
+- API Gateway whitelist: `/api/v1/auth/google` skip JWT validation
+- FE `LoginPage.tsx` — thêm Google Sign-In button
+- FE `authService.ts` — thêm `googleSignIn(idToken)`
+
+**Key decision:**
+- Không dùng server-side OAuth callback (authorization code flow) vì FE là SPA — dùng implicit/token flow: FE nhận `id_token` từ Google, gửi thẳng lên BE để verify. An toàn vì `id_token` được verify bằng Google public keys.
+- `GOOGLE_CLIENT_SECRET` không dùng trong flow này (dành cho server-side code exchange) — giữ trong `.env` để dự phòng nếu cần server-side flow sau này.
+
+---
+[2026-05-15] [BACKEND / API ALIGNMENT PLAN — KHẢO SÁT + LẬP KẾ HOẠCH] [PLANNED]
+
+**Task:** Lập kế hoạch align toàn bộ BE APIs với schema FE cần sau khi Frontend UI hoàn thành.
+
+**Khảo sát thực tế — gaps phát hiện:**
+
+1. **Auth Service**: `LoginRequest.Username` — FE gửi field `email` nhưng BE expect `username`.
+2. **User Service**: `UserProfileDto` thiếu `preferredGenres[]`, `preferredArtists[]`, `hasCompletedOnboarding`. DB thiếu cột `has_completed_onboarding` và `preferred_artists` bị map nhầm sang column `preferred_languages`.
+3. **Music Service**: `SongResponseDto` thiếu `genreName`, `moodName`, `language`, `releaseDate`, `playCount`. Table `songs` không có cột `mood`.
+4. **Analytics Service**: Heatmap DTO trả field `skipRate` nhưng FE cần `count`. Stats DTO trả `DailyPlays[]{Date, Plays}` nhưng FE cần `dailyListeners[]{date, count}`.
+5. **Notification Service**: DTO fields lệch hoàn toàn — BE trả `{Id, Title, Body, Status}`, FE cần `{notificationId, message, read, createdAt, type}`.
+6. **Streaming Service**: Cần verify field name `url` vs `streamUrl` khớp với FE type, và GCS env vars đúng.
+7. **Listening Party**: FE gọi `/ws/v1/parties/{roomId}`, actual SignalR hub là `/hubs/party?roomId={roomId}` → cần API Gateway route alias.
+8. **Infrastructure**: DB drop sạch, không có seed data, Elasticsearch index chưa có, InfluxDB bucket chưa setup.
+
+**Kế hoạch 9 phases:** xem `.claude/plan/backend-api-alignment-frontend.md`
+
+**Quyết định kiến trúc:**
+- Phase 2A (Auth) và 2B (User) chạy song song — độc lập nhau.
+- Group A (Phase 2, 3, 4, 6, 7, 8) chạy song song sau Phase 1.
+- Group B (Phase 5, 9) chờ song data từ Phase 3 (Music seeded).
+- WS path fix: chọn Option A — API Gateway route alias, không sửa FE đã done.
+
+---
 [2026-05-15] [FRONTEND / VERIFICATION + BUG FIXES — TSC, BUILD, 3 UI BUGS] [DONE]
 
 **Task:** Chạy Verification Checklist sau khi hoàn thành Frontend Phase 2 (Phase 0–9). Fix lỗi TypeScript build + 3 UI bugs phát hiện khi verify thủ công.

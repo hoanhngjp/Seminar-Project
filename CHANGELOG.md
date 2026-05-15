@@ -14,6 +14,14 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Added
+
+**Backend — API Alignment Plan + Google OAuth (2026-05-15)**
+- `.claude/plan/backend-api-alignment-frontend.md` — kế hoạch 9 phases align toàn bộ BE APIs với FE schema, sau khi Frontend UI hoàn thành 698/698 tests xanh
+- Khảo sát thực tế xác định 8 gaps: Auth LoginRequest field name, User DTO thiếu preferences + onboarding flag, Music DTO thiếu genreName/moodName/language/playCount, Analytics heatmap field rename, Notification DTO remap hoàn toàn, Streaming field name verify, Listening Party WS path mismatch, Infrastructure trống (seed data, Elasticsearch index, InfluxDB bucket)
+- Dependency graph: Phase 1 (infra) → Group A song song (Phase 2–4, 6–8) → Group B (Phase 5, 9 cần song data)
+- **Google OAuth login** tích hợp vào Phase 2A: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` → `POST /api/v1/auth/google` mới; FE gửi Google `id_token` → BE verify bằng `Google.Apis.Auth` → auto-register user mới → phát JWT; `password_hash` trở thành nullable trong `users` table; `proto/user.proto` thêm `GetUserByEmail` RPC; FE thêm Google Sign-In button trên `LoginPage`
+
 ### Fixed
 
 **Frontend — Verification + UI bug fixes (2026-05-15)**
