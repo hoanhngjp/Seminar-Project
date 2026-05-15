@@ -15,11 +15,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
     {
-        // Docker sets ConnectionStrings__PostgreSQL; local dev may use USER_DB_CONNECTION_STRING or Postgres key
-        var connStr = Environment.GetEnvironmentVariable("USER_DB_CONNECTION_STRING")
-            ?? config["ConnectionStrings:PostgreSQL"]
-            ?? config.GetConnectionString("Postgres")
-            ?? throw new InvalidOperationException("PostgreSQL connection string is required.");
+        var connStr = config.GetConnectionString("Postgres")
+            ?? throw new InvalidOperationException("ConnectionStrings:Postgres is required.");
 
         services.AddDbContext<UserDbContext>(o => o.UseNpgsql(connStr));
 

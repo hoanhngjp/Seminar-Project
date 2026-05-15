@@ -247,6 +247,7 @@
 | 2026-05-16 | Infra | `docker-compose.yml` postgres port đổi từ `5432` → `5434` (host) vì native Windows PostgreSQL chiếm cả 5432 lẫn 5433. pgAdmin kết nối: `localhost:5434`. C# services không bị ảnh hưởng (dùng Docker internal network). |
 | 2026-05-16 | docker-compose | Connection string env var key phải khớp với key C# đọc: `ConnectionStrings__AuthDb` (auth), `ConnectionStrings__Postgres` (user), `ConnectionStrings__DefaultConnection` (music). Dùng sai key → service fallback về appsettings.Development.json → connect localhost thay vì Docker internal host. |
 | 2026-05-16 | appsettings.Development.json | Credentials cho local dev (dotnet ef, seed.sh): `Host=localhost;Port=5434;Username=smartmusic;Password=changeme_local`. Credentials này CHỈ dùng khi chạy từ host — Docker services đọc từ env var docker-compose. |
+| 2026-05-16 | auth/user-service | Connection string: mỗi service chỉ đọc 1 key duy nhất — `ConnectionStrings:AuthDb` (auth), `ConnectionStrings:Postgres` (user), `ConnectionStrings:DefaultConnection` (music). Fail fast với `InvalidOperationException` nếu thiếu key. `appsettings.json` base dùng `Host=postgres` (Docker internal); `appsettings.Development.json` dùng `Host=localhost:5434` (host dev). |
 
 ---
 

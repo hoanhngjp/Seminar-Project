@@ -43,13 +43,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(
-        builder.Configuration["USER_DB_CONNECTION_STRING"]
-            ?? builder.Configuration.GetConnectionString("Postgres")
-            ?? "Host=localhost;Database=test")
+        builder.Configuration.GetConnectionString("Postgres")
+            ?? throw new InvalidOperationException("ConnectionStrings:Postgres is required."))
     .AddRedis(
-        builder.Configuration["REDIS_CONNECTION_STRING"]
-            ?? builder.Configuration["Redis:ConnectionString"]
-            ?? "localhost:6379");
+        builder.Configuration["Redis:ConnectionString"]
+            ?? throw new InvalidOperationException("Redis:ConnectionString is required."));
 
 var app = builder.Build();
 

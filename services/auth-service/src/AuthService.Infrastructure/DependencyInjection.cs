@@ -17,10 +17,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // PostgreSQL — docker sets ConnectionStrings__PostgreSQL, local fallback to AuthDb
-        var pgConn = configuration["ConnectionStrings:PostgreSQL"]
-            ?? configuration.GetConnectionString("AuthDb")
-            ?? throw new InvalidOperationException("PostgreSQL connection string is required.");
+        var pgConn = configuration.GetConnectionString("AuthDb")
+            ?? throw new InvalidOperationException("ConnectionStrings:AuthDb is required.");
         services.AddDbContext<AuthDbContext>(options => options.UseNpgsql(pgConn));
 
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();

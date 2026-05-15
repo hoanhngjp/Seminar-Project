@@ -50,6 +50,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**Infra — Connection string single-key + appsettings.json cleanup (2026-05-16)**
+- `auth-service/DependencyInjection.cs` — xóa fallback chain, chỉ đọc `ConnectionStrings:AuthDb`; fail fast nếu thiếu
+- `user-service/DependencyInjection.cs` — xóa chain 3 bước, chỉ đọc `ConnectionStrings:Postgres`; fail fast nếu thiếu
+- `user-service/Program.cs` — health check dùng cùng key đơn, không fallback `localhost`
+- `auth-service/appsettings.json` + `user-service/appsettings.json` — thay credentials cũ `postgres/4L27hN04@:5432` bằng Docker internal hostname `postgres:5432` với credentials mới
+
 **Infra — PostgreSQL port conflict với native Windows PostgreSQL (2026-05-16)**
 - `infra/docker-compose.yml` — đổi port mapping postgres từ `5432:5432` → `5434:5432` để tránh conflict với 2 native PostgreSQL instances đang chiếm port 5432 và 5433 trên máy Windows
 - Kết nối pgAdmin: `localhost:5434`, user `smartmusic`, password `changeme_local`

@@ -1,5 +1,26 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [INFRA / CONNECTION STRING — SINGLE KEY + APPSETTINGS CLEANUP] [DONE]
+
+**Task:** Đảm bảo các C# services đọc connection string từ docker-compose env var (không fallback về appsettings.json `localhost`).
+
+**Root cause phát hiện thêm:** Dù docker-compose key đã đúng (fix hôm trước), code C# của auth-service và user-service vẫn có fallback chain nhiều bước dễ che giấu lỗi cấu hình. Ngoài ra `appsettings.json` (base) của auth + user vẫn chứa credentials cũ `postgres/4L27hN04@:5432`.
+
+**Changes:**
+- `auth-service/DependencyInjection.cs` — xóa nhánh đọc `ConnectionStrings:PostgreSQL` (key không có trong docker-compose), chỉ đọc `ConnectionStrings:AuthDb`; fail fast với `InvalidOperationException` nếu thiếu
+- `user-service/DependencyInjection.cs` — xóa chain 3 bước (`USER_DB_CONNECTION_STRING` → `ConnectionStrings:PostgreSQL` → `ConnectionStrings:Postgres`), chỉ đọc `ConnectionStrings:Postgres`
+- `user-service/Program.cs` — health check AddNpgSql/AddRedis cũng đọc cùng key đơn, fail fast thay vì fallback `localhost`
+- `auth-service/appsettings.json` — đổi `Host=localhost;Port=5432;Username=postgres;Password=postgres` → `Host=postgres;Port=5432;Username=smartmusic;Password=changeme_local` (Docker internal hostname)
+- `user-service/appsettings.json` — đổi `Host=localhost;Port=5432;Username=postgres;Password=4L27hN04@` → `Host=postgres;Port=5432;Username=smartmusic;Password=changeme_local`
+
+**Logic ưu tiên sau fix:**
+1. Docker: `ConnectionStrings__X` env var → service dùng Docker internal postgres
+2. Local dev: `appsettings.Development.json` → `localhost:5434`
+3. Fallback cuối: `appsettings.json` → `postgres` hostname (chỉ hoạt động trong Docker network)
+
+**Services không cần sửa:** music-service (đã đúng), streaming/analytics/notification/search/listening-party (không dùng PostgreSQL).
+
+---
 [2026-05-16] [BACKEND / PHASE 3 — MUSIC SERVICE ALIGNMENT] [DONE]
 
 **Task:** Enrich Music Service để FE nhận đủ fields: `genreName`, `moodName`, `language`, `releaseDate`, `playCount`.
