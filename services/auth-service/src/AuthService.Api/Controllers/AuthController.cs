@@ -60,6 +60,32 @@ public class AuthController(IAuthService authService) : ControllerBase
         return Ok(ApiResponse<object>.CreateSuccess(dto, HttpContext));
     }
 
+    // Contract-First Checklist — POST /api/v1/auth/google
+    // [1] POST /api/v1/auth/google
+    // [2] Body: { idToken: string }  (Google id_token from frontend SDK)
+    // [3] 200: { success, data: { accessToken, expiresIn }, meta, error:null }
+    //         Cookie: refreshToken (HTTP-only)
+    // [4] 400 VALIDATION_ERROR (idToken missing)
+    //     401 UNAUTHORIZED (Google token invalid/expired)
+    //     500 INTERNAL_ERROR
+    // [5] No auth required (public endpoint)
+    // [6] 500ms
+    // [7] YES
+    // [8] Auto-registers new users. No password stored.
+    [HttpPost("google")]
+    public async Task<IActionResult> GoogleSignIn([FromBody] GoogleAuthRequest request, CancellationToken ct)
+    {
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        var userAgent = Request.Headers.UserAgent.ToString();
+
+        var response = await authService.GoogleSignInAsync(request.IdToken, ipAddress, userAgent, ct);
+
+        AppendRefreshTokenCookie(response.RefreshToken.ToString());
+
+        var dto = new { response.AccessToken, response.ExpiresIn };
+        return Ok(ApiResponse<object>.CreateSuccess(dto, HttpContext));
+    }
+
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(CancellationToken ct)
     {

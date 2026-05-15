@@ -33,6 +33,13 @@ service UserService {
   //   INVALID_ARGUMENT — validation error (missing/invalid fields, weak password)
   //   UNAVAILABLE     — database unreachable
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+
+  // GetUserByEmail looks up a user by email address.
+  // Called by Auth Service during Google OAuth sign-in to check if user exists.
+  // gRPC Status Codes:
+  //   OK        — user found
+  //   NOT_FOUND — no user with the given email exists
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserByEmailResponse);
 }
 
 // ---------------------------------------------------------------------------
@@ -122,6 +129,7 @@ message CreateUserRequest {
   string email = 1;
 
   // password is the plaintext password. User Service hashes it with BCrypt.
+  // Leave empty when is_oauth = true.
   string password = 2;
 
   // display_name is the user-facing name shown in the UI.
@@ -129,6 +137,27 @@ message CreateUserRequest {
 
   // role defaults to LISTENER if not specified or ROLE_UNSPECIFIED.
   Role role = 4;
+
+  // is_oauth: if true, password is not required and password_hash is stored as null.
+  // Used for Google OAuth auto-registration.
+  bool is_oauth = 5;
+
+  // picture_url: avatar URL from OAuth provider (optional, stored as avatar_url).
+  string picture_url = 6;
+}
+
+// GetUserByEmailRequest identifies the user to look up by email.
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
+// GetUserByEmailResponse is returned on OK status.
+message GetUserByEmailResponse {
+  string user_id = 1;
+  string email = 2;
+  string display_name = 3;
+  Role role = 4;
+  bool is_active = 5;
 }
 
 // CreateUserResponse is returned on a successful OK status.

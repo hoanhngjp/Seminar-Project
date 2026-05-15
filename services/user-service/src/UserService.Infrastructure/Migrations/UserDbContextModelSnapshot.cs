@@ -107,7 +107,6 @@ namespace UserService.Infrastructure.Migrations
                         .HasColumnName("last_login_at");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
 
@@ -187,8 +186,8 @@ namespace UserService.Infrastructure.Migrations
                     b.Property<List<string>>("PreferredArtists")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("varchar(10)[]")
-                        .HasColumnName("preferred_languages")
+                        .HasColumnType("text[]")
+                        .HasColumnName("preferred_artists")
                         .HasDefaultValueSql("'{}'");
 
                     b.Property<List<Guid>>("PreferredGenres")

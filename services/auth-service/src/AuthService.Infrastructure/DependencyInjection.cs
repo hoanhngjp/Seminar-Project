@@ -7,6 +7,7 @@ using AuthService.Infrastructure.Repositories;
 using AuthService.Infrastructure.Security;
 using AuthService.Infrastructure.Redis;
 using AuthService.Infrastructure.Grpc;
+using AuthService.Infrastructure.Google;
 using StackExchange.Redis;
 using SmartMusic.User.Grpc;
 
@@ -44,6 +45,7 @@ public static class DependencyInjection
             EnableMultipleHttp2Connections = true
         });
         services.AddScoped<IUserGrpcClient, UserGrpcClient>();
+        services.AddSingleton<IGoogleTokenVerifier, GoogleTokenVerifier>();
 
         return services;
     }

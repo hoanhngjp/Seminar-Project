@@ -18,6 +18,7 @@ public class AuthServiceTests
     private readonly Mock<IRefreshTokenRepository> _refreshTokenRepoMock = new();
     private readonly Mock<ITokenBlacklistRepository> _blacklistRepoMock = new();
     private readonly Mock<ICacheService> _cacheMock = new();
+    private readonly Mock<IGoogleTokenVerifier> _googleVerifierMock = new();
 
     private readonly Application.Services.AuthService _sut;
 
@@ -28,21 +29,22 @@ public class AuthServiceTests
             _tokenGeneratorMock.Object,
             _refreshTokenRepoMock.Object,
             _blacklistRepoMock.Object,
-            _cacheMock.Object
+            _cacheMock.Object,
+            _googleVerifierMock.Object
         );
     }
 
     [Fact]
     public async Task LoginAsync_ValidCredentials_ReturnsTokens()
     {
-        // Arrange
-        var request = new LoginRequest { Username = "test", Password = "password" };
+        // Arrange — FE gửi email field (không phải username)
+        var request = new LoginRequest { Email = "test@example.com", Password = "password" };
         var userId = Guid.NewGuid().ToString();
         var role = "Listener";
 
         _cacheMock.Setup(c => c.IncrementLoginAttemptAsync(It.IsAny<string>(), It.IsAny<TimeSpan>()))
             .ReturnsAsync(1);
-        _userClientMock.Setup(u => u.VerifyCredentialsAsync(request.Username, request.Password, It.IsAny<CancellationToken>()))
+        _userClientMock.Setup(u => u.VerifyCredentialsAsync(request.Email, request.Password, It.IsAny<CancellationToken>()))
             .ReturnsAsync((userId, role));
         _tokenGeneratorMock.Setup(t => t.GenerateAccessToken(It.IsAny<Guid>(), role, It.IsAny<int>()))
             .Returns("access_token");
@@ -55,15 +57,15 @@ public class AuthServiceTests
         result.AccessToken.Should().Be("access_token");
         result.RefreshToken.Should().NotBeEmpty();
         _refreshTokenRepoMock.Verify(r => r.AddAsync(It.Is<RefreshToken>(rt => rt.UserId.ToString() == userId), It.IsAny<CancellationToken>()), Times.Once);
-        _cacheMock.Verify(c => c.ClearLoginAttemptsAsync(request.Username), Times.Once);
+        _cacheMock.Verify(c => c.ClearLoginAttemptsAsync(request.Email), Times.Once);
     }
 
     [Fact]
     public async Task LoginAsync_AccountLocked_ThrowsAccountLockedException()
     {
         // Arrange
-        var request = new LoginRequest { Username = "locked", Password = "password" };
-        
+        var request = new LoginRequest { Email = "locked@example.com", Password = "password" };
+
         _cacheMock.Setup(c => c.IncrementLoginAttemptAsync(It.IsAny<string>(), It.IsAny<TimeSpan>()))
             .ReturnsAsync(6); // 5 is limit
 
@@ -212,5 +214,82 @@ public class AuthServiceTests
         await act.Should().ThrowAsync<ForbiddenException>()
             .WithMessage("*reuse detected*");
         _refreshTokenRepoMock.Verify(r => r.RevokeAllForUserAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    // -------------------------------------------------------------------------
+    // GoogleSignInAsync tests
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task GoogleSignInAsync_ExistingUser_ReturnsTokens()
+    {
+        // Arrange — Google token valid, user already registered
+        var userId = Guid.NewGuid().ToString();
+        var payload = new GooglePayload("user@gmail.com", "User Name", null, "google-sub-123");
+
+        _googleVerifierMock.Setup(g => g.VerifyAsync("valid-id-token", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(payload);
+        _userClientMock.Setup(u => u.GetUserByEmailAsync("user@gmail.com", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((userId, "Listener"));
+        _tokenGeneratorMock.Setup(t => t.GenerateAccessToken(It.IsAny<Guid>(), "Listener", It.IsAny<int>()))
+            .Returns("access_token");
+
+        // Act
+        var result = await _sut.GoogleSignInAsync("valid-id-token", "127.0.0.1", "agent", CancellationToken.None);
+
+        // Assert
+        result.AccessToken.Should().Be("access_token");
+        _userClientMock.Verify(u => u.CreateOAuthUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task GoogleSignInAsync_NewUser_AutoRegistersAndReturnsTokens()
+    {
+        // Arrange — Google token valid, user NOT in system yet → auto-register
+        var newUserId = Guid.NewGuid().ToString();
+        var payload = new GooglePayload("new@gmail.com", "New User", "https://pic.url/avatar.jpg", "sub-new");
+
+        _googleVerifierMock.Setup(g => g.VerifyAsync("valid-id-token", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(payload);
+        _userClientMock.Setup(u => u.GetUserByEmailAsync("new@gmail.com", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ValueTuple<string, string>?)null);
+        _userClientMock.Setup(u => u.CreateOAuthUserAsync("new@gmail.com", "New User", "https://pic.url/avatar.jpg", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new RegisterResponse { UserId = newUserId, Email = "new@gmail.com", DisplayName = "New User", Role = "Listener" });
+        _tokenGeneratorMock.Setup(t => t.GenerateAccessToken(It.IsAny<Guid>(), "Listener", It.IsAny<int>()))
+            .Returns("new_access_token");
+
+        // Act
+        var result = await _sut.GoogleSignInAsync("valid-id-token", "127.0.0.1", "agent", CancellationToken.None);
+
+        // Assert
+        result.AccessToken.Should().Be("new_access_token");
+        _userClientMock.Verify(u => u.CreateOAuthUserAsync("new@gmail.com", "New User", "https://pic.url/avatar.jpg", It.IsAny<CancellationToken>()), Times.Once);
+        _refreshTokenRepoMock.Verify(r => r.AddAsync(It.IsAny<RefreshToken>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task GoogleSignInAsync_InvalidToken_ThrowsUnauthorized()
+    {
+        // Arrange — Google verification fails
+        _googleVerifierMock.Setup(g => g.VerifyAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Token signature invalid."));
+
+        // Act
+        var act = async () => await _sut.GoogleSignInAsync("bad-token", null, null, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<UnauthorizedException>()
+            .Where(e => e.Message.Contains("invalid") || e.ErrorCode == "UNAUTHORIZED");
+    }
+
+    [Fact]
+    public async Task GoogleSignInAsync_MissingIdToken_ThrowsValidationException()
+    {
+        // Arrange — empty idToken
+        var act = async () => await _sut.GoogleSignInAsync("", null, null, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<ValidationException>()
+            .WithMessage("*idToken*");
     }
 }

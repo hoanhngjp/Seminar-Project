@@ -6,7 +6,7 @@ public class User
     public string Email { get; set; } = string.Empty;
     public string Username { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
-    public string PasswordHash { get; set; } = string.Empty;
+    public string? PasswordHash { get; set; }
     public string Role { get; set; } = "Listener";
     public string? AvatarUrl { get; set; }
     public string? Bio { get; set; }

@@ -158,8 +158,8 @@
 ### Backend API Alignment — FE ↔ BE Integration
 
 - [X] Phase 1: Infrastructure setup — postgres init script, SeedData.sql, seed.sh, docker-compose GCS env vars, music-service auto-migrate (2026-05-15)
-- [ ] Phase 2A: Auth Service — accept `email` field + Google OAuth (`POST /api/v1/auth/google`, `Google.Apis.Auth` verify, auto-register)
-- [ ] Phase 2B: User Service — migration (preferred_artists, has_completed_onboarding) + update DTOs + JOIN preferences
+- [X] Phase 2A: Auth Service — accept `email` field + Google OAuth (`POST /api/v1/auth/google`, `Google.Apis.Auth` verify, auto-register)
+- [X] Phase 2B: User Service — migration (preferred_artists nullable password_hash) + update DTOs + JOIN preferences
 - [ ] Phase 3: Music Service — migration (mood column) + enrich SongResponseDto + GCS verify
 - [ ] Phase 4: Streaming Service — verify GCS pre-signed URL + field name alignment
 - [ ] Phase 5: Search Service — verify SearchResult DTO + seed Elasticsearch
@@ -186,11 +186,11 @@
 
 ## Đang làm
 
-- **Service/Task:** Backend API Alignment — Phase 2A (Auth Service: email field + Google OAuth)
+- **Service/Task:** Backend API Alignment — Phase 3 (Music) + Phase 6 (Analytics) + Phase 7 (Notification) + Phase 8 (Party)
 - **File plan cần đọc:** `.claude/plan/backend-api-alignment-frontend.md`
-- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 1 hoàn thành (2026-05-15)
+- **Checkpoint gần nhất đã pass:** Backend Alignment Phase 2A+2B hoàn thành (2026-05-15) — Auth service build OK, 14/14 unit tests xanh, frontend 698/698 xanh
 - **Ngày làm việc gần nhất:** 2026-05-15
-- **Tiếp theo:** Phase 2A (Auth) + Phase 2B (User) → song song Phase 3 (Music), 6 (Analytics), 7 (Notification), 8 (Party) → Phase 5 (Search), 9 (Recommendation)
+- **Tiếp theo:** Group A song song — Phase 3 (Music mood column + SongResponseDto), Phase 6 (Analytics DTO fix), Phase 7 (Notification DTO fix), Phase 8 (Party WS alias)
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

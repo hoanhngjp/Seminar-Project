@@ -19,7 +19,7 @@ public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(
             e.Property(u => u.Email).HasColumnName("email").HasMaxLength(320).IsRequired();
             e.Property(u => u.Username).HasColumnName("username").HasMaxLength(50).IsRequired();
             e.Property(u => u.DisplayName).HasColumnName("display_name").HasMaxLength(100).IsRequired();
-            e.Property(u => u.PasswordHash).HasColumnName("password_hash").IsRequired();
+            e.Property(u => u.PasswordHash).HasColumnName("password_hash").IsRequired(false);
             e.Property(u => u.Role).HasColumnName("role").HasMaxLength(20).HasDefaultValue("Listener").IsRequired();
             e.Property(u => u.AvatarUrl).HasColumnName("avatar_url");
             e.Property(u => u.Bio).HasColumnName("bio");
@@ -42,8 +42,8 @@ public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(
             e.Property(p => p.UserId).HasColumnName("user_id").IsRequired();
             e.Property(p => p.PreferredGenres).HasColumnName("preferred_genres")
                 .HasColumnType("uuid[]").HasDefaultValueSql("'{}'");
-            e.Property(p => p.PreferredArtists).HasColumnName("preferred_languages")
-                .HasColumnType("varchar(10)[]").HasDefaultValueSql("'{}'");
+            e.Property(p => p.PreferredArtists).HasColumnName("preferred_artists")
+                .HasColumnType("text[]").HasDefaultValueSql("'{}'");
             e.Property(p => p.AudioQuality).HasColumnName("audio_quality").HasMaxLength(20)
                 .HasDefaultValue("standard").IsRequired();
             e.Property(p => p.Autoplay).HasColumnName("autoplay").HasDefaultValue(true);

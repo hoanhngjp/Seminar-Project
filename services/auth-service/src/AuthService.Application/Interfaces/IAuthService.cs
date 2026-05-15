@@ -8,4 +8,5 @@ public interface IAuthService
     Task<AuthResponse> RefreshAsync(Guid jti, string? ipAddress, string? userAgent, CancellationToken ct);
     Task LogoutAsync(Guid jti, CancellationToken ct);
     Task<RegisterResponse> RegisterAsync(RegisterRequest request, CancellationToken ct);
+    Task<AuthResponse> GoogleSignInAsync(string idToken, string? ipAddress, string? userAgent, CancellationToken ct);
 }

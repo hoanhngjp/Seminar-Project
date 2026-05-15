@@ -32,7 +32,7 @@ public class UserProfileService(
         var prefs = await prefsRepo.GetByUserIdAsync(userId, ct);
         var hasCompletedOnboarding = prefs != null && prefs.PreferredGenres.Count >= 3;
 
-        var dto = MapToDto(user, hasCompletedOnboarding);
+        var dto = MapToDto(user, hasCompletedOnboarding, prefs);
         await cache.SetAsync(cacheKey, dto, ProfileCacheTtl, ct);
         logger.LogInformation("Profile cache MISS — loaded from DB. UserId={UserId}", userId);
         return (dto, false);
@@ -115,6 +115,16 @@ public class UserProfileService(
         Guid artistId, int limit, string? cursor, CancellationToken ct)
         => userRepo.GetFollowerIdsAsync(artistId, limit, cursor, ct);
 
-    private static UserProfileDto MapToDto(User u, bool hasCompletedOnboarding) => new(
-        u.Id, u.Email, u.Username, u.DisplayName, u.Role, u.AvatarUrl, u.Bio, u.CreatedAt, hasCompletedOnboarding);
+    private static UserProfileDto MapToDto(User u, bool hasCompletedOnboarding, UserPreferences? prefs) => new(
+        u.Id,
+        u.Email,
+        u.Username,
+        u.DisplayName,
+        u.Role,
+        u.AvatarUrl,
+        u.Bio,
+        u.CreatedAt,
+        hasCompletedOnboarding,
+        prefs?.PreferredGenres.Select(g => g.ToString()).ToList() ?? [],
+        prefs?.PreferredArtists ?? []);
 }

@@ -14,25 +14,34 @@ export interface MeData {
   hasCompletedOnboarding: boolean;
 }
 
+const fetchMe = async (): Promise<{ accessToken: string; userId: string; role: Role; hasCompletedOnboarding: boolean }> => {
+  throw new Error('fetchMe must be called after setAccessToken');
+};
+
+const fetchMeWithToken = async (accessToken: string) => {
+  setAccessToken(accessToken);
+  const meRes = await apiClient.get<{ success: boolean; data: MeData }>('/api/v1/users/me');
+  return {
+    accessToken,
+    userId: meRes.data.data.id,
+    role: meRes.data.data.role,
+    hasCompletedOnboarding: meRes.data.data.hasCompletedOnboarding,
+  };
+};
+
 export const authService = {
-  login: async (credentials: Record<string, string>) => {
+  login: async (credentials: { email: string; password: string }) => {
     const loginRes = await apiClient.post<{ success: boolean; data: LoginData }>('/api/v1/auth/login', credentials);
-    const token = loginRes.data.data.accessToken;
-    setAccessToken(token); // Set the token in memory so the next request uses it
-    
-    const meRes = await apiClient.get<{ success: boolean; data: MeData }>('/api/v1/users/me');
-    
-    return {
-      accessToken: loginRes.data.data.accessToken,
-      userId: meRes.data.data.id,
-      role: meRes.data.data.role,
-      hasCompletedOnboarding: meRes.data.data.hasCompletedOnboarding,
-    };
+    return fetchMeWithToken(loginRes.data.data.accessToken);
   },
-  
-  register: async (_data: any) => {
-    // Mock the register endpoint for now
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  googleSignIn: async (idToken: string) => {
+    const loginRes = await apiClient.post<{ success: boolean; data: LoginData }>('/api/v1/auth/google', { idToken });
+    return fetchMeWithToken(loginRes.data.data.accessToken);
+  },
+
+  register: async (data: { email: string; password: string; displayName: string; role?: string }) => {
+    await apiClient.post('/api/v1/auth/register', data);
     return { success: true };
   },
 };

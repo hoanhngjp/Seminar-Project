@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ToastProvider } from './contexts/ToastContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -16,8 +17,11 @@ import ProfilePage from './pages/ProfilePage';
 import PreferencesPage from './pages/PreferencesPage';
 import CreatorSongAnalyticsPage from './pages/creator/CreatorSongAnalyticsPage';
 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
+
 function App() {
   return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <ToastProvider>
       <BrowserRouter>
         <Routes>
@@ -39,6 +43,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </ToastProvider>
+    </GoogleOAuthProvider>
   );
 }
 

@@ -9,5 +9,7 @@ public record UserProfileDto(
     string? AvatarUrl,
     string? Bio,
     DateTime CreatedAt,
-    bool HasCompletedOnboarding
+    bool HasCompletedOnboarding,
+    List<string> PreferredGenres,
+    List<string> PreferredArtists
 );

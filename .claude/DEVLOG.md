@@ -1,5 +1,49 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-15] [BACKEND / PHASE 2A+2B — AUTH + USER SERVICE ALIGNMENT] [DONE]
+
+**Task:** Align Auth Service và User Service với schema FE cần. Google OAuth login, fix field names, fix DB schema.
+
+**Phase 2A — Auth Service:**
+- `LoginRequest.Username` → `LoginRequest.Email` — FE gửi `email` field
+- `POST /api/v1/auth/google` endpoint mới — verify Google `id_token` bằng `Google.Apis.Auth`
+- `GoogleTokenVerifier.cs` — `GoogleJsonWebSignature.ValidateAsync` với `GOOGLE_CLIENT_ID` làm audience
+- `IGoogleTokenVerifier`, `GooglePayload` record thêm vào Application layer
+- `IUserGrpcClient.GetUserByEmailAsync` + `CreateOAuthUserAsync` — gRPC calls mới
+- `proto/user.proto` — thêm `GetUserByEmail` RPC + `is_oauth`, `picture_url` fields vào `CreateUserRequest`
+- `JwtValidationMiddleware` — whitelist `/api/v1/auth/google`
+- `AuthService.GoogleSignInAsync` — lookup → auto-register nếu user mới → issue JWT
+- `Google.Apis.Auth` NuGet thêm vào `AuthService.Infrastructure.csproj`
+
+**Phase 2B — User Service:**
+- `User.PasswordHash` → `string?` nullable — OAuth users không có password
+- `UserGrpcService.GetUserByEmail` mới implemented
+- `UserGrpcService.CreateUser` — skip BCrypt hashing khi `is_oauth = true`, lưu `PasswordHash = null`
+- `UserGrpcService.VerifyCredentials` — block password login cho OAuth users (PasswordHash null)
+- `UserDbContext` — fix `preferred_artists` column (từ `preferred_languages varchar(10)[]` → `text[]`)
+- Migration `20260515000000_FixOAuthAndPreferencesSchema` — nullable password_hash, rename+retype column
+- `UserProfileDto` — thêm `PreferredGenres`, `PreferredArtists` fields
+- `UserProfileService.MapToDto` — include prefs trong DTO response
+
+**Frontend:**
+- `@react-oauth/google` install + `@testing-library/dom` (missing peer dep fixed)
+- `authService.ts` — `login()` dùng `email` field, thêm `googleSignIn(idToken)`
+- `useAuth.ts` — thêm `googleLogin(idToken)`, extract `handleAuthSuccess` helper
+- `LoginForm.tsx` — dùng `GoogleLogin` component (trả `credential` = `id_token`), đổi state `username` → `email`
+- `App.tsx` — wrap với `GoogleOAuthProvider` dùng `VITE_GOOGLE_CLIENT_ID`
+- `.env.example` — thêm `VITE_GOOGLE_CLIENT_ID`
+
+**Results:**
+- Auth Service: build OK, 14/14 unit tests xanh (4 Google tests mới)
+- User Service: build OK
+- Frontend: 698/698 tests xanh (không có test nào bị regression)
+
+**Key decisions:**
+- Dùng `GoogleLogin` component (không phải `useGoogleLogin`) vì chỉ `GoogleLogin` mới cung cấp `credential` = `id_token` cho backend verify. `useGoogleLogin` implicit flow chỉ trả `access_token`.
+- gRPC call thứ 3 (`GetUserByEmail`) được override rule `no-scope-creep` theo xác nhận của user — cần thiết cho OAuth flow.
+- OAuth users bị block khi cố login bằng password (PasswordHash null → reject ngay trong VerifyCredentials).
+
+---
 [2026-05-15] [BACKEND / PHASE 1 — INFRASTRUCTURE SETUP] [DONE]
 
 **Task:** Tạo toàn bộ infrastructure setup cho Backend API Alignment: postgres init script, seed data, seed orchestrator, docker-compose update.

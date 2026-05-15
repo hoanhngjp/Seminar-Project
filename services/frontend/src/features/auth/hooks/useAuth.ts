@@ -12,21 +12,28 @@ export function useAuth() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLocked, setIsLocked] = useState(false);
 
-  const login = async (credentials: Record<string, string>) => {
+  const handleAuthSuccess = (
+    accessToken: string,
+    userId: string,
+    role: string,
+    hasCompletedOnboarding: boolean,
+  ) => {
+    setAccessToken(accessToken);
+    setAuth(accessToken, userId, role as any, hasCompletedOnboarding);
+    if (!hasCompletedOnboarding && role === 'Listener') {
+      navigate('/onboarding');
+    } else {
+      navigate(role === 'Creator' ? '/dashboard' : '/');
+    }
+  };
+
+  const login = async (credentials: { email: string; password: string }) => {
     setLoading(true);
     setErrorMsg(null);
     setIsLocked(false);
-    
     try {
       const { accessToken, userId, role, hasCompletedOnboarding } = await authService.login(credentials);
-      setAccessToken(accessToken);
-      setAuth(accessToken, userId, role, hasCompletedOnboarding);
-      
-      if (!hasCompletedOnboarding && role === 'Listener') {
-        navigate('/onboarding');
-      } else {
-        navigate(role === 'Creator' ? '/dashboard' : '/');
-      }
+      handleAuthSuccess(accessToken, userId, role, hasCompletedOnboarding);
     } catch (err: any) {
       const code = err?.response?.data?.error?.code;
       if (code === 'ACCOUNT_LOCKED') {
@@ -34,6 +41,21 @@ export function useAuth() {
       } else {
         setErrorMsg(getErrorMessage(code));
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const googleLogin = async (idToken: string) => {
+    setLoading(true);
+    setErrorMsg(null);
+    setIsLocked(false);
+    try {
+      const { accessToken, userId, role, hasCompletedOnboarding } = await authService.googleSignIn(idToken);
+      handleAuthSuccess(accessToken, userId, role, hasCompletedOnboarding);
+    } catch (err: any) {
+      const code = err?.response?.data?.error?.code;
+      setErrorMsg(getErrorMessage(code) ?? 'Đăng nhập Google thất bại.');
     } finally {
       setLoading(false);
     }
@@ -53,5 +75,5 @@ export function useAuth() {
     }
   };
 
-  return { login, register, loading, errorMsg, setErrorMsg, isLocked };
+  return { login, googleLogin, register, loading, errorMsg, setErrorMsg, isLocked };
 }

@@ -10,11 +10,12 @@ public class AuthService(
     ITokenGenerator tokenGenerator,
     IRefreshTokenRepository refreshTokenRepo,
     ITokenBlacklistRepository blacklistRepo,
-    ICacheService cache) : IAuthService
+    ICacheService cache,
+    IGoogleTokenVerifier googleVerifier) : IAuthService
 {
     public async Task<AuthResponse> LoginAsync(LoginRequest request, string? ipAddress, string? userAgent, CancellationToken ct)
     {
-        var attempts = await cache.IncrementLoginAttemptAsync(request.Username, TimeSpan.FromMinutes(15));
+        var attempts = await cache.IncrementLoginAttemptAsync(request.Email, TimeSpan.FromMinutes(15));
         if (attempts > 5)
         {
             throw new AccountLockedException();
@@ -24,14 +25,14 @@ public class AuthService(
         string roleStr;
         try
         {
-            (userIdStr, roleStr) = await userClient.VerifyCredentialsAsync(request.Username, request.Password, ct);
+            (userIdStr, roleStr) = await userClient.VerifyCredentialsAsync(request.Email, request.Password, ct);
         }
         catch (Exception ex) when (ex.Message.Contains("Invalid credentials"))
         {
-            throw new UnauthorizedException("AUTH_INVALID_CREDENTIALS", "Invalid username or password.");
+            throw new UnauthorizedException("AUTH_INVALID_CREDENTIALS", "Invalid email or password.");
         }
 
-        await cache.ClearLoginAttemptsAsync(request.Username);
+        await cache.ClearLoginAttemptsAsync(request.Email);
 
         var userId = Guid.Parse(userIdStr);
         var accessToken = tokenGenerator.GenerateAccessToken(userId, roleStr, tokenGenerator.AccessTokenExpiryMinutes);
@@ -152,5 +153,58 @@ public class AuthService(
 
         // Delegate user creation + password hashing to User Service via gRPC
         return await userClient.CreateUserAsync(request, ct);
+    }
+
+    public async Task<AuthResponse> GoogleSignInAsync(string idToken, string? ipAddress, string? userAgent, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(idToken))
+            throw new ValidationException("idToken is required.");
+
+        GooglePayload payload;
+        try
+        {
+            payload = await googleVerifier.VerifyAsync(idToken, ct);
+        }
+        catch (Exception ex) when (ex is not ValidationException)
+        {
+            throw new UnauthorizedException("UNAUTHORIZED", "Google token is invalid or expired.");
+        }
+
+        // Look up or auto-register the user
+        var existing = await userClient.GetUserByEmailAsync(payload.Email, ct);
+
+        string userIdStr;
+        string roleStr;
+        if (existing.HasValue)
+        {
+            (userIdStr, roleStr) = existing.Value;
+        }
+        else
+        {
+            var created = await userClient.CreateOAuthUserAsync(
+                payload.Email, payload.Name, payload.PictureUrl, ct);
+            userIdStr = created.UserId;
+            roleStr = created.Role;
+        }
+
+        var userId = Guid.Parse(userIdStr);
+        var accessToken = tokenGenerator.GenerateAccessToken(userId, roleStr, tokenGenerator.AccessTokenExpiryMinutes);
+
+        var refreshToken = new RefreshToken
+        {
+            Jti = Guid.NewGuid(),
+            UserId = userId,
+            IpAddress = ipAddress,
+            UserAgent = userAgent,
+            ExpiresAt = DateTime.UtcNow.AddDays(tokenGenerator.RefreshTokenExpiryDays)
+        };
+        await refreshTokenRepo.AddAsync(refreshToken, ct);
+
+        return new AuthResponse
+        {
+            AccessToken = accessToken,
+            ExpiresIn = tokenGenerator.AccessTokenExpiryMinutes * 60,
+            RefreshToken = refreshToken.Jti
+        };
     }
 }
