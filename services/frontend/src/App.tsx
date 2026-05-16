@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ToastProvider } from './contexts/ToastContext';
+import AuthInitializer from './components/AuthInitializer';
+import RequireAuth from './components/RequireAuth';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -24,23 +26,28 @@ function App() {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <ToastProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/dashboard" element={<CreatorDashboardPage />} />
-          <Route path="/upload" element={<UploadPage />} />
-          <Route path="/party" element={<PartyLandingPage />} />
-          <Route path="/party/:roomId" element={<PartyRoomPage />} />
-          <Route path="/songs/:songId" element={<SongDetailPage />} />
-          <Route path="/artists/:artistId" element={<ArtistPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/settings/preferences" element={<PreferencesPage />} />
-          <Route path="/dashboard/songs/:songId" element={<CreatorSongAnalyticsPage />} />
-        </Routes>
+        <AuthInitializer>
+          <Routes>
+            {/* Public routes — no auth required */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/onboarding" element={<OnboardingPage />} />
+
+            {/* Protected routes — redirect to /login if not authenticated */}
+            <Route path="/" element={<RequireAuth><HomePage /></RequireAuth>} />
+            <Route path="/search" element={<RequireAuth><SearchPage /></RequireAuth>} />
+            <Route path="/notifications" element={<RequireAuth><NotificationsPage /></RequireAuth>} />
+            <Route path="/dashboard" element={<RequireAuth><CreatorDashboardPage /></RequireAuth>} />
+            <Route path="/upload" element={<RequireAuth><UploadPage /></RequireAuth>} />
+            <Route path="/party" element={<RequireAuth><PartyLandingPage /></RequireAuth>} />
+            <Route path="/party/:roomId" element={<RequireAuth><PartyRoomPage /></RequireAuth>} />
+            <Route path="/songs/:songId" element={<RequireAuth><SongDetailPage /></RequireAuth>} />
+            <Route path="/artists/:artistId" element={<RequireAuth><ArtistPage /></RequireAuth>} />
+            <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
+            <Route path="/settings/preferences" element={<RequireAuth><PreferencesPage /></RequireAuth>} />
+            <Route path="/dashboard/songs/:songId" element={<RequireAuth><CreatorSongAnalyticsPage /></RequireAuth>} />
+          </Routes>
+        </AuthInitializer>
       </BrowserRouter>
     </ToastProvider>
     </GoogleOAuthProvider>

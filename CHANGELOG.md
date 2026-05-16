@@ -28,6 +28,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**W11 Frontend Auth Flow Fix (2026-05-16)**
+- `AuthInitializer` component: restore session từ HTTP-only refresh cookie khi app mount (`POST /auth/refresh` → `GET /users/me`) — fix 401 trên mọi protected API sau khi user refresh trang
+- `RequireAuth` component: route guard hiện spinner khi session chưa được khởi tạo, redirect `/login` nếu unauthenticated
+- `authStore`: thêm `isInitialized` flag — phân biệt "chưa check session" vs "đã check + không có token"
+- `App.tsx`: 12 protected routes wrap trong `<RequireAuth>`, 3 public routes (`/login`, `/register`, `/onboarding`) không cần guard
+- Fix `AuthInitializer` infinite re-render: tách object selector thành 3 selector riêng — object selector tạo new reference mỗi render gây zustand trigger loop vô hạn
+
 **W11 Runtime Bug Fixes — Browser Testing VITE_MOCK=false (2026-05-16)**
 - API Gateway: thêm YARP `AddTransforms` explicit copy `X-User-Id` + `X-User-Role` headers vào mọi proxied request — fix "Missing X-User-Id header from gateway" trên streaming/recommendation services. Root cause: YARP pipeline cần explicit transform để forward headers được thêm bởi middleware
 - Frontend `musicService.ts getArtist()`: map `s.songId ?? s.id ?? ''` — handle C# field name `Id` serialize thành `"id"` (không phải `"songId"`) trong ArtistResponseDto.Songs

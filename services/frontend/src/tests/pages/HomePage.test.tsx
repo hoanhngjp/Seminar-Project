@@ -23,25 +23,25 @@ const PROFILE_URL         = 'http://localhost:5000/api/v1/users/me';
 
 const mockItems = [
   {
-    song_id: 'song-001',
-    title:   'Lạc Trôi',
-    artist:  'Sơn Tùng M-TP',
+    songId:    'song-001',
+    title:     'Lạc Trôi',
+    artist:    'Sơn Tùng M-TP',
     thumbnail: '',
-    reason:  { type: 'CONTEXT', text: 'Phù hợp buổi sáng' },
+    reason:    { type: 'CONTEXT', text: 'Phù hợp buổi sáng' },
   },
   {
-    song_id: 'song-002',
-    title:   'Có Chắc Yêu Là Đây',
-    artist:  'Sơn Tùng M-TP',
+    songId:    'song-002',
+    title:     'Có Chắc Yêu Là Đây',
+    artist:    'Sơn Tùng M-TP',
     thumbnail: '',
-    reason:  { type: 'TRENDING', text: 'Trending' },
+    reason:    { type: 'TRENDING', text: 'Trending' },
   },
   {
-    song_id: 'song-003',
-    title:   'Ngày Mai',
-    artist:  'Vũ.',
+    songId:    'song-003',
+    title:     'Ngày Mai',
+    artist:    'Vũ.',
     thumbnail: '',
-    reason:  { type: 'PREFERENCE', text: '' },
+    reason:    { type: 'PREFERENCE', text: '' },
   },
 ];
 

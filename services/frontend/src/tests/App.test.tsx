@@ -22,6 +22,28 @@ vi.mock('../pages/ProfilePage', () => ({ default: () => <div data-testid="page-p
 vi.mock('../pages/PreferencesPage', () => ({ default: () => <div data-testid="page-preferences">PreferencesPage</div> }));
 vi.mock('../pages/creator/CreatorSongAnalyticsPage', () => ({ default: () => <div data-testid="page-song-analytics">CreatorSongAnalyticsPage</div> }));
 
+// AuthInitializer — passthrough in tests (no real API calls)
+vi.mock('../components/AuthInitializer', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+// authStore — simulate an authenticated Listener so RequireAuth renders children
+vi.mock('../store/authStore', () => ({
+  useAuthStore: vi.fn((selector: (s: object) => unknown) =>
+    selector({
+      isInitialized: true,
+      accessToken: 'test-token',
+      userId: 'user-001',
+      role: 'Listener',
+      hasCompletedOnboarding: true,
+      setAuth: vi.fn(),
+      clearAuth: vi.fn(),
+      setInitialized: vi.fn(),
+      completeOnboarding: vi.fn(),
+    }),
+  ),
+}));
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -135,5 +157,13 @@ describe('App — route registration', () => {
   it('wraps routes in ToastProvider (no crash on any route)', () => {
     navigateTo('/songs/song-001');
     expect(() => renderApp()).not.toThrow();
+  });
+
+  // ── RequireAuth — redirect unauthenticated user to /login ────────────────
+
+  it('renders LoginPage at /login without auth (public route)', () => {
+    navigateTo('/login');
+    renderApp();
+    expect(screen.getByTestId('page-login')).toBeInTheDocument();
   });
 });

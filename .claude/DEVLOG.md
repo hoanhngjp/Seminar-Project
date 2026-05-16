@@ -1,5 +1,40 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [FRONTEND AUTH — 401 on /recommendations + infinite update loop] [DONE]
+
+**Context:** Browser testing (VITE_MOCK=false) phát hiện 2 lỗi liên quan đến auth flow.
+
+**Bug 1: GET /recommendations → 401 Unauthorized khi refresh trang**
+
+Root cause: `_accessToken` trong `api.ts` là in-memory. Khi user refresh browser, token reset về `null`. Không có bước restore session, nên `useRecommendations` gọi API ngay lập tức không có `Authorization` header → Gateway trả 401 `UNAUTHORIZED` (khác `TOKEN_EXPIRED` nên interceptor không retry).
+
+Thêm vào đó: không có route guard — unauthenticated user truy cập `/` thẳng vào `HomePage` → cùng lỗi 401.
+
+Fixes:
+- `authStore.ts` — thêm `isInitialized: boolean` (default `false`) + `setInitialized()` action
+- `AuthInitializer.tsx` (mới) — component wrap toàn app, on mount gọi `POST /api/v1/auth/refresh` → nếu OK set token + user vào store, nếu fail `clearAuth()`, cuối cùng `setInitialized(true)`
+- `RequireAuth.tsx` (mới) — route guard: hiện spinner khi `!isInitialized`, redirect `/login` khi `!accessToken`
+- `App.tsx` — wrap toàn app trong `<AuthInitializer>`, wrap 12 protected routes trong `<RequireAuth>`. Public routes (`/login`, `/register`, `/onboarding`) không cần guard
+
+**Bug 2: Maximum update depth exceeded (infinite loop)**
+
+Root cause: `AuthInitializer.tsx` dùng object selector `useAuthStore((s) => ({ setAuth, clearAuth, setInitialized }))` — selector trả new object reference mỗi render → zustand so sánh bằng reference equality → re-render vô hạn.
+
+Fix: tách thành 3 selector riêng biệt:
+```ts
+const setAuth        = useAuthStore((s) => s.setAuth);
+const clearAuth      = useAuthStore((s) => s.clearAuth);
+const setInitialized = useAuthStore((s) => s.setInitialized);
+```
+Zustand store actions là stable references (tạo 1 lần khi store init) nên không trigger re-render.
+
+**Pre-existing test failures (từ runtime bug fix 2026-05-16) cũng được fix trong session này:**
+- `HomePage.test.tsx`: mock data dùng `song_id` (snake_case) nhưng `recommendationService.ts` đọc `songId` (camelCase) → filter loại bỏ tất cả → songs không render. Fix: đổi `song_id` → `songId` trong mock items
+- `PartyLandingPage.test.tsx` + `PartyRoomPage.test.tsx`: playerStore mock dùng `vi.fn(() => object)` — khi `usePlayerStore((s) => s.clearSong)` được gọi với selector, mock trả về cả object thay vì function → `TypeError: clearSong is not a function`. Fix: đổi sang `vi.fn((sel) => sel(state))` pattern + thêm `clearSong: vi.fn()` vào state object
+
+**Test count sau khi fix: 696/696 xanh** (thêm 1 test mới trong `App.test.tsx`)
+
+---
 [2026-05-16] [RUNTIME BUG FIXES — streaming/undefined/url + GatewayAuth X-User-Id missing] [DONE]
 
 **Context:** Sau khi bật VITE_MOCK=false, browser testing phát hiện 2 lỗi runtime nghiêm trọng.

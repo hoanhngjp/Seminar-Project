@@ -184,6 +184,9 @@
 - [X] Frontend real API integration (Option B): tắt VITE_MOCK=false + wire 5 pages + backend 2 endpoints mới — 695/695 tests xanh (2026-05-16)
 - [X] Runtime bug fix: `GET /streaming/undefined/url` — guard playerStore + BottomPlayerBar + getArtist() mapping (2026-05-16)
 - [X] Runtime bug fix: GatewayAuth "Missing X-User-Id" — YARP explicit `AddTransforms` copy identity headers (2026-05-16)
+- [X] Runtime bug fix: 401 `/recommendations` sau page refresh — `AuthInitializer` + `RequireAuth` + `authStore.isInitialized` (2026-05-16)
+- [X] Runtime bug fix: infinite update loop — `AuthInitializer` object selector → 3 selector riêng (2026-05-16)
+- [X] Test fix: 696/696 xanh — `song_id`→`songId` mock, playerStore selector pattern, App.test.tsx mock authStore (2026-05-16)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 
@@ -191,15 +194,13 @@
 
 ## Đang làm
 
-- **Service/Task:** Verify runtime bugs đã fix → Demo script rehearsal + pre-upload demo songs
+- **Service/Task:** Demo script rehearsal + pre-upload demo songs
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** 695/695 tests xanh — VITE_MOCK=false + 5 pages wired (2026-05-16)
+- **Checkpoint gần nhất đã pass:** 696/696 tests xanh — auth flow fix + pre-existing test fixes (2026-05-16)
 - **Ngày làm việc gần nhất:** 2026-05-16
 - **Tiếp theo:**
-  1. Restart Vite (`npm run dev`) + hard refresh browser → verify `streaming/undefined/url` không còn
-  2. Rebuild api-gateway Docker (`docker-compose up -d --build api-gateway`) → verify X-User-Id forwarded
-  3. Demo script rehearsal 14 phút
-  4. Pre-upload demo songs cho Creator account
+  1. Demo script rehearsal 14 phút
+  2. Pre-upload demo songs cho Creator account
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |
