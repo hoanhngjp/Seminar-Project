@@ -60,14 +60,7 @@ public class UserProfileService(
             };
         }
 
-        // Parse genre strings as Guids where possible; ignore invalid values
-        var genreIds = request.PreferredGenres
-            .Select(g => Guid.TryParse(g, out var id) ? id : (Guid?)null)
-            .Where(g => g.HasValue)
-            .Select(g => g!.Value)
-            .ToList();
-
-        existing.PreferredGenres = genreIds;
+        existing.PreferredGenres = request.PreferredGenres;
         existing.PreferredArtists = request.PreferredArtists;
         existing.AudioQuality = request.AudioQuality;
         existing.UpdatedAt = DateTime.UtcNow;

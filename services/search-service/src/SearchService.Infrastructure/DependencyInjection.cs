@@ -28,8 +28,11 @@ public static class DependencyInjection
         var redisConn = configuration["Redis:ConnectionString"]
             ?? throw new InvalidOperationException("Redis:ConnectionString is required.");
 
-        services.AddSingleton<IConnectionMultiplexer>(_ =>
-            ConnectionMultiplexer.Connect(redisConn));
+        services.AddSingleton<IConnectionMultiplexer>(_ => {
+            var opts = ConfigurationOptions.Parse(redisConn);
+            opts.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(opts);
+        });
 
         services.AddScoped<IDatabase>(sp =>
             sp.GetRequiredService<IConnectionMultiplexer>().GetDatabase());

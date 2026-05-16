@@ -76,7 +76,7 @@ internal record ElasticsearchSongDocument(
     string Artist,
     string? Album,
     string Genre,
-    string[]? Mood,
+    string? Mood,
     string? Language,
     bool IsExplicit,
     bool IsPublished,

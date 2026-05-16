@@ -15,7 +15,7 @@ public class AuthService(
 {
     public async Task<AuthResponse> LoginAsync(LoginRequest request, string? ipAddress, string? userAgent, CancellationToken ct)
     {
-        var attempts = await cache.IncrementLoginAttemptAsync(request.Email, TimeSpan.FromMinutes(15));
+        var attempts = await cache.IncrementLoginAttemptAsync(request.EffectiveEmail, TimeSpan.FromMinutes(15));
         if (attempts > 5)
         {
             throw new AccountLockedException();
@@ -25,14 +25,14 @@ public class AuthService(
         string roleStr;
         try
         {
-            (userIdStr, roleStr) = await userClient.VerifyCredentialsAsync(request.Email, request.Password, ct);
+            (userIdStr, roleStr) = await userClient.VerifyCredentialsAsync(request.EffectiveEmail, request.Password, ct);
         }
         catch (Exception ex) when (ex.Message.Contains("Invalid credentials"))
         {
-            throw new UnauthorizedException("AUTH_INVALID_CREDENTIALS", "Invalid email or password.");
+            throw new InvalidCredentialsException();
         }
 
-        await cache.ClearLoginAttemptsAsync(request.Email);
+        await cache.ClearLoginAttemptsAsync(request.EffectiveEmail);
 
         var userId = Guid.Parse(userIdStr);
         var accessToken = tokenGenerator.GenerateAccessToken(userId, roleStr, tokenGenerator.AccessTokenExpiryMinutes);

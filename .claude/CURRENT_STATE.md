@@ -180,7 +180,8 @@
 - [X] POST /api/v1/auth/register endpoint — Auth Service + User Service gRPC CreateUser
 - [X] infra/seed/demo_accounts.sh — tạo listener@ + creator@ qua API
 - [X] infra/verify_ac.sh — 33 ACs automated curl verification (PASS/FAIL/SKIP)
-- [ ] AC checklist W11: chạy verify_ac.sh, fix FAILs, verify thủ công SKIPs còn lại
+- [X] AC checklist W11: verify_ac.sh — **23 PASS / 0 FAIL / 26 SKIP** (2026-05-16)
+- [ ] Frontend real API integration (Option B): tắt VITE_MOCK + refactor 7 pages dùng mock trực tiếp
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 
@@ -188,11 +189,11 @@
 
 ## Đang làm
 
-- **Service/Task:** AC checklist W11 — chạy verify_ac.sh, fix FAILs
+- **Service/Task:** Frontend real API integration — Option B (tắt VITE_MOCK + wire 7 pages)
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** song_artists table + seed 30 songs hoàn thành (2026-05-16)
+- **Checkpoint gần nhất đã pass:** verify_ac.sh 23 PASS / 0 FAIL (2026-05-16)
 - **Ngày làm việc gần nhất:** 2026-05-16
-- **Tiếp theo:** Chạy `bash infra/verify_ac.sh` → fix FAILs → verify thủ công SKIPs
+- **Tiếp theo:** Tắt `VITE_MOCK=false` → refactor theo thứ tự: Home → Search → SongDetail → Profile → CreatorDashboard → Analytics
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

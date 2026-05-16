@@ -5,19 +5,19 @@ namespace MusicService.Infrastructure.Services;
 
 public class GcsStorageService : IStorageService
 {
-    private readonly StorageClient _client;
+    private readonly Lazy<StorageClient> _lazyClient;
 
     public string BucketName { get; }
 
-    public GcsStorageService(StorageClient client, string bucketName)
+    public GcsStorageService(Lazy<StorageClient> lazyClient, string bucketName)
     {
-        _client = client;
+        _lazyClient = lazyClient;
         BucketName = bucketName;
     }
 
     public async Task<string> UploadFileAsync(string key, Stream content, string contentType, CancellationToken cancellationToken = default)
     {
-        await _client.UploadObjectAsync(BucketName, key, contentType, content,
+        await _lazyClient.Value.UploadObjectAsync(BucketName, key, contentType, content,
             cancellationToken: cancellationToken);
         return key;
     }
@@ -26,7 +26,7 @@ public class GcsStorageService : IStorageService
     {
         try
         {
-            await _client.DeleteObjectAsync(BucketName, key,
+            await _lazyClient.Value.DeleteObjectAsync(BucketName, key,
                 cancellationToken: cancellationToken);
             return true;
         }

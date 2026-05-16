@@ -14,7 +14,9 @@ public static class DependencyInjection
         var redisConn = configuration["Redis:ConnectionString"]
             ?? configuration["REDIS_CONNECTION_STRING"]
             ?? "localhost:6379";
-        var redis = ConnectionMultiplexer.Connect(redisConn);
+        var redisOpts = ConfigurationOptions.Parse(redisConn);
+        redisOpts.AbortOnConnectFail = false;
+        var redis = ConnectionMultiplexer.Connect(redisOpts);
         services.AddSingleton<IConnectionMultiplexer>(redis);
         services.AddSingleton<IDatabase>(_ => redis.GetDatabase());
 

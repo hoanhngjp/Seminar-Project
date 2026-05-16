@@ -11,13 +11,17 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var redisConnectionString = configuration["REDIS_CONNECTION_STRING"]
-            ?? configuration.GetConnectionString("Redis")
-            ?? throw new InvalidOperationException("REDIS_CONNECTION_STRING is required.");
+        var redisConnectionString = configuration["Redis:ConnectionString"]
+            ?? configuration["REDIS_CONNECTION_STRING"]
+            ?? throw new InvalidOperationException("Redis:ConnectionString is required.");
 
         // Lazy factory — connect khi first resolve, không phải khi DI setup.
         // Cho phép WebApplicationFactory replace IConnectionMultiplexer trước khi request đầu tiên.
-        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
+        services.AddSingleton<IConnectionMultiplexer>(_ => {
+            var opts = ConfigurationOptions.Parse(redisConnectionString);
+            opts.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(opts);
+        });
         services.AddSingleton<IDatabase>(sp => sp.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
 
         services.AddScoped<IPartyRepository, RedisPartyRepository>();

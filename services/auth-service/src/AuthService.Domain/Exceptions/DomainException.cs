@@ -10,6 +10,10 @@ public abstract class DomainException(string errorCode, string message, int http
 public class UnauthorizedException(string code, string message)
     : DomainException(code, message, 401);
 
+// API Design V2: AUTH_INVALID_CREDENTIALS → 400
+public class InvalidCredentialsException()
+    : DomainException("AUTH_INVALID_CREDENTIALS", "Invalid email or password.", 400);
+
 public class ForbiddenException(string code, string message)
     : DomainException(code, message, 403);
 

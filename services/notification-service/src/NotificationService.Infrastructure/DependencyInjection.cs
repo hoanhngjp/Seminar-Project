@@ -30,8 +30,11 @@ public static class DependencyInjection
         // Redis
         var redisConnectionString = config["Redis:ConnectionString"]
             ?? throw new InvalidOperationException("Redis:ConnectionString is required.");
-        services.AddSingleton<IConnectionMultiplexer>(
-            _ => ConnectionMultiplexer.Connect(redisConnectionString));
+        services.AddSingleton<IConnectionMultiplexer>(_ => {
+            var opts = ConfigurationOptions.Parse(redisConnectionString);
+            opts.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(opts);
+        });
         services.AddScoped<IIdempotencyRepository, RedisIdempotencyRepository>();
 
         // Kafka producer

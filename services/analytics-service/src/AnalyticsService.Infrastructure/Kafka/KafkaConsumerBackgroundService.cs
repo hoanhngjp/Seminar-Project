@@ -20,6 +20,11 @@ public class KafkaConsumerBackgroundService(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Yield immediately so BackgroundService.StartAsync returns without blocking the host startup.
+        // consumer.Consume() is a synchronous blocking call — without this yield, it would block
+        // the startup thread and cause a TaskCanceledException at Kestrel BindAsync.
+        await Task.Yield();
+
         var config = new ConsumerConfig
         {
             BootstrapServers = bootstrapServers,

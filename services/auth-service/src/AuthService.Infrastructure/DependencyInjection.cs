@@ -29,7 +29,11 @@ public static class DependencyInjection
         var redisConfig = configuration["Redis:ConnectionString"]
             ?? configuration.GetConnectionString("Redis")
             ?? "localhost:6379";
-        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConfig));
+        services.AddSingleton<IConnectionMultiplexer>(_ => {
+            var opts = ConfigurationOptions.Parse(redisConfig);
+            opts.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(opts);
+        });
         services.AddSingleton<ICacheService, RedisCacheService>();
 
         // gRPC client to User Service over plain HTTP/2 (h2c) — docker sets Grpc__UserService

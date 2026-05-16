@@ -21,9 +21,11 @@ public static class DependencyInjection
         var bucketName = configuration["GCP:BucketName"]
             ?? throw new InvalidOperationException("GCP:BucketName is required.");
 
-        services.AddSingleton<StorageClient>(_ => StorageClient.Create());
+        // Lazy GCS client — only instantiated on first actual upload/download call.
+        // BucketName-only operations (e.g. internal storage-key endpoint) don't need real credentials.
+        services.AddSingleton<Lazy<StorageClient>>(_ => new Lazy<StorageClient>(() => StorageClient.Create()));
         services.AddSingleton<IStorageService>(sp =>
-            new GcsStorageService(sp.GetRequiredService<StorageClient>(), bucketName));
+            new GcsStorageService(sp.GetRequiredService<Lazy<StorageClient>>(), bucketName));
 
         services.AddSingleton<IEventPublisher, KafkaEventPublisher>();
         services.AddScoped<IMusicRepository, MusicRepository>();
@@ -33,7 +35,9 @@ public static class DependencyInjection
         services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
             var redisConnectionString = configuration["Redis:ConnectionString"] ?? "localhost:6379";
-            return ConnectionMultiplexer.Connect(redisConnectionString);
+            var opts = ConfigurationOptions.Parse(redisConnectionString);
+            opts.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(opts);
         });
 
         return services;

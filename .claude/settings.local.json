@@ -9,7 +9,16 @@
       "Bash(npx vitest *)",
       "Bash(npm run *)",
       "PowerShell(& \"E:\\\\Google\\\\google-cloud-sdk\\\\bin\\\\gsutil.cmd\" ls gs://smart-music-microservices/songs/ 2>&1)",
-      "Bash(dotnet ef *)"
+      "Bash(dotnet ef *)",
+      "Bash(docker exec *)",
+      "Bash(xargs grep *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5006/health)",
+      "Bash(bash infra/verify_ac.sh)",
+      "Bash(bash infra/seed/demo_accounts.sh)",
+      "Bash(curl -s -X POST http://localhost:5000/api/v1/auth/register -H 'Content-Type: application/json' -d '{\"email\":\"listener@example.com\",\"password\":\"Demo1234!\",\"displayName\":\"Test Listener\",\"role\":\"Listener\"}')",
+      "Bash(curl -s -X POST http://localhost:5000/api/v1/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"listener@example.com\",\"password\":\"Demo1234!\"}')",
+      "Bash(curl -s -X POST http://localhost:5000/api/v1/auth/register -H \"Content-Type: application/json\" -d '{\"email\":\"listener@example.com\",\"password\":\"Demo1234!\",\"displayName\":\"Listener Demo\",\"role\":\"Listener\"}')",
+      "Bash(bash \"c:/Users/User/source/repos/Seminar-Project/infra/seed/demo_accounts.sh\")"
     ]
   }
 }

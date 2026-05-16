@@ -1456,3 +1456,52 @@ Handler `GET /api/v1/notifications/unread` đổi từ trả filtered (chỉ unr
 **Lesson / Warning:** Trước khi implement bất kỳ API call nào từ plan, kiểm tra API_DESIGN_V2.md để confirm endpoint tồn tại. Plan file có thể out-of-date so với contract.
 
 ---
+
+---
+
+[2026-05-16] [VERIFY_AC / ALL SERVICES] [BUG MARATHON → 23 PASS / 0 FAIL]
+
+**Problem:** Chạy `verify_ac.sh` lần đầu ra PASS:4, FAIL:19. Cần fix toàn bộ trước W11 demo.
+
+**Root causes & fixes theo thứ tự:**
+
+1. **Redis `abortConnect=false` không áp dụng** (music, analytics, api-gateway, listening-party, notification, search, user, auth): Connection string có `abortConnect=false` nhưng `ConfigurationOptions.Parse()` không luôn honor. Fix: Explicit `opts.AbortOnConnectFail = false` sau khi parse, trước `Connect()`.
+
+2. **Listening Party config key sai**: Code đọc `configuration["REDIS_CONNECTION_STRING"]` nhưng docker-compose set `Redis__ConnectionString` (→ mapped thành `Redis:ConnectionString` bởi ASP.NET). Fix: đổi sang `configuration["Redis:ConnectionString"]`.
+
+3. **Auth Service 401 thay vì 400 cho sai mật khẩu**: API Design V2 nói `AUTH_INVALID_CREDENTIALS` → 400. Code throw `UnauthorizedException` (401). Fix: tạo `InvalidCredentialsException` với HTTP 400.
+
+4. **User Service `List<Guid>` vs `List<string>`**: DB column `preferred_genres` là `uuid[]` nhưng dữ liệu seed là string genre names. Fix: đổi column sang `text[]`, đổi domain model sang `List<string>`.
+
+5. **Search: `string[]? Mood` deserialization lỗi**: ES document có `mood: "string"` nhưng C# record khai báo `string[]?`. Fix: đổi thành `string?`.
+
+6. **Search: Elasticsearch Vietnamese garbled**: Seed chạy từ Git Bash trên Windows → UTF-8 bị encode sai. Fix: re-seed qua `docker run Alpine` container có locale đúng.
+
+7. **GCS credentials**: Streaming service không tìm `/app/secrets/google-cloud-key.json`. Fix: copy service account key với tên chuẩn. Music service: `StorageClient.Create()` gọi eager → crash startup. Fix: Lazy<StorageClient>.
+
+8. **Music upload 500**: `genreIds=genre-vpop-001` → `Guid.Parse()` throw `FormatException` → không có catch cụ thể → 500 INTERNAL_ERROR. Fix: dùng UUID thật `d4e5f6a7-b8c9-0123-defa-234567890123` (Pop genre) trong verify_ac.sh.
+
+9. **Artist profile missing**: Không có record trong `artists` table cho `creator@example.com`. Fix: INSERT artist với `UserId = '2b654acb-feb4-44f3-84ef-4663fee85417'`.
+
+10. **Rate limit false-fail khi chạy nhiều lần**: Consecutive runs → `POST /auth/login` hit 429 trước khi AC1.1.x kiểm tra được. Fix: flush `rate:*` + `rl:*` keys từ Redis đầu mỗi run.
+
+11. **`grep -oP` locale error trên Git Bash**: 3 chỗ dùng PCRE regex với `grep -oP` bị lỗi trên Windows. Fix: chuyển tất cả sang `python3 -c "import re, sys; ..."`.
+
+12. **`UPLOADED_SONG_ID` extraction sai field**: `json_str "id"` tìm field `id` nhưng response có `data.songId`. Fix: Python3 path `d.get('data',{}).get('songId','')`.
+
+**Lesson:** `Guid.Parse()` với string tùy ý (không phải UUID) là bug ẩn trong SongService — nên bắt `FormatException` và trả 400 `VALIDATION_ERROR` thay vì để slip thành 500. Ghi TODO.
+
+**Kết quả cuối:** PASS:23 / FAIL:0 / SKIP:26.
+
+---
+
+[2026-05-16] [FRONTEND] [DECISION]
+
+**Problem:** FE hiển thị mock data thay vì real data từ backend. `VITE_MOCK=true` trong `.env.development` + nhiều page import trực tiếp từ `mocks/data.ts` không qua env check.
+
+**Phạm vi vấn đề:**
+- MSW (Mock Service Worker) intercept toàn bộ API calls khi `VITE_MOCK=true`
+- Các page import mock trực tiếp (không qua env check): ArtistPage, SongDetailPage, CreatorDashboardPage, ProfilePage, PreferencesPage, CreatorSongAnalyticsPage, PartyRoomPage
+
+**Decision:** Chọn **Option B — Full integration** (tắt VITE_MOCK + refactor từng page để gọi real API). Thứ tự ưu tiên: Home → Search → SongDetail → Profile → CreatorDashboard → Analytics. Bắt đầu ở session tiếp theo.
+

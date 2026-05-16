@@ -14,6 +14,24 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Fixed
+
+**W11 Demo Prep — verify_ac.sh: 23/23 automated ACs PASS (2026-05-16)**
+- `verify_ac.sh` — flush Redis rate-limit keys (`rate:*`, `rl:*`) trước mỗi lần chạy, tránh 429 false-fail khi chạy nhiều lần liên tiếp
+- `verify_ac.sh` — `genreIds` trong AC1.3.1 upload test đổi từ `"genre-vpop-001"` → UUID `d4e5f6a7-b8c9-0123-defa-234567890123` (Pop genre) — `Guid.Parse` không parse string tự do
+- `verify_ac.sh` — `UPLOADED_SONG_ID` extraction đổi từ `json_str "id"` → Python3 path `data.songId` (đúng với response schema)
+- `infra/tests/fixtures/test-audio.mp3` — tạo file fixture với valid ID3 magic bytes để AC1.3.1 pass file validation
+- Auth Service — `InvalidCredentialsException` mới trả HTTP 400 (thay vì 401) cho `AUTH_INVALID_CREDENTIALS` — khớp API Design V2
+- User Service — `PreferredGenres`/`PreferredArtists` đổi từ `List<Guid>` → `List<string>` (DB column `uuid[]` → `text[]`) — fix AC1.2.1/1.2.3
+- Search Service — `ElasticsearchSongDocument.Mood` đổi từ `string[]?` → `string?` — fix deserialization lỗi, AC5.1.1 PASS
+- Elasticsearch — re-seed 30 songs từ Docker Alpine container (fix UTF-8 garbled từ Git Bash)
+- Music Service — `StorageClient` đăng ký lazy (`Lazy<StorageClient>`) — không gọi GCS credentials khi startup
+- Tất cả 8 C# services — Redis `ConfigurationOptions.AbortOnConnectFail = false` set explicit (thay vì chỉ trong connection string) — fix startup failure khi Redis chưa ready
+- Listening Party Service — config key đổi từ `REDIS_CONNECTION_STRING` → `Redis:ConnectionString` — khớp với ASP.NET double-underscore env var mapping
+- `infra/secrets/google-cloud-key.json` — copy từ service account key với tên chuẩn, mount vào streaming-service + music-service
+- Music DB — tạo artist record cho `creator@example.com` (userId `2b654acb-...`) — fix AC1.3.1 "Creator profile not found"
+- `verify_ac.sh` — thay 3 `grep -oP` cuối còn lại bằng Python3 equivalents (fix locale error trên Git Bash)
+
 ### Added
 
 **Music Service — song_artists Table + Real Song Seed (2026-05-16)**
