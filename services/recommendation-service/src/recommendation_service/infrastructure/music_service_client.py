@@ -21,6 +21,7 @@ class MusicBatchSong:
     artist_name: str
     genre_id: str | None
     mood_tags: list[str]
+    cover_image_url: str = ""
 
 
 class MusicServiceClient:
@@ -57,6 +58,7 @@ class MusicServiceClient:
                     artist_name=s.get("artistName", ""),
                     genre_id=str(s["genreId"]) if s.get("genreId") else None,
                     mood_tags=s.get("moodTags", []),
+                    cover_image_url=s.get("coverImageUrl") or "",
                 )
                 for s in songs
             ]

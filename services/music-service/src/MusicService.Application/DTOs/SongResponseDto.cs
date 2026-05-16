@@ -55,5 +55,6 @@ public record BatchSongDto(
     string Title,
     string ArtistName,
     Guid? GenreId,
-    List<string> MoodTags
+    List<string> MoodTags,
+    string? CoverImageUrl
 );

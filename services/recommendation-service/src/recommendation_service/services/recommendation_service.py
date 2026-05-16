@@ -51,7 +51,7 @@ class RecommendationService:
                 self._run_rule_engine(user_id, resolved_context, limit),
                 timeout=settings.recommendation_timeout_ms / 1000,
             )
-            serialized = [item.model_dump() for item in items]
+            serialized = [item.model_dump(by_alias=True) for item in items]
             await self._repo.set_cached_recommendations(user_id, resolved_context, serialized)
             return items, "MISS"
 
@@ -131,7 +131,7 @@ class RecommendationService:
                     song_id=sid,
                     title=meta.title,
                     artist=meta.artist_name,
-                    thumbnail="",           # batch endpoint does not return coverUrl
+                    thumbnail=meta.cover_image_url,
                     genre_id=meta.genre_id or sid,
                     genre_name="",
                     mood_tags=meta.mood_tags,

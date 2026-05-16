@@ -151,7 +151,8 @@ public class SongService : ISongService
             s.Title,
             s.Artist?.StageName ?? string.Empty,
             s.SongGenres.FirstOrDefault()?.GenreId,
-            new List<string>()
+            new List<string>(),
+            s.CoverImageUrl
         )).ToList();
     }
 

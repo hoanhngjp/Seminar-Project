@@ -1,5 +1,37 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-17] [BUG FIX — Recommendation Service: empty homepage + wrong env var + missing coverUrl] [DONE]
+
+**Context:** HomePage hiển thị "Không có gợi ý. Hãy nghe nhạc để cá nhân hoá!" dù API `/recommendations` trả về 20 items. Tìm ra 3 bugs độc lập gây ra vấn đề này.
+
+**Root cause (3 lớp):**
+
+1. **Env var mismatch:** `docker-compose.yml` set `MUSIC_SERVICE_URL=http://music-service:80` nhưng Python config (`config.py`) đọc field `music_service_base_url` → Pydantic-settings map sang env var `MUSIC_SERVICE_BASE_URL`. Sai tên → service dùng default `http://localhost:5003` → trong Docker container `localhost` = container itself → connection fail → `get_songs_batch()` catch exception → trả `[]` → tất cả candidates có `title=""`, `artist=""`.
+
+2. **Cache key casing:** `recommendation_service.py` serialize cache với `item.model_dump()` (không có `by_alias=True`) → lưu `{"song_id": "...", ...}` (snake_case). Frontend `recommendationService.ts` đọc `item.songId` (camelCase) → `undefined` → `.filter((item) => item.songId)` lọc hết 20 items → `allEmpty = true` → empty state.
+
+3. **Thiếu `coverUrl`:** `BatchSongDto` trong Music Service không có `CoverImageUrl` → `thumbnail` luôn rỗng → cards hiển thị không có ảnh bìa.
+
+**Fixes:**
+
+1. `infra/docker-compose.yml` — đổi `MUSIC_SERVICE_URL` → `MUSIC_SERVICE_BASE_URL` trong block `recommendation-service`.
+2. `recommendation_service.py` — `item.model_dump(by_alias=True)` khi serialize vào Redis cache.
+3. `SongResponseDto.cs` — thêm `string? CoverImageUrl` vào `BatchSongDto`.
+4. `SongService.cs` — truyền `s.CoverImageUrl` vào `BatchSongDto` constructor.
+5. `music_service_client.py` — thêm field `cover_image_url: str = ""` vào `MusicBatchSong` + đọc `s.get("coverImageUrl")` từ JSON.
+6. `recommendation_service.py` — `thumbnail=meta.cover_image_url` thay vì `thumbnail=""`.
+7. Rebuild `music-service` + `recommendation-service` containers, flush `rec:cache:*` trong Redis.
+
+**Verify:** `curl /api/v1/recommendations?limit=3` → trả `songId` camelCase + `title`/`artist` thật + `thumbnail` = Cloudinary URL thật.
+
+**Files thay đổi:**
+- `infra/docker-compose.yml`
+- `services/recommendation-service/src/recommendation_service/services/recommendation_service.py`
+- `services/recommendation-service/src/recommendation_service/infrastructure/music_service_client.py`
+- `services/music-service/src/MusicService.Application/DTOs/SongResponseDto.cs`
+- `services/music-service/src/MusicService.Application/Services/SongService.cs`
+
+---
 [2026-05-17] [BUG FIX — Search Service: cover_url null + stale Redis search cache] [DONE]
 
 **Context:** Search kết quả trả về `coverUrl: null` dù Elasticsearch đã có URL thật sau khi re-index.
