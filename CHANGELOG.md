@@ -28,6 +28,11 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**W11 Runtime Bug Fixes — 401 khi play từ SearchPage (2026-05-17)**
+- `services/api.ts`: mở rộng interceptor xử lý cả `UNAUTHORIZED` lẫn `TOKEN_EXPIRED` — attempt refresh token trước khi fail, tránh trường hợp `_accessToken` null khi streaming request được gửi
+- `services/api.ts`: đổi `||` → `??` cho `baseURL` — `VITE_API_BASE_URL=''` không bị fallback về `localhost:5000`
+- `frontend/.env.development`: thêm `VITE_API_BASE_URL=` (empty string) — requests đi qua Vite proxy thay vì cross-origin trực tiếp đến `localhost:5000`
+
 **W11 Runtime Bug Fixes — SearchPage + Google OAuth (2026-05-17)**
 - `searchService.ts`: fix type mismatch — backend trả `data: { items, nextCursor, hasMore }` nhưng FE typed là flat `SearchResult[]` → `results.filter` crash. Fix: đúng type + đọc `d?.items`
 - `SearchPage.test.tsx`: update MSW mock handlers trả đúng shape backend (`{ items, nextCursor, hasMore }`)

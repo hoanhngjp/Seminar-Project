@@ -1,5 +1,26 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-17] [RUNTIME BUG FIX — 401 UNAUTHORIZED khi click play từ SearchPage] [DONE]
+
+**Context:** Browser testing (VITE_MOCK=false) — sau khi search bài hát và click play, BottomPlayerBar gọi `GET /api/v1/streaming/{songId}/url` nhận 401 UNAUTHORIZED "Authentication required." (2 lần), sau đó 503 UNAUTHORIZED do circuit breaker timeout.
+
+**Root cause:**
+
+`_accessToken` trong `services/api.ts` là `null` tại thời điểm request streaming được gửi (race condition hoặc session chưa được restore xong). API Gateway `JwtValidationMiddleware` chỉ trả `"Authentication required."` khi không có `Authorization` header → xác nhận token null.
+
+Interceptor trong `api.ts` chỉ retry khi `errorCode === 'TOKEN_EXPIRED'` — bỏ qua hoàn toàn `UNAUTHORIZED`, nên không tự phục hồi bằng refresh token.
+
+Thêm vào đó: `baseURL` dùng `||` nên `VITE_API_BASE_URL=''` (empty string) vẫn fallback về `'http://localhost:5000'` (truthy check fails on empty string) → requests đi cross-origin thay vì qua Vite proxy, có thể gây edge case với cookie/CORS.
+
+**Fixes:**
+
+1. `services/frontend/src/services/api.ts` — đổi `isTokenExpired` → `shouldRefresh`, mở rộng condition: `errorCode === 'TOKEN_EXPIRED' || errorCode === 'UNAUTHORIZED'`. Logic refresh + retry + redirect `/login` giữ nguyên.
+2. `services/frontend/src/services/api.ts` — đổi `||` → `??` cho `baseURL` để `VITE_API_BASE_URL=''` được nhận diện là "dùng empty string" (đi qua Vite proxy).
+3. `services/frontend/.env.development` — thêm `VITE_API_BASE_URL=` (empty string) → axios dùng relative URL → Vite proxy forward `/api → localhost:5000`.
+
+**Files thay đổi:** `services/frontend/src/services/api.ts`, `services/frontend/.env.development`
+
+---
 [2026-05-17] [RUNTIME BUG FIXES — SearchPage crash + Google OAuth 400] [DONE]
 
 **Context:** Browser testing (VITE_MOCK=false) phát hiện 2 lỗi runtime sau khi bật real API.

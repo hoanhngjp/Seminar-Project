@@ -11,7 +11,7 @@ export const setAccessToken = (token: string | null): void => {
 export const getAccessToken = (): string | null => _accessToken;
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000',
   withCredentials: true, // sends HTTP-only refresh cookie automatically
 });
 
@@ -38,12 +38,12 @@ apiClient.interceptors.response.use(
     const original = error.config as (typeof error.config & { _retry?: boolean }) | undefined;
 
     const errorCode = (error.response?.data as { error?: { code?: string } })?.error?.code;
-    const isTokenExpired =
+    const shouldRefresh =
       error.response?.status === 401 &&
-      errorCode === 'TOKEN_EXPIRED' &&
+      (errorCode === 'TOKEN_EXPIRED' || errorCode === 'UNAUTHORIZED') &&
       !original?._retry;
 
-    if (!isTokenExpired) return Promise.reject(error);
+    if (!shouldRefresh) return Promise.reject(error);
 
     if (_isRefreshing) {
       return new Promise((resolve, reject) => {
