@@ -44,6 +44,10 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `BottomPlayerBar.tsx`: đổi timing gửi analytics từ "khi bấm Play" sang "khi `onDurationChange` fire VÀ user đã play" — đảm bảo `durationSec` là giá trị thật, không phải 0 hoặc fallback; thêm `hasStartedRef` để track
 - `BottomPlayerBar.test.tsx`: thêm 2 test — gửi đúng body sau `durationChange` + không gửi nếu chưa bấm play (13/13 xanh)
 
+**W11 Bug Fix — Search Service cover_url deserialization (2026-05-17)**
+- `ElasticsearchSearchRepository.cs`: thêm `[JsonPropertyName]` cho tất cả snake_case fields trong `ElasticsearchSongDocument` (`cover_url`, `is_explicit`, `is_published`, `play_count`, `duration_sec`) — fix `coverUrl: null` trong search results dù ES có URL thật
+- Stale Redis search cache (`search:cache:*`) xóa targeted sau khi deploy fix
+
 **W11 Runtime Bug Fixes — SearchPage + Google OAuth (2026-05-17)**
 - `searchService.ts`: fix type mismatch — backend trả `data: { items, nextCursor, hasMore }` nhưng FE typed là flat `SearchResult[]` → `results.filter` crash. Fix: đúng type + đọc `d?.items`
 - `SearchPage.test.tsx`: update MSW mock handlers trả đúng shape backend (`{ items, nextCursor, hasMore }`)

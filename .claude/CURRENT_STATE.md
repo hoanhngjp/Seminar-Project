@@ -192,6 +192,7 @@
 - [X] Runtime bug fix: 401 UNAUTHORIZED khi click play từ SearchPage — mở rộng interceptor handle `UNAUTHORIZED` + `TOKEN_EXPIRED`, `??` thay `||` cho baseURL, `VITE_API_BASE_URL=` để đi qua Vite proxy (2026-05-17)
 - [X] Runtime bug fix: analytics/events/play 400 Bad Request — fix request body (durationSec/listenedSec/platform), đổi timing gửi sang onDurationChange + hasStartedRef (2026-05-17)
 - [X] Upload 30 cover images lên Cloudinary (smart-music/covers/) + cập nhật CoverImageUrl trong SeedData.sql + UPDATE live DB music_db (2026-05-17)
+- [X] Bug fix: Elasticsearch re-index 30/30 docs với URL thật (reindex_elasticsearch.py) + fix Search Service cover_url deserialization + xóa stale search cache (2026-05-17)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 

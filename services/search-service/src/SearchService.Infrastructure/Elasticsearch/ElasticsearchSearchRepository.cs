@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Configuration;
@@ -69,18 +70,18 @@ public class ElasticsearchSearchRepository(
     }
 }
 
-// Internal document model — maps Elasticsearch fields
+// Internal document model — maps Elasticsearch fields (snake_case from ES)
 internal record ElasticsearchSongDocument(
-    string Id,
-    string Title,
-    string Artist,
-    string? Album,
-    string Genre,
-    string? Mood,
-    string? Language,
-    bool IsExplicit,
-    bool IsPublished,
-    long PlayCount,
-    string? CoverUrl,
-    int? DurationSec
+    [property: JsonPropertyName("id")]           string Id,
+    [property: JsonPropertyName("title")]        string Title,
+    [property: JsonPropertyName("artist")]       string Artist,
+    [property: JsonPropertyName("album")]        string? Album,
+    [property: JsonPropertyName("genre")]        string Genre,
+    [property: JsonPropertyName("mood")]         string? Mood,
+    [property: JsonPropertyName("language")]     string? Language,
+    [property: JsonPropertyName("is_explicit")]  bool IsExplicit,
+    [property: JsonPropertyName("is_published")] bool IsPublished,
+    [property: JsonPropertyName("play_count")]   long PlayCount,
+    [property: JsonPropertyName("cover_url")]    string? CoverUrl,
+    [property: JsonPropertyName("duration_sec")] int? DurationSec
 );

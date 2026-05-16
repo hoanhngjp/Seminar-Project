@@ -1,5 +1,22 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-17] [BUG FIX — Search Service: cover_url null + stale Redis search cache] [DONE]
+
+**Context:** Search kết quả trả về `coverUrl: null` dù Elasticsearch đã có URL thật sau khi re-index.
+
+**Root cause (2 lớp):**
+
+1. **Code bug:** `ElasticsearchSongDocument` record không có `[JsonPropertyName]` attributes → Elastic .NET client (System.Text.Json) deserialize field `cover_url` (snake_case từ ES) không match `CoverUrl` (PascalCase C#) → luôn `null`. Tương tự cho `is_explicit`, `is_published`, `play_count`, `duration_sec`.
+2. **Stale cache:** Redis search cache (TTL 10 phút, key prefix `search:cache:*`) hold kết quả cũ có `coverUrl: null` từ trước khi fix được deploy. Mỗi lần search lại tiếp tục hit cache cũ thay vì query ES.
+
+**Fixes:**
+1. `ElasticsearchSearchRepository.cs` — thêm `[property: JsonPropertyName("cover_url")]` và tương tự cho tất cả snake_case fields trong `ElasticsearchSongDocument`.
+2. Rebuild & restart `search-service` container.
+3. Xóa toàn bộ `search:cache:*` keys trong Redis (targeted DEL, không FLUSHDB — giữ nguyên `rec:trending:global` và các keys khác).
+
+**Files thay đổi:** `services/search-service/src/SearchService.Infrastructure/Elasticsearch/ElasticsearchSearchRepository.cs`
+
+---
 [2026-05-17] [INFRA — Upload 30 cover images lên Cloudinary + cập nhật DB] [DONE]
 
 **Context:** 30 bài hát trong DB đang dùng placeholder URL `res.cloudinary.com/demo/...` → ảnh bìa không hiển thị trên FE.
