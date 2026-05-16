@@ -1,5 +1,26 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-17] [RUNTIME BUG FIXES — SearchPage crash + Google OAuth 400] [DONE]
+
+**Context:** Browser testing (VITE_MOCK=false) phát hiện 2 lỗi runtime sau khi bật real API.
+
+**Bug 1: SearchPage crash — `results.filter is not a function`**
+
+Root cause: `searchService.ts` khai báo sai type `ApiResponse<SearchResult[]>` nhưng backend Search Service trả `data: { items, nextCursor, hasMore }` (nested object). Kết quả `res.data.data` là 1 object, không phải array → `setResults(res.items)` set state thành object → `results.filter(...)` trong SearchPage crash với TypeError.
+
+Fix: đổi generic type sang `ApiResponse<{ items: SearchResult[]; nextCursor: string | null; hasMore: boolean }>` và đọc `d?.items ?? []` thay vì `res.data.data ?? []`.
+
+Đồng thời update mock handlers trong `SearchPage.test.tsx` từ `apiOk([])` / `apiOk(ALL_RESULTS)` sang `apiOk({ items: [], nextCursor: null, hasMore: false })` / `apiOk({ items: ALL_RESULTS, ... })` để match đúng backend shape. 24/24 tests xanh.
+
+**Bug 2: Google OAuth 400 — `[GSI_LOGGER]: Parameter client_id is not set correctly`**
+
+Root cause: `App.tsx` đọc `import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''` — env var này không được khai báo trong `.env.development` nên fallback về empty string → `GoogleOAuthProvider` init với `clientId=""` → Google GSI library báo lỗi config → button load 400.
+
+Fix: thêm `VITE_GOOGLE_CLIENT_ID=<id>` vào `services/frontend/.env.development` — value lấy từ `infra/.env` (GOOGLE_CLIENT_ID đã có sẵn).
+
+**Test count sau fix: 696/696 xanh**
+
+---
 [2026-05-16] [FRONTEND AUTH — 401 on /recommendations + infinite update loop] [DONE]
 
 **Context:** Browser testing (VITE_MOCK=false) phát hiện 2 lỗi liên quan đến auth flow.

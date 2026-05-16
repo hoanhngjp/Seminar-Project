@@ -48,8 +48,8 @@ const profileHandler = http.get(PROFILE_URL, () =>
   apiOk({ userId: 'u1', email: 'test@example.com', displayName: 'Test User', role: 'Listener', hasCompletedOnboarding: true }),
 );
 
-const emptySearchHandler = http.get(SEARCH_URL, () => apiOk([]));
-const resultsSearchHandler = http.get(SEARCH_URL, () => apiOk(ALL_RESULTS));
+const emptySearchHandler = http.get(SEARCH_URL, () => apiOk({ items: [], nextCursor: null, hasMore: false }));
+const resultsSearchHandler = http.get(SEARCH_URL, () => apiOk({ items: ALL_RESULTS, nextCursor: null, hasMore: false }));
 
 const server = setupServer(emptySearchHandler, notificationsHandler, profileHandler);
 

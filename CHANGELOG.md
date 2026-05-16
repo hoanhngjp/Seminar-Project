@@ -28,6 +28,11 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**W11 Runtime Bug Fixes — SearchPage + Google OAuth (2026-05-17)**
+- `searchService.ts`: fix type mismatch — backend trả `data: { items, nextCursor, hasMore }` nhưng FE typed là flat `SearchResult[]` → `results.filter` crash. Fix: đúng type + đọc `d?.items`
+- `SearchPage.test.tsx`: update MSW mock handlers trả đúng shape backend (`{ items, nextCursor, hasMore }`)
+- `frontend/.env.development`: thêm `VITE_GOOGLE_CLIENT_ID` — fix Google OAuth GSI_LOGGER 400 error khi button render
+
 **W11 Frontend Auth Flow Fix (2026-05-16)**
 - `AuthInitializer` component: restore session từ HTTP-only refresh cookie khi app mount (`POST /auth/refresh` → `GET /users/me`) — fix 401 trên mọi protected API sau khi user refresh trang
 - `RequireAuth` component: route guard hiện spinner khi session chưa được khởi tạo, redirect `/login` nếu unauthenticated

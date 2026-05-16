@@ -187,6 +187,8 @@
 - [X] Runtime bug fix: 401 `/recommendations` sau page refresh — `AuthInitializer` + `RequireAuth` + `authStore.isInitialized` (2026-05-16)
 - [X] Runtime bug fix: infinite update loop — `AuthInitializer` object selector → 3 selector riêng (2026-05-16)
 - [X] Test fix: 696/696 xanh — `song_id`→`songId` mock, playerStore selector pattern, App.test.tsx mock authStore (2026-05-16)
+- [X] Runtime bug fix: `SearchPage` crash `results.filter is not a function` — `searchService.ts` type mismatch + test mock update (2026-05-17)
+- [X] Runtime bug fix: Google OAuth GSI_LOGGER 400 — thêm `VITE_GOOGLE_CLIENT_ID` vào `.env.development` (2026-05-17)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 

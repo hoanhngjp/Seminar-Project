@@ -17,14 +17,14 @@ export async function searchContent(
   const params: Record<string, string | number> = { q: query, type, limit };
   if (cursor) params['cursor'] = cursor;
 
-  const res = await apiClient.get<ApiResponse<SearchResult[]>>(
+  const res = await apiClient.get<ApiResponse<{ items: SearchResult[]; nextCursor: string | null; hasMore: boolean }>>(
     '/api/v1/search',
     { params },
   );
-  const meta = res.data.meta;
+  const d = res.data.data;
   return {
-    items:      res.data.data ?? [],
-    nextCursor: meta.pagination?.nextCursor ?? null,
-    hasMore:    meta.pagination?.hasMore ?? false,
+    items:      d?.items ?? [],
+    nextCursor: d?.nextCursor ?? null,
+    hasMore:    d?.hasMore ?? false,
   };
 }
