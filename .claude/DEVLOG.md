@@ -1,5 +1,20 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-17] [INFRA — Upload 30 cover images lên Cloudinary + cập nhật DB] [DONE]
+
+**Context:** 30 bài hát trong DB đang dùng placeholder URL `res.cloudinary.com/demo/...` → ảnh bìa không hiển thị trên FE.
+
+**Thực hiện:**
+1. Viết `infra/seed/upload_covers.py` — map 30 public_id → filename trong `songs_pic/`, upload lên Cloudinary folder `smart-music/covers/` với `overwrite=True`.
+2. Chạy script: 30/30 upload thành công, cloud `dd9umsxtf`.
+3. Cập nhật `infra/seed/SeedData.sql` — thay toàn bộ 30 URL `demo` → URL thật (verify: 0 URL `demo` còn sót).
+4. Apply trực tiếp vào live DB `music_db` qua `docker exec psql` — 30 × `UPDATE 1`.
+
+**Lưu ý:** Music Service cache song metadata trong Redis TTL 30m (`song:{songId}`). Nếu bài hát đã được cache trước khi UPDATE, phải đợi cache expire hoặc flush Redis để thấy ảnh mới ngay lập tức.
+
+**Files thay đổi:** `infra/seed/SeedData.sql`, `infra/seed/upload_covers.py` (mới)
+
+---
 [2026-05-17] [RUNTIME BUG FIX — analytics/events/play 400 Bad Request] [DONE]
 
 **Context:** Browser testing — phát nhạc từ bất kỳ trang nào, `BottomPlayerBar` gọi `POST /api/v1/analytics/events/play` nhận 400 Bad Request.

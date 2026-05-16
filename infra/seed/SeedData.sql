@@ -1,4 +1,4 @@
--- ============================================================
+﻿-- ============================================================
 -- Smart Music Platform — Seed Data
 -- Run AFTER EF Core migrations have applied to music_db and user_db.
 -- Usage: psql -h localhost -p 5434 -U smartmusic -d music_db -f SeedData.sql
@@ -124,7 +124,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000001', NULL,
    'Bước Qua Nhau (Teaser)', 180,
    'songs/(MV TEASER) BƯỚC QUA NHAU.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/buoc-qua-nhau-teaser.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962315/smart-music/covers/buoc-qua-nhau-teaser.jpg',
    'vi', 'sad', false, true, 1200000, NOW(), NOW()),
 
   -- 2: Anh Nhớ Ra (ft. Trang) — Vũ.
@@ -132,7 +132,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000001', NULL,
    'Anh Nhớ Ra (ft. Trang)', 240,
    'songs/ANH NHỚ RA - Vũ. (Feat. Trang).mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/anh-nho-ra.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962336/smart-music/covers/anh-nho-ra.jpg',
    'vi', 'sad', false, true, 3800000, NOW(), NOW()),
 
   -- 3: Anh Nhớ Ra (Live Solo) — Vũ.
@@ -140,7 +140,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000001', NULL,
    'Anh Nhớ Ra (Live Solo)', 250,
    'songs/ANH NHỚ RA - Vũ. (Solo Version) Live Session.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/anh-nho-ra-solo.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962337/smart-music/covers/anh-nho-ra-solo.jpg',
    'vi', 'chill', false, true, 2100000, NOW(), NOW()),
 
   -- 4: An Thần — Low G
@@ -148,7 +148,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000007', NULL,
    'An Thần', 210,
    'songs/An Thần.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/an-than.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962337/smart-music/covers/an-than.jpg',
    'vi', 'chill', false, true, 4500000, NOW(), NOW()),
 
   -- 5: Bút Chì Bạc — Thắng
@@ -156,7 +156,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000008', NULL,
    'Bút Chì Bạc', 220,
    'songs/Bút Chì Bạc.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/but-chi-bac.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962338/smart-music/covers/but-chi-bac.jpg',
    'vi', 'chill', false, true, 1900000, NOW(), NOW()),
 
   -- 6: Bước Qua Nhau — Vũ.
@@ -164,7 +164,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000001', NULL,
    'Bước Qua Nhau', 255,
    'songs/BƯỚC QUA NHAU Vũ. (Official MV).mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/buoc-qua-nhau.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962339/smart-music/covers/buoc-qua-nhau.jpg',
    'vi', 'sad', false, true, 8900000, NOW(), NOW()),
 
   -- 7: Chúng Ta Không Thuộc Về Nhau — Sơn Tùng M-TP
@@ -172,7 +172,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000002', NULL,
    'Chúng Ta Không Thuộc Về Nhau', 228,
    'songs/Chúng Ta Không Thuộc Về Nhau.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/chung-ta-khong-thuoc-ve-nhau.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962339/smart-music/covers/chung-ta-khong-thuoc-ve-nhau.jpg',
    'vi', 'energetic', false, true, 32000000, NOW(), NOW()),
 
   -- 8: Chậm Lại — Vũ.
@@ -180,7 +180,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000001', NULL,
    'Chậm Lại', 235,
    'songs/Chậm Lại.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/cham-lai.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962340/smart-music/covers/cham-lai.jpg',
    'vi', 'chill', false, true, 5200000, NOW(), NOW()),
 
   -- 9: Ending Interlude — The Aaron Smith Experience
@@ -188,7 +188,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000005', NULL,
    'Ending Interlude', 120,
    'songs/Ending Interlude - The Aaron Smith Experience.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/ending-interlude.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962340/smart-music/covers/ending-interlude.jpg',
    'en', 'atmospheric', false, true, 480000, NOW(), NOW()),
 
   -- 10: Ghé Qua — Dick
@@ -196,7 +196,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000009', NULL,
    'Ghé Qua', 215,
    'songs/Ghé Qua - Dick x Tofu x PC [Official Audio] - TaynguyenSound Official.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/ghe-qua.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962341/smart-music/covers/ghe-qua.jpg',
    'vi', 'chill', false, true, 11000000, NOW(), NOW()),
 
   -- 11: Gội Đầu — Thắng
@@ -204,7 +204,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000008', NULL,
    'Gội Đầu', 245,
    'songs/Gội Đầu.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/goi-dau.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962342/smart-music/covers/goi-dau.jpg',
    'vi', 'chill', false, true, 3100000, NOW(), NOW()),
 
   -- 12: Intro 2022 — Sơn Tùng M-TP
@@ -212,7 +212,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000002', NULL,
    'Intro 2022', 90,
    'songs/Intro 2022.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/intro-2022.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962342/smart-music/covers/intro-2022.jpg',
    'vi', NULL, false, true, 4200000, NOW(), NOW()),
 
   -- 13: Lạ Lùng — Vũ.
@@ -220,7 +220,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000001', NULL,
    'Lạ Lùng', 250,
    'songs/Lạ Lùng.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/la-lung.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962343/smart-music/covers/la-lung.jpg',
    'vi', 'sad', false, true, 6700000, NOW(), NOW()),
 
   -- 14: Chuyển Kênh — Ngọt
@@ -228,7 +228,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000003', NULL,
    'Chuyển Kênh', 220,
    'songs/Ngọt - CHUYỂN KÊNH (sản phẩm này không phải là thuốc).mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/chuyen-kenh.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962344/smart-music/covers/chuyen-kenh.jpg',
    'vi', 'energetic', false, true, 7800000, NOW(), NOW()),
 
   -- 15: Lần Cuối — Ngọt
@@ -236,7 +236,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000003', NULL,
    'Lần Cuối', 265,
    'songs/Ngọt - LẦN CUỐI (đi bên em xót xa người ơi).mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/lan-cuoi.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962344/smart-music/covers/lan-cuoi.jpg',
    'vi', 'sad', false, true, 9200000, NOW(), NOW()),
 
   -- 16: Những Lời Hứa Bỏ Quên — Vũ.
@@ -244,7 +244,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000001', NULL,
    'Những Lời Hứa Bỏ Quên', 270,
    'songs/Những Lời Hứa Bỏ Quên.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/nhung-loi-hua-bo-quen.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962345/smart-music/covers/nhung-loi-hua-bo-quen.jpg',
    'vi', 'sad', false, true, 5500000, NOW(), NOW()),
 
   -- 17: No Need — The Aaron Smith Experience
@@ -252,7 +252,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000005', NULL,
    'No Need', 195,
    'songs/No Need - The Aaron Smith Experience.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/no-need.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962346/smart-music/covers/no-need.jpg',
    'en', 'chill', false, true, 620000, NOW(), NOW()),
 
   -- 18: Nơi Này Có Anh — Sơn Tùng M-TP
@@ -260,7 +260,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000002', NULL,
    'Nơi Này Có Anh', 321,
    'songs/Nơi Này Có Anh.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/noi-nay-co-anh.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962346/smart-music/covers/noi-nay-co-anh.jpg',
    'vi', 'romantic', false, true, 48000000, NOW(), NOW()),
 
   -- 19: Nếu Những Tiếc Nuối — Vũ.
@@ -268,7 +268,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000001', NULL,
    'Nếu Những Tiếc Nuối', 242,
    'songs/Nếu Những Tiếc Nuối.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/neu-nhung-tiec-nuoi.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962347/smart-music/covers/neu-nhung-tiec-nuoi.jpg',
    'vi', 'sad', false, true, 4100000, NOW(), NOW()),
 
   -- 20: #MusicForM — PC
@@ -276,7 +276,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000011', NULL,
    '#MusicForM', 230,
    'songs/PC - #MusicForM [Music Video] - TaynguyenSound Official.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/music-for-m.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962348/smart-music/covers/music-for-m.jpg',
    'vi', 'chill', false, true, 7200000, NOW(), NOW()),
 
   -- 21: Stay with Me (Night Tempo Mix) — Miki Matsubara ft. Night Tempo
@@ -284,7 +284,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000006', NULL,
    'Stay with Me (Night Tempo Mix)', 270,
    'songs/Stay with Me - Night Tempo Showa Groove Mix.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/stay-with-me-remix.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962348/smart-music/covers/stay-with-me-remix.jpg',
    'ja', 'energetic', false, true, 18000000, NOW(), NOW()),
 
   -- 22: Cơn Mưa Xa Dần — Sơn Tùng M-TP
@@ -292,7 +292,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000002', NULL,
    'Cơn Mưa Xa Dần', 285,
    'songs/SƠN TÙNG M-TP _ SKY DECADE _ Cơn Mưa Xa Dần.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/con-mua-xa-dan.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962349/smart-music/covers/con-mua-xa-dan.jpg',
    'vi', 'chill', false, true, 22000000, NOW(), NOW()),
 
   -- 23: Nắng Ấm Ngang Qua — Sơn Tùng M-TP
@@ -300,7 +300,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000002', NULL,
    'Nắng Ấm Ngang Qua', 278,
    'songs/SƠN TÙNG M-TP _ SKY DECADE _ Nắng Ấm Ngang Qua.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/nang-am-ngang-qua.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962349/smart-music/covers/nang-am-ngang-qua.jpg',
    'vi', 'chill', false, true, 19000000, NOW(), NOW()),
 
   -- 24: Mây Lang Thang — Tùng TeA ft. PC, NewoulZ
@@ -308,7 +308,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000010', NULL,
    'Mây Lang Thang', 225,
    'songs/Tùng TeA & PC - Mây Lang Thang ft. NewoulZ (Official MV) - TaynguyenSound Official.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/may-lang-thang.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962350/smart-music/covers/may-lang-thang.jpg',
    'vi', 'chill', false, true, 13000000, NOW(), NOW()),
 
   -- 25: Waiting For — The Aaron Smith Experience
@@ -316,7 +316,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000005', NULL,
    'Waiting For', 210,
    'songs/Waiting For - The Aaron Smith Experience.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/waiting-for.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962351/smart-music/covers/waiting-for.jpg',
    'en', 'chill', false, true, 890000, NOW(), NOW()),
 
   -- 26: Bản Tình Ca Không Hoàn Thiện (Live) — TaynguyenSound
@@ -324,7 +324,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000004', NULL,
    'Bản Tình Ca Không Hoàn Thiện (Live)', 310,
    'songs/[Live] Bản Tình Ca Không Hoàn Thiện - TaynguyenSound (Show Văn Nghệ Thường Niên 2) - TaynguyenSound Official.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/ban-tinh-ca-khong-hoan-thien.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962351/smart-music/covers/ban-tinh-ca-khong-hoan-thien.jpg',
    'vi', 'romantic', false, true, 9800000, NOW(), NOW()),
 
   -- 27: Linh Hồn Của Bữa Tiệc (Live) — TaynguyenSound
@@ -332,7 +332,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000004', NULL,
    'Linh Hồn Của Bữa Tiệc (Live)', 280,
    'songs/[Live] Linh Hồn Của Bữa Tiệc - TaynguyenSound Live in Hà Nội - TaynguyenSound Official.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/linh-hon-cua-bua-tiec.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962352/smart-music/covers/linh-hon-cua-bua-tiec.jpg',
    'vi', 'energetic', false, true, 12000000, NOW(), NOW()),
 
   -- 28: Thôi Trễ Rồi, Chắc Anh Phải Về Đây (Live) — TaynguyenSound
@@ -340,7 +340,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000004', NULL,
    'Thôi Trễ Rồi, Chắc Anh Phải Về Đây (Live)', 295,
    'songs/[Live] Thôi Trễ Rồi, Chắc Anh Phải Về Đây - TaynguyenSound Live in Hà Nội - TaynguyenSound Official.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/thoi-tre-roi.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962353/smart-music/covers/thoi-tre-roi.jpg',
    'vi', 'chill', false, true, 8400000, NOW(), NOW()),
 
   -- 29: Âm Thầm Bên Em — Sơn Tùng M-TP
@@ -348,7 +348,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000002', NULL,
    'Âm Thầm Bên Em', 252,
    'songs/Âm Thầm Bên Em.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/am-tham-ben-em.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962353/smart-music/covers/am-tham-ben-em.jpg',
    'vi', 'sad', false, true, 16000000, NOW(), NOW()),
 
   -- 30: 真夜中のドア〜Stay with Me — Miki Matsubara (original)
@@ -356,7 +356,7 @@ INSERT INTO songs (
    'a0000001-0000-0000-0000-000000000006', NULL,
    '真夜中のドア〜Stay with Me', 248,
    'songs/「真夜中のドア〜stay with me」_ 松原みき Official Lyric Video.mp3',
-   'https://res.cloudinary.com/demo/image/upload/v1/smart-music/covers/mayonaka-no-door.jpg',
+   'https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962354/smart-music/covers/mayonaka-no-door.jpg',
    'ja', 'romantic', false, true, 85000000, NOW(), NOW())
 
 ON CONFLICT ("Id") DO NOTHING;

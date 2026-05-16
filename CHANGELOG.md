@@ -33,6 +33,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `services/api.ts`: đổi `||` → `??` cho `baseURL` — `VITE_API_BASE_URL=''` không bị fallback về `localhost:5000`
 - `frontend/.env.development`: thêm `VITE_API_BASE_URL=` (empty string) — requests đi qua Vite proxy thay vì cross-origin trực tiếp đến `localhost:5000`
 
+**W11 Infra — Cover images Cloudinary upload (2026-05-17)**
+- Upload 30 cover images lên Cloudinary (`smart-music/covers/`, cloud `dd9umsxtf`) — thay thế toàn bộ placeholder URL `cloudinary.com/demo`
+- `infra/seed/SeedData.sql`: cập nhật 30 `CoverImageUrl` thành URL thật
+- `infra/seed/upload_covers.py`: script upload (cloudinary SDK, mapping public_id → filename)
+- Live DB `music_db`: 30 × `UPDATE` áp dụng trực tiếp
+
 **W11 Runtime Bug Fix — analytics/events/play 400 (2026-05-17)**
 - `BottomPlayerBar.tsx`: fix `POST /api/v1/analytics/events/play` 400 Bad Request — body cũ gửi `durationPercent` (field không có trong BE DTO), thiếu `durationSec`/`listenedSec`/`platform`. Fix: gửi đúng `{ songId, durationSec, listenedSec, platform: 'web' }` với `Math.max(1, Math.round(durationSec))` để pass `[Range(1, 86400)]` validation
 - `BottomPlayerBar.tsx`: đổi timing gửi analytics từ "khi bấm Play" sang "khi `onDurationChange` fire VÀ user đã play" — đảm bảo `durationSec` là giá trị thật, không phải 0 hoặc fallback; thêm `hasStartedRef` để track
