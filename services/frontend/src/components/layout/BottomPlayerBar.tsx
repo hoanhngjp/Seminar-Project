@@ -25,6 +25,7 @@ export default function BottomPlayerBar() {
   const urlFetchedAtRef = useRef<number>(0);
   const expiresInRef    = useRef<number>(0);
   const analyticsSentRef = useRef(false);
+  const hasStartedRef    = useRef(false);
 
   const [streamUrl,    setStreamUrl]    = useState<string | null>(null);
   const [isPlaying,    setIsPlaying]    = useState(false);
@@ -68,6 +69,7 @@ export default function BottomPlayerBar() {
       return;
     }
     analyticsSentRef.current = false;
+    hasStartedRef.current    = false;
     setCurrentTime(0);
     setDuration(0);
     setIsPlaying(false);
@@ -91,13 +93,18 @@ export default function BottomPlayerBar() {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
 
-  const sendPlayAnalytics = useCallback(async (songId: string) => {
+  const sendPlayAnalytics = useCallback(async (songId: string, durationSec: number, listenedSec: number) => {
     if (analyticsSentRef.current) return;
     analyticsSentRef.current = true;
     try {
       await apiClient.post(
         '/api/v1/analytics/events/play',
-        { songId, durationPercent: 0 },
+        {
+          songId,
+          durationSec: Math.max(1, Math.round(durationSec)),
+          listenedSec: Math.round(listenedSec),
+          platform: 'web',
+        },
         { headers: { 'Idempotency-Key': `${songId}-${Date.now()}` } },
       );
     } catch {
@@ -108,7 +115,11 @@ export default function BottomPlayerBar() {
   const handlePlay = () => {
     audioRef.current?.play();
     setIsPlaying(true);
-    if (currentSong) sendPlayAnalytics(currentSong.songId);
+    hasStartedRef.current = true;
+    // If duration already loaded (metadata arrived before play), send now
+    if (currentSong && duration > 0) {
+      sendPlayAnalytics(currentSong.songId, duration, currentTime);
+    }
   };
 
   const handlePause  = () => { audioRef.current?.pause(); setIsPlaying(false); };
@@ -153,7 +164,14 @@ export default function BottomPlayerBar() {
             ref={audioRef}
             src={streamUrl}
             onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-            onDurationChange={(e) => setDuration(e.currentTarget.duration)}
+            onDurationChange={(e) => {
+              const d = e.currentTarget.duration;
+              setDuration(d);
+              // Send analytics once we have real duration and user has already pressed play
+              if (hasStartedRef.current && currentSong) {
+                sendPlayAnalytics(currentSong.songId, d, audioRef.current?.currentTime ?? 0);
+              }
+            }}
             onEnded={() => setIsPlaying(false)}
             onError={() => fetchStreamUrl(currentSong.songId)}
           />

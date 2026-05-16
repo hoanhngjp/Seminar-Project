@@ -190,6 +190,7 @@
 - [X] Runtime bug fix: `SearchPage` crash `results.filter is not a function` — `searchService.ts` type mismatch + test mock update (2026-05-17)
 - [X] Runtime bug fix: Google OAuth GSI_LOGGER 400 — thêm `VITE_GOOGLE_CLIENT_ID` vào `.env.development` (2026-05-17)
 - [X] Runtime bug fix: 401 UNAUTHORIZED khi click play từ SearchPage — mở rộng interceptor handle `UNAUTHORIZED` + `TOKEN_EXPIRED`, `??` thay `||` cho baseURL, `VITE_API_BASE_URL=` để đi qua Vite proxy (2026-05-17)
+- [X] Runtime bug fix: analytics/events/play 400 Bad Request — fix request body (durationSec/listenedSec/platform), đổi timing gửi sang onDurationChange + hasStartedRef (2026-05-17)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 

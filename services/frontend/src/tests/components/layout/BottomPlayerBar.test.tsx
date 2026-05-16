@@ -97,6 +97,62 @@ describe('BottomPlayerBar', () => {
     );
   });
 
+  // ── Analytics — send after duration known and user has played ─────────────
+
+  it('sends analytics with correct body when duration loads after play', async () => {
+    let capturedBody: unknown = null;
+    server.use(
+      http.post('http://localhost:5000/api/v1/analytics/events/play', async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ success: true, data: null }, { status: 202 });
+      }),
+    );
+
+    usePlayerStore.getState().playSong(SONG);
+    renderBar();
+
+    await waitFor(() => expect(screen.getByLabelText('Phát')).toBeInTheDocument());
+
+    // User presses play (hasStartedRef = true, but duration still 0 → no analytics yet)
+    fireEvent.click(screen.getByLabelText('Phát'));
+
+    // Audio metadata loads → onDurationChange fires with real duration
+    const audio = document.querySelector('audio')!;
+    Object.defineProperty(audio, 'duration', { value: 210, configurable: true });
+    fireEvent.durationChange(audio);
+
+    await waitFor(() => expect(capturedBody).not.toBeNull());
+    expect(capturedBody).toMatchObject({
+      songId: 'song-001',
+      durationSec: 210,
+      listenedSec: 0,
+      platform: 'web',
+    });
+  });
+
+  it('does not send analytics when duration loads but user has not pressed play', async () => {
+    let called = false;
+    server.use(
+      http.post('http://localhost:5000/api/v1/analytics/events/play', () => {
+        called = true;
+        return HttpResponse.json({ success: true, data: null }, { status: 202 });
+      }),
+    );
+
+    usePlayerStore.getState().playSong(SONG);
+    renderBar();
+
+    await waitFor(() => expect(screen.getByLabelText('Phát')).toBeInTheDocument());
+
+    const audio = document.querySelector('audio')!;
+    Object.defineProperty(audio, 'duration', { value: 210, configurable: true });
+    fireEvent.durationChange(audio);
+
+    // Wait a tick to ensure no async call slips through
+    await new Promise((r) => setTimeout(r, 50));
+    expect(called).toBe(false);
+  });
+
   // ── Phase 9 — QueueDrawer integration ────────────────────────────────────
 
   it('renders queue button when song is playing', async () => {

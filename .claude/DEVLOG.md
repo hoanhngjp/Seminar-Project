@@ -1,5 +1,28 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-17] [RUNTIME BUG FIX — analytics/events/play 400 Bad Request] [DONE]
+
+**Context:** Browser testing — phát nhạc từ bất kỳ trang nào, `BottomPlayerBar` gọi `POST /api/v1/analytics/events/play` nhận 400 Bad Request.
+
+**Root cause:** Mismatch giữa FE request body và BE `RecordPlayRequest` DTO:
+- FE gửi `{ songId, durationPercent: 0 }` — field `durationPercent` không tồn tại trong DTO
+- BE expect `{ songId: Guid, durationSec: int [Range(1,86400)], listenedSec: int, platform: string [Required] }`
+- `durationSec`, `listenedSec`, `platform` đều thiếu → ModelState invalid → 400 VALIDATION_ERROR
+
+Thêm vào đó, analytics được gửi ngay khi user bấm Play (trước khi audio metadata load) → `duration` state = 0 → kể cả khi fix field names thì `durationSec: 0` vẫn fail `[Range(1, 86400)]`.
+
+**Fixes:**
+
+1. `BottomPlayerBar.tsx` — thêm `hasStartedRef` (track user đã bấm Play chưa).
+2. `BottomPlayerBar.tsx` — `handlePlay`: set `hasStartedRef.current = true`, chỉ gửi analytics ngay nếu `duration > 0` (trường hợp metadata đã load trước).
+3. `BottomPlayerBar.tsx` — `onDurationChange`: khi duration thật load xong, nếu `hasStartedRef.current` → gửi analytics với `{ songId, durationSec: Math.max(1, Math.round(d)), listenedSec: currentTime, platform: 'web' }`.
+4. `BottomPlayerBar.test.tsx` — thêm 2 test: gửi đúng body sau durationChange, và không gửi nếu chưa play.
+
+**Files thay đổi:** `services/frontend/src/components/layout/BottomPlayerBar.tsx`, `services/frontend/src/tests/components/layout/BottomPlayerBar.test.tsx`
+
+**Test count: 13/13 xanh** (thêm 2 test mới)
+
+---
 [2026-05-17] [RUNTIME BUG FIX — 401 UNAUTHORIZED khi click play từ SearchPage] [DONE]
 
 **Context:** Browser testing (VITE_MOCK=false) — sau khi search bài hát và click play, BottomPlayerBar gọi `GET /api/v1/streaming/{songId}/url` nhận 401 UNAUTHORIZED "Authentication required." (2 lần), sau đó 503 UNAUTHORIZED do circuit breaker timeout.
