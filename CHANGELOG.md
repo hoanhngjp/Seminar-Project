@@ -14,7 +14,27 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Added
+
+**W11 Frontend Real API Integration — VITE_MOCK=false + 5 Pages Wired (2026-05-16)**
+- Music Service: `GET /api/v1/music/artists/{artistId}` — trả `ArtistResponseDto` (stageName, bio, totalFollowers, totalPlays, songs[])
+- Music Service: `GET /api/v1/music/songs/my` — Creator/Admin only, trả danh sách bài hát của creator đang đăng nhập
+- Frontend: `ArtistPage` wire thật với `getArtist()` — loading state, error state, follow toggle
+- Frontend: `ProfilePage` wire thật với `userService.getProfile()` — avatar, display name, email, role, preferred genres/artists
+- Frontend: `SongDetailPage` wire thật với `getSong()` + `fetchRecommendations()` — metadata grid, related songs
+- Frontend: `CreatorSongAnalyticsPage` wire thật với `getSong()` + `fetchHeatmap()` + `fetchSongStats()` — KPI cards, daily chart, heatmap
+- Frontend: `CreatorDashboardPage` wire thật với `getMySongs()` — song selector dropdown populated từ API (thay hardcoded options)
+- `VITE_MOCK=false` trong `.env.development` — toàn bộ API calls đi thật đến backend
+
 ### Fixed
+
+**W11 Runtime Bug Fixes — Browser Testing VITE_MOCK=false (2026-05-16)**
+- API Gateway: thêm YARP `AddTransforms` explicit copy `X-User-Id` + `X-User-Role` headers vào mọi proxied request — fix "Missing X-User-Id header from gateway" trên streaming/recommendation services. Root cause: YARP pipeline cần explicit transform để forward headers được thêm bởi middleware
+- Frontend `musicService.ts getArtist()`: map `s.songId ?? s.id ?? ''` — handle C# field name `Id` serialize thành `"id"` (không phải `"songId"`) trong ArtistResponseDto.Songs
+- Frontend `SongDetailPage.tsx`: map `songData.songId ?? songData.id ?? songId` để normalize field name từ API
+- Frontend `playerStore.ts`: guard `if (!song.songId) return` trong `setSong`/`playSong` — prevent `GET /streaming/undefined/url` 404 khi `song.id` = JS undefined
+- Frontend `BottomPlayerBar.tsx`: guard `if (!currentSong.songId) { clearSong(); return }` trước `fetchStreamUrl` — auto-cleanup stale store state
+- Frontend `recommendationService.ts`: `.filter((item) => item.songId)` trước map — loại bỏ items thiếu songId, fix React "unique key" warning
 
 **W11 Demo Prep — verify_ac.sh: 23/23 automated ACs PASS (2026-05-16)**
 - `verify_ac.sh` — flush Redis rate-limit keys (`rate:*`, `rl:*`) trước mỗi lần chạy, tránh 429 false-fail khi chạy nhiều lần liên tiếp

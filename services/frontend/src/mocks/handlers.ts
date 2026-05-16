@@ -5,6 +5,8 @@ import {
   MOCK_RECOMMENDATIONS,
   MOCK_SEARCH_RESULTS,
   MOCK_SONGS,
+  MOCK_ARTIST,
+  MOCK_CREATOR_SONG_ROWS,
   MOCK_PARTY,
   getMockAnalyticsStats,
   getMockHeatmap,
@@ -107,6 +109,40 @@ const streamingUrlHandler = http.get('*/api/v1/streaming/:songId/url', async () 
 // ─────────────────────────────────────────────────────────────────────────────
 // Music
 // ─────────────────────────────────────────────────────────────────────────────
+
+const getMySongsHandler = http.get('*/api/v1/music/songs/my', async () => {
+  await delay(LATENCY);
+  const rows = MOCK_CREATOR_SONG_ROWS.map((r) => ({
+    songId: r.songId,
+    title: r.title,
+    coverUrl: r.coverUrl,
+    genre: r.genre,
+    uploadedAt: r.uploadedAt,
+    playCount: r.totalPlays,
+  }));
+  return ok(rows);
+});
+
+const getArtistHandler = http.get('*/api/v1/music/artists/:artistId', async () => {
+  await delay(LATENCY);
+  const artistDetail = {
+    id: MOCK_ARTIST.id,
+    stageName: MOCK_ARTIST.name,
+    bio: 'Nghệ sĩ hàng đầu Việt Nam',
+    country: 'VN',
+    avatarUrl: MOCK_ARTIST.avatarUrl,
+    bannerImageUrl: MOCK_ARTIST.avatarUrl,
+    verified: true,
+    totalFollowers: MOCK_ARTIST.followerCount ?? 0,
+    totalPlays: MOCK_ARTIST.totalPlays ?? 0,
+    songs: MOCK_SONGS.slice(0, 5).map((s) => ({
+      ...s,
+      durationSec: s.duration,
+      genreName: 'V-Pop',
+    })),
+  };
+  return ok(artistDetail);
+});
 
 const getSongHandler = http.get('*/api/v1/music/songs/:songId', async ({ params }) => {
   await delay(LATENCY);
@@ -227,6 +263,8 @@ export const handlers = [
   streamingUrlHandler,
 
   // Music
+  getMySongsHandler,
+  getArtistHandler,
   getSongHandler,
   uploadSongHandler,
 

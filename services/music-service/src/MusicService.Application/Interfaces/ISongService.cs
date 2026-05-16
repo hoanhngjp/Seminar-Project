@@ -19,4 +19,10 @@ public interface ISongService
 
     /// <summary>Batch fetch for Recommendation Service. Returns only existing songs — missing IDs are silently skipped.</summary>
     Task<List<BatchSongDto>> GetSongsBatchAsync(IEnumerable<Guid> songIds, CancellationToken cancellationToken = default);
+
+    /// <summary>Returns artist profile + top songs. Throws KeyNotFoundException when not found.</summary>
+    Task<ArtistResponseDto> GetArtistAsync(Guid artistId, CancellationToken cancellationToken = default);
+
+    /// <summary>Returns all songs uploaded by the given creator (by userId).</summary>
+    Task<List<MySongDto>> GetMySongsAsync(Guid userId, CancellationToken cancellationToken = default);
 }

@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import AppShell from '../components/layout/AppShell';
 import SongCard from '../features/recommendation/components/SongCard';
 import { usePlayerStore } from '../store/playerStore';
-import { MOCK_SONG_DETAIL, MOCK_RELATED_SONGS } from '../mocks/data';
-import type { RecommendedSong } from '../types/domain';
+import { getSong } from '../services/musicService';
+import { fetchRecommendations } from '../services/recommendationService';
+import type { SongDetail, RecommendedSong } from '../types/domain';
 
 function formatDuration(sec: number): string {
   const m = Math.floor(sec / 60);
@@ -19,21 +20,85 @@ function formatCount(n: number): string {
 }
 
 export default function SongDetailPage() {
+  const { songId } = useParams<{ songId: string }>();
   const navigate = useNavigate();
   const playSong = usePlayerStore((s) => s.playSong);
   const addToQueue = usePlayerStore((s) => s.addToQueue);
 
-  const song = MOCK_SONG_DETAIL;
-  const related = MOCK_RELATED_SONGS;
-
+  const [song, setSong] = useState<SongDetail | null>(null);
+  const [related, setRelated] = useState<RecommendedSong[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showContextMenu, setShowContextMenu] = useState(false);
 
+  useEffect(() => {
+    if (!songId) return;
+    let cancelled = false;
+
+    setLoading(true);
+    Promise.all([
+      getSong(songId),
+      fetchRecommendations('none', 8),
+    ]).then(([songData, recs]) => {
+      if (cancelled) return;
+      // Map BE response to SongDetail shape
+      const detail: SongDetail = {
+        id: String(songData.songId ?? songData.id ?? songId),
+        title: (songData as any).title ?? '',
+        artist: (songData as any).artist?.stageName ?? (songData as any).artist ?? '',
+        album: (songData as any).album?.title,
+        duration: (songData as any).durationSec ?? (songData as any).duration ?? 0,
+        coverUrl: (songData as any).coverUrl,
+        isExplicit: (songData as any).isExplicit ?? false,
+        genreId: undefined,
+        genreName: (songData as any).genreName,
+        moodName: (songData as any).moodName,
+        language: (songData as any).language,
+        releaseDate: (songData as any).releaseDate,
+        playCount: (songData as any).playCount,
+      };
+      setSong(detail);
+      setRelated(recs);
+    }).catch(() => {
+      // leave song null → show error state
+    }).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+
+    return () => { cancelled = true; };
+  }, [songId]);
+
+  if (loading) {
+    return (
+      <AppShell>
+        <div className="h-[320px] rounded-[8px] bg-dark-surface animate-shimmer mb-8" />
+        <div className="flex gap-3 mb-8">
+          <div className="h-12 w-24 rounded-full bg-dark-surface animate-shimmer" />
+          <div className="h-12 w-36 rounded-full bg-dark-surface animate-shimmer" />
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (!song) {
+    return (
+      <AppShell>
+        <div className="flex flex-col items-center gap-4 py-24 text-center">
+          <span className="material-symbols-outlined text-[48px] text-text-secondary">music_off</span>
+          <p className="text-text-secondary">Không tìm thấy bài hát.</p>
+          <button onClick={() => navigate(-1)} className="text-spotify-green hover:underline text-sm">
+            Quay lại
+          </button>
+        </div>
+      </AppShell>
+    );
+  }
+
   function handlePlay() {
-    playSong({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl });
+    playSong({ songId: song!.id, title: song!.title, artist: song!.artist, coverUrl: song!.coverUrl });
   }
 
   function handleAddToQueue() {
-    addToQueue({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl });
+    addToQueue({ songId: song!.id, title: song!.title, artist: song!.artist, coverUrl: song!.coverUrl });
     setShowContextMenu(false);
   }
 
@@ -45,15 +110,11 @@ export default function SongDetailPage() {
     <AppShell>
       {/* ── Hero ── */}
       <div className="relative h-[320px] rounded-[8px] overflow-hidden mb-8" data-testid="hero-section">
-        {/* Blurred background */}
         <div
           className="absolute inset-0 bg-cover bg-center blur-3xl scale-110 opacity-50"
           style={{ backgroundImage: `url(${song.coverUrl ?? ''})` }}
         />
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/60 to-transparent" />
-
-        {/* Content */}
         <div className="relative h-full flex items-end gap-6 p-6">
           <img
             src={song.coverUrl}
@@ -64,13 +125,7 @@ export default function SongDetailPage() {
             <p className="text-text-secondary text-sm mb-1">Bài hát</p>
             <h1 className="text-[24px] font-bold text-text-base truncate mb-1">{song.title}</h1>
             <div className="flex items-center gap-2 text-sm text-text-secondary">
-              <Link
-                to={`/artists/${song.genreId ?? 'artist-001'}`}
-                className="hover:text-text-base hover:underline font-medium"
-                data-testid="artist-link"
-              >
-                {song.artist}
-              </Link>
+              <span className="font-medium text-text-base">{song.artist}</span>
               {song.album && (
                 <>
                   <span>·</span>
@@ -113,12 +168,6 @@ export default function SongDetailPage() {
           </button>
           {showContextMenu && (
             <div className="absolute left-0 top-10 bg-[#282828] rounded-[8px] shadow-heavy border border-border-muted z-[100] w-[200px] py-1">
-              <button
-                className="w-full text-left px-4 py-2 text-sm text-text-base hover:bg-mid-dark"
-                onClick={() => navigate(`/artists/artist-001`)}
-              >
-                Đến trang nghệ sĩ
-              </button>
               <button
                 className="w-full text-left px-4 py-2 text-sm text-text-base hover:bg-mid-dark"
                 onClick={() => setShowContextMenu(false)}
@@ -164,25 +213,19 @@ export default function SongDetailPage() {
         )}
       </div>
 
-      {/* ── Suggestion card ── */}
-      {song.explainText && (
-        <div className="bg-dark-surface rounded-[8px] p-4 mb-8 flex items-center gap-3" data-testid="explain-card">
-          <span className="material-symbols-outlined text-spotify-green text-[20px]">lightbulb</span>
-          <p className="text-text-secondary text-sm">{song.explainText}</p>
-        </div>
-      )}
-
       {/* ── Related songs ── */}
-      <section>
-        <div className="mb-4">
-          <h3 className="text-[18px] font-semibold text-text-base">Bài hát liên quan</h3>
-        </div>
-        <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
-          {related.map((s) => (
-            <SongCard key={s.id} song={s} onPlay={handleRelatedPlay} />
-          ))}
-        </div>
-      </section>
+      {related.length > 0 && (
+        <section>
+          <div className="mb-4">
+            <h3 className="text-[18px] font-semibold text-text-base">Bài hát liên quan</h3>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
+            {related.map((s) => (
+              <SongCard key={s.id} song={s} onPlay={handleRelatedPlay} />
+            ))}
+          </div>
+        </section>
+      )}
     </AppShell>
   );
 }

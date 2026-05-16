@@ -1,6 +1,6 @@
 import { apiClient } from './api';
 import type { ApiResponse } from '../types/api';
-import type { Song } from '../types/domain';
+import type { Song, ArtistDetail, MySong } from '../types/domain';
 
 export interface UploadSongRequest {
   title: string;
@@ -32,7 +32,39 @@ export async function uploadSong(req: UploadSongRequest): Promise<Song> {
   return res.data.data!;
 }
 
-export async function getSong(songId: string): Promise<Song> {
-  const res = await apiClient.get<ApiResponse<Song>>(`/api/v1/music/songs/${songId}`);
+export async function getSong(songId: string): Promise<any> {
+  const res = await apiClient.get<ApiResponse<any>>(`/api/v1/music/songs/${songId}`);
   return res.data.data!;
+}
+
+export async function getArtist(artistId: string): Promise<ArtistDetail> {
+  const res = await apiClient.get<ApiResponse<any>>(`/api/v1/music/artists/${artistId}`);
+  const d = res.data.data!;
+  return {
+    id: String(d.id ?? artistId),
+    stageName: d.stageName ?? '',
+    bio: d.bio,
+    country: d.country,
+    avatarUrl: d.avatarUrl,
+    bannerImageUrl: d.bannerImageUrl,
+    verified: d.verified ?? false,
+    totalFollowers: d.totalFollowers ?? 0,
+    totalPlays: d.totalPlays ?? 0,
+    songs: (d.songs ?? []).map((s: any) => ({
+      id: String(s.songId ?? s.id ?? ''),
+      title: s.title ?? '',
+      artist: s.artist?.stageName ?? s.artist ?? d.stageName ?? '',
+      album: s.album?.title ?? s.album,
+      duration: s.durationSec ?? s.duration ?? 0,
+      coverUrl: s.coverUrl,
+      isExplicit: s.isExplicit ?? false,
+      genreId: s.genreId,
+      genreName: s.genreName,
+    })),
+  };
+}
+
+export async function getMySongs(): Promise<MySong[]> {
+  const res = await apiClient.get<ApiResponse<MySong[]>>('/api/v1/music/songs/my');
+  return res.data.data ?? [];
 }

@@ -1,5 +1,95 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-16] [RUNTIME BUG FIXES — streaming/undefined/url + GatewayAuth X-User-Id missing] [DONE]
+
+**Context:** Sau khi bật VITE_MOCK=false, browser testing phát hiện 2 lỗi runtime nghiêm trọng.
+
+**Bug 1: GET /streaming/undefined/url 404**
+
+Root cause chuỗi:
+1. `ArtistResponseDto.Songs` chứa `SongResponseDto` với field `Guid Id` → JSON serializes thành `"id"` (camelCase)
+2. `ArtistPage.tsx` cũ gọi `getArtist()` chưa có → songs từ raw API response, `s.songId` undefined, `s.id` = GUID
+3. `getArtist()` lúc đầu thiếu → ArtistPage không có getArtist → songs không được map đúng
+4. `playSong({ songId: String(song.id) })` khi `song.id = undefined` (JS undefined) → `String(undefined)` = `"undefined"` → request `/streaming/undefined/url`
+5. Streaming controller `[HttpGet("{songId:guid}/url")]` reject vì `"undefined"` không phải GUID → 404
+
+Fixes:
+- `musicService.ts getArtist()` — map `s.songId ?? s.id ?? ''` (handle cả `songId` lẫn `id` field name)
+- `SongDetailPage.tsx` — map `songData.songId ?? songData.id ?? songId`
+- `playerStore.ts` — guard `if (!song.songId) return;` trong `setSong` và `playSong` → reject undefined songId
+- `BottomPlayerBar.tsx` — guard `if (!currentSong.songId) { clearSong(); return; }` trước `fetchStreamUrl`
+- `recommendationService.ts` — `.filter((item) => item.songId)` trước `.map()` → loại bỏ items không có songId (tránh `key={undefined}` React warning)
+
+**Bug 2: Streaming service log "Missing X-User-Id header from gateway"**
+
+Root cause: YARP build `HttpRequestMessage` từ headers TRƯỚC khi `JwtValidationMiddleware` chạy (hoặc headers middleware thêm vào không propagate đúng vào proxy pipeline). Header `X-User-Id` có trong `HttpContext.Request.Headers` nhưng YARP không forward vào downstream request.
+
+Fix: `api-gateway/Program.cs` — thêm `AddTransforms()` với `AddRequestTransform` explicit copy `X-User-Id` và `X-User-Role` từ `HttpContext.Request.Headers` vào `ProxyRequest.Headers`.
+
+```csharp
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(...)
+    .AddTransforms(ctx => {
+        ctx.AddRequestTransform(transform => {
+            // Explicitly copy gateway identity headers to proxied request
+            if (headers.TryGetValue("X-User-Id", out var userId) && !string.IsNullOrEmpty(userId))
+                transform.ProxyRequest.Headers.TryAddWithoutValidation("X-User-Id", (string?)userId);
+            ...
+            return ValueTask.CompletedTask;
+        });
+    });
+```
+
+Cần add `using Yarp.ReverseProxy.Transforms;` — thiếu namespace gây build error lần đầu.
+
+**Root cause của cả 2 bugs:**
+- Bug 1: C# → JSON field name mapping: C# `Guid SongId` → JSON `"songId"`, nhưng `Guid Id` → JSON `"id"` — frontend mapping phải handle cả 2 case
+- Bug 2: YARP middleware interaction: headers thêm bởi ASP.NET middleware được YARP đọc đúng TỪ `HttpContext.Request.Headers`, nhưng cần explicit transform vì YARP có thể không include custom headers tự động trong một số configurations
+
+**Verified (Python):** Recommendation service serialize `song_id → songId` đúng cả cache hit lẫn cache miss path — không phải nguồn gây bug.
+
+---
+[2026-05-16] [FRONTEND REAL API INTEGRATION — VITE_MOCK=false + 5 PAGES + 2 BACKEND ENDPOINTS] [DONE]
+
+**Task:** Tắt VITE_MOCK, wire 5 trang FE dùng real API calls, thêm 2 backend endpoints mới, fix toàn bộ test suite.
+
+**Backend changes (Music Service):**
+- `MusicService.Application/DTOs/SongResponseDto.cs` — thêm `ArtistResponseDto` + `MySongDto`
+- `MusicService.Application/Interfaces/IMusicRepository.cs` — thêm `GetArtistByIdAsync`, `GetSongsByArtistIdAsync`, `GetSongsByCreatorUserIdAsync`
+- `MusicService.Application/Interfaces/ISongService.cs` — thêm `GetArtistAsync`, `GetMySongsAsync`
+- `MusicService.Infrastructure/Repositories/MusicRepository.cs` — implement 3 methods với EF Core includes
+- `MusicService.Application/Services/SongService.cs` — implement `GetArtistAsync`, `GetMySongsAsync`
+- `MusicService.Api/Controllers/ArtistsController.cs` — NEW: `GET /api/v1/music/artists/{artistId}` → 200 ArtistResponseDto
+- `MusicService.Api/Controllers/SongsController.cs` — thêm `GET /api/v1/music/songs/my` (Creator/Admin only)
+- `MusicService.UnitTests/SongServiceArtistTests.cs` — NEW: 5 unit tests
+- Bugfix: `SongServiceGetTests.cs` — thêm `FeaturedArtists` param 14th vào `BuildSongDto`
+- Bugfix: `GcsStorageServiceTests.cs` — `Lazy<StorageClient>` constructor
+
+**Frontend changes:**
+- `services/frontend/.env.development` — `VITE_MOCK=true` → `VITE_MOCK=false`
+- `src/types/domain.ts` — thêm `ArtistDetail`, `MySong` interfaces
+- `src/services/musicService.ts` — thêm `getArtist()`, `getMySongs()`
+- `src/mocks/handlers.ts` — thêm `getMySongsHandler`, `getArtistHandler` (cho test mode)
+- `src/pages/ArtistPage.tsx` — rewrite: `useParams` + `getArtist()` async + loading/error states
+- `src/pages/ProfilePage.tsx` — rewrite: `userService.getProfile()` async + loading/error states
+- `src/pages/SongDetailPage.tsx` — rewrite: `getSong()` + `fetchRecommendations()` async
+- `src/pages/creator/CreatorSongAnalyticsPage.tsx` — rewrite: `getSong()` + `fetchHeatmap()` + `fetchSongStats()` async
+- `src/pages/CreatorDashboardPage.tsx` — `getMySongs()` thay hardcoded SONG_OPTIONS, thêm `data-testid="song-selector-button"`
+
+**Test fixes (695/695 xanh):**
+- `ArtistPage.test.tsx` — `vi.hoisted()` cho MOCK_ARTIST_DETAIL, `Routes/Route` wrapper, `findBy*` async
+- `ProfilePage.test.tsx` — `vi.hoisted()` cho MOCK_PROFILE_DATA, `findBy*` async
+- `SongDetailPage.test.tsx` — rewrite: mock services, `Routes/Route`, `findBy*`, remove deleted features
+- `CreatorSongAnalyticsPage.test.tsx` — rewrite: `vi.hoisted()` mocks, `Routes/Route`, `findBy*`
+- `CreatorDashboardPage.test.tsx` — thêm `mySongsHandler` vào MSW server, fix song selector assertions
+- `PartyRoomPage.test.tsx` — bugfix pre-existing: `/ws/v1/parties/` → `/hubs/party?roomId=`
+
+**Quyết định:**
+- API Gateway catch-all route đã cover `GET /api/v1/music/artists/{artistId}` và `GET /api/v1/music/songs/my` — không cần sửa gateway
+- `getMySongsHandler` phải register TRƯỚC `getSongHandler` trong MSW để tránh `/songs/my` match pattern `/songs/:songId`
+- `vi.mock` factory không thể reference biến khai báo ngoài nó (hoisting) — dùng `vi.hoisted()` để khai báo data dùng trong factory
+
+---
 [2026-05-16] [MUSIC SERVICE — song_artists TABLE + SEED 30 SONGS] [DONE]
 
 **Task:** Thêm `song_artists` junction table + seed 30 bài nhạc thật từ GCS bucket.

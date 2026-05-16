@@ -1,29 +1,51 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import AppShell from '../components/layout/AppShell';
 import { useAuthStore } from '../store/authStore';
-import { MOCK_PROFILE } from '../mocks/data';
+import { userService, type UserProfile } from '../services/userService';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
-  const profile = MOCK_PROFILE;
-  const [displayName, setDisplayName] = useState(profile.displayName);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [displayName, setDisplayName] = useState('');
   const [editingName, setEditingName] = useState(false);
-  const [avatarSrc, setAvatarSrc] = useState(profile.avatarUrl ?? '');
+  const [avatarSrc, setAvatarSrc] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    userService.getProfile()
+      .then((p) => {
+        setProfile(p);
+        setDisplayName(p.displayName);
+        setAvatarSrc(p.avatarUrl ?? '');
+      })
+      .catch(() => {/* stay null → show generic fallback */})
+      .finally(() => setLoading(false));
+  }, []);
 
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (file) {
-      setAvatarSrc(URL.createObjectURL(file));
-    }
+    if (file) setAvatarSrc(URL.createObjectURL(file));
   }
 
   function handleLogout() {
     clearAuth();
     navigate('/login');
+  }
+
+  if (loading) {
+    return (
+      <AppShell>
+        <div className="max-w-[640px] mx-auto py-8 space-y-4">
+          <div className="w-[120px] h-[120px] rounded-full bg-dark-surface animate-shimmer mx-auto" />
+          <div className="h-12 rounded-[8px] bg-dark-surface animate-shimmer" />
+          <div className="h-12 rounded-[8px] bg-dark-surface animate-shimmer" />
+        </div>
+      </AppShell>
+    );
   }
 
   return (
@@ -35,7 +57,7 @@ export default function ProfilePage() {
         <div className="flex justify-center mb-8">
           <div className="relative group" data-testid="avatar-wrapper">
             <img
-              src={avatarSrc}
+              src={avatarSrc || 'https://picsum.photos/seed/avatar/120/120'}
               alt="Avatar"
               className="w-[120px] h-[120px] rounded-full object-cover border-2 border-border-muted"
               data-testid="profile-avatar"
@@ -78,7 +100,7 @@ export default function ProfilePage() {
               className="text-text-base text-[16px] font-medium cursor-pointer hover:text-spotify-green transition-colors"
               data-testid="name-display"
             >
-              {displayName}
+              {displayName || '—'}
             </span>
           )}
         </div>
@@ -88,20 +110,20 @@ export default function ProfilePage() {
           <span className="material-symbols-outlined text-text-secondary text-[18px]">lock</span>
           <div>
             <p className="text-text-secondary text-xs">Email</p>
-            <p className="text-text-base text-[14px]">{profile.email}</p>
+            <p className="text-text-base text-[14px]">{profile?.email ?? '—'}</p>
           </div>
         </div>
 
         {/* ── Role ── */}
         <div className="mb-6" data-testid="role-section">
           <span className="inline-block bg-mid-dark text-text-secondary text-xs px-3 py-1 rounded-full">
-            {profile.role}
+            {profile?.role ?? '—'}
           </span>
         </div>
 
         {/* ── Preferences ── */}
         <div className="mb-6" data-testid="preferences-section">
-          {profile.preferredGenres && profile.preferredGenres.length > 0 && (
+          {profile?.preferredGenres && profile.preferredGenres.length > 0 && (
             <div className="mb-4">
               <p className="text-text-secondary text-xs mb-2">Thể loại yêu thích</p>
               <div className="flex flex-wrap gap-2">
@@ -113,7 +135,7 @@ export default function ProfilePage() {
               </div>
             </div>
           )}
-          {profile.preferredArtists && profile.preferredArtists.length > 0 && (
+          {profile?.preferredArtists && profile.preferredArtists.length > 0 && (
             <div>
               <p className="text-text-secondary text-xs mb-2">Nghệ sĩ yêu thích</p>
               <div className="flex flex-wrap gap-2">

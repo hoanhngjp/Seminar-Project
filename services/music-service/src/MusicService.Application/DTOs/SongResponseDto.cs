@@ -28,6 +28,28 @@ public record AlbumSummaryDto(Guid Id, string Title);
 
 public record SongStorageKeyDto(string StorageKey, string Bucket);
 
+public record ArtistResponseDto(
+    Guid Id,
+    string StageName,
+    string? Bio,
+    string? Country,
+    string? AvatarUrl,
+    string? BannerImageUrl,
+    bool Verified,
+    long TotalFollowers,
+    long TotalPlays,
+    List<SongResponseDto> Songs
+);
+
+public record MySongDto(
+    Guid SongId,
+    string Title,
+    string? CoverUrl,
+    string? Genre,
+    DateTimeOffset UploadedAt,
+    long PlayCount
+);
+
 public record BatchSongDto(
     Guid Id,
     string Title,

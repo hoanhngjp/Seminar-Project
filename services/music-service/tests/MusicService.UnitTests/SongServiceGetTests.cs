@@ -214,7 +214,8 @@ public class SongServiceGetTests
         null,
         null,
         null,
-        0
+        0,
+        new List<FeaturedArtistDto>()
     );
 
     // ----------------------------------------------------------------

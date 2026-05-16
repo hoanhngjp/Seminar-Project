@@ -45,4 +45,25 @@ public class MusicRepository : IMusicRepository
             .Include(s => s.SongGenres)
             .Where(s => songIds.Contains(s.Id))
             .ToListAsync(cancellationToken);
+
+    public async Task<Artist?> GetArtistByIdAsync(Guid artistId, CancellationToken cancellationToken = default)
+        => await _context.Artists.FirstOrDefaultAsync(a => a.Id == artistId, cancellationToken);
+
+    public async Task<List<Song>> GetSongsByArtistIdAsync(Guid artistId, CancellationToken cancellationToken = default)
+        => await _context.Songs
+            .Include(s => s.Artist)
+            .Include(s => s.Album)
+            .Include(s => s.SongGenres).ThenInclude(sg => sg.Genre)
+            .Include(s => s.SongArtists).ThenInclude(sa => sa.Artist)
+            .Where(s => s.ArtistId == artistId)
+            .OrderByDescending(s => s.PlayCount)
+            .ToListAsync(cancellationToken);
+
+    public async Task<List<Song>> GetSongsByCreatorUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        => await _context.Songs
+            .Include(s => s.Artist)
+            .Include(s => s.SongGenres).ThenInclude(sg => sg.Genre)
+            .Where(s => s.Artist != null && s.Artist.UserId == userId)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync(cancellationToken);
 }

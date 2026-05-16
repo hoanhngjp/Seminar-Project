@@ -15,4 +15,8 @@ public interface IMusicRepository
 
     Task<Song?> GetSongByIdAsync(Guid songId, CancellationToken cancellationToken = default);
     Task<List<Song>> GetSongsByIdsAsync(IEnumerable<Guid> songIds, CancellationToken cancellationToken = default);
+
+    Task<Artist?> GetArtistByIdAsync(Guid artistId, CancellationToken cancellationToken = default);
+    Task<List<Song>> GetSongsByArtistIdAsync(Guid artistId, CancellationToken cancellationToken = default);
+    Task<List<Song>> GetSongsByCreatorUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 }

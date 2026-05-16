@@ -119,6 +119,43 @@ public class SongsController : ControllerBase
     // [8] Redis cache key: song:meta:{songId} TTL 30m
     // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
+    // Contract-First Checklist — GET /api/v1/music/songs/my
+    // [1] GET /api/v1/music/songs/my
+    // [2] —
+    // [3] 200: { success, data: MySongDto[], meta }
+    // [4] 401 UNAUTHORIZED, 403 FORBIDDEN
+    // [5] Auth (GatewayAuth), Creator/Admin only
+    // [6] 300ms
+    // [7] YES
+    // [8] Returns songs ordered by CreatedAt desc
+    // ----------------------------------------------------------------
+
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMySongs()
+    {
+        var requestId = HttpContext.Items["X-Correlation-Id"]?.ToString() ?? Guid.NewGuid().ToString();
+
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var role = User.FindFirstValue(ClaimTypes.Role);
+
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized(ApiResponse<object>.Fail("UNAUTHORIZED", "Authentication required.", requestId));
+
+        if (role != "Creator" && role != "Admin")
+            return StatusCode(403, ApiResponse<object>.Fail("FORBIDDEN", "Only Creators can access this endpoint.", requestId));
+
+        try
+        {
+            var songs = await _songService.GetMySongsAsync(userId, HttpContext.RequestAborted);
+            return Ok(ApiResponse<object>.Ok(songs, requestId));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, ApiResponse<object>.Fail("INTERNAL_ERROR", "An unexpected error occurred.", requestId));
+        }
+    }
+
     [HttpGet("{songId:guid}")]
     public async Task<IActionResult> GetSong(Guid songId)
     {

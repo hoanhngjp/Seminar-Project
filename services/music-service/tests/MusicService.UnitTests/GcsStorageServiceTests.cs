@@ -18,7 +18,7 @@ public class GcsStorageServiceTests
 
     public GcsStorageServiceTests()
     {
-        _sut = new GcsStorageService(_clientMock.Object, Bucket);
+        _sut = new GcsStorageService(new Lazy<StorageClient>(() => _clientMock.Object), Bucket);
     }
 
     [Fact]

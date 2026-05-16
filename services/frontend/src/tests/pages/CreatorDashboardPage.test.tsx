@@ -46,10 +46,11 @@ const MOCK_HEATMAP = {
 // MSW handlers
 // ---------------------------------------------------------------------------
 
-const HEATMAP_URL = 'http://localhost:5000/api/v1/analytics/creator/heatmap/:songId';
-const STATS_URL   = 'http://localhost:5000/api/v1/analytics/creator/stats/:songId';
-const PROFILE_URL = 'http://localhost:5000/api/v1/users/me';
-const NOTIF_URL   = 'http://localhost:5000/api/v1/notifications/unread';
+const HEATMAP_URL   = 'http://localhost:5000/api/v1/analytics/creator/heatmap/:songId';
+const STATS_URL     = 'http://localhost:5000/api/v1/analytics/creator/stats/:songId';
+const PROFILE_URL   = 'http://localhost:5000/api/v1/users/me';
+const NOTIF_URL     = 'http://localhost:5000/api/v1/notifications/unread';
+const MY_SONGS_URL  = 'http://localhost:5000/api/v1/music/songs/my';
 
 const heatmapHandler = http.get(HEATMAP_URL, () =>
   HttpResponse.json({
@@ -89,14 +90,28 @@ const notifHandler = http.get(NOTIF_URL, () =>
   }),
 );
 
-const server = setupServer(heatmapHandler, statsHandler, profileHandler, notifHandler);
+const mySongsHandler = http.get(MY_SONGS_URL, () =>
+  HttpResponse.json({
+    success: true,
+    data: [
+      { songId: 'song-001', title: 'Lạc Trôi', coverUrl: 'https://picsum.photos/seed/lactroi/300/300', genre: 'V-Pop', uploadedAt: '2024-01-01T00:00:00Z', playCount: 1500000 },
+      { songId: 'song-002', title: 'Có Chắc Yêu Là Đây', coverUrl: 'https://picsum.photos/seed/cochac/300/300', genre: 'V-Pop', uploadedAt: '2024-02-01T00:00:00Z', playCount: 900000 },
+      { songId: 'song-003', title: 'Chuyến Xe', coverUrl: 'https://picsum.photos/seed/chuyenxe/300/300', genre: 'Indie', uploadedAt: '2024-03-01T00:00:00Z', playCount: 400000 },
+      { songId: 'song-004', title: 'Đưa Nhau Đi Trốn', coverUrl: 'https://picsum.photos/seed/ditrong/300/300', genre: 'Rap', uploadedAt: '2024-04-01T00:00:00Z', playCount: 600000 },
+    ],
+    meta: { apiVersion: 'v1', requestId: 'r5', timestamp: '' },
+    error: null,
+  }),
+);
+
+const server = setupServer(heatmapHandler, statsHandler, profileHandler, notifHandler, mySongsHandler);
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
   server.resetHandlers();
   useAuthStore.setState({ accessToken: null, userId: null, role: null });
   usePlayerStore.getState().clearSong();
-  server.use(heatmapHandler, statsHandler, profileHandler, notifHandler);
+  server.use(heatmapHandler, statsHandler, profileHandler, notifHandler, mySongsHandler);
 });
 afterAll(() => server.close());
 
@@ -272,16 +287,16 @@ describe('CreatorDashboardPage — song selector', () => {
     setRole('Creator');
     renderPage();
     await waitFor(() => {
-      expect(screen.getByText('Lạc Trôi')).toBeInTheDocument();
+      expect(screen.getByTestId('song-selector-button')).toHaveTextContent('Lạc Trôi');
     });
   });
 
   it('opens dropdown and shows other song options on click', async () => {
     setRole('Creator');
     renderPage();
-    await waitFor(() => screen.getByText('Lạc Trôi'));
+    await waitFor(() => screen.getByTestId('song-selector-button'));
 
-    fireEvent.click(screen.getByText('Lạc Trôi'));
+    fireEvent.click(screen.getByTestId('song-selector-button'));
     expect(screen.getAllByText('Chuyến Xe').length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText('Đưa Nhau Đi Trốn').length).toBeGreaterThanOrEqual(1);
   });

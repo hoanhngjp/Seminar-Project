@@ -1,6 +1,7 @@
 using ApiGateway.Api.Middleware;
 using ApiGateway.Infrastructure;
 using Prometheus;
+using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,30 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+    .AddTransforms(ctx =>
+    {
+        // YARP builds HttpRequestMessage before middleware-added headers propagate.
+        // Explicitly copy gateway identity headers to every proxied request.
+        ctx.AddRequestTransform(transform =>
+        {
+            var headers = transform.HttpContext.Request.Headers;
+
+            if (headers.TryGetValue("X-User-Id", out var userId) && !string.IsNullOrEmpty(userId))
+            {
+                transform.ProxyRequest.Headers.Remove("X-User-Id");
+                transform.ProxyRequest.Headers.TryAddWithoutValidation("X-User-Id", (string?)userId);
+            }
+
+            if (headers.TryGetValue("X-User-Role", out var userRole) && !string.IsNullOrEmpty(userRole))
+            {
+                transform.ProxyRequest.Headers.Remove("X-User-Role");
+                transform.ProxyRequest.Headers.TryAddWithoutValidation("X-User-Role", (string?)userRole);
+            }
+
+            return ValueTask.CompletedTask;
+        });
+    });
 
 var app = builder.Build();
 

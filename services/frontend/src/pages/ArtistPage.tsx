@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import AppShell from '../components/layout/AppShell';
 import { usePlayerStore } from '../store/playerStore';
-import { MOCK_ARTIST, MOCK_RELATED_SONGS } from '../mocks/data';
+import { getArtist } from '../services/musicService';
+import type { ArtistDetail, SongDetail } from '../types/domain';
 
 function formatCount(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -16,17 +18,59 @@ function formatDuration(sec: number): string {
 }
 
 export default function ArtistPage() {
+  const { artistId } = useParams<{ artistId: string }>();
   const playSong = usePlayerStore((s) => s.playSong);
-  const artist = MOCK_ARTIST;
-  const songs = MOCK_RELATED_SONGS;
 
+  const [artist, setArtist] = useState<ArtistDetail | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    if (!artistId) return;
+    let cancelled = false;
+
+    getArtist(artistId)
+      .then((a) => { if (!cancelled) setArtist(a); })
+      .catch(() => {/* stay null */})
+      .finally(() => { if (!cancelled) setLoading(false); });
+
+    return () => { cancelled = true; };
+  }, [artistId]);
+
+  const songs: SongDetail[] = artist?.songs ?? [];
 
   function handlePlayAll() {
     if (songs.length > 0) {
       const first = songs[0];
-      playSong({ songId: first.id, title: first.title, artist: first.artist, coverUrl: first.coverUrl });
+      playSong({
+        songId: String(first.id),
+        title: first.title,
+        artist: first.artist,
+        coverUrl: first.coverUrl,
+      });
     }
+  }
+
+  if (loading) {
+    return (
+      <AppShell>
+        <div className="h-[280px] rounded-[8px] bg-dark-surface animate-shimmer mb-6" data-testid="artist-hero" />
+        <div className="flex gap-8 mb-6">
+          {[1, 2, 3].map((i) => <div key={i} className="h-5 w-24 rounded bg-dark-surface animate-shimmer" />)}
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (!artist) {
+    return (
+      <AppShell>
+        <div className="flex flex-col items-center gap-4 py-24 text-center">
+          <span className="material-symbols-outlined text-[48px] text-text-secondary">person_off</span>
+          <p className="text-text-secondary">Không tìm thấy nghệ sĩ.</p>
+        </div>
+      </AppShell>
+    );
   }
 
   return (
@@ -35,20 +79,20 @@ export default function ArtistPage() {
       <div className="relative h-[280px] rounded-[8px] overflow-hidden mb-6" data-testid="artist-hero">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${artist.avatarUrl ?? ''})` }}
+          style={{ backgroundImage: `url(${artist.bannerImageUrl ?? artist.avatarUrl ?? ''})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/50 to-transparent" />
         <div className="relative h-full flex items-end p-6 gap-6">
           <img
-            src={artist.avatarUrl}
-            alt={artist.name}
+            src={artist.avatarUrl ?? 'https://picsum.photos/seed/artist/120/120'}
+            alt={artist.stageName}
             className="w-[120px] h-[120px] rounded-full object-cover shadow-level-3 flex-shrink-0 border-2 border-border-muted"
             data-testid="artist-avatar"
           />
           <div>
             <p className="text-text-secondary text-xs mb-1">Nghệ sĩ</p>
             <h1 className="text-[48px] font-bold text-text-base leading-tight" data-testid="artist-name">
-              {artist.name}
+              {artist.stageName}
             </h1>
           </div>
         </div>
@@ -57,15 +101,15 @@ export default function ArtistPage() {
       {/* ── Stats ── */}
       <div className="flex gap-8 mb-6 text-sm" data-testid="stats-bar">
         <div>
-          <span className="text-text-base font-semibold">{artist.songCount ?? 0}</span>
+          <span className="text-text-base font-semibold">{songs.length}</span>
           <span className="text-text-secondary ml-1">bài hát</span>
         </div>
         <div>
-          <span className="text-text-base font-semibold">{formatCount(artist.totalPlays ?? 0)}</span>
+          <span className="text-text-base font-semibold">{formatCount(artist.totalPlays)}</span>
           <span className="text-text-secondary ml-1">lượt nghe</span>
         </div>
         <div>
-          <span className="text-text-base font-semibold">{formatCount(artist.followerCount ?? 0)}</span>
+          <span className="text-text-base font-semibold">{formatCount(artist.totalFollowers)}</span>
           <span className="text-text-secondary ml-1">người theo dõi</span>
         </div>
       </div>
@@ -94,53 +138,48 @@ export default function ArtistPage() {
       </div>
 
       {/* ── Popular tracks ── */}
-      <section className="mb-8">
-        <h2 className="text-[18px] font-semibold text-text-base mb-4">Bài hát phổ biến</h2>
-        <div className="space-y-1">
-          {songs.map((song, idx) => (
-            <div
-              key={song.id}
-              className="flex items-center gap-4 px-3 py-2 rounded-[8px] hover:bg-mid-dark group cursor-pointer"
-              onClick={() => playSong({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl })}
-              data-testid={`track-row-${song.id}`}
-            >
-              <span className="w-6 text-center text-text-secondary text-sm group-hover:hidden">{idx + 1}</span>
-              <span className="w-6 text-center material-symbols-outlined text-[16px] text-text-base hidden group-hover:block">
-                play_arrow
-              </span>
-              <img
-                src={song.coverUrl}
-                alt={song.title}
-                className="w-10 h-10 rounded object-cover flex-shrink-0"
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-text-base text-sm font-medium truncate">{song.title}</p>
+      {songs.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-[18px] font-semibold text-text-base mb-4">Bài hát phổ biến</h2>
+          <div className="space-y-1">
+            {songs.slice(0, 10).map((song, idx) => (
+              <div
+                key={String(song.id)}
+                className="flex items-center gap-4 px-3 py-2 rounded-[8px] hover:bg-mid-dark group cursor-pointer"
+                onClick={() => playSong({
+                  songId: String(song.id),
+                  title: song.title,
+                  artist: song.artist,
+                  coverUrl: song.coverUrl,
+                })}
+                data-testid={`track-row-${song.id}`}
+              >
+                <span className="w-6 text-center text-text-secondary text-sm group-hover:hidden">{idx + 1}</span>
+                <span className="w-6 text-center material-symbols-outlined text-[16px] text-text-base hidden group-hover:block">
+                  play_arrow
+                </span>
+                <img
+                  src={song.coverUrl ?? 'https://picsum.photos/seed/cover/40/40'}
+                  alt={song.title}
+                  className="w-10 h-10 rounded object-cover flex-shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-text-base text-sm font-medium truncate">{song.title}</p>
+                </div>
+                <span className="text-text-secondary text-sm flex-shrink-0">{formatDuration(song.duration)}</span>
               </div>
-              <span className="text-text-secondary text-sm flex-shrink-0">{formatDuration(song.duration)}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* ── Fans Also Like ── */}
-      <section>
-        <h2 className="text-[18px] font-semibold text-text-base mb-4">Người hâm mộ cũng thích</h2>
-        <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
-          {[MOCK_ARTIST, { ...MOCK_ARTIST, id: 'artist-002', name: 'Vũ.', avatarUrl: 'https://picsum.photos/seed/vu/400/400' }].map((a) => (
-            <div
-              key={a.id}
-              className="flex-shrink-0 w-[160px] text-center cursor-pointer group"
-              data-testid={`similar-artist-${a.id}`}
-            >
-              <div className="w-[120px] h-[120px] mx-auto rounded-full overflow-hidden mb-3 shadow-level-2">
-                <img src={a.avatarUrl} alt={a.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-              </div>
-              <p className="text-text-base text-sm font-medium truncate">{a.name}</p>
-              <p className="text-text-secondary text-xs">Nghệ sĩ</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ── Bio ── */}
+      {artist.bio && (
+        <section className="mb-8">
+          <h2 className="text-[18px] font-semibold text-text-base mb-3">Giới thiệu</h2>
+          <p className="text-text-secondary text-sm leading-relaxed">{artist.bio}</p>
+        </section>
+      )}
     </AppShell>
   );
 }

@@ -155,6 +155,40 @@ public class SongService : ISongService
         )).ToList();
     }
 
+    public async Task<ArtistResponseDto> GetArtistAsync(Guid artistId, CancellationToken cancellationToken = default)
+    {
+        var artist = await _repository.GetArtistByIdAsync(artistId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Artist {artistId} not found.");
+
+        var songs = await _repository.GetSongsByArtistIdAsync(artistId, cancellationToken);
+
+        return new ArtistResponseDto(
+            artist.Id,
+            artist.StageName,
+            artist.Bio,
+            artist.Country,
+            artist.ProfileImageUrl,
+            artist.BannerImageUrl,
+            artist.Verified,
+            artist.TotalFollowers,
+            artist.TotalPlays,
+            songs.Select(MapToResponseDto).ToList()
+        );
+    }
+
+    public async Task<List<MySongDto>> GetMySongsAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var songs = await _repository.GetSongsByCreatorUserIdAsync(userId, cancellationToken);
+        return songs.Select(s => new MySongDto(
+            s.Id,
+            s.Title,
+            s.CoverImageUrl,
+            s.SongGenres.FirstOrDefault()?.Genre?.Name,
+            s.CreatedAt,
+            s.PlayCount
+        )).ToList();
+    }
+
     private static SongResponseDto MapToResponseDto(Song song) => new(
         song.Id,
         song.Title,

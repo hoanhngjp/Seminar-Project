@@ -63,12 +63,16 @@ export default function BottomPlayerBar() {
       setShowOverlay(false);
       return;
     }
+    if (!currentSong.songId) {
+      clearSong();
+      return;
+    }
     analyticsSentRef.current = false;
     setCurrentTime(0);
     setDuration(0);
     setIsPlaying(false);
     fetchStreamUrl(currentSong.songId);
-  }, [currentSong, fetchStreamUrl]);
+  }, [currentSong, fetchStreamUrl, clearSong]);
 
   // Proactive URL refresh
   useEffect(() => {

@@ -22,8 +22,8 @@ interface PlayerState {
 export const usePlayerStore = create<PlayerState>((set) => ({
   currentSong: null,
   queue:       [],
-  setSong:  (song) => set({ currentSong: song }),
-  playSong: (song) => set({ currentSong: song }),
+  setSong:  (song) => { if (!song.songId) return; set({ currentSong: song }); },
+  playSong: (song) => { if (!song.songId) return; set({ currentSong: song }); },
   clearSong: () => set({ currentSong: null }),
   addToQueue: (song) => set((s) => ({ queue: [...s.queue, song] })),
   removeFromQueue: (index) =>

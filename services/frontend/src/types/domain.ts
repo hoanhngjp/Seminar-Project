@@ -97,6 +97,28 @@ export interface SongDetail extends Song {
   explainText?: string;
 }
 
+export interface ArtistDetail {
+  id: string;
+  stageName: string;
+  bio?: string;
+  country?: string;
+  avatarUrl?: string;
+  bannerImageUrl?: string;
+  verified: boolean;
+  totalFollowers: number;
+  totalPlays: number;
+  songs: SongDetail[];
+}
+
+export interface MySong {
+  songId: string;
+  title: string;
+  coverUrl?: string;
+  genre?: string;
+  uploadedAt: string;
+  playCount: number;
+}
+
 export interface CreatorSongRow {
   songId: string;
   title: string;

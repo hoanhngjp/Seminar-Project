@@ -239,7 +239,7 @@ describe('PartyRoomPage', () => {
       renderPage('room-test-001');
       await waitFor(() => {
         expect(mockBuilder.withUrl).toHaveBeenCalledWith(
-          '/ws/v1/parties/room-test-001',
+          '/hubs/party?roomId=room-test-001',
           expect.anything(),
         );
       });

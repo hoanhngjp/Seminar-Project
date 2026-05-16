@@ -1,12 +1,41 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import SongDetailPage from '../../pages/SongDetailPage';
 import { usePlayerStore } from '../../store/playerStore';
 import { useAuthStore } from '../../store/authStore';
-import { MOCK_SONG_DETAIL, MOCK_RELATED_SONGS } from '../../mocks/data';
+import { MOCK_RELATED_SONGS } from '../../mocks/data';
+import { fetchRecommendations } from '../../services/recommendationService';
 
-// ── Mocks ──────────────────────────────────────────────────────────────────────
+// ── Service mocks ─────────────────────────────────────────────────────────────
+
+const { MOCK_SONG_DATA } = vi.hoisted(() => ({
+  MOCK_SONG_DATA: {
+    id: 'song-001',
+    title: 'Lạc Trôi',
+    artist: 'Sơn Tùng M-TP',
+    duration: 245,
+    coverUrl: 'https://picsum.photos/seed/lactroi/300/300',
+    isExplicit: false,
+    genreName: 'V-Pop',
+    moodName: 'Lãng mạn',
+    language: 'Tiếng Việt',
+    releaseDate: '2017-01-01',
+    playCount: 150000000,
+  },
+}));
+
+vi.mock('../../services/musicService', () => ({
+  getSong: vi.fn().mockResolvedValue(MOCK_SONG_DATA),
+  getArtist: vi.fn(),
+  getMySongs: vi.fn(),
+}));
+
+vi.mock('../../services/recommendationService', () => ({
+  fetchRecommendations: vi.fn(),
+}));
+
+// ── Component mocks ───────────────────────────────────────────────────────────
 
 vi.mock('../../components/layout/AppShell', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div data-testid="app-shell">{children}</div>,
@@ -38,7 +67,7 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-// ── Setup ──────────────────────────────────────────────────────────────────────
+// ── Setup ─────────────────────────────────────────────────────────────────────
 
 function setup() {
   (usePlayerStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector: (s: unknown) => unknown) =>
@@ -47,17 +76,20 @@ function setup() {
   (useAuthStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector: (s: unknown) => unknown) =>
     selector({ userId: 'user-001', role: 'Listener', accessToken: 'tok', hasCompletedOnboarding: true })
   );
+  (fetchRecommendations as ReturnType<typeof vi.fn>).mockResolvedValue(MOCK_RELATED_SONGS);
 }
 
 function renderPage() {
   return render(
     <MemoryRouter initialEntries={['/songs/song-001']}>
-      <SongDetailPage />
+      <Routes>
+        <Route path="/songs/:songId" element={<SongDetailPage />} />
+      </Routes>
     </MemoryRouter>
   );
 }
 
-// ── Tests ──────────────────────────────────────────────────────────────────────
+// ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('SongDetailPage', () => {
   beforeEach(() => {
@@ -70,137 +102,118 @@ describe('SongDetailPage', () => {
     expect(screen.getByTestId('app-shell')).toBeInTheDocument();
   });
 
-  it('renders hero section with song title', () => {
+  it('renders hero section after load', async () => {
     renderPage();
-    expect(screen.getByTestId('hero-section')).toBeInTheDocument();
-    // title appears in hero h1 AND in related SongCard song-001 — use heading role
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(MOCK_SONG_DETAIL.title);
+    expect(await screen.findByTestId('hero-section')).toBeInTheDocument();
   });
 
-  it('renders artist name as link', () => {
+  it('shows song title in hero after load', async () => {
     renderPage();
-    const artistLink = screen.getByTestId('artist-link');
-    expect(artistLink).toBeInTheDocument();
-    expect(artistLink.textContent).toBe(MOCK_SONG_DETAIL.artist);
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(MOCK_SONG_DATA.title);
   });
 
-  it('renders song cover image', () => {
+  it('renders song cover image after load', async () => {
     renderPage();
-    const img = screen.getByRole('img', { name: MOCK_SONG_DETAIL.title });
-    expect(img).toHaveAttribute('src', MOCK_SONG_DETAIL.coverUrl);
+    const img = await screen.findByRole('img', { name: MOCK_SONG_DATA.title });
+    expect(img).toHaveAttribute('src', MOCK_SONG_DATA.coverUrl);
   });
 
-  it('renders play button', () => {
+  it('renders play button after load', async () => {
     renderPage();
-    expect(screen.getByTestId('play-button')).toBeInTheDocument();
+    expect(await screen.findByTestId('play-button')).toBeInTheDocument();
   });
 
-  it('clicking play calls playSong with correct data', () => {
+  it('clicking play calls playSong with correct data', async () => {
     renderPage();
-    fireEvent.click(screen.getByTestId('play-button'));
+    fireEvent.click(await screen.findByTestId('play-button'));
     expect(mockPlaySong).toHaveBeenCalledWith({
-      songId: MOCK_SONG_DETAIL.id,
-      title: MOCK_SONG_DETAIL.title,
-      artist: MOCK_SONG_DETAIL.artist,
-      coverUrl: MOCK_SONG_DETAIL.coverUrl,
+      songId: MOCK_SONG_DATA.id,
+      title: MOCK_SONG_DATA.title,
+      artist: MOCK_SONG_DATA.artist,
+      coverUrl: MOCK_SONG_DATA.coverUrl,
     });
   });
 
-  it('renders add to queue button', () => {
+  it('renders add to queue button after load', async () => {
     renderPage();
-    expect(screen.getByTestId('add-to-queue-button')).toBeInTheDocument();
+    expect(await screen.findByTestId('add-to-queue-button')).toBeInTheDocument();
   });
 
-  it('clicking add to queue calls addToQueue', () => {
+  it('clicking add to queue calls addToQueue', async () => {
     renderPage();
-    fireEvent.click(screen.getByTestId('add-to-queue-button'));
+    fireEvent.click(await screen.findByTestId('add-to-queue-button'));
     expect(mockAddToQueue).toHaveBeenCalledWith({
-      songId: MOCK_SONG_DETAIL.id,
-      title: MOCK_SONG_DETAIL.title,
-      artist: MOCK_SONG_DETAIL.artist,
-      coverUrl: MOCK_SONG_DETAIL.coverUrl,
+      songId: MOCK_SONG_DATA.id,
+      title: MOCK_SONG_DATA.title,
+      artist: MOCK_SONG_DATA.artist,
+      coverUrl: MOCK_SONG_DATA.coverUrl,
     });
   });
 
-  it('renders more options button', () => {
+  it('renders more options button after load', async () => {
     renderPage();
-    expect(screen.getByTestId('more-options-button')).toBeInTheDocument();
+    expect(await screen.findByTestId('more-options-button')).toBeInTheDocument();
   });
 
-  it('clicking more options shows context menu', () => {
+  it('clicking more options shows context menu with Chia sẻ', async () => {
     renderPage();
-    fireEvent.click(screen.getByTestId('more-options-button'));
-    expect(screen.getByText('Đến trang nghệ sĩ')).toBeInTheDocument();
+    fireEvent.click(await screen.findByTestId('more-options-button'));
     expect(screen.getByText('Chia sẻ')).toBeInTheDocument();
   });
 
-  it('renders metadata grid', () => {
+  it('renders metadata grid after load', async () => {
     renderPage();
-    expect(screen.getByTestId('metadata-grid')).toBeInTheDocument();
+    expect(await screen.findByTestId('metadata-grid')).toBeInTheDocument();
   });
 
-  it('shows genre in metadata', () => {
+  it('shows genre in metadata after load', async () => {
     renderPage();
-    expect(screen.getByText(MOCK_SONG_DETAIL.genreName!)).toBeInTheDocument();
+    expect(await screen.findByText(MOCK_SONG_DATA.genreName)).toBeInTheDocument();
   });
 
-  it('shows mood in metadata', () => {
+  it('shows mood in metadata after load', async () => {
     renderPage();
-    expect(screen.getByText(MOCK_SONG_DETAIL.moodName!)).toBeInTheDocument();
+    expect(await screen.findByText(MOCK_SONG_DATA.moodName)).toBeInTheDocument();
   });
 
-  it('shows language in metadata', () => {
+  it('shows language in metadata after load', async () => {
     renderPage();
-    expect(screen.getByText(MOCK_SONG_DETAIL.language!)).toBeInTheDocument();
+    expect(await screen.findByText(MOCK_SONG_DATA.language)).toBeInTheDocument();
   });
 
-  it('shows release year in metadata', () => {
+  it('shows release year in metadata after load', async () => {
     renderPage();
-    expect(screen.getByText('2017')).toBeInTheDocument();
+    expect(await screen.findByText('2017')).toBeInTheDocument();
   });
 
-  it('renders explain card when explainText exists', () => {
+  it('renders related songs section after load', async () => {
     renderPage();
-    expect(screen.getByTestId('explain-card')).toBeInTheDocument();
-    expect(screen.getByText(MOCK_SONG_DETAIL.explainText!)).toBeInTheDocument();
+    expect(await screen.findByText('Bài hát liên quan')).toBeInTheDocument();
   });
 
-  it('renders related songs section', () => {
+  it('renders all related song cards after load', async () => {
     renderPage();
-    expect(screen.getByText('Bài hát liên quan')).toBeInTheDocument();
+    for (const s of MOCK_RELATED_SONGS) {
+      expect(await screen.findByTestId(`song-card-${s.id}`)).toBeInTheDocument();
+    }
   });
 
-  it('renders all related song cards', () => {
-    renderPage();
-    MOCK_RELATED_SONGS.forEach((s) => {
-      expect(screen.getByTestId(`song-card-${s.id}`)).toBeInTheDocument();
-    });
-  });
-
-  it('clicking play on related song calls playSong', () => {
+  it('clicking play on related song calls playSong', async () => {
     renderPage();
     const firstRelated = MOCK_RELATED_SONGS[0];
-    fireEvent.click(screen.getByTestId(`play-${firstRelated.id}`));
+    fireEvent.click(await screen.findByTestId(`play-${firstRelated.id}`));
     expect(mockPlaySong).toHaveBeenCalled();
   });
 
-  it('navigates to artist page when clicking artist name in context menu', () => {
+  it('hides context menu after clicking Chia sẻ', async () => {
     renderPage();
-    fireEvent.click(screen.getByTestId('more-options-button'));
-    fireEvent.click(screen.getByText('Đến trang nghệ sĩ'));
-    expect(mockNavigate).toHaveBeenCalledWith('/artists/artist-001');
-  });
-
-  it('hides context menu after clicking Chia sẻ', () => {
-    renderPage();
-    fireEvent.click(screen.getByTestId('more-options-button'));
+    fireEvent.click(await screen.findByTestId('more-options-button'));
     fireEvent.click(screen.getByText('Chia sẻ'));
-    expect(screen.queryByText('Đến trang nghệ sĩ')).not.toBeInTheDocument();
+    expect(screen.queryByText('Chia sẻ')).not.toBeInTheDocument();
   });
 
-  it('shows play count formatted', () => {
+  it('shows play count formatted after load', async () => {
     renderPage();
-    // 150000000 → "150.0M"
-    expect(screen.getByText(/150\.0M/)).toBeInTheDocument();
+    expect(await screen.findByText(/150\.0M/)).toBeInTheDocument();
   });
 });

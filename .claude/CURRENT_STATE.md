@@ -181,7 +181,9 @@
 - [X] infra/seed/demo_accounts.sh — tạo listener@ + creator@ qua API
 - [X] infra/verify_ac.sh — 33 ACs automated curl verification (PASS/FAIL/SKIP)
 - [X] AC checklist W11: verify_ac.sh — **23 PASS / 0 FAIL / 26 SKIP** (2026-05-16)
-- [ ] Frontend real API integration (Option B): tắt VITE_MOCK + refactor 7 pages dùng mock trực tiếp
+- [X] Frontend real API integration (Option B): tắt VITE_MOCK=false + wire 5 pages + backend 2 endpoints mới — 695/695 tests xanh (2026-05-16)
+- [X] Runtime bug fix: `GET /streaming/undefined/url` — guard playerStore + BottomPlayerBar + getArtist() mapping (2026-05-16)
+- [X] Runtime bug fix: GatewayAuth "Missing X-User-Id" — YARP explicit `AddTransforms` copy identity headers (2026-05-16)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 
@@ -189,11 +191,15 @@
 
 ## Đang làm
 
-- **Service/Task:** Frontend real API integration — Option B (tắt VITE_MOCK + wire 7 pages)
+- **Service/Task:** Verify runtime bugs đã fix → Demo script rehearsal + pre-upload demo songs
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** verify_ac.sh 23 PASS / 0 FAIL (2026-05-16)
+- **Checkpoint gần nhất đã pass:** 695/695 tests xanh — VITE_MOCK=false + 5 pages wired (2026-05-16)
 - **Ngày làm việc gần nhất:** 2026-05-16
-- **Tiếp theo:** Tắt `VITE_MOCK=false` → refactor theo thứ tự: Home → Search → SongDetail → Profile → CreatorDashboard → Analytics
+- **Tiếp theo:**
+  1. Restart Vite (`npm run dev`) + hard refresh browser → verify `streaming/undefined/url` không còn
+  2. Rebuild api-gateway Docker (`docker-compose up -d --build api-gateway`) → verify X-User-Id forwarded
+  3. Demo script rehearsal 14 phút
+  4. Pre-upload demo songs cho Creator account
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |
@@ -251,6 +257,8 @@
 | 2026-05-16 | docker-compose | Connection string env var key phải khớp với key C# đọc: `ConnectionStrings__AuthDb` (auth), `ConnectionStrings__Postgres` (user), `ConnectionStrings__DefaultConnection` (music). Dùng sai key → service fallback về appsettings.Development.json → connect localhost thay vì Docker internal host. |
 | 2026-05-16 | appsettings.Development.json | Credentials cho local dev (dotnet ef, seed.sh): `Host=localhost;Port=5434;Username=smartmusic;Password=changeme_local`. Credentials này CHỈ dùng khi chạy từ host — Docker services đọc từ env var docker-compose. |
 | 2026-05-16 | auth/user-service | Connection string: mỗi service chỉ đọc 1 key duy nhất — `ConnectionStrings:AuthDb` (auth), `ConnectionStrings:Postgres` (user), `ConnectionStrings:DefaultConnection` (music). Fail fast với `InvalidOperationException` nếu thiếu key. `appsettings.json` base dùng `Host=postgres` (Docker internal); `appsettings.Development.json` dùng `Host=localhost:5434` (host dev). |
+| 2026-05-16 | API Gateway | YARP không tự forward headers được thêm bởi ASP.NET middleware vào proxied request. Fix: `AddTransforms(ctx => ctx.AddRequestTransform(...))` explicit copy `X-User-Id` + `X-User-Role`. Cần `using Yarp.ReverseProxy.Transforms;`. Áp dụng global cho mọi route — không cần config per-route trong `appsettings.json`. |
+| 2026-05-16 | Music Service / Frontend | C# record field `Guid Id` → JSON `"id"` (camelCase). C# `Guid SongId` → JSON `"songId"`. Frontend mapping phải handle cả 2: `s.songId ?? s.id ?? ''`. Không dùng `String(song.id)` trực tiếp vì `String(undefined)` = `"undefined"` (string), không phải falsy. |
 
 ---
 
@@ -259,6 +267,8 @@
 _(Format: [service]: vấn đề — workaround: ...)_
 
 - Recommendation Service: IDE VS Code Pylance báo "Cannot find module" — do IDE dùng global Python, không phải `.venv`. Tests chạy đúng với `.venv/Scripts/python -m pytest`.
+- API Gateway: Sau khi sửa `Program.cs` thêm YARP transforms, cần `docker-compose up -d --build api-gateway` để apply. Container cũ vẫn dùng code cũ.
+- Frontend: Sau khi sửa `BottomPlayerBar.tsx` / `playerStore.ts` / `recommendationService.ts`, cần restart Vite dev server (không chỉ HMR) để đảm bảo changes apply. Line numbers trong stack trace có thể lệch nếu HMR chưa reload đúng.
 
 ---
 

@@ -18,7 +18,7 @@ export async function fetchRecommendations(
     '/api/v1/recommendations',
     { params: { context, limit } },
   );
-  return (res.data.data?.items ?? []).map((item) => ({
+  return (res.data.data?.items ?? []).filter((item) => item.songId).map((item) => ({
     id:         item.songId,
     title:      item.title,
     artist:     item.artist,
