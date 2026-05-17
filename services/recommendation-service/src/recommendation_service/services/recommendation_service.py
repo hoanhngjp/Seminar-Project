@@ -52,7 +52,12 @@ class RecommendationService:
                 timeout=settings.recommendation_timeout_ms / 1000,
             )
             serialized = [item.model_dump(by_alias=True) for item in items]
-            await self._repo.set_cached_recommendations(user_id, resolved_context, serialized)
+            # Only cache when Music Service metadata is available; skip caching
+            # empty-title results so stale data from a failed Music Service call
+            # doesn't poison the cache for the next TTL window.
+            has_metadata = any(item.title for item in items)
+            if has_metadata:
+                await self._repo.set_cached_recommendations(user_id, resolved_context, serialized)
             return items, "MISS"
 
         except asyncio.TimeoutError:

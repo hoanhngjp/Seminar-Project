@@ -194,6 +194,7 @@
 - [X] Upload 30 cover images lên Cloudinary (smart-music/covers/) + cập nhật CoverImageUrl trong SeedData.sql + UPDATE live DB music_db (2026-05-17)
 - [X] Bug fix: Elasticsearch re-index 30/30 docs với URL thật (reindex_elasticsearch.py) + fix Search Service cover_url deserialization + xóa stale search cache (2026-05-17)
 - [X] Bug fix: Recommendation Service — 3 bugs: env var mismatch (MUSIC_SERVICE_URL→MUSIC_SERVICE_BASE_URL), cache snake_case→camelCase, thêm coverUrl vào BatchSongDto — homepage giờ hiển thị songs thật với ảnh bìa Cloudinary (2026-05-17)
+- [X] Bug fix: Recommendation Service — stale poisoned cache cho context=evening/morning/etc — thêm `has_metadata` guard trước cache write + flush 4 stale Redis keys (2026-05-18)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 
@@ -204,7 +205,7 @@
 - **Service/Task:** Demo script rehearsal + pre-upload demo songs
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
 - **Checkpoint gần nhất đã pass:** HomePage recommendations hiển thị songs thật với title/artist/coverUrl từ Cloudinary (2026-05-17)
-- **Ngày làm việc gần nhất:** 2026-05-17
+- **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
   1. Demo script rehearsal 14 phút
   2. Pre-upload demo songs cho Creator account

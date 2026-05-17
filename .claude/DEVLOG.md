@@ -1,5 +1,23 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [BUG FIX — Recommendation Service: stale poisoned cache for context=evening (và các context khác)] [DONE]
+
+**Context:** `GET /api/v1/recommendations?context=evening&limit=20` trả về `title=""`, `artist=""`, `thumbnail=""` cho tất cả 20 items dù `cache: "HIT"`. Fix env var từ hôm qua (MUSIC_SERVICE_BASE_URL) đã đúng nhưng cache cũ được populate trước khi fix vẫn còn tồn tại.
+
+**Root cause:**
+Cache key `rec:cache:{userId}:evening` (và các context khác) được populate khi Music Service batch call còn fail (do env var mismatch hôm 2026-05-17). Data rỗng (`title=""`) được cache với TTL 1 giờ. Sau khi rebuild container với env var đúng, service vẫn hit cache cũ → trả stale empty data → FE hiển thị cards không có title/artist/thumbnail.
+
+**Fixes:**
+1. `recommendation_service.py` — thêm guard `has_metadata = any(item.title for item in items)` trước `set_cached_recommendations()`: chỉ cache khi ít nhất 1 item có title thật. Ngăn cache poison tái diễn nếu Music Service tạm down trong tương lai.
+2. Redis — flush 4 stale `rec:cache:*` keys (targeted scan + DEL, không FLUSHDB).
+3. Rebuild `recommendation-service` container để apply code fix.
+
+**Verify:** `context=evening` request 1 → `MISS` + title thật; request 2 → `HIT` + title thật.
+
+**Files thay đổi:**
+- `services/recommendation-service/src/recommendation_service/services/recommendation_service.py`
+
+---
 [2026-05-17] [BUG FIX — Recommendation Service: empty homepage + wrong env var + missing coverUrl] [DONE]
 
 **Context:** HomePage hiển thị "Không có gợi ý. Hãy nghe nhạc để cá nhân hoá!" dù API `/recommendations` trả về 20 items. Tìm ra 3 bugs độc lập gây ra vấn đề này.

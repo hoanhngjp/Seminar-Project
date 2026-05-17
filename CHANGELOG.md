@@ -50,6 +50,11 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `SongResponseDto.cs` + `SongService.cs`: thêm `CoverImageUrl` vào `BatchSongDto` — fix thumbnail rỗng trên homepage recommendation cards
 - `music_service_client.py`: đọc `coverImageUrl` từ batch response và truyền vào `SongCandidate.thumbnail`
 
+**W11 Bug Fix — Recommendation Service stale poisoned cache (2026-05-18)**
+- `recommendation_service.py`: không cache kết quả khi Music Service trả về empty metadata (`has_metadata` guard) — ngăn cache bị poison khi Music Service tạm down, tránh tái phát trong suốt TTL window tiếp theo
+- Redis: flush 4 stale `rec:cache:*` keys bị poison với `title/artist/thumbnail=""` từ trước khi fix env var `MUSIC_SERVICE_BASE_URL`
+- Root cause: `context=evening` và các context khác đã được cache với data rỗng trước khi rebuild container; cache TTL 1 giờ khiến stale data tồn tại qua các request tiếp theo
+
 **W11 Bug Fix — Search Service cover_url deserialization (2026-05-17)**
 - `ElasticsearchSearchRepository.cs`: thêm `[JsonPropertyName]` cho tất cả snake_case fields trong `ElasticsearchSongDocument` (`cover_url`, `is_explicit`, `is_published`, `play_count`, `duration_sec`) — fix `coverUrl: null` trong search results dù ES có URL thật
 - Stale Redis search cache (`search:cache:*`) xóa targeted sau khi deploy fix
