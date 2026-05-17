@@ -1,18 +1,24 @@
 import { create } from 'zustand';
 
 export interface CurrentSong {
-  songId:    string;
-  title:     string;
-  artist:    string;
-  coverUrl?: string;
+  songId:     string;
+  title:      string;
+  artist:     string;
+  coverUrl?:  string;
+  /** Signal BottomPlayerBar to auto-play after stream URL loads (used by Listening Party) */
+  autoPlay?:  boolean;
 }
 
 interface PlayerState {
   currentSong:      CurrentSong | null;
   queue:            CurrentSong[];
+  /** Incremented each time an external caller (e.g. Listening Party) wants to pause */
+  pauseSignal:      number;
   setSong:          (song: CurrentSong) => void;
   /** Alias for setSong — preferred in new components */
   playSong:         (song: CurrentSong) => void;
+  /** Signal BottomPlayerBar to pause without re-fetching stream URL */
+  pauseSong:        () => void;
   clearSong:        () => void;
   addToQueue:       (song: CurrentSong) => void;
   removeFromQueue:  (index: number) => void;
@@ -20,10 +26,12 @@ interface PlayerState {
 }
 
 export const usePlayerStore = create<PlayerState>((set) => ({
-  currentSong: null,
-  queue:       [],
+  currentSong:  null,
+  queue:        [],
+  pauseSignal:  0,
   setSong:  (song) => { if (!song.songId) return; set({ currentSong: song }); },
   playSong: (song) => { if (!song.songId) return; set({ currentSong: song }); },
+  pauseSong: () => set((s) => ({ pauseSignal: s.pauseSignal + 1 })),
   clearSong: () => set({ currentSong: null }),
   addToQueue: (song) => set((s) => ({ queue: [...s.queue, song] })),
   removeFromQueue: (index) =>

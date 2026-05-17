@@ -18,14 +18,17 @@ function formatTime(sec: number): string {
 }
 
 export default function BottomPlayerBar() {
-  const currentSong = usePlayerStore((s) => s.currentSong);
-  const clearSong   = usePlayerStore((s) => s.clearSong);
+  const currentSong  = usePlayerStore((s) => s.currentSong);
+  const clearSong    = usePlayerStore((s) => s.clearSong);
+  const pauseSignal  = usePlayerStore((s) => s.pauseSignal);
 
   const audioRef        = useRef<HTMLAudioElement>(null);
   const urlFetchedAtRef = useRef<number>(0);
   const expiresInRef    = useRef<number>(0);
   const analyticsSentRef = useRef(false);
   const hasStartedRef    = useRef(false);
+  // Consumed once after stream URL loads — set from currentSong.autoPlay
+  const autoPlayRef      = useRef(false);
 
   const [streamUrl,    setStreamUrl]    = useState<string | null>(null);
   const [isPlaying,    setIsPlaying]    = useState(false);
@@ -62,6 +65,7 @@ export default function BottomPlayerBar() {
       setCurrentTime(0);
       setDuration(0);
       setShowOverlay(false);
+      autoPlayRef.current = false;
       return;
     }
     if (!currentSong.songId) {
@@ -70,11 +74,31 @@ export default function BottomPlayerBar() {
     }
     analyticsSentRef.current = false;
     hasStartedRef.current    = false;
+    autoPlayRef.current      = currentSong.autoPlay ?? false;
     setCurrentTime(0);
     setDuration(0);
     setIsPlaying(false);
     fetchStreamUrl(currentSong.songId);
   }, [currentSong, fetchStreamUrl, clearSong]);
+
+  // Auto-play once stream URL is ready (triggered by Listening Party)
+  useEffect(() => {
+    if (!streamUrl || !autoPlayRef.current) return;
+    autoPlayRef.current = false;
+    audioRef.current?.play().then(() => {
+      setIsPlaying(true);
+      hasStartedRef.current = true;
+    }).catch(() => {
+      // Browser autoplay policy blocked — user must interact first
+    });
+  }, [streamUrl]);
+
+  // Pause command from external caller (e.g. Listening Party host presses pause)
+  useEffect(() => {
+    if (pauseSignal === 0) return;
+    audioRef.current?.pause();
+    setIsPlaying(false);
+  }, [pauseSignal]);
 
   // Proactive URL refresh
   useEffect(() => {

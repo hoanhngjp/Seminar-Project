@@ -104,7 +104,7 @@ vi.mock('../../store/authStore', () => ({
   ),
 }));
 
-const _playerState = { currentSong: null, isPlaying: false, queue: [], play: vi.fn(), pause: vi.fn(), setQueue: vi.fn(), clearSong: vi.fn(), setSong: vi.fn() };
+const _playerState = { currentSong: null, isPlaying: false, queue: [], pauseSignal: 0, play: vi.fn(), pause: vi.fn(), setQueue: vi.fn(), clearSong: vi.fn(), setSong: vi.fn(), playSong: vi.fn(), pauseSong: vi.fn() };
 vi.mock('../../store/playerStore', () => ({
   usePlayerStore: vi.fn((sel: (s: typeof _playerState) => unknown) => sel(_playerState)),
 }));

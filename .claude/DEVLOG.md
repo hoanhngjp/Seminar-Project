@@ -1,5 +1,37 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [BUG FIX — Bug 8: Listening Party play/pause không trigger audio] [DONE]
+
+**Context:** Sau khi fix Bugs 1–7, test tiếp phát hiện 3 bugs mới. Bug 8 fix trong session này.
+
+**Bug 8 — Play/Pause button không trigger audio thật**
+- Symptom: Host nhấn Play → bài hát "sync" xuống BottomPlayerBar nhưng phải nhấn lại nút play mới có tiếng. Host nhấn Pause → BottomPlayerBar không dừng.
+- Root cause (play): `BottomPlayerBar` khi detect `currentSong` thay đổi luôn reset `isPlaying = false` rồi fetch stream URL. Sau khi URL load xong, không có gì trigger `audioRef.current.play()`.
+- Root cause (pause): `PartyRoomPage` `useEffect` chỉ gọi `playSong()` khi `isPlaying === true`, không làm gì khi false. BottomPlayerBar không nhận được lệnh pause.
+- Fix:
+  - `playerStore.ts`: thêm `autoPlay?: boolean` vào `CurrentSong`; thêm `pauseSignal: number` + `pauseSong()` (increment signal)
+  - `BottomPlayerBar.tsx`: thêm `autoPlayRef` consumed một lần trong `useEffect([streamUrl])`; thêm `useEffect([pauseSignal])` gọi `.pause()`
+  - `PartyRoomPage.tsx`: sync effect gọi `playSong({..., autoPlay: true})` khi play, `pauseSong()` khi pause
+  - `PartyRoomPage.test.tsx`: thêm `pauseSong: vi.fn()` + `pauseSignal: 0` vào mock
+- Verification: 701/701 tests xanh
+
+**Bug 9 + 10 — Còn pending:**
+
+**Bug 9 — BottomPlayerBar không hiển thị thanh tiến trình bài hát**
+- Symptom: Khi đang trong phòng nghe nhạc, thanh progress bar ở BottomPlayerBar luôn bằng 0, không thấy có duration.
+- Root cause: Audio element thiếu `preload="metadata"` → browser không load metadata (duration) cho tới khi `play()` được gọi. `onDurationChange` chưa bao giờ fire → `duration = 0` → progress bar width = `0%`.
+- Fix plan: Thêm `preload="metadata"` vào `<audio>` element trong BottomPlayerBar.
+- Files: `BottomPlayerBar.tsx`
+
+**Bug 10 — SignalR disconnect sau ~30 giây ("Server timeout elapsed")**
+- Symptom: `[2026-05-17T22:22:13.438Z] Error: Connection disconnected with error 'Error: Server timeout elapsed without receiving a message from the server.'`
+- Root cause: Server `KeepAliveInterval = 30s`, JS client default `serverTimeoutInMilliseconds = 30000ms` (30s) — timing quá sát, thêm latency qua YARP proxy → client timeout trước khi ping kịp đến.
+- Fix plan:
+  - Server (`Program.cs`): giảm `KeepAliveInterval = 15s`, tăng `ClientTimeoutInterval = 60s`
+  - Client (`usePartyWebSocket.ts`): set `serverTimeoutInMilliseconds = 60000`, `keepAliveIntervalInMilliseconds = 15000`
+- Files: `usePartyWebSocket.ts`, `ListeningPartyService.Api/Program.cs`
+
+---
 [2026-05-18] [BUG FIX — Bug 7: SignalR "connection was stopped during negotiation" — React StrictMode] [DONE]
 
 **Context:** Sau khi fix Bug 6 (thêm `app.UseWebSockets()` vào listening-party-service + mở rộng CircuitBreaker bypass) và rebuild containers, lỗi SignalR vẫn còn:

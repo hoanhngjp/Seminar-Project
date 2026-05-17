@@ -31,7 +31,7 @@ public class PartyService(IPartyRepository repository, ILogger<PartyService> log
         logger.LogInformation("Party created: roomId={RoomId} joinCode={JoinCode} hostId={HostId}",
             roomId, joinCode, hostId);
 
-        return new CreatePartyResponse(roomId, joinCode, hostId, roomName);
+        return new CreatePartyResponse(roomId, joinCode, hostId, roomName, songId ?? string.Empty);
     }
 
     public async Task<JoinPartyResponse> JoinPartyAsync(string joinCode, string userId, CancellationToken ct = default)

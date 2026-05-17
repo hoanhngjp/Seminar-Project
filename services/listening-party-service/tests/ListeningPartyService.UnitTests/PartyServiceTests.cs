@@ -32,13 +32,14 @@ public class PartyServiceTests
         _repoMock.Setup(r => r.AddMemberAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var result = await _sut.CreatePartyAsync(hostId, songId);
+        var result = await _sut.CreatePartyAsync(hostId, null, songId);
 
         result.HostId.Should().Be(hostId);
         result.RoomId.Should().NotBeNullOrEmpty();
         Guid.TryParse(result.RoomId, out _).Should().BeTrue("RoomId phải là UUID");
         result.JoinCode.Should().HaveLength(6);
         result.JoinCode.Should().MatchRegex("^[A-Z0-9]{6}$", "JoinCode phải là 6 ký tự alphanumeric uppercase");
+        result.CurrentSongId.Should().Be(songId);
     }
 
     [Fact]
@@ -54,7 +55,7 @@ public class PartyServiceTests
         _repoMock.Setup(r => r.AddMemberAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        await _sut.CreatePartyAsync(hostId, songId);
+        await _sut.CreatePartyAsync(hostId, null, songId);
 
         capturedRoom.Should().NotBeNull();
         capturedRoom!.HostId.Should().Be(hostId);
@@ -80,7 +81,7 @@ public class PartyServiceTests
             })
             .Returns(Task.CompletedTask);
 
-        var result = await _sut.CreatePartyAsync(hostId, "song-001");
+        var result = await _sut.CreatePartyAsync(hostId, null, "song-001");
 
         capturedUserId.Should().Be(hostId, "host phải được add vào members ngay khi tạo room");
         capturedRoomId.Should().Be(result.RoomId);
@@ -97,7 +98,7 @@ public class PartyServiceTests
         var codes = new HashSet<string>();
         for (int i = 0; i < 100; i++)
         {
-            var result = await _sut.CreatePartyAsync(Guid.NewGuid().ToString(), "song-001");
+            var result = await _sut.CreatePartyAsync(Guid.NewGuid().ToString(), null, "song-001");
             codes.Add(result.JoinCode);
         }
 

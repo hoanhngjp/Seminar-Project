@@ -33,6 +33,16 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**W11 Bug Fix — Bug 8: Listening Party play/pause không trigger audio (2026-05-18)**
+- `playerStore.ts`: thêm `autoPlay?: boolean` vào `CurrentSong` interface; thêm `pauseSignal: number` + `pauseSong()` action
+- `BottomPlayerBar.tsx`: thêm `autoPlayRef` — consumed một lần sau khi stream URL load để auto-play; thêm `useEffect([pauseSignal])` gọi `.pause()` khi nhận lệnh pause từ bên ngoài
+- `PartyRoomPage.tsx`: sync effect gọi `playSong({..., autoPlay: true})` khi play, `pauseSong()` khi pause
+- 701/701 tests xanh
+
+**W11 Bug Fix — Bug 9–10: Listening Party progress bar + SignalR keepalive (pending)**
+- Bug 9: `<audio>` thiếu `preload="metadata"` → `duration=0` → progress bar trống; fix plan: thêm `preload="metadata"`
+- Bug 10: SignalR client timeout 30s vs server ping 30s → race condition qua YARP; fix plan: server `KeepAliveInterval=15s`, client `serverTimeoutInMilliseconds=60000`
+
 **W11 Bug Fix — Bug 7: SignalR "connection was stopped during negotiation" (2026-05-18)**
 - `main.tsx`: bỏ `<React.StrictMode>` wrapper — StrictMode gây effect double-invocation trong dev mode, trigger `OnDisconnectedAsync` giữa hai lần mount, xóa Redis room trước khi user kịp kết nối lần hai, dẫn đến `ROOM_CLOSED` + `navigate('/')` ngay khi vào phòng
 - Root cause: StrictMode cleanup → `connection.stop()` → host disconnect → room xóa → effect re-mount → room null → user bị kick

@@ -5,6 +5,7 @@ import RoomPlayer from '../../features/party/components/RoomPlayer';
 import MemberList from '../../features/party/components/MemberList';
 import { useListeningParty } from '../../features/party/hooks/useListeningParty';
 import { useAuthStore } from '../../store/authStore';
+import { usePlayerStore } from '../../store/playerStore';
 import { getSong } from '../../services/musicService';
 import type { Party, PartyMember, Song } from '../../types/domain';
 import type { SyncState, MemberJoin, MemberLeave } from '../../types/listening-party';
@@ -24,6 +25,9 @@ export default function PartyRoomPage() {
 
   const currentUserId = useAuthStore((s) => s.userId) ?? '';
   const initialParty  = state.party;
+  const playSong      = usePlayerStore((s) => s.playSong);
+  const pauseSong     = usePlayerStore((s) => s.pauseSong);
+  const clearSong     = usePlayerStore((s) => s.clearSong);
 
   // ─── Party state ───────────────────────────────────────────────────────────
   const [members, setMembers]         = useState<PartyMember[]>(initialParty?.members ?? []);
@@ -44,6 +48,21 @@ export default function PartyRoomPage() {
     if (!currentSongId) return;
     getSong(currentSongId).then((s) => setCurrentSong(s)).catch(() => {});
   }, [currentSongId]);
+
+  // Sync audio player with party state
+  useEffect(() => {
+    if (!currentSong) return;
+    if (isPlaying) {
+      playSong({ songId: currentSong.id, title: currentSong.title, artist: currentSong.artist, coverUrl: currentSong.coverUrl, autoPlay: true });
+    } else {
+      pauseSong();
+    }
+  }, [currentSong, isPlaying, playSong, pauseSong]);
+
+  // Stop audio when leaving the party room
+  useEffect(() => {
+    return () => { clearSong(); };
+  }, [clearSong]);
 
   // ─── SignalR handlers ──────────────────────────────────────────────────────
   const handleSyncState = useCallback((sync: SyncState) => {
