@@ -33,6 +33,20 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**W11 Bug Fix — Bug 7: SignalR "connection was stopped during negotiation" (2026-05-18)**
+- `main.tsx`: bỏ `<React.StrictMode>` wrapper — StrictMode gây effect double-invocation trong dev mode, trigger `OnDisconnectedAsync` giữa hai lần mount, xóa Redis room trước khi user kịp kết nối lần hai, dẫn đến `ROOM_CLOSED` + `navigate('/')` ngay khi vào phòng
+- Root cause: StrictMode cleanup → `connection.stop()` → host disconnect → room xóa → effect re-mount → room null → user bị kick
+- Chuỗi fix hoàn chỉnh (Bug 4→6→7): CircuitBreaker bypass WebSocket → `UseWebSockets()` cả api-gateway lẫn listening-party-service → CircuitBreaker bypass tất cả `/hubs/*` → bỏ StrictMode
+- **Verified:** frontend rebuilt, negotiate 200 + WebSocket 101, user ở trong phòng, không bị kick — tất cả 7 bugs confirmed fixed (2026-05-18)
+
+**W11 Bug Fix — Bug 1–6: Listening Party end-to-end integration (2026-05-17 → 2026-05-18)**
+- Bug 1: `PartyRoomPage.tsx` — xóa MOCK_SONG/MOCK_MEMBERS; fetch song thật qua `getSong(currentSongId)`; cập nhật `currentSongId` khi nhận `SYNC_STATE` từ SignalR; `RoomPlayer.tsx` đổi prop `song: Song | null`
+- Bug 2: `JwtValidationMiddleware.cs` — thêm fallback đọc `?access_token=` query param cho `/hubs/*` (SignalR WebSocket upgrade không set Authorization header); YARP config thêm `party-hubs-route`; `vite.config.ts` proxy target từ env var `VITE_PROXY_TARGET`
+- Bug 3: `infra/docker-compose.yml` — thêm `VITE_PROXY_TARGET=http://api-gateway` cho frontend container; đổi `VITE_API_BASE_URL=` (empty — đi qua Vite proxy)
+- Bug 4: `CircuitBreakerMiddleware.cs` (api-gateway) — early-return bypass `IsWebSocketRequest`; `Program.cs` (api-gateway) thêm `app.UseWebSockets()`
+- Bug 5: `musicService.ts` — `getSong()` map `artist?.stageName`, `durationSec ?? duration`, `id ?? songId`; đổi return type sang `Song`
+- Bug 6: `Program.cs` (listening-party-service) — thêm `app.UseWebSockets()` trước `app.UseRouting()`; `CircuitBreakerMiddleware.cs` mở rộng bypass sang tất cả `path.StartsWithSegments("/hubs")`
+
 **W11 Bug Fix — POST /api/v1/parties 400 khi tạo phòng (2026-05-18)**
 - `PartiesController.cs`: bỏ validation bắt buộc `songId` — tạo phòng không cần chọn bài trước
 - `PartyDtos.cs`: `CreatePartyRequest` đổi thành `Name?` + `SongId?` (cả hai optional); `CreatePartyResponse` thêm `Name`

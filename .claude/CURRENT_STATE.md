@@ -197,6 +197,9 @@
 - [X] Bug fix: Recommendation Service — stale poisoned cache cho context=evening/morning/etc — thêm `has_metadata` guard trước cache write + flush 4 stale Redis keys (2026-05-18)
 - [X] Feature: CreateRoomModal — thay 8 mock songs bằng real API: recommendations (4 bài theo timeContext) khi default + search infinite scroll (IntersectionObserver + cursor pagination) khi gõ query — 18/18 tests xanh (2026-05-18)
 - [X] Bug fix: POST /api/v1/parties 400 — BE accept Name?+SongId? optional, FE đổi firstSongId→songId (2026-05-18)
+- [X] Bug fix (Bug 7): SignalR "connection was stopped during negotiation" — bỏ React StrictMode khỏi main.tsx (2026-05-18)
+- [X] Rebuild frontend container — confirmed: negotiate 200, WebSocket 101, user ở trong phòng, không bị kick (2026-05-18)
+- [X] Listening Party end-to-end: tất cả 7 bugs đã fix và xác nhận (2026-05-18)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 
@@ -206,7 +209,7 @@
 
 - **Service/Task:** Demo script rehearsal + pre-upload demo songs
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** HomePage recommendations hiển thị songs thật với title/artist/coverUrl từ Cloudinary (2026-05-17)
+- **Checkpoint gần nhất đã pass:** Listening Party fully working end-to-end — tất cả 7 bugs đã fix, frontend rebuilt, user vào phòng thành công, SYNC_STATE hoạt động (2026-05-18)
 - **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
   1. Demo script rehearsal 14 phút

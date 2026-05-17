@@ -23,13 +23,24 @@ public class JwtValidationMiddleware(RequestDelegate next, IJwtValidationService
         }
 
         var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
-        if (authHeader == null || !authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        string token;
+
+        if (authHeader != null && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            token = authHeader["Bearer ".Length..].Trim();
+        }
+        else if (context.Request.Path.StartsWithSegments("/hubs", StringComparison.OrdinalIgnoreCase)
+                 && context.Request.Query.TryGetValue("access_token", out var qToken)
+                 && !string.IsNullOrEmpty(qToken))
+        {
+            // SignalR browsers send token via query param — cannot set Authorization header on WS upgrade
+            token = qToken!;
+        }
+        else
         {
             await ApiErrorWriter.WriteAsync(context, 401, "UNAUTHORIZED", "Authentication required.");
             return;
         }
-
-        var token = authHeader["Bearer ".Length..].Trim();
         var result = await jwtValidationService.ValidateAsync(token, context.RequestAborted);
 
         if (!result.IsValid)

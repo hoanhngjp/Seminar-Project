@@ -2,7 +2,7 @@ import type { Song } from '../../../types/domain';
 import HostControls from './HostControls';
 
 interface Props {
-  song: Song;
+  song: Song | null;
   isPlaying: boolean;
   positionSec: number;
   isHost: boolean;
@@ -28,6 +28,16 @@ export default function RoomPlayer({
   onNext,
   onPrev,
 }: Props) {
+  if (!song) {
+    return (
+      <div className="flex flex-col items-center text-center w-full py-16">
+        <div className="w-[280px] h-[280px] rounded-[8px] bg-mid-dark animate-pulse mb-8" />
+        <div className="h-6 w-48 bg-mid-dark rounded animate-pulse mb-2" />
+        <div className="h-4 w-32 bg-mid-dark rounded animate-pulse" />
+      </div>
+    );
+  }
+
   const progress = song.duration > 0 ? (positionSec / song.duration) * 100 : 0;
 
   return (

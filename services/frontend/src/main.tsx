@@ -1,4 +1,3 @@
-import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
@@ -17,9 +16,7 @@ async function prepare() {
 }
 
 prepare().then(() => {
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      <App />
-    </StrictMode>,
-  );
+  // StrictMode removed: double-invocation causes SignalR cleanup to trigger OnDisconnectedAsync,
+  // deleting the room from Redis before the second mount can reconnect.
+  createRoot(document.getElementById('root')!).render(<App />);
 });

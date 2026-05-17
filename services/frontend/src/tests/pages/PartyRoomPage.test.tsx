@@ -57,11 +57,12 @@ vi.mock('react-router-dom', async () => {
 import PartyRoomPage from '../../pages/party/PartyRoomPage';
 
 // ---------------------------------------------------------------------------
-// MSW — mock Sidebar dependencies (users/me + notifications/unread)
+// MSW — mock Sidebar dependencies + music API
 // ---------------------------------------------------------------------------
 
 const USERS_URL         = 'http://localhost:5000/api/v1/users/me';
 const NOTIFICATIONS_URL = 'http://localhost:5000/api/v1/notifications/unread';
+const SONG_URL          = 'http://localhost:5000/api/v1/music/songs/song-001';
 
 const server = setupServer(
   http.get(USERS_URL, () => HttpResponse.json({
@@ -71,6 +72,11 @@ const server = setupServer(
   http.get(NOTIFICATIONS_URL, () => HttpResponse.json({
     success: true, data: { items: [], hasMore: false },
     meta: { apiVersion: 'v1', requestId: 'r2', timestamp: new Date().toISOString() }, error: null,
+  })),
+  http.get(SONG_URL, () => HttpResponse.json({
+    success: true,
+    data: { id: 'song-001', title: 'Lạc Trôi', artist: 'Sơn Tùng M-TP', album: 'M-TP Collection', duration: 245, coverUrl: 'https://example.com/lactroi.jpg', isExplicit: false },
+    meta: { apiVersion: 'v1', requestId: 'r3', timestamp: new Date().toISOString() }, error: null,
   })),
 );
 
@@ -91,11 +97,11 @@ beforeEach(() => {
 // Mock store
 // ---------------------------------------------------------------------------
 
+const mockAuthState = { accessToken: 'mock-token', userId: 'user-listener-001', role: 'Listener', hasCompletedOnboarding: true, setAuth: vi.fn(), clearAuth: vi.fn() };
 vi.mock('../../store/authStore', () => ({
-  useAuthStore: vi.fn(() => ({
-    accessToken: 'mock-token', userId: 'user-listener-001', role: 'Listener',
-    setTokens: vi.fn(), clearAuth: vi.fn(),
-  })),
+  useAuthStore: vi.fn((sel?: (s: typeof mockAuthState) => unknown) =>
+    sel ? sel(mockAuthState) : mockAuthState
+  ),
 }));
 
 const _playerState = { currentSong: null, isPlaying: false, queue: [], play: vi.fn(), pause: vi.fn(), setQueue: vi.fn(), clearSong: vi.fn(), setSong: vi.fn() };
@@ -202,7 +208,12 @@ describe('PartyRoomPage', () => {
     });
 
     it('shows "Đồng bộ với Host" for member', async () => {
-      renderPage('room-test-001', { ...MOCK_PARTY_STATE, isHost: false, currentUserId: 'user-creator-001' });
+      const { useAuthStore } = await import('../../store/authStore');
+      const memberState = { ...mockAuthState, userId: 'user-creator-001' };
+      vi.mocked(useAuthStore).mockImplementation((sel?: (s: typeof mockAuthState) => unknown) =>
+        sel ? sel(memberState) : memberState
+      );
+      renderPage('room-test-001', MOCK_PARTY_STATE);
       await waitFor(() => {
         expect(screen.getByText(/Đồng bộ với Host/)).toBeInTheDocument();
       });
@@ -244,11 +255,11 @@ describe('PartyRoomPage', () => {
     });
   });
 
-  describe('Fallback mock data', () => {
-    it('renders with mock data when no location state provided', async () => {
+  describe('No location state', () => {
+    it('renders room structure without crashing when no location state provided', async () => {
       renderPage('room-test-001', {});
       await waitFor(() => {
-        expect(screen.getByText('Lạc Trôi')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Rời phòng/ })).toBeInTheDocument();
       });
     });
   });

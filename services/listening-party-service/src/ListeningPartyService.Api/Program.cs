@@ -29,6 +29,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseWebSockets();
 app.UseRouting();
 app.UseHttpMetrics();
 app.UseAuthentication();

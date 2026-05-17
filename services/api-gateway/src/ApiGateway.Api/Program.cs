@@ -71,6 +71,7 @@ app.UseMiddleware<CircuitBreakerMiddleware>();
 app.UseMiddleware<RateLimitingMiddleware>();
 app.UseMiddleware<JwtValidationMiddleware>();
 
+app.UseWebSockets();
 app.UseRouting();
 app.UseHttpMetrics();
 app.UseAuthorization();

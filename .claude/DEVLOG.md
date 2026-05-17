@@ -1,5 +1,83 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [BUG FIX — Bug 7: SignalR "connection was stopped during negotiation" — React StrictMode] [DONE]
+
+**Context:** Sau khi fix Bug 6 (thêm `app.UseWebSockets()` vào listening-party-service + mở rộng CircuitBreaker bypass) và rebuild containers, lỗi SignalR vẫn còn:
+`[2026-05-17T21:47:56.392Z] Error: Failed to start the connection: Error: The connection was stopped during negotiation.`
+Docker logs api-gateway cho thấy negotiate 200 và WebSocket 101 trả về THÀNH CÔNG — tức là kết nối được thiết lập đúng, nhưng bị phá vỡ ngay sau đó.
+
+**Root cause:**
+React `<StrictMode>` trong dev mode gây ra double-invocation của effects:
+1. Effect lần 1: `connection.start()` → negotiate 200 → WebSocket 101 → `OnConnectedAsync` → room found → `SYNC_STATE` ✓
+2. StrictMode cleanup: `connection.stop()` (cleanup function của useEffect) → `OnDisconnectedAsync` → host disconnect → **room bị xóa khỏi Redis**
+3. Effect lần 2 (StrictMode re-mount): `connection.start()` → WebSocket 101 → `OnConnectedAsync` → `GetRoomAsync` → **null** → gửi `ROOM_CLOSED` → `navigate('/')` → user bị kick về trang chủ
+4. "connection was stopped during negotiation" là side effect của step 3: component unmount (do navigate) trong khi negotiate đang diễn ra → SignalR `stop()` được gọi lại
+
+**Fix:**
+Bỏ `<StrictMode>` khỏi `services/frontend/src/main.tsx`.
+
+**Diagnostic evidence:**
+Docker logs api-gateway hiển thị negotiate→200 VÀ WebSocket→101 xuất hiện **HAI LẦN**, xác nhận connections đều thành công nhưng room bị xóa giữa hai lần mount.
+
+**Files thay đổi:**
+- `services/frontend/src/main.tsx` — xóa `<StrictMode>` wrapper + thêm comment giải thích lý do
+
+**Verification (sau rebuild):**
+- `docker compose -f infra/docker-compose.yml up -d --build frontend` — thành công
+- Vào party room: negotiate 200 → WebSocket 101 → SYNC_STATE nhận được → user ở trong phòng, không bị kick
+- Lỗi "connection was stopped during negotiation" không còn xuất hiện
+- **STATUS: CONFIRMED FIXED ✓**
+
+**Lesson / Warning:** `<StrictMode>` gây effect double-invocation trong dev mode — không tương thích với bất kỳ server-side resource nào bị xóa khi disconnect (Redis room, DB session, lock). Với SignalR hub có `OnDisconnectedAsync` thực hiện side effects, StrictMode phải tắt. Comment lý do trong code để không ai re-enable nhầm.
+
+---
+[2026-05-18] [BUG FIX — Bug 6: WebSocket 1006 vẫn còn sau fix Bug 4] [DONE]
+
+**Context:** Sau khi fix Bug 4 (CircuitBreaker bypass WebSocket), SignalR vẫn fail với 1006 WebSocket Abnormal Closure.
+
+**Root cause (2 vấn đề song song):**
+1. `listening-party-service/Program.cs` thiếu `app.UseWebSockets()` — ASP.NET Core không xử lý WebSocket upgrade request, trả non-101 → YARP đóng kết nối → 1006
+2. `CircuitBreakerMiddleware.cs` chỉ bypass `IsWebSocketRequest` — SSE và Long Polling (SignalR fallback transports) cũng là long-lived connections, cũng bị kill sau 2 giây → tất cả transport đều thất bại
+
+**Fixes:**
+1. `listening-party-service/Program.cs` — thêm `app.UseWebSockets()` trước `app.UseRouting()`
+2. `CircuitBreakerMiddleware.cs` — mở rộng bypass: `IsWebSocketRequest || path.StartsWithSegments("/hubs")` — cover WebSocket, SSE, Long Polling
+
+**Files thay đổi:**
+- `services/listening-party-service/src/ListeningPartyService.Api/Program.cs`
+- `services/api-gateway/src/ApiGateway.Api/Middleware/CircuitBreakerMiddleware.cs`
+
+---
+[2026-05-18] [BUG FIX — Bug 1-5: Listening Party end-to-end integration] [DONE]
+
+**Context:** Loạt 5 bugs phát hiện khi test Listening Party feature end-to-end sau khi tắt VITE_MOCK.
+
+**Bug 1 — PartyRoomPage mock data:**
+- Root cause: `MOCK_SONG` + `MOCK_MEMBERS` hardcode, không fetch API/SignalR thật
+- Fix: `PartyRoomPage.tsx` fetch `getSong(currentSongId)`, update khi nhận `SYNC_STATE`; `RoomPlayer.tsx` đổi prop `song: Song | null`
+- Files: `PartyRoomPage.tsx`, `RoomPlayer.tsx`, `PartyRoomPage.test.tsx`
+
+**Bug 2 — SignalR negotiate 502 Bad Gateway:**
+- Root cause: Vite proxy `/hubs` → `localhost:5005` trực tiếp, bypass API Gateway → service dùng GatewayAuth cần X-User-Id do Gateway set → thiếu header → 401 → 502
+- Fix: Thêm fallback `?access_token=` query param cho `/hubs/*` trong `JwtValidationMiddleware.cs`; thêm `party-hubs-route` trong YARP config; Vite proxy target từ env var `VITE_PROXY_TARGET`
+- Files: `JwtValidationMiddleware.cs`, `appsettings.json` (api-gateway), `vite.config.ts`
+
+**Bug 3 — 502 trong Docker:**
+- Root cause: Frontend container dùng `localhost:5005` — trong Docker, `localhost` không resolve tới `listening-party-service`
+- Fix: `docker-compose.yml` thêm `VITE_PROXY_TARGET=http://api-gateway` cho frontend container
+- Files: `infra/docker-compose.yml`
+
+**Bug 4 — WebSocket 1006 sau 2 giây:**
+- Root cause: `CircuitBreakerMiddleware` timeout 2000ms kill long-lived WebSocket connections
+- Fix: `CircuitBreakerMiddleware.cs` early-return bypass cho `IsWebSocketRequest`; `Program.cs` (api-gateway) thêm `app.UseWebSockets()`
+- Files: `CircuitBreakerMiddleware.cs`, `Program.cs` (api-gateway)
+
+**Bug 5 — React "Objects are not valid as React child":**
+- Root cause: Music Service trả `artist` là object `{id, stageName}`, `getSong()` không map fields, `RoomPlayer` render `{song.artist}` trực tiếp → React throw
+- Fix: `musicService.ts` map `artist?.stageName`, `durationSec ?? duration`, `id ?? songId`
+- Files: `musicService.ts`
+
+---
 [2026-05-18] [BUG FIX — POST /api/v1/parties 400 Bad Request khi tạo phòng] [DONE]
 
 **Context:** `CreateRoomModal` nhấn "Tạo phòng" → `POST /api/v1/parties` → 400 Bad Request. Không tạo được phòng.

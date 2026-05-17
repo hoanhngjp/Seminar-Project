@@ -562,8 +562,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - VITE_API_BASE_URL=http://localhost:5000
-      - VITE_WS_URL=ws://localhost:5005
+      - VITE_API_BASE_URL=
+      - VITE_PROXY_TARGET=http://api-gateway
     volumes:
       - ../services/frontend/src:/app/src
       - ../services/frontend/public:/app/public

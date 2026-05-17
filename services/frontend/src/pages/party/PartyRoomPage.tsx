@@ -1,35 +1,19 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import AppShell from '../../components/layout/AppShell';
 import RoomPlayer from '../../features/party/components/RoomPlayer';
 import MemberList from '../../features/party/components/MemberList';
 import { useListeningParty } from '../../features/party/hooks/useListeningParty';
+import { useAuthStore } from '../../store/authStore';
+import { getSong } from '../../services/musicService';
 import type { Party, PartyMember, Song } from '../../types/domain';
 import type { SyncState, MemberJoin, MemberLeave } from '../../types/listening-party';
-
-// ─── Mock fallback — used when entering via direct URL or testing ─────────────
-const MOCK_SONG: Song = {
-  id:         'song-001',
-  title:      'Lạc Trôi',
-  artist:     'Sơn Tùng M-TP',
-  album:      'M-TP Collection',
-  duration:   245,
-  coverUrl:   'https://picsum.photos/seed/lactroi/300/300',
-  isExplicit: false,
-};
-
-const MOCK_MEMBERS: PartyMember[] = [
-  { userId: 'user-listener-001', name: 'Nghiệp', isHost: true,  avatarUrl: 'https://picsum.photos/seed/user001/100/100' },
-  { userId: 'user-creator-001',  name: 'Linh',   isHost: false, avatarUrl: 'https://picsum.photos/seed/user002/100/100' },
-  { userId: 'user-member-003',   name: 'Hải',    isHost: false },
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface LocationState {
   party?: Party;
   isHost?: boolean;
-  currentUserId?: string;
 }
 
 export default function PartyRoomPage() {
@@ -38,27 +22,34 @@ export default function PartyRoomPage() {
   const navigate   = useNavigate();
   const state      = (location.state ?? {}) as LocationState;
 
-  const initialParty = state.party;
-  const currentUserId = state.currentUserId ?? 'user-listener-001';
+  const currentUserId = useAuthStore((s) => s.userId) ?? '';
+  const initialParty  = state.party;
 
   // ─── Party state ───────────────────────────────────────────────────────────
-  const [members, setMembers]       = useState<PartyMember[]>(
-    initialParty?.members ?? MOCK_MEMBERS,
+  const [members, setMembers]         = useState<PartyMember[]>(initialParty?.members ?? []);
+  const [isPlaying, setIsPlaying]     = useState(false);
+  const [positionSec, setPositionSec] = useState(initialParty?.playbackPositionSec ?? 0);
+  const [currentSongId, setCurrentSongId] = useState<string | null>(
+    initialParty?.currentSongId ?? null,
   );
-  const [isPlaying, setIsPlaying]   = useState(false);
-  const [positionSec, setPositionSec] = useState(
-    initialParty?.playbackPositionSec ?? 84,
-  );
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
 
-  const hostId   = initialParty?.hostId ?? 'user-listener-001';
-  const joinCode = initialParty?.joinCode ?? 'ABC123';
+  const hostId   = initialParty?.hostId ?? '';
+  const joinCode = initialParty?.joinCode ?? '';
   const roomName = (initialParty as (Party & { name?: string }) | undefined)?.name ?? 'Phòng nghe nhạc';
-  const isHost   = currentUserId === hostId;
+  const isHost   = !!currentUserId && currentUserId === hostId;
+
+  // Load song details whenever currentSongId changes
+  useEffect(() => {
+    if (!currentSongId) return;
+    getSong(currentSongId).then((s) => setCurrentSong(s)).catch(() => {});
+  }, [currentSongId]);
 
   // ─── SignalR handlers ──────────────────────────────────────────────────────
   const handleSyncState = useCallback((sync: SyncState) => {
     setIsPlaying(sync.isPlaying);
     setPositionSec(sync.positionSec);
+    if (sync.songId) setCurrentSongId(sync.songId);
   }, []);
 
   const handleMemberJoin = useCallback((data: MemberJoin) => {
@@ -81,10 +72,10 @@ export default function PartyRoomPage() {
   });
 
   // ─── Player actions (Host only) ────────────────────────────────────────────
-  const handlePlay  = () => { setIsPlaying(true);  void sendPlayerAction({ action: 'PLAY',  songId: MOCK_SONG.id }); };
+  const handlePlay  = () => { setIsPlaying(true);  void sendPlayerAction({ action: 'PLAY',  songId: currentSongId ?? '' }); };
   const handlePause = () => { setIsPlaying(false); void sendPlayerAction({ action: 'PAUSE' }); };
-  const handleNext  = () => void sendPlayerAction({ action: 'PLAY', songId: MOCK_SONG.id });
-  const handlePrev  = () => void sendPlayerAction({ action: 'PLAY', songId: MOCK_SONG.id });
+  const handleNext  = () => void sendPlayerAction({ action: 'PLAY', songId: currentSongId ?? '' });
+  const handlePrev  = () => void sendPlayerAction({ action: 'PLAY', songId: currentSongId ?? '' });
 
   const handleLeave = () => navigate('/');
 
@@ -142,7 +133,7 @@ export default function PartyRoomPage() {
           {/* Player */}
           <div className="mt-20 lg:mt-12 w-full">
             <RoomPlayer
-              song={MOCK_SONG}
+              song={currentSong}
               isPlaying={isPlaying}
               positionSec={positionSec}
               isHost={isHost}

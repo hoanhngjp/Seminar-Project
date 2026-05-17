@@ -32,9 +32,20 @@ export async function uploadSong(req: UploadSongRequest): Promise<Song> {
   return res.data.data!;
 }
 
-export async function getSong(songId: string): Promise<any> {
+export async function getSong(songId: string): Promise<Song> {
   const res = await apiClient.get<ApiResponse<any>>(`/api/v1/music/songs/${songId}`);
-  return res.data.data!;
+  const d = res.data.data!;
+  return {
+    id: String(d.id ?? d.songId ?? songId),
+    title: d.title ?? '',
+    artist: d.artist?.stageName ?? (typeof d.artist === 'string' ? d.artist : '') ?? '',
+    album: d.album?.title ?? d.album,
+    duration: d.durationSec ?? d.duration ?? 0,
+    coverUrl: d.coverUrl ?? d.coverImageUrl,
+    isExplicit: d.isExplicit ?? false,
+    genreId: d.genreId,
+    mood: d.mood,
+  };
 }
 
 export async function getArtist(artistId: string): Promise<ArtistDetail> {

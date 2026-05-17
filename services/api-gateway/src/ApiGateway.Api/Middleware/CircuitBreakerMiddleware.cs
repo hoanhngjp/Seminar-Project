@@ -8,6 +8,15 @@ public class CircuitBreakerMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context)
     {
+        // SignalR hub connections are long-lived (WebSocket, SSE, Long Polling) —
+        // bypass the 2-second circuit breaker so all transports stay connected.
+        if (context.WebSockets.IsWebSocketRequest ||
+            context.Request.Path.StartsWithSegments("/hubs", StringComparison.OrdinalIgnoreCase))
+        {
+            await next(context);
+            return;
+        }
+
         var originalAborted = context.RequestAborted;
 
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(originalAborted);
