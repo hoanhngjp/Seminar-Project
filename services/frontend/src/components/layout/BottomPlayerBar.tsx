@@ -21,6 +21,8 @@ export default function BottomPlayerBar() {
   const currentSong  = usePlayerStore((s) => s.currentSong);
   const clearSong    = usePlayerStore((s) => s.clearSong);
   const pauseSignal  = usePlayerStore((s) => s.pauseSignal);
+  const seekSignal   = usePlayerStore((s) => s.seekSignal);
+  const seekPosition = usePlayerStore((s) => s.seekPosition);
 
   const audioRef        = useRef<HTMLAudioElement>(null);
   const urlFetchedAtRef = useRef<number>(0);
@@ -39,6 +41,7 @@ export default function BottomPlayerBar() {
   const [urlError,     setUrlError]     = useState<string | null>(null);
   const [showOverlay,  setShowOverlay]  = useState(false);
   const [showQueue,    setShowQueue]    = useState(false);
+  const [seekHovered,  setSeekHovered]  = useState(false);
 
   const fetchStreamUrl = useCallback(async (songId: string) => {
     setUrlError(null);
@@ -99,6 +102,13 @@ export default function BottomPlayerBar() {
     audioRef.current?.pause();
     setIsPlaying(false);
   }, [pauseSignal]);
+
+  // Seek command from external caller (e.g. Listening Party host seeks)
+  useEffect(() => {
+    if (seekSignal === 0 || !audioRef.current) return;
+    audioRef.current.currentTime = seekPosition;
+    setCurrentTime(seekPosition);
+  }, [seekSignal, seekPosition]);
 
   // Proactive URL refresh
   useEffect(() => {
@@ -187,6 +197,7 @@ export default function BottomPlayerBar() {
           <audio
             ref={audioRef}
             src={streamUrl}
+            preload="metadata"
             onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
             onDurationChange={(e) => {
               const d = e.currentTarget.duration;
@@ -270,7 +281,25 @@ export default function BottomPlayerBar() {
             <span className="text-[10px] text-text-secondary w-7 text-right tabular-nums">
               {formatTime(currentTime)}
             </span>
-            <div className="h-1 flex-1 bg-border-muted rounded-full overflow-hidden group cursor-pointer relative">
+            {/* Outer wrapper: py-2 expands hover/click area without changing visual height */}
+            <div
+              className="relative flex-1 py-2 cursor-pointer"
+              onMouseEnter={() => setSeekHovered(true)}
+              onMouseLeave={() => setSeekHovered(false)}
+            >
+              {/* Visual track — rendered before input so input doesn't obscure it */}
+              <div className="relative z-10 pointer-events-none h-1 w-full bg-border-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-spotify-green rounded-full"
+                  style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
+                />
+              </div>
+              {/* Thumb — centered on track, visible on hover */}
+              <div
+                className={`absolute z-10 top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full shadow transition-opacity pointer-events-none ${seekHovered ? 'opacity-100' : 'opacity-0'}`}
+                style={{ left: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
+              />
+              {/* Invisible input — on top for drag events, appearance-none removes native browser track */}
               <input
                 type="range"
                 min={0}
@@ -278,12 +307,8 @@ export default function BottomPlayerBar() {
                 step={0.5}
                 value={currentTime}
                 onChange={handleSeekInput}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none"
                 aria-label="Seek"
-              />
-              <div
-                className="h-full bg-white group-hover:bg-spotify-green rounded-full transition-colors pointer-events-none"
-                style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
               />
             </div>
             <span className="text-[10px] text-text-secondary w-7 tabular-nums">

@@ -39,8 +39,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `PartyRoomPage.tsx`: sync effect gọi `playSong({..., autoPlay: true})` khi play, `pauseSong()` khi pause
 - 701/701 tests xanh
 
-**W11 Bug Fix — Bug 9–10: Listening Party progress bar + SignalR keepalive (pending)**
-- Bug 9: `<audio>` thiếu `preload="metadata"` → `duration=0` → progress bar trống; fix plan: thêm `preload="metadata"`
+**W11 Bug Fix — Bug 9: Progress bar không chạy + seek không hoạt động (2026-05-18)**
+- `PartyRoomPage.tsx`: thêm `setInterval` 1s tự tăng `positionSec` khi đang play → RoomPlayer progress bar chạy theo nhạc; tự reset về giá trị server khi nhận `SYNC_STATE`
+- `RoomPlayer.tsx`: thêm prop `onSeek?(sec)` — Host có interactive seek bar + thumb; Member có read-only bar (không có thumb, tránh hiểu nhầm); thumb dùng React state `onMouseEnter/Leave` thay `group-hover` Tailwind (fix hover không trigger qua input)
+- `playerStore.ts`: thêm `seekSignal`, `seekPosition`, `seekSong(positionSec)` — pattern giống `pauseSignal`
+- `BottomPlayerBar.tsx`: thêm `preload="metadata"` trên `<audio>`; subscribe `seekSignal` để seek audio element thật; CSS restructure seek bar: `appearance-none` input, `relative z-10` track, DOM order input cuối; thumb dùng React state hover
+- ⚠️ Còn pending: BottomPlayerBar progress track vẫn chưa visible (CSS conflict chưa xác định nguyên nhân)
+- **W11 Bug Fix — Bug 10: SignalR disconnect (pending)**
 - Bug 10: SignalR client timeout 30s vs server ping 30s → race condition qua YARP; fix plan: server `KeepAliveInterval=15s`, client `serverTimeoutInMilliseconds=60000`
 
 **W11 Bug Fix — Bug 7: SignalR "connection was stopped during negotiation" (2026-05-18)**

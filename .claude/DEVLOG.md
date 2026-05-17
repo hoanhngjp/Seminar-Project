@@ -17,11 +17,32 @@
 
 **Bug 9 + 10 — Còn pending:**
 
-**Bug 9 — BottomPlayerBar không hiển thị thanh tiến trình bài hát**
-- Symptom: Khi đang trong phòng nghe nhạc, thanh progress bar ở BottomPlayerBar luôn bằng 0, không thấy có duration.
-- Root cause: Audio element thiếu `preload="metadata"` → browser không load metadata (duration) cho tới khi `play()` được gọi. `onDurationChange` chưa bao giờ fire → `duration = 0` → progress bar width = `0%`.
-- Fix plan: Thêm `preload="metadata"` vào `<audio>` element trong BottomPlayerBar.
-- Files: `BottomPlayerBar.tsx`
+**Bug 9 — Progress bar không chạy theo bài hát (RoomPlayer + BottomPlayerBar)**
+- Symptom 1: Trong party room, thanh tiến trình RoomPlayer đứng im không chạy theo nhạc.
+- Symptom 2: BottomPlayerBar thanh progress bar không hiển thị (track xám không thấy, fill xanh cũng không).
+- Symptom 3: Hover vào thanh tiến trình không xuất hiện hình tròn thumb ở cả hai component.
+- Symptom 4: Host kéo seek trong RoomPlayer → visual bar cập nhật nhưng audio không seek.
+
+**Root cause 1 — RoomPlayer bar đứng im:**
+`positionSec` trong `PartyRoomPage` là snapshot từ server `SYNC_STATE`, không có timer tự tăng giữa các lần nhận event.
+Fix: Thêm `setInterval` 1s increment `positionSec` khi `isPlaying === true`, tự reset khi `handleSyncState` nhận SYNC_STATE mới.
+
+**Root cause 2 — BottomPlayerBar bar không hiển thị:**
+`<input type="range">` với `opacity-0 z-10` được render sau visual track trong DOM nhưng ở stacking layer cao hơn. Một số Chrome version render native range track/thumb bên dưới layer đó dù `opacity-0`, che khuất visual track. Thêm `appearance-none` xóa native styling; đặt track + thumb trong DOM trước input và dùng `relative z-10` để paint đúng thứ tự.
+⚠️ Vẫn chưa xác nhận fix — BottomPlayerBar track còn chưa visible sau các lần thử CSS (ongoing).
+
+**Root cause 3 — Thumb không hiện khi hover:**
+Tailwind `group-hover:opacity-100` không fire khi hover qua `<input type="range">` trong một số context (hover không propagate lên parent group qua input element). Fix: đổi sang React state `useState(seekHovered)` + `onMouseEnter/onMouseLeave` trên wrapper div → đã fix ở cả RoomPlayer lẫn BottomPlayerBar.
+
+**Root cause 4 — Seek không thay đổi audio:**
+`handleSeek` trong `PartyRoomPage` chỉ cập nhật `positionSec` visual và gửi SignalR `SEEK` action, không seek `<audio>` element thật trong BottomPlayerBar.
+Fix: Thêm `seekSignal` + `seekPosition` + `seekSong()` vào `playerStore` (pattern giống `pauseSignal`). BottomPlayerBar subscribe `seekSignal` và set `audioRef.current.currentTime`. `PartyRoomPage.handleSeek` gọi `seekSong(sec)`.
+
+**Files đã thay đổi:**
+- `PartyRoomPage.tsx`: `setInterval` positionSec + `handleSeek` gọi `seekSong`
+- `RoomPlayer.tsx`: prop `onSeek?`, interactive bar cho Host (React state hover + thumb), read-only bar cho Member
+- `playerStore.ts`: `seekSignal`, `seekPosition`, `seekSong(positionSec)`
+- `BottomPlayerBar.tsx`: `preload="metadata"`, seek effect, React state hover thumb, CSS restructure (`appearance-none`, `z-10` track, DOM order input cuối)
 
 **Bug 10 — SignalR disconnect sau ~30 giây ("Server timeout elapsed")**
 - Symptom: `[2026-05-17T22:22:13.438Z] Error: Connection disconnected with error 'Error: Server timeout elapsed without receiving a message from the server.'`

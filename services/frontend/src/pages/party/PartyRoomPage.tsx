@@ -27,6 +27,7 @@ export default function PartyRoomPage() {
   const initialParty  = state.party;
   const playSong      = usePlayerStore((s) => s.playSong);
   const pauseSong     = usePlayerStore((s) => s.pauseSong);
+  const seekSong      = usePlayerStore((s) => s.seekSong);
   const clearSong     = usePlayerStore((s) => s.clearSong);
 
   // ─── Party state ───────────────────────────────────────────────────────────
@@ -64,6 +65,13 @@ export default function PartyRoomPage() {
     return () => { clearSong(); };
   }, [clearSong]);
 
+  // Tick positionSec every second while playing so the progress bar moves
+  useEffect(() => {
+    if (!isPlaying) return;
+    const timer = setInterval(() => setPositionSec((p) => p + 1), 1000);
+    return () => clearInterval(timer);
+  }, [isPlaying]);
+
   // ─── SignalR handlers ──────────────────────────────────────────────────────
   const handleSyncState = useCallback((sync: SyncState) => {
     setIsPlaying(sync.isPlaying);
@@ -95,6 +103,7 @@ export default function PartyRoomPage() {
   const handlePause = () => { setIsPlaying(false); void sendPlayerAction({ action: 'PAUSE' }); };
   const handleNext  = () => void sendPlayerAction({ action: 'PLAY', songId: currentSongId ?? '' });
   const handlePrev  = () => void sendPlayerAction({ action: 'PLAY', songId: currentSongId ?? '' });
+  const handleSeek  = (sec: number) => { setPositionSec(sec); seekSong(sec); void sendPlayerAction({ action: 'SEEK', positionSec: sec }); };
 
   const handleLeave = () => navigate('/');
 
@@ -160,6 +169,7 @@ export default function PartyRoomPage() {
               onPause={handlePause}
               onNext={handleNext}
               onPrev={handlePrev}
+              onSeek={isHost ? handleSeek : undefined}
             />
           </div>
         </section>

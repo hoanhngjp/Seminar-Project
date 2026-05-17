@@ -201,7 +201,7 @@
 - [X] Rebuild frontend container — confirmed: negotiate 200, WebSocket 101, user ở trong phòng, không bị kick (2026-05-18)
 - [X] Listening Party end-to-end: tất cả 7 bugs đã fix và xác nhận (2026-05-18)
 - [X] Bug 8: BottomPlayerBar không auto-play / pause khi party room sync — `autoPlay?` flag + `pauseSignal` (2026-05-18)
-- [ ] Bug 9: BottomPlayerBar progress bar trống — cần `preload="metadata"` trên audio element
+- [~] Bug 9: Progress bar (partial) — RoomPlayer bar chạy ✓, Host seek ✓, audio seek ✓, thumb hover ✓ — BottomPlayerBar track vẫn chưa visible (CSS conflict ongoing)
 - [ ] Bug 10: SignalR disconnect sau ~30s — cần tăng timeout client + giảm KeepAliveInterval server
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
@@ -216,7 +216,7 @@
 - **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
   1. ~~Fix Bug 8~~ ✓ Done
-  2. Fix Bug 9: `BottomPlayerBar.tsx` — thêm `preload="metadata"`
+  2. [~] Bug 9 partial: RoomPlayer ✓, Host seek ✓, seek audio ✓, thumb hover ✓ — BottomPlayerBar track chưa visible
   3. Fix Bug 10: `usePartyWebSocket.ts` + `Program.cs` (listening-party-service) — timeout config
   4. Demo script rehearsal 14 phút
   5. Pre-upload demo songs cho Creator account

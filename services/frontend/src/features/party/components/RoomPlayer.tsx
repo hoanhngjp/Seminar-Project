@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Song } from '../../../types/domain';
 import HostControls from './HostControls';
 
@@ -10,6 +11,7 @@ interface Props {
   onPause: () => void;
   onNext:  () => void;
   onPrev:  () => void;
+  onSeek?: (sec: number) => void;
 }
 
 function formatTime(sec: number): string {
@@ -27,7 +29,10 @@ export default function RoomPlayer({
   onPause,
   onNext,
   onPrev,
+  onSeek,
 }: Props) {
+  const [seekHovered, setSeekHovered] = useState(false);
+
   if (!song) {
     return (
       <div className="flex flex-col items-center text-center w-full py-16">
@@ -80,12 +85,44 @@ export default function RoomPlayer({
           <span>{formatTime(positionSec)}</span>
           <span>{formatTime(song.duration)}</span>
         </div>
-        <div className="h-1.5 bg-border-muted rounded-full overflow-hidden relative">
+
+        {isHost && onSeek ? (
+          /* Host: interactive seek bar with thumb */
           <div
-            className="absolute top-0 left-0 h-full bg-spotify-green rounded-full transition-all duration-1000"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
+            className="relative py-2 cursor-pointer"
+            onMouseEnter={() => setSeekHovered(true)}
+            onMouseLeave={() => setSeekHovered(false)}
+          >
+            <div className="relative z-10 pointer-events-none h-1.5 w-full bg-border-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-spotify-green rounded-full transition-all duration-1000"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <div
+              className={`absolute z-10 top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white rounded-full shadow transition-opacity pointer-events-none ${seekHovered ? 'opacity-100' : 'opacity-0'}`}
+              style={{ left: `${progress}%` }}
+            />
+            <input
+              type="range"
+              min={0}
+              max={song.duration || 0}
+              step={1}
+              value={positionSec}
+              onChange={(e) => onSeek(Number(e.target.value))}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none"
+              aria-label="Tua nhạc"
+            />
+          </div>
+        ) : (
+          /* Member: read-only bar */
+          <div className="h-1.5 bg-border-muted rounded-full overflow-hidden">
+            <div
+              className="h-full bg-spotify-green rounded-full transition-all duration-1000"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        )}
 
         {/* LIVE badge */}
         <div className="absolute -right-2 top-0 -translate-y-full pb-1">
