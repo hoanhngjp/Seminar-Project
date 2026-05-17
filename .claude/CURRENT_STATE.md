@@ -196,6 +196,7 @@
 - [X] Bug fix: Recommendation Service — 3 bugs: env var mismatch (MUSIC_SERVICE_URL→MUSIC_SERVICE_BASE_URL), cache snake_case→camelCase, thêm coverUrl vào BatchSongDto — homepage giờ hiển thị songs thật với ảnh bìa Cloudinary (2026-05-17)
 - [X] Bug fix: Recommendation Service — stale poisoned cache cho context=evening/morning/etc — thêm `has_metadata` guard trước cache write + flush 4 stale Redis keys (2026-05-18)
 - [X] Feature: CreateRoomModal — thay 8 mock songs bằng real API: recommendations (4 bài theo timeContext) khi default + search infinite scroll (IntersectionObserver + cursor pagination) khi gõ query — 18/18 tests xanh (2026-05-18)
+- [X] Bug fix: POST /api/v1/parties 400 — BE accept Name?+SongId? optional, FE đổi firstSongId→songId (2026-05-18)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 

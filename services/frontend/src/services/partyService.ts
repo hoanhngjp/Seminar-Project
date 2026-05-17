@@ -2,8 +2,8 @@ import { apiClient } from './api';
 import type { Party } from '../types/domain';
 
 export interface CreatePartyRequest {
-  name: string;
-  firstSongId?: string;
+  name?: string;
+  songId?: string;
 }
 
 export async function createParty(req: CreatePartyRequest): Promise<Party> {

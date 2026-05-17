@@ -3,6 +3,7 @@ namespace ListeningPartyService.Domain.Models;
 public class Room
 {
     public string RoomId { get; set; } = string.Empty;
+    public string Name { get; set; } = "Listening Party";
     public string HostId { get; set; } = string.Empty;
     public string SongId { get; set; } = string.Empty;
     public bool IsPlaying { get; set; }

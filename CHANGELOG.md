@@ -33,6 +33,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**W11 Bug Fix — POST /api/v1/parties 400 khi tạo phòng (2026-05-18)**
+- `PartiesController.cs`: bỏ validation bắt buộc `songId` — tạo phòng không cần chọn bài trước
+- `PartyDtos.cs`: `CreatePartyRequest` đổi thành `Name?` + `SongId?` (cả hai optional); `CreatePartyResponse` thêm `Name`
+- `Room.cs`: thêm field `Name` (default `"Listening Party"`)
+- `RedisPartyRepository.cs`: lưu/đọc field `name` vào Redis hash
+- `partyService.ts` + `CreateRoomModal.tsx`: đổi `firstSongId` → `songId` để khớp với BE contract
+
 **W11 Runtime Bug Fixes — 401 khi play từ SearchPage (2026-05-17)**
 - `services/api.ts`: mở rộng interceptor xử lý cả `UNAUTHORIZED` lẫn `TOKEN_EXPIRED` — attempt refresh token trước khi fail, tránh trường hợp `_accessToken` null khi streaming request được gửi
 - `services/api.ts`: đổi `||` → `??` cho `baseURL` — `VITE_API_BASE_URL=''` không bị fallback về `localhost:5000`

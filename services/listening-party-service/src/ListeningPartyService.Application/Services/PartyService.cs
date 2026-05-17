@@ -8,16 +8,18 @@ namespace ListeningPartyService.Application.Services;
 
 public class PartyService(IPartyRepository repository, ILogger<PartyService> logger) : IPartyService
 {
-    public async Task<CreatePartyResponse> CreatePartyAsync(string hostId, string songId, CancellationToken ct = default)
+    public async Task<CreatePartyResponse> CreatePartyAsync(string hostId, string? name, string? songId, CancellationToken ct = default)
     {
         var roomId = Guid.NewGuid().ToString();
         var joinCode = GenerateJoinCode();
+        var roomName = string.IsNullOrWhiteSpace(name) ? "Listening Party" : name.Trim();
 
         var room = new Room
         {
             RoomId = roomId,
+            Name = roomName,
             HostId = hostId,
-            SongId = songId,
+            SongId = songId ?? string.Empty,
             IsPlaying = false,
             PositionSec = 0,
             JoinCode = joinCode
@@ -29,7 +31,7 @@ public class PartyService(IPartyRepository repository, ILogger<PartyService> log
         logger.LogInformation("Party created: roomId={RoomId} joinCode={JoinCode} hostId={HostId}",
             roomId, joinCode, hostId);
 
-        return new CreatePartyResponse(roomId, joinCode, hostId);
+        return new CreatePartyResponse(roomId, joinCode, hostId, roomName);
     }
 
     public async Task<JoinPartyResponse> JoinPartyAsync(string joinCode, string userId, CancellationToken ct = default)

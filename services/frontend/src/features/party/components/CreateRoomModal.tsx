@@ -112,7 +112,7 @@ export default function CreateRoomModal({ onClose, onCreated, onSwitchToJoin }: 
     try {
       const party = await createParty({
         name: roomName.trim(),
-        firstSongId: selectedSong?.id,
+        songId: selectedSong?.id,
       });
       onCreated(party);
     } catch {

@@ -1,5 +1,32 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [BUG FIX — POST /api/v1/parties 400 Bad Request khi tạo phòng] [DONE]
+
+**Context:** `CreateRoomModal` nhấn "Tạo phòng" → `POST /api/v1/parties` → 400 Bad Request. Không tạo được phòng.
+
+**Root cause:**
+FE gửi `{ name, firstSongId }` nhưng BE `CreatePartyRequest` chỉ có field `SongId` (required). Field `firstSongId` không map vào `SongId` → `SongId = null` → controller validate `string.IsNullOrWhiteSpace(request.SongId)` → 400.
+
+**Fixes:**
+1. `Room.cs` — thêm field `Name` (default `"Listening Party"`).
+2. `PartyDtos.cs` — `CreatePartyRequest(Name?, SongId?)` cả hai optional; `CreatePartyResponse` thêm `Name`.
+3. `IPartyService.cs` + `PartyService.cs` — signature `CreatePartyAsync(hostId, name?, songId?)`, default name nếu blank.
+4. `PartiesController.cs` — bỏ validation bắt buộc `SongId`.
+5. `RedisPartyRepository.cs` — lưu/đọc field `name` vào Redis hash `party:room:{roomId}`.
+6. `partyService.ts` — `CreatePartyRequest.firstSongId` → `songId?`.
+7. `CreateRoomModal.tsx` — call site `firstSongId:` → `songId:`.
+
+**Files thay đổi:**
+- `services/listening-party-service/src/ListeningPartyService.Domain/Models/Room.cs`
+- `services/listening-party-service/src/ListeningPartyService.Application/DTOs/PartyDtos.cs`
+- `services/listening-party-service/src/ListeningPartyService.Application/Services/IPartyService.cs`
+- `services/listening-party-service/src/ListeningPartyService.Application/Services/PartyService.cs`
+- `services/listening-party-service/src/ListeningPartyService.Api/Controllers/PartiesController.cs`
+- `services/listening-party-service/src/ListeningPartyService.Infrastructure/Repositories/RedisPartyRepository.cs`
+- `services/frontend/src/services/partyService.ts`
+- `services/frontend/src/features/party/components/CreateRoomModal.tsx`
+
+---
 [2026-05-18] [FEATURE — CreateRoomModal: thay mock data bằng real API + infinite scroll search] [DONE]
 
 **Context:** Popup "Tạo phòng nghe nhạc" hiển thị danh sách bài hát cứng (8 mock songs hardcoded). Cần thay bằng data thật từ database.

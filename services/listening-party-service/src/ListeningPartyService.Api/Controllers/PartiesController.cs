@@ -25,16 +25,13 @@ public class PartiesController(IPartyService partyService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateParty([FromBody] CreatePartyRequest request, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(request.SongId))
-            return BadRequest(ApiResponse<object>.Fail("VALIDATION_ERROR", "songId is required."));
-
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         cts.CancelAfter(TimeSpan.FromMilliseconds(200));
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var requestId = HttpContext.Items["CorrelationId"]?.ToString() ?? Guid.NewGuid().ToString();
 
-        var result = await partyService.CreatePartyAsync(userId, request.SongId, cts.Token);
+        var result = await partyService.CreatePartyAsync(userId, request.Name, request.SongId, cts.Token);
         return StatusCode(201, ApiResponse<CreatePartyResponse>.Ok(result, requestId));
     }
 

@@ -16,6 +16,7 @@ public class RedisPartyRepository(IDatabase db, ILogger<RedisPartyRepository> lo
 
         var hashEntries = new HashEntry[]
         {
+            new("name", room.Name),
             new("hostId", room.HostId),
             new("songId", room.SongId),
             new("isPlaying", room.IsPlaying.ToString().ToLower()),
@@ -45,6 +46,7 @@ public class RedisPartyRepository(IDatabase db, ILogger<RedisPartyRepository> lo
         return new Room
         {
             RoomId = roomId,
+            Name = dict.GetValueOrDefault("name", "Listening Party"),
             HostId = dict.GetValueOrDefault("hostId", ""),
             SongId = dict.GetValueOrDefault("songId", ""),
             IsPlaying = dict.GetValueOrDefault("isPlaying", "false") == "true",
