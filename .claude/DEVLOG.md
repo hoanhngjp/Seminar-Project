@@ -1,5 +1,20 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — CreateRoomModal: thay mock data bằng real API + infinite scroll search] [DONE]
+
+**Context:** Popup "Tạo phòng nghe nhạc" hiển thị danh sách bài hát cứng (8 mock songs hardcoded). Cần thay bằng data thật từ database.
+
+**Design:**
+- Default (no query): gọi `GET /api/v1/recommendations?context=<timeContext>&limit=4` — hiển thị 4 gợi ý theo thời điểm trong ngày (morning/afternoon/evening/night).
+- Search mode: gọi `GET /api/v1/search?q=...&type=song&limit=10` — container có `max-h-[240px] overflow-y-auto`, dùng `IntersectionObserver` trên sentinel div ở đáy để tự động load trang tiếp theo khi cuộn.
+- Debounce 300ms khi user gõ query.
+- Xóa query → reset về recommendations.
+
+**Files thay đổi:**
+- `services/frontend/src/features/party/components/CreateRoomModal.tsx` — xóa `SEARCH_SONGS` mock, thêm `SongOption` type, `loadMore()` + IntersectionObserver, infinite scroll
+- `services/frontend/src/tests/features/party/CreateRoomModal.test.tsx` — mock `IntersectionObserver` via `vi.stubGlobal`, thêm test load-more + reset to recommendations (18/18 xanh)
+
+---
 [2026-05-18] [BUG FIX — Recommendation Service: stale poisoned cache for context=evening (và các context khác)] [DONE]
 
 **Context:** `GET /api/v1/recommendations?context=evening&limit=20` trả về `title=""`, `artist=""`, `thumbnail=""` cho tất cả 20 items dù `cache: "HIT"`. Fix env var từ hôm qua (MUSIC_SERVICE_BASE_URL) đã đúng nhưng cache cũ được populate trước khi fix vẫn còn tồn tại.

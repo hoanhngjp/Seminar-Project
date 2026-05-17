@@ -16,6 +16,11 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**W11 CreateRoomModal — Real API + Infinite Scroll (2026-05-18)**
+- `CreateRoomModal.tsx`: xóa 8 mock songs hardcoded, thay bằng `GET /api/v1/recommendations?context=<timeContext>&limit=4` khi mở modal (default list theo thời điểm trong ngày)
+- `CreateRoomModal.tsx`: khi user gõ query, debounce 300ms gọi `GET /api/v1/search?q=...&type=song&limit=10` — container `max-h-[240px] overflow-y-auto`, `IntersectionObserver` trên sentinel div tự load trang tiếp theo khi cuộn
+- 18/18 tests xanh (`IntersectionObserver` mock + load-more + reset to recommendations)
+
 **W11 Frontend Real API Integration — VITE_MOCK=false + 5 Pages Wired (2026-05-16)**
 - Music Service: `GET /api/v1/music/artists/{artistId}` — trả `ArtistResponseDto` (stageName, bio, totalFollowers, totalPlays, songs[])
 - Music Service: `GET /api/v1/music/songs/my` — Creator/Admin only, trả danh sách bài hát của creator đang đăng nhập

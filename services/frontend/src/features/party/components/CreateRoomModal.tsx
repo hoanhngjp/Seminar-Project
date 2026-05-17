@@ -1,18 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createParty } from '../../../services/partyService';
+import { fetchRecommendations } from '../../../services/recommendationService';
+import { searchContent } from '../../../services/searchService';
+import { getTimeContext } from '../../../utils/time';
 import type { Party } from '../../../types/domain';
 
-// Mock song list for search — demo data
-const SEARCH_SONGS = [
-  { id: 'song-001', title: 'Lạc Trôi',           artist: 'Sơn Tùng M-TP', coverUrl: 'https://picsum.photos/seed/lactroi/300/300' },
-  { id: 'song-002', title: 'Có Chắc Yêu Là Đây', artist: 'Sơn Tùng M-TP', coverUrl: 'https://picsum.photos/seed/cochac/300/300' },
-  { id: 'song-003', title: 'Chuyến Xe',           artist: 'Ngọt',           coverUrl: 'https://picsum.photos/seed/chuyenxe/300/300' },
-  { id: 'song-004', title: 'Từ Hôm Nay',          artist: 'Vũ.',            coverUrl: 'https://picsum.photos/seed/tuhomnay/300/300' },
-  { id: 'song-005', title: 'Ngày Mai',             artist: 'Vũ.',            coverUrl: 'https://picsum.photos/seed/ngaymai/300/300' },
-  { id: 'song-006', title: 'Đưa Nhau Đi Trốn',   artist: 'Đen Vâu',        coverUrl: 'https://picsum.photos/seed/ditrong/300/300' },
-  { id: 'song-007', title: 'Mang Tiền Về Cho Mẹ', artist: 'Đen Vâu',       coverUrl: 'https://picsum.photos/seed/mangtienvemee/300/300' },
-  { id: 'song-008', title: 'Là Ai',               artist: 'Chillies',       coverUrl: 'https://picsum.photos/seed/laai/300/300' },
-];
+interface SongOption {
+  id: string;
+  title: string;
+  artist: string;
+  coverUrl: string;
+}
 
 interface Props {
   onClose: () => void;
@@ -23,17 +21,86 @@ interface Props {
 export default function CreateRoomModal({ onClose, onCreated, onSwitchToJoin }: Props) {
   const [roomName, setRoomName]         = useState('');
   const [songQuery, setSongQuery]       = useState('');
-  const [selectedSong, setSelectedSong] = useState<(typeof SEARCH_SONGS)[0] | null>(null);
+  const [selectedSong, setSelectedSong] = useState<SongOption | null>(null);
+  const [songList, setSongList]         = useState<SongOption[]>([]);
+  const [songLoading, setSongLoading]   = useState(false);
+  const [loadingMore, setLoadingMore]   = useState(false);
+  const [isSearchMode, setIsSearchMode] = useState(false);
+  const [nextCursor, setNextCursor]     = useState<string | null>(null);
+  const [hasMore, setHasMore]           = useState(false);
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState('');
 
-  const searchResults = useMemo(() => {
-    if (!songQuery.trim()) return SEARCH_SONGS.slice(0, 4);
-    const q = songQuery.toLowerCase();
-    return SEARCH_SONGS.filter(
-      (s) => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q),
-    ).slice(0, 4);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // Load recommendations (default) OR debounced search when query changes
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (!songQuery.trim()) {
+      setIsSearchMode(false);
+      setNextCursor(null);
+      setHasMore(false);
+      setSongLoading(true);
+      fetchRecommendations(getTimeContext(), 4)
+        .then((items) =>
+          setSongList(items.map((s) => ({ id: s.id, title: s.title, artist: s.artist, coverUrl: s.coverUrl ?? '' })))
+        )
+        .catch(() => setSongList([]))
+        .finally(() => setSongLoading(false));
+      return;
+    }
+
+    debounceRef.current = setTimeout(() => {
+      setIsSearchMode(true);
+      setSongList([]);
+      setNextCursor(null);
+      setHasMore(false);
+      setSongLoading(true);
+      searchContent(songQuery.trim(), 'song', 10)
+        .then((res) => {
+          setSongList(res.items.map((s) => ({ id: s.id, title: s.name, artist: s.artist ?? '', coverUrl: s.coverUrl ?? '' })));
+          setNextCursor(res.nextCursor);
+          setHasMore(res.hasMore);
+        })
+        .catch(() => setSongList([]))
+        .finally(() => setSongLoading(false));
+    }, 300);
+
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [songQuery]);
+
+  // Load next page of search results
+  const loadMore = useCallback(async () => {
+    if (!hasMore || loadingMore || !nextCursor || !songQuery.trim()) return;
+    setLoadingMore(true);
+    try {
+      const res = await searchContent(songQuery.trim(), 'song', 10, nextCursor);
+      setSongList((prev) => [
+        ...prev,
+        ...res.items.map((s) => ({ id: s.id, title: s.name, artist: s.artist ?? '', coverUrl: s.coverUrl ?? '' })),
+      ]);
+      setNextCursor(res.nextCursor);
+      setHasMore(res.hasMore);
+    } catch {
+      // silent — already showing results
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [hasMore, loadingMore, nextCursor, songQuery]);
+
+  // IntersectionObserver on sentinel div (search mode only)
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !isSearchMode) return;
+    const observer = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) loadMore(); },
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isSearchMode, loadMore]);
 
   const handleCreate = async () => {
     if (!roomName.trim()) {
@@ -121,35 +188,58 @@ export default function CreateRoomModal({ onClose, onCreated, onSwitchToJoin }: 
               />
             </div>
 
-            {/* Search results */}
+            {/* Song list */}
             {!selectedSong && (
-              <div className="flex flex-col gap-xs bg-mid-dark rounded-[8px] p-xs" role="listbox" aria-label="Kết quả tìm kiếm">
-                {searchResults.map((song, idx) => (
-                  <button
-                    key={song.id}
-                    role="option"
-                    aria-selected={false}
-                    onClick={() => setSelectedSong(song)}
-                    className="flex items-center gap-md p-sm rounded-[4px] hover:bg-mid-card transition-colors w-full text-left group"
-                  >
-                    <span className="font-micro text-micro text-text-secondary w-4 text-center">
-                      {idx + 1}
-                    </span>
-                    <img
-                      src={song.coverUrl}
-                      alt={song.title}
-                      className="w-10 h-10 rounded-[4px] object-cover"
-                    />
-                    <div className="flex flex-col flex-grow overflow-hidden">
-                      <span className="font-body-regular text-body-regular text-text-base truncate group-hover:text-spotify-green transition-colors">
-                        {song.title}
-                      </span>
-                      <span className="font-caption text-caption text-text-secondary truncate">
-                        {song.artist}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+              <div
+                className={`flex flex-col gap-xs bg-mid-dark rounded-[8px] p-xs${isSearchMode ? ' max-h-[240px] overflow-y-auto' : ''}`}
+                role="listbox"
+                aria-label="Kết quả tìm kiếm"
+              >
+                {songLoading ? (
+                  <div className="flex items-center justify-center py-md">
+                    <span className="material-symbols-outlined animate-spin text-text-secondary">refresh</span>
+                  </div>
+                ) : songList.length === 0 ? (
+                  <p className="text-center font-caption text-caption text-text-secondary py-md">Không tìm thấy bài hát</p>
+                ) : (
+                  <>
+                    {songList.map((song, idx) => (
+                      <button
+                        key={song.id}
+                        role="option"
+                        aria-selected={false}
+                        onClick={() => setSelectedSong(song)}
+                        className="flex items-center gap-md p-sm rounded-[4px] hover:bg-mid-card transition-colors w-full text-left group"
+                      >
+                        <span className="font-micro text-micro text-text-secondary w-4 text-center">
+                          {idx + 1}
+                        </span>
+                        <img
+                          src={song.coverUrl}
+                          alt={song.title}
+                          className="w-10 h-10 rounded-[4px] object-cover"
+                        />
+                        <div className="flex flex-col flex-grow overflow-hidden">
+                          <span className="font-body-regular text-body-regular text-text-base truncate group-hover:text-spotify-green transition-colors">
+                            {song.title}
+                          </span>
+                          <span className="font-caption text-caption text-text-secondary truncate">
+                            {song.artist}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+
+                    {/* Sentinel — triggers loadMore when scrolled into view */}
+                    {isSearchMode && (
+                      <div ref={sentinelRef} className="flex items-center justify-center py-xs">
+                        {loadingMore && (
+                          <span className="material-symbols-outlined animate-spin text-text-secondary text-[18px]">refresh</span>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             )}
           </div>
