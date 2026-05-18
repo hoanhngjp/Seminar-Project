@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { RecommendedSong } from '../../../types/domain';
 import { songUrl } from '../../../utils/slugify';
+import { usePlayerStore } from '../../../store/playerStore';
 
 interface RecommendationFeedRowProps {
   song: RecommendedSong;
@@ -18,6 +19,11 @@ function formatDuration(seconds: number): string {
 export default function RecommendationFeedRow({ song, index, onPlay }: RecommendationFeedRowProps) {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
+  const addToQueue = usePlayerStore((s) => s.addToQueue);
+
+  const handleAddToQueue = () => {
+    addToQueue({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl });
+  };
 
   return (
     <div
@@ -72,8 +78,19 @@ export default function RecommendationFeedRow({ song, index, onPlay }: Recommend
         </div>
       </div>
 
+      {/* Queue button — visible on hover */}
+      {hovered && (
+        <button
+          aria-label={`Thêm ${song.title} vào hàng chờ`}
+          onClick={handleAddToQueue}
+          className="w-8 h-8 flex items-center justify-center text-text-secondary hover:text-text-base transition-colors flex-shrink-0"
+        >
+          <span className="material-symbols-outlined text-[20px]">add_to_queue</span>
+        </button>
+      )}
+
       {/* Duration */}
-      <span className="text-text-secondary text-sm flex-shrink-0 tabular-nums">
+      <span className="text-text-secondary text-sm flex-shrink-0 tabular-nums w-10 text-right">
         {song.duration ? formatDuration(song.duration) : '—'}
       </span>
     </div>

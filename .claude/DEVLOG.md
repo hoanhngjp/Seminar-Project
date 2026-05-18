@@ -1,5 +1,21 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — Feature 3: Nút + Queue trong SongCard + RecommendationFeedRow] [DONE]
+
+**SongCard**
+- Thêm button `+` (icon `add`, 28×28px, bg đen/70) ở góc trên-phải của ảnh bìa, luôn có trong DOM nhưng `opacity-0`, cùng pattern hiển thị với play button khi group-hover.
+- Click gọi `addToQueue({ songId: song.id, title, artist, coverUrl })` từ `usePlayerStore` với `e.stopPropagation()` — không trigger navigate (cover area) hay onPlay.
+
+**RecommendationFeedRow**
+- Thêm button `add_to_queue` (icon Material Symbols) render có điều kiện khi `hovered === true`, đặt sau song info và trước cột duration.
+- Click gọi `addToQueue(...)` — không gọi `onPlay`.
+- Duration column thêm `w-10 text-right` để giữ alignment khi queue button xuất hiện/biến mất.
+
+**Mapping RecommendedSong → CurrentSong:** `{ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl }`
+
+**Tests:** +11 tests (5 SongCard + 6 RecommendationFeedRow). Dùng `usePlayerStore.setState/getState` trực tiếp — không mock store. 737/737 xanh.
+
+---
 [2026-05-18] [FEATURE — Feature 1+2: URL slug + Tách click navigate/play trong SongCard] [DONE]
 
 **Feature 1 — URL slug**

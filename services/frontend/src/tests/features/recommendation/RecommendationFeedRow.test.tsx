@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import RecommendationFeedRow from '../../../features/recommendation/components/RecommendationFeedRow';
 import type { RecommendedSong } from '../../../types/domain';
+import { usePlayerStore } from '../../../store/playerStore';
 
 const MOCK_SONG: RecommendedSong = {
   id: 'song-001',
@@ -28,6 +29,10 @@ const SONG_NO_REASON: RecommendedSong = {
   title: 'Muộn Rồi Mà Sao Còn',
   reason: { type: 'PREFERENCE', text: '' },
 };
+
+beforeEach(() => {
+  usePlayerStore.setState({ queue: [] });
+});
 
 function renderRow(song = MOCK_SONG, index = 0) {
   return render(
@@ -198,6 +203,59 @@ describe('RecommendationFeedRow', () => {
     );
     expect(screen.getByText('Lạc Trôi')).toBeInTheDocument();
     expect(screen.getByText('Chuyến Xe')).toBeInTheDocument();
+  });
+
+  // ── Feature 3: Queue button ───────────────────────────────────────────
+
+  it('queue button not shown before hover', () => {
+    renderRow();
+    expect(screen.queryByLabelText('Thêm Lạc Trôi vào hàng chờ')).not.toBeInTheDocument();
+  });
+
+  it('queue button shown on hover', () => {
+    renderRow();
+    fireEvent.mouseEnter(screen.getByRole('row'));
+    expect(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ')).toBeInTheDocument();
+  });
+
+  it('queue button hidden after mouse leaves', () => {
+    renderRow();
+    fireEvent.mouseEnter(screen.getByRole('row'));
+    fireEvent.mouseLeave(screen.getByRole('row'));
+    expect(screen.queryByLabelText('Thêm Lạc Trôi vào hàng chờ')).not.toBeInTheDocument();
+  });
+
+  it('clicking queue button adds song to store queue', () => {
+    renderRow();
+    fireEvent.mouseEnter(screen.getByRole('row'));
+    fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
+    const { queue } = usePlayerStore.getState();
+    expect(queue).toHaveLength(1);
+    expect(queue[0]).toMatchObject({
+      songId: MOCK_SONG.id,
+      title: MOCK_SONG.title,
+      artist: MOCK_SONG.artist,
+    });
+  });
+
+  it('clicking queue button does NOT call onPlay', () => {
+    const onPlay = vi.fn();
+    render(
+      <MemoryRouter>
+        <RecommendationFeedRow song={MOCK_SONG} index={0} onPlay={onPlay} />
+      </MemoryRouter>,
+    );
+    fireEvent.mouseEnter(screen.getByRole('row'));
+    fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
+    expect(onPlay).not.toHaveBeenCalled();
+  });
+
+  it('adding same song twice results in two queue entries', () => {
+    renderRow();
+    fireEvent.mouseEnter(screen.getByRole('row'));
+    fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
+    fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
+    expect(usePlayerStore.getState().queue).toHaveLength(2);
   });
 
   // ── Reason badge variants ─────────────────────────────────────────────

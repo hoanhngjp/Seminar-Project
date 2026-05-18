@@ -16,6 +16,14 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Feature 3 — Nút + Queue trong SongCard + RecommendationFeedRow (2026-05-18)**
+- `SongCard.tsx`: thêm button `+` (icon `add`) ở góc trên-phải ảnh bìa, xuất hiện khi hover. Click gọi `addToQueue()` từ `playerStore` với `e.stopPropagation()` — không trigger navigate hay play
+- `RecommendationFeedRow.tsx`: thêm button `add_to_queue` ở bên phải (trước cột duration), chỉ render khi `hovered === true`. Click gọi `addToQueue()` — không ảnh hưởng `onPlay`
+- Mapping: `{ songId: song.id, title, artist, coverUrl }` → `CurrentSong` shape của `playerStore`
+- `SongCard.test.tsx`: +5 tests — queue button render, addToQueue gọi đúng args, stopPropagation
+- `RecommendationFeedRow.test.tsx`: +6 tests — queue button theo hover state, addToQueue, không trigger onPlay
+- 737/737 tests xanh (+11 tests)
+
 **Feature 1+2 — URL slug + Tách click navigate/play trong SongCard (2026-05-18)**
 - `src/utils/slugify.ts`: `slugify()` xử lý đầy đủ dấu tiếng Việt (150+ ký tự precomposed), đ/Đ; `songUrl()` tạo URL dạng `/songs/lac-troi?id={uuid}`
 - `SongCard.tsx`: tách 2 interaction — click cover/title → navigate đến detail page; click play button overlay → `onPlay()` (không navigate). Thêm `useNavigate` + aria-label riêng cho từng vùng click

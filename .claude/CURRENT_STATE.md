@@ -197,6 +197,7 @@
 - [X] Bug fix: Recommendation Service — stale poisoned cache cho context=evening/morning/etc — thêm `has_metadata` guard trước cache write + flush 4 stale Redis keys (2026-05-18)
 - [X] Feature: CreateRoomModal — thay 8 mock songs bằng real API: recommendations (4 bài theo timeContext) khi default + search infinite scroll (IntersectionObserver + cursor pagination) khi gõ query — 18/18 tests xanh (2026-05-18)
 - [X] Feature 1+2: URL slug (`slugify.ts` + `songUrl()`) + tách click navigate/play trong SongCard — 726/726 tests xanh (+25 tests) (2026-05-18)
+- [X] Feature 3: Nút + Queue trong SongCard + RecommendationFeedRow — 737/737 tests xanh (+11 tests) (2026-05-18)
 - [X] Bug fix: POST /api/v1/parties 400 — BE accept Name?+SongId? optional, FE đổi firstSongId→songId (2026-05-18)
 - [X] Bug fix (Bug 7): SignalR "connection was stopped during negotiation" — bỏ React StrictMode khỏi main.tsx (2026-05-18)
 - [X] Rebuild frontend container — confirmed: negotiate 200, WebSocket 101, user ở trong phòng, không bị kick (2026-05-18)
@@ -218,9 +219,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Feature 1+2 ✅ Done. Tiếp theo: Feature 3+4
+- **Service/Task:** Feature 3 ✅ Done. Tiếp theo: Feature 4
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** Feature 1+2 (2026-05-18), 726/726 xanh
+- **Checkpoint gần nhất đã pass:** Feature 3 (2026-05-18), 737/737 xanh
 - **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
   1. ~~Fix Bug 8~~ ✓ Done
@@ -231,7 +232,7 @@
   6. ~~Bug 1~~ ✓ Done — BottomPlayerBar move ra App.tsx, không unmount khi navigate
   7. ~~Bug 2~~ ✓ Done — `autoPlay: true` trong HomePage + SearchPage
   8. ~~Feature 1+2~~ ✓ Done — URL slug (`slugify.ts` + `songUrl()`) + tách click navigate/play trong SongCard
-  9. Feature 3: Nút + Queue trong SongCard + RecommendationFeedRow
+  9. ~~Feature 3~~ ✓ Done — Nút + Queue trong SongCard + RecommendationFeedRow
   10. Feature 4: NowPlayingOverlay tabs wire real queue + related songs
   11. Demo script rehearsal 14 phút
   12. Pre-upload demo songs cho Creator account

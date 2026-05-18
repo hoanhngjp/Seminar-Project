@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import type { RecommendedSong } from '../../../types/domain';
 import { songUrl } from '../../../utils/slugify';
+import { usePlayerStore } from '../../../store/playerStore';
 
 interface SongCardProps {
   song: RecommendedSong;
@@ -9,8 +10,14 @@ interface SongCardProps {
 
 export default function SongCard({ song, onPlay }: SongCardProps) {
   const navigate = useNavigate();
+  const addToQueue = usePlayerStore((s) => s.addToQueue);
 
   const goToDetail = () => navigate(songUrl(song));
+
+  const handleAddToQueue = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToQueue({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl });
+  };
 
   return (
     <div
@@ -45,6 +52,15 @@ export default function SongCard({ song, onPlay }: SongCardProps) {
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
             play_arrow
           </span>
+        </button>
+
+        {/* Hover queue button — top-right corner */}
+        <button
+          aria-label={`Thêm ${song.title} vào hàng chờ`}
+          onClick={handleAddToQueue}
+          className="absolute top-2 right-2 w-7 h-7 bg-black/70 rounded-full flex items-center justify-center text-white opacity-0 transition-opacity duration-200 queue-button hover:bg-black/90"
+        >
+          <span className="material-symbols-outlined text-[16px]">add</span>
         </button>
       </div>
 

@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import SongCard from '../../../features/recommendation/components/SongCard';
 import type { RecommendedSong } from '../../../types/domain';
+import { usePlayerStore } from '../../../store/playerStore';
 
 const MOCK_SONG: RecommendedSong = {
   id: 'song-abc123',
@@ -37,7 +38,10 @@ function renderCard(song = MOCK_SONG, onPlay = vi.fn()) {
 }
 
 describe('SongCard', () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+    usePlayerStore.setState({ queue: [] });
+  });
 
   // ── Rendering ─────────────────────────────────────────────────────────
 
@@ -128,5 +132,49 @@ describe('SongCard', () => {
   it('cover area has correct aria-label', () => {
     renderCard();
     expect(screen.getByLabelText('Xem chi tiết Lạc Trôi')).toBeInTheDocument();
+  });
+
+  // ── Feature 3: Queue button ───────────────────────────────────────────
+
+  it('renders queue button with correct aria-label', () => {
+    renderCard();
+    expect(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ')).toBeInTheDocument();
+  });
+
+  it('clicking queue button adds song to store queue', () => {
+    renderCard();
+    fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
+    const { queue } = usePlayerStore.getState();
+    expect(queue).toHaveLength(1);
+    expect(queue[0]).toMatchObject({
+      songId: MOCK_SONG.id,
+      title: MOCK_SONG.title,
+      artist: MOCK_SONG.artist,
+    });
+  });
+
+  it('clicking queue button does NOT call onPlay and does NOT navigate', () => {
+    const onPlay = vi.fn();
+    renderCard(MOCK_SONG, onPlay);
+    fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
+    expect(onPlay).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('clicking queue button twice adds two entries to queue', () => {
+    renderCard();
+    fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
+    fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
+    expect(usePlayerStore.getState().queue).toHaveLength(2);
+  });
+
+  it('queue button propagation does not trigger cover navigation', () => {
+    renderCard();
+    const coverArea = screen.getByLabelText('Xem chi tiết Lạc Trôi');
+    const queueBtn = screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ');
+    // queue button is inside cover area — stopPropagation must prevent navigate
+    expect(coverArea).toContainElement(queueBtn);
+    fireEvent.click(queueBtn);
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
