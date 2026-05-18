@@ -1,5 +1,20 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [BUG FIX — Bug 1: Song mất khi navigate + Bug 2: Phải bấm play 2 lần] [DONE]
+
+**Bug 1 — BottomPlayerBar bị unmount mỗi khi chuyển trang**
+- Root cause: `BottomPlayerBar` nằm trong `AppShell`, mỗi page render `AppShell` riêng → khi navigate, `AppShell` cũ unmount → `BottomPlayerBar` mất toàn bộ local state (stream URL, currentTime, isPlaying, audioRef).
+- Fix: xóa `<BottomPlayerBar />` khỏi `AppShell.tsx`. Thêm vào `App.tsx` bên trong `<BrowserRouter>` nhưng sau `</AuthInitializer>` và ngoài `<Routes>` → mount 1 lần duy nhất suốt lifetime app.
+- `App.test.tsx`: mock `BottomPlayerBar` để ngăn API calls (`/streaming/*/url`) trong route tests.
+
+**Bug 2 — Phải bấm play 2 lần sau khi chọn bài**
+- Root cause: `playSong()` / `setSong()` trong `HomePage` và `SearchPage` không truyền `autoPlay: true`. `BottomPlayerBar` có logic auto-play khi `streamUrl` load nhưng chỉ kích hoạt khi `autoPlayRef.current === true`. Kết quả: stream URL load xong nhưng audio không tự phát — user phải bấm nút play thủ công.
+- Fix: `HomePage.handlePlay` đổi `setSong` → `playSong` + thêm `autoPlay: true`. `SearchPage.handlePlay` thêm `autoPlay: true`.
+- `HomePage.test.tsx`: rewrite 2 tests "mounts AudioPlayer / closes AudioPlayer" → verify store state (`currentSong.autoPlay === true`, `currentSong.songId`, `currentSong.artist`) thay vì check DOM `BottomPlayerBar` (vốn không còn render trong scope của `HomePage`).
+
+- 701/701 tests xanh
+
+---
 [2026-05-18] [BUG FIX — Bug 0: Duration 0:00 trong Recommendation Feed] [DONE]
 
 **Bug 0 — `durationSec: 0` trong API response dù DB có giá trị đúng**

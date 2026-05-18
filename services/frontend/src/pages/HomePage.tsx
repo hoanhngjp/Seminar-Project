@@ -127,7 +127,7 @@ function ContextFeedSection({
 export default function HomePage() {
   const navigate    = useNavigate();
   const accessToken = useAuthStore((s) => s.accessToken);
-  const setSong     = usePlayerStore((s) => s.setSong);
+  const playSong    = usePlayerStore((s) => s.playSong);
 
   const [selectedContext, setSelectedContext] = useState<TimeContext | 'none'>('none');
 
@@ -142,7 +142,7 @@ export default function HomePage() {
   const allItems = [...contextItems, ...trendingItems, ...preferenceItems];
 
   const handlePlay = (song: RecommendedSong) => {
-    setSong({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl });
+    playSong({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl, autoPlay: true });
   };
 
   if (!accessToken) return null;

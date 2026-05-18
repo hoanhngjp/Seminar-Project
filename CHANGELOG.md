@@ -16,6 +16,15 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**Bug 1 + Bug 2 — Song mất khi navigate + Phải bấm play 2 lần (2026-05-18)**
+- `AppShell.tsx`: xóa `<BottomPlayerBar />` ra khỏi layout component
+- `App.tsx`: thêm `<BottomPlayerBar />` bên trong `<BrowserRouter>` nhưng ngoài `<Routes>` → component mount 1 lần duy nhất, audio state (stream URL, currentTime, isPlaying) không bị reset khi navigate giữa các trang
+- `HomePage.tsx`: đổi `setSong` → `playSong` + thêm `autoPlay: true` → nhạc tự phát ngay sau khi stream URL load, không cần bấm play thêm lần nữa
+- `SearchPage.tsx`: thêm `autoPlay: true` vào `playSong` call trong `handlePlay`
+- `App.test.tsx`: mock `BottomPlayerBar` để tránh API calls trong route tests
+- `HomePage.test.tsx`: rewrite 2 playback tests → verify `playSong` được gọi với `autoPlay: true` + đúng metadata (thay vì check DOM presence của `BottomPlayerBar`)
+- 701/701 tests xanh
+
 **Bug 0 — Duration 0:00 trong Recommendation Feed (2026-05-18)**
 - `Music Service` (`BatchSongDto`): thêm `DurationSec` vào record → batch endpoint giờ trả `durationSec` trong JSON
 - `Music Service` (`SongService`): `GetSongsBatchAsync` pass `s.DurationSec` khi build `BatchSongDto`

@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import Sidebar from './Sidebar';
-import BottomPlayerBar from './BottomPlayerBar';
 import MobileNav from './MobileNav';
 
 interface AppShellProps {
@@ -27,9 +26,6 @@ export default function AppShell({ children, headerContent }: AppShellProps) {
         )}
         {children}
       </main>
-
-      {/* ── Fixed Bottom Player Bar (mobile: sits above MobileNav) ── */}
-      <BottomPlayerBar />
 
       {/* ── Mobile Bottom Nav (hidden on desktop) ── */}
       <MobileNav />

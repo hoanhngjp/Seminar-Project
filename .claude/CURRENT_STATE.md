@@ -202,6 +202,8 @@
 - [X] Listening Party end-to-end: tất cả 7 bugs đã fix và xác nhận (2026-05-18)
 - [X] Bug 8: BottomPlayerBar không auto-play / pause khi party room sync — `autoPlay?` flag + `pauseSignal` (2026-05-18)
 - [X] Bug 0: Duration 0:00 trong Recommendation Feed — pipeline fix (BatchSongDto → MusicBatchSong → SongCandidate → SongItem) + frontend map + flush Redis cache (2026-05-18)
+- [X] Bug 1: BottomPlayerBar move ra App.tsx — song không còn mất khi navigate (2026-05-18)
+- [X] Bug 2: `autoPlay: true` trong HomePage + SearchPage — nhạc tự phát sau khi chọn bài (2026-05-18)
 - [~] Bug A (= Bug 9): BottomPlayerBar seek bar không hiển thị — đã thử flex restructure (`flex items-center` + non-absolute track), cần verify browser thật
 - [X] Bug B: NowPlayingOverlay fill lag sau thumb — `isDragging` check trên transition (2026-05-18)
 - [X] Bug C: RoomPlayer duration mismatch — `audioDuration` store, BottomPlayerBar write, RoomPlayer dùng `effectiveDuration` (2026-05-18)
@@ -215,9 +217,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Bug 0 ✅ Done. Tiếp theo: Bug 1 (song mất khi navigate) + Bug 2 (phải bấm play 2 lần) + Features 1–4
+- **Service/Task:** Bug 1 + Bug 2 ✅ Done. Tiếp theo: Features 1–4
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** Bug B + Bug C fixed (2026-05-18), 701/701 xanh
+- **Checkpoint gần nhất đã pass:** Bug 1 + Bug 2 fixed (2026-05-18), 701/701 xanh
 - **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
   1. ~~Fix Bug 8~~ ✓ Done
@@ -225,8 +227,13 @@
   3. ~~Bug B~~ ✓ Done — NowPlayingOverlay fill sync với thumb
   4. ~~Bug C~~ ✓ Done — RoomPlayer dùng `effectiveDuration` từ audio thật
   5. ~~Fix Bug 10~~ ✓ Done
-  6. Demo script rehearsal 14 phút
-  7. Pre-upload demo songs cho Creator account
+  6. ~~Bug 1~~ ✓ Done — BottomPlayerBar move ra App.tsx, không unmount khi navigate
+  7. ~~Bug 2~~ ✓ Done — `autoPlay: true` trong HomePage + SearchPage
+  8. Feature 1+2: URL slug + tách click navigate/play
+  9. Feature 3: Nút + Queue trong SongCard + RecommendationFeedRow
+  10. Feature 4: NowPlayingOverlay tabs wire real queue + related songs
+  11. Demo script rehearsal 14 phút
+  12. Pre-upload demo songs cho Creator account
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

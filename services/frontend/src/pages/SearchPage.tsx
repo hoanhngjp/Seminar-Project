@@ -351,6 +351,7 @@ export default function SearchPage() {
         title:    r.name,
         artist:   r.artist ?? '',
         coverUrl: r.coverUrl,
+        autoPlay: true,
       });
     }
   }

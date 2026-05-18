@@ -13,7 +13,6 @@ import { getTimeContext } from '../../utils/time';
 // ---------------------------------------------------------------------------
 
 const RECOMMENDATIONS_URL = 'http://localhost:5000/api/v1/recommendations';
-const STREAMING_URL       = 'http://localhost:5000/api/v1/streaming/:songId/url';
 const NOTIFICATIONS_URL   = 'http://localhost:5000/api/v1/notifications/unread';
 const PROFILE_URL         = 'http://localhost:5000/api/v1/users/me';
 
@@ -191,47 +190,28 @@ describe('HomePage — song rendering', () => {
 // ---------------------------------------------------------------------------
 
 describe('HomePage — playback', () => {
-  it('mounts AudioPlayer when a song card is clicked', async () => {
-    server.use(
-      http.get(STREAMING_URL, () =>
-        HttpResponse.json({
-          success: true,
-          data: { url: 'http://cdn.example.com/song-001.mp3', expiresIn: 900 },
-          meta: { apiVersion: 'v1', requestId: 'x', timestamp: '' },
-          error: null,
-        }),
-      ),
-    );
-
+  it('calls playSong with autoPlay:true when a song card is clicked', async () => {
     renderAuthenticated();
     await waitFor(() => expect(screen.getByText('Lạc Trôi')).toBeInTheDocument());
 
     fireEvent.click(screen.getByLabelText('Phát Lạc Trôi — Sơn Tùng M-TP'));
-    expect(screen.getByLabelText('Đóng player')).toBeInTheDocument();
+
+    const { currentSong } = usePlayerStore.getState();
+    expect(currentSong?.songId).toBe('song-001');
+    expect(currentSong?.autoPlay).toBe(true);
   });
 
-  it('closes AudioPlayer when close button is clicked', async () => {
-    server.use(
-      http.get(STREAMING_URL, () =>
-        HttpResponse.json({
-          success: true,
-          data: { url: 'http://cdn.example.com/song-001.mp3', expiresIn: 900 },
-          meta: { apiVersion: 'v1', requestId: 'x', timestamp: '' },
-          error: null,
-        }),
-      ),
-    );
-
+  it('calls playSong with correct song metadata', async () => {
     renderAuthenticated();
-    await waitFor(() => expect(screen.getByText('Lạc Trôi')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Có Chắc Yêu Là Đây')).toBeInTheDocument());
 
-    fireEvent.click(screen.getByLabelText('Phát Lạc Trôi — Sơn Tùng M-TP'));
-    expect(screen.getByLabelText('Đóng player')).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText('Phát Có Chắc Yêu Là Đây — Sơn Tùng M-TP'));
 
-    fireEvent.click(screen.getByLabelText('Đóng player'));
-    await waitFor(() => {
-      expect(screen.queryByLabelText('Đóng player')).not.toBeInTheDocument();
-    });
+    const { currentSong } = usePlayerStore.getState();
+    expect(currentSong?.songId).toBe('song-002');
+    expect(currentSong?.title).toBe('Có Chắc Yêu Là Đây');
+    expect(currentSong?.artist).toBe('Sơn Tùng M-TP');
+    expect(currentSong?.autoPlay).toBe(true);
   });
 });
 

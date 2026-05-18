@@ -18,6 +18,7 @@ import ArtistPage from './pages/ArtistPage';
 import ProfilePage from './pages/ProfilePage';
 import PreferencesPage from './pages/PreferencesPage';
 import CreatorSongAnalyticsPage from './pages/creator/CreatorSongAnalyticsPage';
+import BottomPlayerBar from './components/layout/BottomPlayerBar';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 
@@ -48,6 +49,8 @@ function App() {
             <Route path="/dashboard/songs/:songId" element={<RequireAuth><CreatorSongAnalyticsPage /></RequireAuth>} />
           </Routes>
         </AuthInitializer>
+        {/* BottomPlayerBar lives outside <Routes> so audio state persists across navigation */}
+        <BottomPlayerBar />
       </BrowserRouter>
     </ToastProvider>
     </GoogleOAuthProvider>

@@ -21,6 +21,7 @@ vi.mock('../pages/ArtistPage', () => ({ default: () => <div data-testid="page-ar
 vi.mock('../pages/ProfilePage', () => ({ default: () => <div data-testid="page-profile">ProfilePage</div> }));
 vi.mock('../pages/PreferencesPage', () => ({ default: () => <div data-testid="page-preferences">PreferencesPage</div> }));
 vi.mock('../pages/creator/CreatorSongAnalyticsPage', () => ({ default: () => <div data-testid="page-song-analytics">CreatorSongAnalyticsPage</div> }));
+vi.mock('../components/layout/BottomPlayerBar', () => ({ default: () => null }));
 
 // AuthInitializer — passthrough in tests (no real API calls)
 vi.mock('../components/AuthInitializer', () => ({
