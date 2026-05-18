@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { RecommendedSong } from '../../../types/domain';
+import { songUrl } from '../../../utils/slugify';
 
 interface RecommendationFeedRowProps {
   song: RecommendedSong;
@@ -57,7 +58,7 @@ export default function RecommendationFeedRow({ song, index, onPlay }: Recommend
       <div className="flex-1 min-w-0">
         <button
           className="font-bold text-text-base text-sm truncate block hover:underline text-left w-full"
-          onClick={() => navigate(`/songs/${song.id}`)}
+          onClick={() => navigate(songUrl(song))}
         >
           {song.title}
         </button>

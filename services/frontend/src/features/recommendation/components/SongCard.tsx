@@ -1,4 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import type { RecommendedSong } from '../../../types/domain';
+import { songUrl } from '../../../utils/slugify';
 
 interface SongCardProps {
   song: RecommendedSong;
@@ -6,17 +8,23 @@ interface SongCardProps {
 }
 
 export default function SongCard({ song, onPlay }: SongCardProps) {
+  const navigate = useNavigate();
+
+  const goToDetail = () => navigate(songUrl(song));
+
   return (
     <div
-      role="button"
-      tabIndex={0}
-      aria-label={`Phát ${song.title} — ${song.artist}`}
-      onClick={() => onPlay(song)}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onPlay(song); }}
       className="w-[160px] flex-shrink-0 bg-dark-surface p-3 rounded-[6px] hover:bg-[#282828] transition-colors group relative cursor-pointer shadow-level-2 hover:shadow-level-3 snap-start"
     >
-      {/* Cover art */}
-      <div className="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden">
+      {/* Cover art — click navigates to detail */}
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label={`Xem chi tiết ${song.title}`}
+        onClick={goToDetail}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') goToDetail(); }}
+        className="relative w-full aspect-square mb-3 rounded shadow-md overflow-hidden"
+      >
         {song.coverUrl ? (
           <img
             src={song.coverUrl}
@@ -28,10 +36,10 @@ export default function SongCard({ song, onPlay }: SongCardProps) {
             <span className="material-symbols-outlined text-text-secondary text-[32px]">music_note</span>
           </div>
         )}
-        {/* Hover play button */}
+        {/* Hover play button — click plays without navigating */}
         <button
-          tabIndex={-1}
-          aria-hidden="true"
+          aria-label={`Phát ${song.title}`}
+          onClick={(e) => { e.stopPropagation(); onPlay(song); }}
           className="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center text-black shadow-xl opacity-0 transform translate-y-2 transition-all duration-300 play-button hover:scale-105 hover:bg-[#34e36a]"
         >
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -40,8 +48,13 @@ export default function SongCard({ song, onPlay }: SongCardProps) {
         </button>
       </div>
 
-      {/* Metadata */}
-      <h4 className="font-bold text-text-base truncate text-sm">{song.title}</h4>
+      {/* Title — click navigates to detail */}
+      <button
+        onClick={goToDetail}
+        className="font-bold text-text-base truncate text-sm text-left w-full hover:underline block"
+      >
+        {song.title}
+      </button>
       <p className="text-text-secondary truncate text-xs mt-1">{song.artist}</p>
 
       {/* Explain badge — only when present */}

@@ -14,6 +14,17 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Added
+
+**Feature 1+2 — URL slug + Tách click navigate/play trong SongCard (2026-05-18)**
+- `src/utils/slugify.ts`: `slugify()` xử lý đầy đủ dấu tiếng Việt (150+ ký tự precomposed), đ/Đ; `songUrl()` tạo URL dạng `/songs/lac-troi?id={uuid}`
+- `SongCard.tsx`: tách 2 interaction — click cover/title → navigate đến detail page; click play button overlay → `onPlay()` (không navigate). Thêm `useNavigate` + aria-label riêng cho từng vùng click
+- `RecommendationFeedRow.tsx`: dùng `songUrl()` khi navigate từ title button → URL human-readable
+- `SongDetailPage.tsx`: đọc `useSearchParams().get('id')` trước, fallback về `useParams().songId` (backward compat với link cũ `/songs/{uuid}`)
+- `SongCard.test.tsx`: 13 test cases mới — verify play vs navigate separation, slug URL format
+- `slugify.test.ts`: 12 test cases — slugify() + songUrl() đầy đủ cases tiếng Việt
+- 726/726 tests xanh (+25 tests)
+
 ### Fixed
 
 **Bug 1 + Bug 2 — Song mất khi navigate + Phải bấm play 2 lần (2026-05-18)**

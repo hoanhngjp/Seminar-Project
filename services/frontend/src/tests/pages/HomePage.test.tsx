@@ -194,7 +194,7 @@ describe('HomePage — playback', () => {
     renderAuthenticated();
     await waitFor(() => expect(screen.getByText('Lạc Trôi')).toBeInTheDocument());
 
-    fireEvent.click(screen.getByLabelText('Phát Lạc Trôi — Sơn Tùng M-TP'));
+    fireEvent.click(screen.getByLabelText('Phát Lạc Trôi'));
 
     const { currentSong } = usePlayerStore.getState();
     expect(currentSong?.songId).toBe('song-001');
@@ -205,7 +205,7 @@ describe('HomePage — playback', () => {
     renderAuthenticated();
     await waitFor(() => expect(screen.getByText('Có Chắc Yêu Là Đây')).toBeInTheDocument());
 
-    fireEvent.click(screen.getByLabelText('Phát Có Chắc Yêu Là Đây — Sơn Tùng M-TP'));
+    fireEvent.click(screen.getByLabelText('Phát Có Chắc Yêu Là Đây'));
 
     const { currentSong } = usePlayerStore.getState();
     expect(currentSong?.songId).toBe('song-002');

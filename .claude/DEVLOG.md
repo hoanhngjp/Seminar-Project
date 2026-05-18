@@ -1,5 +1,20 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — Feature 1+2: URL slug + Tách click navigate/play trong SongCard] [DONE]
+
+**Feature 1 — URL slug**
+- Tạo `src/utils/slugify.ts`: `slugify()` map 150+ precomposed Vietnamese chars → ASCII, xử lý đ/Đ riêng. `songUrl(song)` trả `/songs/{slug}?id={uuid}`.
+- `SongDetailPage`: thêm `useSearchParams`, đọc `?id=` → `useParams().songId` fallback. Backward compat: link cũ `/songs/{uuid}` vẫn hoạt động.
+- `RecommendationFeedRow`: navigate dùng `songUrl()`.
+
+**Feature 2 — Tách click navigate/play**
+- `SongCard` (trước): toàn bộ card là `role="button"` → click bất kỳ chỗ nào đều play.
+- `SongCard` (sau): cover + title → navigate (`goToDetail`); play button overlay → `onPlay(song)` với `e.stopPropagation()`. Mỗi vùng có `aria-label` riêng.
+- `HomePage.test.tsx`: sửa 2 test dùng aria-label cũ `'Phát ... — ...'` → `'Phát ...'` (bỏ artist).
+
+- Tests: 726/726 xanh (+25 tests: 13 SongCard + 12 slugify)
+
+---
 [2026-05-18] [BUG FIX — Bug 1: Song mất khi navigate + Bug 2: Phải bấm play 2 lần] [DONE]
 
 **Bug 1 — BottomPlayerBar bị unmount mỗi khi chuyển trang**

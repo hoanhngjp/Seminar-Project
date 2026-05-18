@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom';
 import AppShell from '../components/layout/AppShell';
 import SongCard from '../features/recommendation/components/SongCard';
 import { usePlayerStore } from '../store/playerStore';
@@ -20,7 +20,11 @@ function formatCount(n: number): string {
 }
 
 export default function SongDetailPage() {
-  const { songId } = useParams<{ songId: string }>();
+  const { songId: slugParam } = useParams<{ songId: string }>();
+  const [searchParams] = useSearchParams();
+  // When navigated via songUrl(), the real UUID is in ?id=; slugParam is the human-readable slug.
+  // Fallback to slugParam for direct /songs/{uuid} links (backward compat).
+  const songId = searchParams.get('id') ?? slugParam;
   const navigate = useNavigate();
   const playSong = usePlayerStore((s) => s.playSong);
   const addToQueue = usePlayerStore((s) => s.addToQueue);
