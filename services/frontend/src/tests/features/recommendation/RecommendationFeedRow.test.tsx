@@ -5,6 +5,11 @@ import RecommendationFeedRow from '../../../features/recommendation/components/R
 import type { RecommendedSong } from '../../../types/domain';
 import { usePlayerStore } from '../../../store/playerStore';
 
+const mockShowToast = vi.fn();
+vi.mock('../../../contexts/ToastContext', () => ({
+  useToast: () => ({ show: mockShowToast, hide: vi.fn() }),
+}));
+
 const MOCK_SONG: RecommendedSong = {
   id: 'song-001',
   title: 'Lạc Trôi',
@@ -225,17 +230,19 @@ describe('RecommendationFeedRow', () => {
     expect(screen.queryByLabelText('Thêm Lạc Trôi vào hàng chờ')).not.toBeInTheDocument();
   });
 
-  it('clicking queue button adds song to store queue', () => {
+  it('clicking queue button adds song — sets currentSong when player is empty', () => {
     renderRow();
     fireEvent.mouseEnter(screen.getByRole('row'));
     fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
-    const { queue } = usePlayerStore.getState();
-    expect(queue).toHaveLength(1);
-    expect(queue[0]).toMatchObject({
+    const { currentSong, queue } = usePlayerStore.getState();
+    // First add with no active song → song becomes currentSong (bar visible, not auto-playing)
+    expect(currentSong).toMatchObject({
       songId: MOCK_SONG.id,
       title: MOCK_SONG.title,
       artist: MOCK_SONG.artist,
+      autoPlay: false,
     });
+    expect(queue).toHaveLength(0);
   });
 
   it('clicking queue button does NOT call onPlay', () => {
@@ -250,12 +257,13 @@ describe('RecommendationFeedRow', () => {
     expect(onPlay).not.toHaveBeenCalled();
   });
 
-  it('adding same song twice is deduped — queue stays at 1 entry', () => {
+  it('adding same song twice is deduped — song ends up in currentSong only', () => {
     renderRow();
     fireEvent.mouseEnter(screen.getByRole('row'));
     fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
     fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
-    expect(usePlayerStore.getState().queue).toHaveLength(1);
+    expect(usePlayerStore.getState().currentSong?.songId).toBe(MOCK_SONG.id);
+    expect(usePlayerStore.getState().queue).toHaveLength(0);
   });
 
   // ── Reason badge variants ─────────────────────────────────────────────

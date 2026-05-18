@@ -29,6 +29,11 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
+const mockShowToast = vi.fn();
+vi.mock('../../../contexts/ToastContext', () => ({
+  useToast: () => ({ show: mockShowToast, hide: vi.fn() }),
+}));
+
 function renderCard(song = MOCK_SONG, onPlay = vi.fn()) {
   return render(
     <MemoryRouter>
@@ -141,16 +146,18 @@ describe('SongCard', () => {
     expect(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ')).toBeInTheDocument();
   });
 
-  it('clicking queue button adds song to store queue', () => {
+  it('clicking queue button adds song — sets currentSong when player is empty', () => {
     renderCard();
     fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
-    const { queue } = usePlayerStore.getState();
-    expect(queue).toHaveLength(1);
-    expect(queue[0]).toMatchObject({
+    const { currentSong, queue } = usePlayerStore.getState();
+    // First add with no active song → song becomes currentSong (bar visible, not auto-playing)
+    expect(currentSong).toMatchObject({
       songId: MOCK_SONG.id,
       title: MOCK_SONG.title,
       artist: MOCK_SONG.artist,
+      autoPlay: false,
     });
+    expect(queue).toHaveLength(0);
   });
 
   it('clicking queue button does NOT call onPlay and does NOT navigate', () => {
@@ -161,11 +168,13 @@ describe('SongCard', () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  it('clicking queue button twice is deduped — queue stays at 1 entry', () => {
+  it('clicking queue button twice is deduped — song ends up in currentSong only', () => {
     renderCard();
     fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
     fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
-    expect(usePlayerStore.getState().queue).toHaveLength(1);
+    // First click → currentSong; second click → duplicate toast, no change
+    expect(usePlayerStore.getState().currentSong?.songId).toBe(MOCK_SONG.id);
+    expect(usePlayerStore.getState().queue).toHaveLength(0);
   });
 
   it('queue button propagation does not trigger cover navigation', () => {

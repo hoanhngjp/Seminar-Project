@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import type { RecommendedSong } from '../../../types/domain';
 import { songUrl } from '../../../utils/slugify';
 import { usePlayerStore } from '../../../store/playerStore';
+import { useToast } from '../../../contexts/ToastContext';
 
 interface SongCardProps {
   song: RecommendedSong;
@@ -9,14 +10,25 @@ interface SongCardProps {
 }
 
 export default function SongCard({ song, onPlay }: SongCardProps) {
-  const navigate = useNavigate();
-  const addToQueue = usePlayerStore((s) => s.addToQueue);
+  const navigate    = useNavigate();
+  const addToQueue  = usePlayerStore((s) => s.addToQueue);
+  const currentSong = usePlayerStore((s) => s.currentSong);
+  const queue       = usePlayerStore((s) => s.queue);
+  const { show }    = useToast();
 
   const goToDetail = () => navigate(songUrl(song));
 
   const handleAddToQueue = (e: React.MouseEvent) => {
     e.stopPropagation();
+    const isDuplicate =
+      currentSong?.songId === song.id ||
+      queue.some((q) => q.songId === song.id);
+    if (isDuplicate) {
+      show(`"${song.title}" đã có trong hàng chờ`, 'info');
+      return;
+    }
     addToQueue({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl });
+    show(`Đã thêm "${song.title}" vào hàng chờ`, 'success');
   };
 
   return (

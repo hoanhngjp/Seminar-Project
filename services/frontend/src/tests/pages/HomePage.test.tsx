@@ -8,6 +8,11 @@ import { useAuthStore } from '../../store/authStore';
 import { usePlayerStore } from '../../store/playerStore';
 import { getTimeContext } from '../../utils/time';
 
+const mockShowToast = vi.fn();
+vi.mock('../../contexts/ToastContext', () => ({
+  useToast: () => ({ show: mockShowToast, hide: vi.fn() }),
+}));
+
 // ---------------------------------------------------------------------------
 // URLs
 // ---------------------------------------------------------------------------

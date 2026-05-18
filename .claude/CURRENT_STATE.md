@@ -201,6 +201,7 @@
 - [X] Feature 4: NowPlayingOverlay tabs — queue tab wire real playerStore queue + related tab fetch by artist (searchContent) — 750/750 tests xanh (+13 tests) (2026-05-18)
 - [X] Player Enhancements: dedup queue, skip prev/next, shuffle/repeat, click-to-play queue (QueueDrawer + NowPlayingOverlay), history-based playPrev, onEnded auto-advance — 772/772 tests xanh (+22 tests) (2026-05-18)
 - [X] QueueDrawer drag-and-drop reorder (HTML5 DnD, line indicator, reorderQueue store action) + SearchPage + Queue button (SongsList + RelatedSongsGrid) — 790/790 tests xanh (+18 tests) (2026-05-18)
+- [X] BottomPlayerBar hiện khi thêm vào queue (autoPlay: false) + Toast notification khi add/duplicate — 790/790 tests xanh (2026-05-18)
 - [X] Bug fix: POST /api/v1/parties 400 — BE accept Name?+SongId? optional, FE đổi firstSongId→songId (2026-05-18)
 - [X] Bug fix (Bug 7): SignalR "connection was stopped during negotiation" — bỏ React StrictMode khỏi main.tsx (2026-05-18)
 - [X] Rebuild frontend container — confirmed: negotiate 200, WebSocket 101, user ở trong phòng, không bị kick (2026-05-18)
@@ -222,7 +223,7 @@
 
 ## Đang làm
 
-- **Service/Task:** QueueDrawer DnD + SearchPage Queue ✅ Done. Tiếp theo: Demo prep
+- **Service/Task:** BottomPlayerBar queue visibility + Toast ✅ Done. Tiếp theo: Demo prep
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
 - **Checkpoint gần nhất đã pass:** QueueDrawer DnD + SearchPage Queue (2026-05-18), 790/790 xanh
 - **Ngày làm việc gần nhất:** 2026-05-18

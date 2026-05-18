@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { RecommendedSong } from '../../../types/domain';
 import { songUrl } from '../../../utils/slugify';
 import { usePlayerStore } from '../../../store/playerStore';
+import { useToast } from '../../../contexts/ToastContext';
 
 interface RecommendationFeedRowProps {
   song: RecommendedSong;
@@ -17,12 +18,23 @@ function formatDuration(seconds: number): string {
 }
 
 export default function RecommendationFeedRow({ song, index, onPlay }: RecommendationFeedRowProps) {
-  const navigate = useNavigate();
+  const navigate    = useNavigate();
   const [hovered, setHovered] = useState(false);
-  const addToQueue = usePlayerStore((s) => s.addToQueue);
+  const addToQueue  = usePlayerStore((s) => s.addToQueue);
+  const currentSong = usePlayerStore((s) => s.currentSong);
+  const queue       = usePlayerStore((s) => s.queue);
+  const { show }    = useToast();
 
   const handleAddToQueue = () => {
+    const isDuplicate =
+      currentSong?.songId === song.id ||
+      queue.some((q) => q.songId === song.id);
+    if (isDuplicate) {
+      show(`"${song.title}" đã có trong hàng chờ`, 'info');
+      return;
+    }
     addToQueue({ songId: song.id, title: song.title, artist: song.artist, coverUrl: song.coverUrl });
+    show(`Đã thêm "${song.title}" vào hàng chờ`, 'success');
   };
 
   return (

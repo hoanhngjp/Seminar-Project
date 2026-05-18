@@ -188,18 +188,21 @@ describe('QueueDrawer clear all', () => {
 // ── playerStore queue actions ──────────────────────────────────────────────
 
 describe('playerStore queue actions', () => {
-  it('addToQueue appends song to queue', () => {
+  it('addToQueue — first song becomes currentSong, subsequent songs go to queue', () => {
     usePlayerStore.getState().addToQueue(SONG_A);
     usePlayerStore.getState().addToQueue(SONG_B);
-    expect(usePlayerStore.getState().queue).toHaveLength(2);
-    expect(usePlayerStore.getState().queue[0].songId).toBe(SONG_A.songId);
-    expect(usePlayerStore.getState().queue[1].songId).toBe(SONG_B.songId);
+    // SONG_A → currentSong (bar visible, autoPlay: false), SONG_B → queue[0]
+    expect(usePlayerStore.getState().currentSong?.songId).toBe(SONG_A.songId);
+    expect(usePlayerStore.getState().queue).toHaveLength(1);
+    expect(usePlayerStore.getState().queue[0].songId).toBe(SONG_B.songId);
   });
 
-  it('addToQueue deduplicates — same songId is not added twice', () => {
+  it('addToQueue deduplicates — same songId as currentSong is not added to queue', () => {
     usePlayerStore.getState().addToQueue(SONG_A);
     usePlayerStore.getState().addToQueue(SONG_A);
-    expect(usePlayerStore.getState().queue).toHaveLength(1);
+    // First → currentSong; second → duplicate, ignored
+    expect(usePlayerStore.getState().currentSong?.songId).toBe(SONG_A.songId);
+    expect(usePlayerStore.getState().queue).toHaveLength(0);
   });
 
   it('addToQueue ignores song that is currently playing', () => {

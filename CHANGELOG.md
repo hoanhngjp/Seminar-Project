@@ -16,6 +16,14 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**BottomPlayerBar hiện khi thêm vào queue + Toast notification (2026-05-18)**
+- `playerStore.addToQueue`: khi player trống (`currentSong === null`), bài đầu tiên được thêm vào queue sẽ set `currentSong` với `autoPlay: false` — BottomPlayerBar hiển thị ngay mà không tự phát nhạc
+- Toast "Đã thêm "[tên]" vào hàng chờ" (`success`, xanh lá) khi thêm thành công
+- Toast ""[tên]" đã có trong hàng chờ" (`info`, xanh dương) khi bài đã có (kiểm tra cả `currentSong` lẫn `queue`)
+- Áp dụng cho: `SongCard`, `RecommendationFeedRow`, `SearchPage` (song row + related card)
+- Toast auto-dismiss sau 4 giây, có nút X đóng sớm
+- 790/790 tests xanh (updated 9 tests phản ánh behavior mới)
+
 **Drag-and-drop reorder trong QueueDrawer + Nút + Queue trên SearchPage (2026-05-18)**
 - **QueueDrawer — drag-and-drop reorder**: `playerStore.reorderQueue(from, to)` action mới; mỗi `QueueItem` có `draggable` + HTML5 drag events; line indicator màu `spotify-green` xuất hiện giữa các bài để chỉ vị trí drop; item đang kéo có `opacity-40`; `cursor-grab/grabbing` trên drag handle; drop zone cuối danh sách để move xuống cuối
 - **SearchPage `SongsList` — + Queue**: nút `add_to_queue` icon bên phải cột duration, `opacity-0 group-hover:opacity-100`, không trigger play

@@ -96,7 +96,10 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     if (!song.songId) return s;
     if (s.currentSong?.songId === song.songId) return s;
     if (s.queue.some((q) => q.songId === song.songId)) return s;
-    return { queue: [...s.queue, song] };
+    // If nothing is playing yet, show the bar without auto-playing
+    const nextCurrent = s.currentSong ?? { ...song, autoPlay: false };
+    const nextQueue   = s.currentSong ? [...s.queue, song] : s.queue;
+    return { currentSong: nextCurrent, queue: nextQueue };
   }),
 
   removeFromQueue: (index) =>

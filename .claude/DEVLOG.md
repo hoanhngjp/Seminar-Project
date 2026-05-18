@@ -1,5 +1,24 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — BottomPlayerBar hiện khi thêm queue + Toast notification] [DONE]
+
+**playerStore.ts**
+- `addToQueue`: khi `currentSong === null`, set `currentSong = { ...song, autoPlay: false }` thay vì chỉ push vào `queue`. `nextQueue` chỉ nhận song nếu `currentSong` đã có sẵn.
+- Hệ quả: lần đầu thêm bài → bar hiển thị, không phát. Lần thứ 2+ → vào queue bình thường.
+
+**SongCard.tsx / RecommendationFeedRow.tsx / SearchPage.tsx**
+- Import `useToast` từ `ToastContext`
+- Mỗi component tự kiểm tra duplicate trước khi gọi store: `currentSong?.songId === song.id || queue.some(q => q.songId === song.id)`
+- Nếu duplicate → `show("[tên]" đã có trong hàng chờ", 'info')`
+- Nếu mới → gọi `addToQueue()` rồi `show("Đã thêm "[tên]" vào hàng chờ", 'success')`
+
+**Test updates (9 tests cập nhật)**
+- `SongCard.test.tsx`, `RecommendationFeedRow.test.tsx`: "queue button adds song" → verify `currentSong` thay vì `queue[0]`; "dedup" → expect `queue.length === 0`
+- `QueueDrawer.test.tsx`: "addToQueue appends" → SONG_A vào currentSong, SONG_B vào queue[0]; "dedup" → queue.length 0
+- `SearchPage.test.tsx`: 3 tests → expect `currentSong.autoPlay === false` thay vì `queue.length === 1`
+- 5 test files thêm `vi.mock('../contexts/ToastContext', ...)` để mock `useToast`
+
+---
 [2026-05-18] [FEATURE — QueueDrawer drag-and-drop reorder + SearchPage + Queue buttons] [DONE]
 
 **playerStore.ts**

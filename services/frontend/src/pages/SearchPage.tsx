@@ -5,6 +5,7 @@ import EmptyState from '../components/ui/EmptyState';
 import ArtistCard from '../features/search/components/ArtistCard';
 import { useSearch } from '../features/search/hooks/useSearch';
 import { usePlayerStore } from '../store/playerStore';
+import { useToast } from '../contexts/ToastContext';
 import type { SearchResult } from '../types/domain';
 
 // ── Genre data (Stitch design) ────────────────────────────────────────────────
@@ -348,6 +349,9 @@ export default function SearchPage() {
   const { query, setQuery, results, loading, clearQuery } = useSearch();
   const playSong    = usePlayerStore((s) => s.playSong);
   const addToQueue  = usePlayerStore((s) => s.addToQueue);
+  const currentSong = usePlayerStore((s) => s.currentSong);
+  const queue       = usePlayerStore((s) => s.queue);
+  const { show }    = useToast();
 
   const [filterTab, setFilterTab] = useState<FilterTab>('all');
 
@@ -378,9 +382,16 @@ export default function SearchPage() {
   }
 
   function handleAddToQueue(r: SearchResult) {
-    if (r.type === 'song') {
-      addToQueue({ songId: r.id, title: r.name, artist: r.artist ?? '', coverUrl: r.coverUrl });
+    if (r.type !== 'song') return;
+    const isDuplicate =
+      currentSong?.songId === r.id ||
+      queue.some((q) => q.songId === r.id);
+    if (isDuplicate) {
+      show(`"${r.name}" đã có trong hàng chờ`, 'info');
+      return;
     }
+    addToQueue({ songId: r.id, title: r.name, artist: r.artist ?? '', coverUrl: r.coverUrl });
+    show(`Đã thêm "${r.name}" vào hàng chờ`, 'success');
   }
 
   // Reset filter tab when query changes
