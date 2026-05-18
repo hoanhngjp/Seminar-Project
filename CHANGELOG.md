@@ -14,6 +14,16 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Fixed
+
+**Listening Party — member names không hiển thị (2026-05-18)**
+- Root cause: `User.DisplayName` mặc định `""` (empty string) trong DB; `??` operator không fallback cho empty string → tên member render trống trong MemberList
+- `InternalUsersController` (User Service): fallback sang `Username` khi `DisplayName` trống — tên luôn có giá trị tại source
+- `PartyService` (Listening Party): dùng `IsNullOrWhiteSpace` thay `??` cho tất cả DisplayName checks
+- `PartyHub`: fallback cuối là `"Người dùng"` thay vì raw userId
+- Frontend `authStore`: `displayName` fallback sang `username` nếu displayName trống
+- `MemberList`: hiển thị `"Me"` cho người dùng hiện tại, tên thật cho các thành viên khác
+
 ### Added
 
 **BottomPlayerBar hiện khi thêm vào queue + Toast notification (2026-05-18)**

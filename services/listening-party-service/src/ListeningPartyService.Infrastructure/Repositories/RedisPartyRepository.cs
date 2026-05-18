@@ -92,4 +92,29 @@ public class RedisPartyRepository(IDatabase db, ILogger<RedisPartyRepository> lo
         });
         logger.LogDebug("Room deleted from Redis: roomId={RoomId}", roomId);
     }
+
+    public async Task StoreMemberProfileAsync(string roomId, string userId, string displayName, string? avatarUrl, CancellationToken ct = default)
+    {
+        var key = $"party:memberprofile:{roomId}:{userId}";
+        await db.HashSetAsync(key, new HashEntry[]
+        {
+            new("name",      displayName),
+            new("avatarUrl", avatarUrl ?? ""),
+        });
+        await db.KeyExpireAsync(key, RoomTtl);
+    }
+
+    public async Task<(string? DisplayName, string? AvatarUrl)> GetMemberProfileAsync(string roomId, string userId, CancellationToken ct = default)
+    {
+        var key  = $"party:memberprofile:{roomId}:{userId}";
+        var hash = await db.HashGetAllAsync(key);
+        if (hash.Length == 0) return (null, null);
+
+        var dict = hash.ToDictionary(h => h.Name.ToString(), h => h.Value.ToString());
+        var name   = dict.GetValueOrDefault("name");
+        var avatar = dict.GetValueOrDefault("avatarUrl");
+        return (
+            string.IsNullOrEmpty(name)   ? null : name,
+            string.IsNullOrEmpty(avatar) ? null : avatar);
+    }
 }

@@ -43,6 +43,15 @@ public class InternalUsersController(IUserService userService) : ControllerBase
         });
     }
 
+    // GET /internal/users/{id}/profile — for Listening Party Service (preview card + member list)
+    [HttpGet("{id:guid}/profile")]
+    public async Task<IActionResult> GetProfile(Guid id, CancellationToken ct)
+    {
+        var (profile, _) = await userService.GetMyProfileAsync(id, ct);
+        var displayName = string.IsNullOrWhiteSpace(profile.DisplayName) ? profile.Username : profile.DisplayName;
+        return Ok(new UserMiniProfileDto(profile.Id, displayName, profile.AvatarUrl));
+    }
+
     // POST /internal/users/verify-credentials — for Auth Service login flow
     [HttpPost("verify-credentials")]
     public async Task<IActionResult> VerifyCredentials(

@@ -1,5 +1,6 @@
 using ListeningPartyService.Application.Interfaces;
 using ListeningPartyService.Application.Services;
+using ListeningPartyService.Infrastructure.HttpClients;
 using ListeningPartyService.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,26 @@ public static class DependencyInjection
 
         services.AddScoped<IPartyRepository, RedisPartyRepository>();
         services.AddScoped<IPartyService, PartyService>();
+
+        var userServiceBaseUrl = configuration["UserService:BaseUrl"]
+            ?? configuration["USER_SERVICE_BASE_URL"]
+            ?? "http://user-service:80";
+
+        var musicServiceBaseUrl = configuration["MusicService:BaseUrl"]
+            ?? configuration["MUSIC_SERVICE_BASE_URL"]
+            ?? "http://music-service:80";
+
+        services.AddHttpClient<IUserServiceClient, UserServiceClient>(c =>
+        {
+            c.BaseAddress = new Uri(userServiceBaseUrl);
+            c.Timeout = TimeSpan.FromMilliseconds(500);
+        });
+
+        services.AddHttpClient<IMusicServiceClient, MusicServiceClient>(c =>
+        {
+            c.BaseAddress = new Uri(musicServiceBaseUrl);
+            c.Timeout = TimeSpan.FromMilliseconds(500);
+        });
 
         return services;
     }

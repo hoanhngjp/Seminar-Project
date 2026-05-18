@@ -54,10 +54,20 @@ export interface Notification {
 export interface Party {
   roomId: string;
   joinCode: string;
+  name: string;
   hostId: string;
   currentSongId: string | null;
   playbackPositionSec: number;
   members: PartyMember[];
+}
+
+export interface PartyPreview {
+  roomId: string;
+  name: string;
+  memberCount: number;
+  currentSongTitle: string | null;
+  hostAvatarUrl: string | null;
+  hostDisplayName: string;
 }
 
 export interface PartyMember {

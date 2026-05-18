@@ -1,5 +1,20 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [BUG FIX — Listening Party member names không hiển thị] [DONE]
+
+**Root cause:** `User.DisplayName` defaults to `""` (empty string) trong DB. `??` operator chỉ fallback khi `null`, không fallback cho `""` → member name render trống.
+
+**Fix đa tầng:**
+- `InternalUsersController.cs` (User Service): nếu `DisplayName` trống → fallback sang `Username` tại source
+- `PartyService.cs` (Listening Party): đổi `??` → `string.IsNullOrWhiteSpace()` cho tất cả DisplayName checks
+- `PartyHub.cs`: fallback cuối là `"Người dùng"` thay vì userId raw khi User Service trả empty name
+- `authService.ts` + `AuthInitializer.tsx` (FE): `displayName = displayName?.trim() || username?.trim() || null` — authStore luôn có giá trị nếu username có
+- `usePartyWebSocket.ts`: trim trước khi check `if (displayName?.trim())`
+- `MemberList.tsx`: hiển thị `"Me"` cho current user, tên thật cho người khác
+
+**Cần rebuild:** `docker-compose up -d --build user-service listening-party-service`
+
+---
 [2026-05-18] [FEATURE — BottomPlayerBar hiện khi thêm queue + Toast notification] [DONE]
 
 **playerStore.ts**

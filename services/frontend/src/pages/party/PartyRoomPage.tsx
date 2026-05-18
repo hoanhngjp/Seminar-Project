@@ -43,7 +43,7 @@ export default function PartyRoomPage() {
 
   const hostId   = initialParty?.hostId ?? '';
   const joinCode = initialParty?.joinCode ?? '';
-  const roomName = (initialParty as (Party & { name?: string }) | undefined)?.name ?? 'Phòng nghe nhạc';
+  const roomName = initialParty?.name ?? 'Phòng nghe nhạc';
   const isHost   = !!currentUserId && currentUserId === hostId;
 
   // Load song details whenever currentSongId changes

@@ -12,7 +12,14 @@ export interface MeData {
   username: string;
   role: Role;
   hasCompletedOnboarding: boolean;
+  displayName?: string;
+  avatarUrl?: string | null;
 }
+
+const resolveDisplayName = (me: MeData): string | null => {
+  const name = me.displayName?.trim() || me.username?.trim();
+  return name || null;
+};
 
 const fetchMe = async (): Promise<{ accessToken: string; userId: string; role: Role; hasCompletedOnboarding: boolean }> => {
   throw new Error('fetchMe must be called after setAccessToken');
@@ -21,11 +28,14 @@ const fetchMe = async (): Promise<{ accessToken: string; userId: string; role: R
 const fetchMeWithToken = async (accessToken: string) => {
   setAccessToken(accessToken);
   const meRes = await apiClient.get<{ success: boolean; data: MeData }>('/api/v1/users/me');
+  const me = meRes.data.data;
   return {
     accessToken,
-    userId: meRes.data.data.id,
-    role: meRes.data.data.role,
-    hasCompletedOnboarding: meRes.data.data.hasCompletedOnboarding,
+    userId:               me.id,
+    role:                 me.role,
+    hasCompletedOnboarding: me.hasCompletedOnboarding,
+    displayName:          resolveDisplayName(me),
+    avatarUrl:            me.avatarUrl ?? null,
   };
 };
 

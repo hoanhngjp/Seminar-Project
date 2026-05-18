@@ -6,7 +6,11 @@ using Microsoft.Extensions.Logging;
 
 namespace ListeningPartyService.Application.Services;
 
-public class PartyService(IPartyRepository repository, ILogger<PartyService> logger) : IPartyService
+public class PartyService(
+    IPartyRepository repository,
+    IUserServiceClient userServiceClient,
+    IMusicServiceClient musicServiceClient,
+    ILogger<PartyService> logger) : IPartyService
 {
     public async Task<CreatePartyResponse> CreatePartyAsync(string hostId, string? name, string? songId, CancellationToken ct = default)
     {
@@ -28,10 +32,17 @@ public class PartyService(IPartyRepository repository, ILogger<PartyService> log
         await repository.CreateAsync(room, ct);
         await repository.AddMemberAsync(roomId, hostId, ct);
 
+        var hostProfile = await userServiceClient.GetUserProfileAsync(hostId, ct);
+        var hostMember  = new MemberDto(
+            UserId:   hostId,
+            Name:     string.IsNullOrWhiteSpace(hostProfile?.DisplayName) ? "Host" : hostProfile.DisplayName,
+            AvatarUrl: hostProfile?.AvatarUrl,
+            IsHost:   true);
+
         logger.LogInformation("Party created: roomId={RoomId} joinCode={JoinCode} hostId={HostId}",
             roomId, joinCode, hostId);
 
-        return new CreatePartyResponse(roomId, joinCode, hostId, roomName, songId ?? string.Empty);
+        return new CreatePartyResponse(roomId, joinCode, hostId, roomName, songId ?? string.Empty, [hostMember]);
     }
 
     public async Task<JoinPartyResponse> JoinPartyAsync(string joinCode, string userId, CancellationToken ct = default)
@@ -46,9 +57,61 @@ public class PartyService(IPartyRepository repository, ILogger<PartyService> log
 
         await repository.AddMemberAsync(roomId, userId, ct);
 
+        var memberIds = await repository.GetMembersAsync(roomId, ct);
+        var members   = await BuildMemberDtosAsync(memberIds, room.HostId, roomId, ct);
+
         logger.LogInformation("User {UserId} joined party roomId={RoomId}", userId, roomId);
 
-        return new JoinPartyResponse(roomId, room.HostId, room.SongId, room.PositionSec);
+        return new JoinPartyResponse(roomId, room.JoinCode, room.Name, room.HostId, room.SongId, room.PositionSec, members);
+    }
+
+    public async Task<PartyPreviewResponse?> GetPartyPreviewAsync(string joinCode, CancellationToken ct = default)
+    {
+        var roomId = await repository.GetRoomIdByJoinCodeAsync(joinCode, ct);
+        if (roomId is null) return null;
+
+        var room = await repository.GetRoomAsync(roomId, ct);
+        if (room is null) return null;
+
+        var memberIds   = await repository.GetMembersAsync(roomId, ct);
+        var songTitle   = await musicServiceClient.GetSongTitleAsync(room.SongId, ct);
+        var hostProfile = await userServiceClient.GetUserProfileAsync(room.HostId, ct);
+
+        return new PartyPreviewResponse(
+            RoomId:          roomId,
+            Name:            room.Name,
+            MemberCount:     memberIds.Count,
+            CurrentSongTitle: songTitle,
+            HostAvatarUrl:   hostProfile?.AvatarUrl,
+            HostDisplayName: hostProfile?.DisplayName ?? "Host");
+    }
+
+    public Task StoreMemberProfileAsync(string roomId, string userId, string displayName, string? avatarUrl, CancellationToken ct = default)
+        => repository.StoreMemberProfileAsync(roomId, userId, displayName, avatarUrl, ct);
+
+    private async Task<List<MemberDto>> BuildMemberDtosAsync(ISet<string> memberIds, string hostId, string roomId, CancellationToken ct)
+    {
+        var tasks = memberIds.Select(async uid =>
+        {
+            // Try Redis profile cache first (populated by hub at connect time)
+            var (cachedName, cachedAvatar) = await repository.GetMemberProfileAsync(roomId, uid, ct);
+            if (cachedName is not null)
+            {
+                return new MemberDto(UserId: uid, Name: cachedName, AvatarUrl: cachedAvatar, IsHost: uid == hostId);
+            }
+
+            // Fallback to User Service HTTP call
+            var profile = await userServiceClient.GetUserProfileAsync(uid, ct);
+            var name = string.IsNullOrWhiteSpace(profile?.DisplayName) ? "Người dùng" : profile.DisplayName;
+            return new MemberDto(
+                UserId:   uid,
+                Name:     name,
+                AvatarUrl: profile?.AvatarUrl,
+                IsHost:   uid == hostId);
+        });
+
+        var results = await Task.WhenAll(tasks);
+        return [.. results.OrderByDescending(m => m.IsHost)];
     }
 
     public Task<Room?> GetRoomAsync(string roomId, CancellationToken ct = default)

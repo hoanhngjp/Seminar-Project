@@ -1,4 +1,5 @@
 using ListeningPartyService.Application.DTOs;
+using ListeningPartyService.Application.Interfaces;
 using ListeningPartyService.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -6,7 +7,10 @@ using Microsoft.AspNetCore.SignalR;
 namespace ListeningPartyService.Api.Hubs;
 
 [Authorize]
-public class PartyHub(IPartyService partyService, ILogger<PartyHub> logger) : Hub
+public class PartyHub(
+    IPartyService partyService,
+    IUserServiceClient userServiceClient,
+    ILogger<PartyHub> logger) : Hub
 {
     // Virtual — overridable in unit tests to avoid HttpContext dependency
     protected virtual string GetRoomId() =>
@@ -41,11 +45,26 @@ public class PartyHub(IPartyService partyService, ILogger<PartyHub> logger) : Hu
             room.HostId,
             DateTime.UtcNow.ToString("O")));
 
-        // Notify existing members that someone joined
+        // Read display name + avatar from query params (set by FE at connect time)
+        var query       = Context.GetHttpContext()?.Request.Query;
+        var displayName = query?["displayName"].ToString();
+        var avatarUrl   = query?["avatarUrl"].ToString();
+
+        // Fallback to User Service if FE didn't pass name or name is empty
+        if (string.IsNullOrWhiteSpace(displayName))
+        {
+            var profile = await userServiceClient.GetUserProfileAsync(userId);
+            displayName = string.IsNullOrWhiteSpace(profile?.DisplayName) ? "Người dùng" : profile.DisplayName;
+            avatarUrl   = profile?.AvatarUrl;
+        }
+
+        // Cache in Redis so BuildMemberDtosAsync can read without HTTP call
+        await partyService.StoreMemberProfileAsync(roomId, userId, displayName, avatarUrl);
+
         await Clients.OthersInGroup(roomId).SendAsync("MEMBER_JOIN", new MemberJoinMessage(
             userId,
-            userId,   // DisplayName — fallback to userId; upgrade to User Service lookup in Phase 2
-            null,
+            displayName,
+            avatarUrl,
             DateTime.UtcNow.ToString("O")));
 
         logger.LogInformation("User {UserId} connected to room {RoomId} (connId={ConnId})",

@@ -393,6 +393,8 @@ services:
       - ConnectionStrings__PostgreSQL=${LISTENING_PARTY_DB_CONNECTION}
       - Redis__ConnectionString=${REDIS_CONNECTION}
       - Kafka__BootstrapServers=${KAFKA_BOOTSTRAP_SERVERS}
+      - USER_SERVICE_BASE_URL=http://user-service:80
+      - MUSIC_SERVICE_BASE_URL=http://music-service:80
     depends_on:
       postgres:
         condition: service_healthy

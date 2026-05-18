@@ -17,9 +17,11 @@ export function useAuth() {
     userId: string,
     role: string,
     hasCompletedOnboarding: boolean,
+    displayName?: string | null,
+    avatarUrl?: string | null,
   ) => {
     setAccessToken(accessToken);
-    setAuth(accessToken, userId, role as any, hasCompletedOnboarding);
+    setAuth(accessToken, userId, role as any, hasCompletedOnboarding, displayName, avatarUrl);
     if (!hasCompletedOnboarding && role === 'Listener') {
       navigate('/onboarding');
     } else {
@@ -32,8 +34,8 @@ export function useAuth() {
     setErrorMsg(null);
     setIsLocked(false);
     try {
-      const { accessToken, userId, role, hasCompletedOnboarding } = await authService.login(credentials);
-      handleAuthSuccess(accessToken, userId, role, hasCompletedOnboarding);
+      const { accessToken, userId, role, hasCompletedOnboarding, displayName, avatarUrl } = await authService.login(credentials);
+      handleAuthSuccess(accessToken, userId, role, hasCompletedOnboarding, displayName, avatarUrl);
     } catch (err: any) {
       const code = err?.response?.data?.error?.code;
       if (code === 'ACCOUNT_LOCKED') {
@@ -51,8 +53,8 @@ export function useAuth() {
     setErrorMsg(null);
     setIsLocked(false);
     try {
-      const { accessToken, userId, role, hasCompletedOnboarding } = await authService.googleSignIn(idToken);
-      handleAuthSuccess(accessToken, userId, role, hasCompletedOnboarding);
+      const { accessToken, userId, role, hasCompletedOnboarding, displayName, avatarUrl } = await authService.googleSignIn(idToken);
+      handleAuthSuccess(accessToken, userId, role, hasCompletedOnboarding, displayName, avatarUrl);
     } catch (err: any) {
       const code = err?.response?.data?.error?.code;
       setErrorMsg(getErrorMessage(code) ?? 'Đăng nhập Google thất bại.');

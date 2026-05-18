@@ -45,6 +45,31 @@ public class PartiesController(IPartyService partyService) : ControllerBase
     // [7] YES
     // [8] Redis GET party:joincode:{joinCode} → HGETALL party:room:{roomId}
 
+    // Contract-First Checklist:
+    // [1] GET /api/v1/parties/{joinCode}
+    // [2] Path: joinCode (6 chars)
+    // [3] 200: { success, data: { roomId, name, memberCount, currentSongTitle, hostAvatarUrl, hostDisplayName }, meta }
+    // [4] 404 ROOM_NOT_FOUND, 401 UNAUTHORIZED
+    // [5] GatewayAuth [Authorize]
+    // [6] 300ms (includes calls to UserService + MusicService)
+    // [7] YES
+    // [8] Enriches room data with user profile and song title for preview card
+
+    [HttpGet("{joinCode}")]
+    public async Task<IActionResult> GetPartyPreview(string joinCode, CancellationToken ct)
+    {
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        cts.CancelAfter(TimeSpan.FromMilliseconds(300));
+
+        var requestId = HttpContext.Items["CorrelationId"]?.ToString() ?? Guid.NewGuid().ToString();
+
+        var result = await partyService.GetPartyPreviewAsync(joinCode, cts.Token);
+        if (result is null)
+            return NotFound(ApiResponse<object>.Fail("ROOM_NOT_FOUND", "Phòng không tồn tại hoặc đã đóng.", requestId));
+
+        return Ok(ApiResponse<PartyPreviewResponse>.Ok(result, requestId));
+    }
+
     [HttpPost("{joinCode}/join")]
     public async Task<IActionResult> JoinParty(string joinCode, CancellationToken ct)
     {

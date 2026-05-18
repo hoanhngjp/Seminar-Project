@@ -82,18 +82,19 @@ interface MemberRowProps {
   isHost: boolean;
 }
 
-function MemberRow({ member, isHost }: MemberRowProps) {
+function MemberRow({ member, isCurrentUser, isHost }: MemberRowProps) {
+  const displayName = isCurrentUser ? 'Me' : (member.name || 'Người dùng');
   return (
     <div
       className="flex items-center justify-between group hover:bg-mid-dark/50 p-2 rounded-md transition-colors"
-      aria-label={`${member.name}${isHost ? ' — Chủ phòng' : ''}`}
+      aria-label={`${displayName}${isHost ? ' — Chủ phòng' : ''}`}
     >
       <div className="flex items-center gap-3">
         <div className="relative">
           {member.avatarUrl ? (
             <img
               src={member.avatarUrl}
-              alt={`${member.name} avatar`}
+              alt={`${displayName} avatar`}
               className={`w-12 h-12 rounded-full object-cover ${isHost ? 'border-2 border-transparent group-hover:border-spotify-green transition-colors' : ''}`}
             />
           ) : (
@@ -107,7 +108,7 @@ function MemberRow({ member, isHost }: MemberRowProps) {
 
         <div>
           <p className={`font-body-bold text-body-bold ${isHost ? 'text-text-base' : 'text-text-secondary group-hover:text-text-base transition-colors'}`}>
-            {member.name}
+            {displayName}
           </p>
           {isHost ? (
             <span className="text-warning text-[10px] uppercase font-bold flex items-center gap-1 mt-0.5">

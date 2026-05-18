@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { useNavigate } from 'react-router-dom';
 import { getAccessToken } from '../services/api';
+import { useAuthStore } from '../store/authStore';
 import type {
   SyncState,
   MemberJoin,
@@ -34,12 +35,17 @@ export function usePartyWebSocket({
   onMemberJoin,
   onMemberLeave,
 }: UsePartyWebSocketOptions): UsePartyWebSocketResult {
-  const navigate = useNavigate();
+  const navigate     = useNavigate();
+  const displayName  = useAuthStore((s) => s.displayName);
+  const avatarUrl    = useAuthStore((s) => s.avatarUrl);
   const connectionRef = useRef<signalR.HubConnection | null>(null);
   const [status, setStatus] = useState<ConnectionStatus>('connecting');
 
   useEffect(() => {
-    const hubUrl = `/hubs/party?roomId=${roomId}`;
+    const params = new URLSearchParams({ roomId });
+    if (displayName?.trim()) params.set('displayName', displayName.trim());
+    if (avatarUrl?.trim())   params.set('avatarUrl', avatarUrl.trim());
+    const hubUrl = `/hubs/party?${params.toString()}`;
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {

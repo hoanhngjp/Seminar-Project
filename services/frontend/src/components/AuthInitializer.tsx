@@ -4,8 +4,11 @@ import { apiClient, setAccessToken } from '../services/api';
 
 interface MeData {
   id: string;
+  username?: string;
   role: string;
   hasCompletedOnboarding: boolean;
+  displayName?: string;
+  avatarUrl?: string | null;
 }
 
 export default function AuthInitializer({ children }: { children: ReactNode }) {
@@ -29,7 +32,8 @@ export default function AuthInitializer({ children }: { children: ReactNode }) {
         setAccessToken(token);
         const meRes = await apiClient.get<{ success: boolean; data: MeData }>('/api/v1/users/me');
         const me = meRes.data.data;
-        setAuth(token, me.id, me.role, me.hasCompletedOnboarding);
+        const displayName = me.displayName?.trim() || me.username?.trim() || null;
+        setAuth(token, me.id, me.role, me.hasCompletedOnboarding, displayName, me.avatarUrl ?? null);
       })
       .catch(() => {
         clearAuth();

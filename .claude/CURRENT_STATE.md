@@ -203,6 +203,7 @@
 - [X] QueueDrawer drag-and-drop reorder (HTML5 DnD, line indicator, reorderQueue store action) + SearchPage + Queue button (SongsList + RelatedSongsGrid) — 790/790 tests xanh (+18 tests) (2026-05-18)
 - [X] BottomPlayerBar hiện khi thêm vào queue (autoPlay: false) + Toast notification khi add/duplicate — 790/790 tests xanh (2026-05-18)
 - [X] Bug fix: POST /api/v1/parties 400 — BE accept Name?+SongId? optional, FE đổi firstSongId→songId (2026-05-18)
+- [X] Bug fix: Listening Party member names không hiển thị — empty string DisplayName fallback (`IsNullOrWhiteSpace` thay `??`), InternalUsersController fallback sang Username, authStore.displayName fallback sang username, MemberList hiện "Me" cho current user (2026-05-18)
 - [X] Bug fix (Bug 7): SignalR "connection was stopped during negotiation" — bỏ React StrictMode khỏi main.tsx (2026-05-18)
 - [X] Rebuild frontend container — confirmed: negotiate 200, WebSocket 101, user ở trong phòng, không bị kick (2026-05-18)
 - [X] Listening Party end-to-end: tất cả 7 bugs đã fix và xác nhận (2026-05-18)
@@ -223,7 +224,7 @@
 
 ## Đang làm
 
-- **Service/Task:** BottomPlayerBar queue visibility + Toast ✅ Done. Tiếp theo: Demo prep
+- **Service/Task:** Listening Party member names fix ✅ Done. Tiếp theo: Demo prep
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
 - **Checkpoint gần nhất đã pass:** QueueDrawer DnD + SearchPage Queue (2026-05-18), 790/790 xanh
 - **Ngày làm việc gần nhất:** 2026-05-18

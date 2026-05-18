@@ -1,14 +1,6 @@
-import { useState, useRef, useCallback } from 'react';
-import { joinParty } from '../../../services/partyService';
-import type { Party } from '../../../types/domain';
-
-// Mock room preview when 6-char code is complete — demo only
-const MOCK_PREVIEW = {
-  name: 'Phòng của Nghiệp',
-  memberCount: 3,
-  currentSong: 'Lạc Trôi',
-  hostAvatarUrl: 'https://picsum.photos/seed/user001/100/100',
-};
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { joinParty, getPartyPreview } from '../../../services/partyService';
+import type { Party, PartyPreview } from '../../../types/domain';
 
 interface Props {
   onClose: () => void;
@@ -16,13 +8,27 @@ interface Props {
 }
 
 export default function JoinRoomModal({ onClose, onJoined }: Props) {
-  const [chars, setChars]   = useState<string[]>(Array(6).fill(''));
-  const [loading, setLoading] = useState(false);
-  const [error, setError]   = useState('');
+  const [chars, setChars]       = useState<string[]>(Array(6).fill(''));
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState('');
+  const [preview, setPreview]   = useState<PartyPreview | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
 
   const joinCode = chars.join('').toUpperCase();
   const isComplete = joinCode.length === 6 && chars.every((c) => c !== '');
+
+  useEffect(() => {
+    if (!isComplete) { setPreview(null); return; }
+    let cancelled = false;
+    setPreviewLoading(true);
+    setPreview(null);
+    getPartyPreview(joinCode)
+      .then((data) => { if (!cancelled) setPreview(data); })
+      .catch(() => { if (!cancelled) setPreview(null); })
+      .finally(() => { if (!cancelled) setPreviewLoading(false); });
+    return () => { cancelled = true; };
+  }, [joinCode, isComplete]);
 
   const handleChange = useCallback((idx: number, value: string) => {
     const char = value.slice(-1).toUpperCase();
@@ -131,28 +137,45 @@ export default function JoinRoomModal({ onClose, onJoined }: Props) {
               className="bg-dark-card rounded-[8px] p-md flex flex-col gap-sm shadow-[rgba(0,0,0,0.3)_0px_8px_8px]"
               aria-label="Thông tin phòng"
             >
-              <div className="flex items-center gap-sm">
-                <div className="w-10 h-10 rounded-full bg-mid-dark flex items-center justify-center overflow-hidden">
-                  <img
-                    src={MOCK_PREVIEW.hostAvatarUrl}
-                    alt="Avatar host"
-                    className="w-full h-full object-cover"
-                  />
+              {previewLoading && (
+                <div className="flex items-center gap-sm animate-pulse">
+                  <div className="w-10 h-10 rounded-full bg-mid-dark" />
+                  <div className="flex flex-col gap-1 flex-1">
+                    <div className="h-3 bg-mid-dark rounded w-3/4" />
+                    <div className="h-2 bg-mid-dark rounded w-1/2" />
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="font-body-bold text-body-bold text-text-emphasis flex items-center gap-xs">
-                    <span className="material-symbols-outlined text-[18px]" aria-hidden="true">music_note</span>
-                    {MOCK_PREVIEW.name}
-                  </span>
-                  <span className="font-caption text-[12px] text-text-secondary">
-                    {MOCK_PREVIEW.memberCount} thành viên · Đang phát: {MOCK_PREVIEW.currentSong}
-                  </span>
-                </div>
-              </div>
-              <div className="flex justify-end items-center text-spotify-green font-body-bold text-[14px] cursor-pointer hover:text-primary-fixed transition-colors">
-                Tham gia ngay
-                <span className="material-symbols-outlined ml-xs text-[18px]" aria-hidden="true">arrow_forward</span>
-              </div>
+              )}
+              {!previewLoading && preview && (
+                <>
+                  <div className="flex items-center gap-sm">
+                    <div className="w-10 h-10 rounded-full bg-mid-dark flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {preview.hostAvatarUrl ? (
+                        <img src={preview.hostAvatarUrl} alt="Avatar host" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined text-text-secondary text-[20px]" aria-hidden="true">person</span>
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-body-bold text-body-bold text-text-emphasis flex items-center gap-xs">
+                        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">music_note</span>
+                        {preview.name}
+                      </span>
+                      <span className="font-caption text-[12px] text-text-secondary">
+                        {preview.memberCount} thành viên
+                        {preview.currentSongTitle && ` · Đang phát: ${preview.currentSongTitle}`}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex justify-end items-center text-spotify-green font-body-bold text-[14px] cursor-pointer hover:text-primary-fixed transition-colors">
+                    Tham gia ngay
+                    <span className="material-symbols-outlined ml-xs text-[18px]" aria-hidden="true">arrow_forward</span>
+                  </div>
+                </>
+              )}
+              {!previewLoading && !preview && (
+                <p className="font-caption text-caption text-text-secondary text-center py-1">Không tìm thấy phòng với mã này.</p>
+              )}
             </div>
           )}
 

@@ -12,6 +12,9 @@ public interface IPartyService
     Task<Room?> GetRoomAsync(string roomId, CancellationToken ct = default);
     Task<Room> UpdateRoomStateAsync(string roomId, bool isPlaying, int positionSec, CancellationToken ct = default);
 
+    Task<PartyPreviewResponse?> GetPartyPreviewAsync(string joinCode, CancellationToken ct = default);
+    Task StoreMemberProfileAsync(string roomId, string userId, string displayName, string? avatarUrl, CancellationToken ct = default);
+
     /// <summary>Removes member, cleans up room if host. Returns true if the disconnected user was the host.</summary>
     Task<bool> HandleMemberDisconnectAsync(string roomId, string userId, CancellationToken ct = default);
 }

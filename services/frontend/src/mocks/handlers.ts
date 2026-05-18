@@ -250,6 +250,22 @@ const joinPartyHandler = http.post('*/api/v1/parties/:joinCode/join', async ({ p
   return ok({ ...MOCK_PARTY, joinCode: params.joinCode as string });
 });
 
+const getPartyPreviewHandler = http.get('*/api/v1/parties/:joinCode', async ({ params }) => {
+  await delay(LATENCY);
+  const code = params.joinCode as string;
+  if (code !== MOCK_PARTY.joinCode) {
+    return new Response(JSON.stringify({ success: false, data: null, error: { code: 'ROOM_NOT_FOUND', message: 'Phòng không tồn tại.' } }), { status: 404 });
+  }
+  return ok({
+    roomId:           MOCK_PARTY.roomId,
+    name:             MOCK_PARTY.name,
+    memberCount:      MOCK_PARTY.members.length,
+    currentSongTitle: 'Lạc Trôi',
+    hostAvatarUrl:    MOCK_PARTY.members.find((m) => m.isHost)?.avatarUrl ?? null,
+    hostDisplayName:  MOCK_PARTY.members.find((m) => m.isHost)?.name ?? 'Host',
+  });
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Export all handlers
 // ─────────────────────────────────────────────────────────────────────────────
@@ -292,5 +308,6 @@ export const handlers = [
 
   // Party
   createPartyHandler,
+  getPartyPreviewHandler,
   joinPartyHandler,
 ];
