@@ -45,8 +45,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `playerStore.ts`: thêm `seekSignal`, `seekPosition`, `seekSong(positionSec)` — pattern giống `pauseSignal`
 - `BottomPlayerBar.tsx`: thêm `preload="metadata"` trên `<audio>`; subscribe `seekSignal` để seek audio element thật; CSS restructure seek bar: `appearance-none` input, `relative z-10` track, DOM order input cuối; thumb dùng React state hover
 - ⚠️ Còn pending: BottomPlayerBar progress track vẫn chưa visible (CSS conflict chưa xác định nguyên nhân)
-- **W11 Bug Fix — Bug 10: SignalR disconnect (pending)**
-- Bug 10: SignalR client timeout 30s vs server ping 30s → race condition qua YARP; fix plan: server `KeepAliveInterval=15s`, client `serverTimeoutInMilliseconds=60000`
+
+**W11 Bug Fix — Bug 10: SignalR disconnect sau ~30s (2026-05-18)**
+- `ListeningPartyService.Api/Program.cs`: `KeepAliveInterval` 30s → 15s; `ClientTimeoutInterval` 40s → 60s
+- `usePartyWebSocket.ts`: set `connection.serverTimeoutInMilliseconds = 60_000`; `connection.keepAliveIntervalInMilliseconds = 15_000`
+- Root cause: server ping mỗi 30s nhưng client timeout cũng 30s → chỉ cần 1 ping bị delay qua YARP proxy là đủ để ngắt kết nối; margin mới là 4 lần ping trước khi timeout
+- 701/701 tests xanh; container `listening-party-service` đã rebuild
 
 **W11 Bug Fix — Bug 7: SignalR "connection was stopped during negotiation" (2026-05-18)**
 - `main.tsx`: bỏ `<React.StrictMode>` wrapper — StrictMode gây effect double-invocation trong dev mode, trigger `OnDisconnectedAsync` giữa hai lần mount, xóa Redis room trước khi user kịp kết nối lần hai, dẫn đến `ROOM_CLOSED` + `navigate('/')` ngay khi vào phòng

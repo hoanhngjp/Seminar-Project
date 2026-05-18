@@ -49,6 +49,11 @@ export function usePartyWebSocket({
       .configureLogging(signalR.LogLevel.Warning)
       .build();
 
+    // Mirror server-side values: ping every 15s, timeout after 60s.
+    // Prevents spurious "Server timeout elapsed" through YARP proxy (Bug 10).
+    connection.serverTimeoutInMilliseconds = 60_000;
+    connection.keepAliveIntervalInMilliseconds = 15_000;
+
     connectionRef.current = connection;
 
     // ─── Server → Client handlers ─────────────────────────────────────────

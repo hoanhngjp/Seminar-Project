@@ -44,13 +44,15 @@ Fix: Thêm `seekSignal` + `seekPosition` + `seekSong()` vào `playerStore` (patt
 - `playerStore.ts`: `seekSignal`, `seekPosition`, `seekSong(positionSec)`
 - `BottomPlayerBar.tsx`: `preload="metadata"`, seek effect, React state hover thumb, CSS restructure (`appearance-none`, `z-10` track, DOM order input cuối)
 
-**Bug 10 — SignalR disconnect sau ~30 giây ("Server timeout elapsed")**
+**Bug 10 — SignalR disconnect sau ~30 giây ("Server timeout elapsed") [DONE 2026-05-18]**
 - Symptom: `[2026-05-17T22:22:13.438Z] Error: Connection disconnected with error 'Error: Server timeout elapsed without receiving a message from the server.'`
-- Root cause: Server `KeepAliveInterval = 30s`, JS client default `serverTimeoutInMilliseconds = 30000ms` (30s) — timing quá sát, thêm latency qua YARP proxy → client timeout trước khi ping kịp đến.
-- Fix plan:
-  - Server (`Program.cs`): giảm `KeepAliveInterval = 15s`, tăng `ClientTimeoutInterval = 60s`
-  - Client (`usePartyWebSocket.ts`): set `serverTimeoutInMilliseconds = 60000`, `keepAliveIntervalInMilliseconds = 15000`
-- Files: `usePartyWebSocket.ts`, `ListeningPartyService.Api/Program.cs`
+- Root cause: Server `KeepAliveInterval = 30s`, JS client default `serverTimeoutInMilliseconds = 30000ms` (30s) — timing quá sát, thêm latency qua YARP proxy → client timeout trước khi ping kịp đến. Chỉ cần 1 ping delay nhẹ là ngắt kết nối.
+- Fix:
+  - Server (`ListeningPartyService.Api/Program.cs`): `KeepAliveInterval` 30s → **15s**, `ClientTimeoutInterval` 40s → **60s**
+  - Client (`usePartyWebSocket.ts`): set `connection.serverTimeoutInMilliseconds = 60_000`, `connection.keepAliveIntervalInMilliseconds = 15_000` (ngay sau `.build()`)
+- Kết quả: 4 lần ping trong 60s — margin rộng hơn nhiều, sẽ không bị disconnect khi nghe nhiều bài liên tiếp
+- Container `listening-party-service` đã rebuild và started
+- 701/701 tests xanh
 
 ---
 [2026-05-18] [BUG FIX — Bug 7: SignalR "connection was stopped during negotiation" — React StrictMode] [DONE]

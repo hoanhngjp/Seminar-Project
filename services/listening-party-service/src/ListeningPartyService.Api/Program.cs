@@ -12,9 +12,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSignalR(options =>
 {
-    // Built-in keepalive: server pings every 30s, disconnects if no pong within 40s
-    options.KeepAliveInterval = TimeSpan.FromSeconds(30);
-    options.ClientTimeoutInterval = TimeSpan.FromSeconds(40);
+    // Ping every 15s; disconnect client if no response within 60s.
+    // Client mirrors these values (serverTimeoutInMilliseconds=60000, keepAliveIntervalInMilliseconds=15000).
+    // Previous 30s/40s caused spurious timeouts through the YARP proxy.
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
 });
 builder.Services.AddGatewayAuth();
 builder.Services.AddInfrastructure(builder.Configuration);
