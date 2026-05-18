@@ -200,6 +200,7 @@
 - [X] Feature 3: Nút + Queue trong SongCard + RecommendationFeedRow — 737/737 tests xanh (+11 tests) (2026-05-18)
 - [X] Feature 4: NowPlayingOverlay tabs — queue tab wire real playerStore queue + related tab fetch by artist (searchContent) — 750/750 tests xanh (+13 tests) (2026-05-18)
 - [X] Player Enhancements: dedup queue, skip prev/next, shuffle/repeat, click-to-play queue (QueueDrawer + NowPlayingOverlay), history-based playPrev, onEnded auto-advance — 772/772 tests xanh (+22 tests) (2026-05-18)
+- [X] QueueDrawer drag-and-drop reorder (HTML5 DnD, line indicator, reorderQueue store action) + SearchPage + Queue button (SongsList + RelatedSongsGrid) — 790/790 tests xanh (+18 tests) (2026-05-18)
 - [X] Bug fix: POST /api/v1/parties 400 — BE accept Name?+SongId? optional, FE đổi firstSongId→songId (2026-05-18)
 - [X] Bug fix (Bug 7): SignalR "connection was stopped during negotiation" — bỏ React StrictMode khỏi main.tsx (2026-05-18)
 - [X] Rebuild frontend container — confirmed: negotiate 200, WebSocket 101, user ở trong phòng, không bị kick (2026-05-18)
@@ -221,9 +222,9 @@
 
 ## Đang làm
 
-- **Service/Task:** Player Enhancements ✅ Done. Tiếp theo: Demo prep
+- **Service/Task:** QueueDrawer DnD + SearchPage Queue ✅ Done. Tiếp theo: Demo prep
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** Player Enhancements (2026-05-18), 772/772 xanh
+- **Checkpoint gần nhất đã pass:** QueueDrawer DnD + SearchPage Queue (2026-05-18), 790/790 xanh
 - **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
   1. ~~Fix Bug 8~~ ✓ Done
@@ -237,8 +238,9 @@
   9. ~~Feature 3~~ ✓ Done
   10. ~~Feature 4~~ ✓ Done — NowPlayingOverlay queue + related tabs
   11. ~~Player Enhancements~~ ✓ Done — dedup, skip, shuffle, repeat, click-to-play
-  12. Demo script rehearsal 14 phút
-  13. Pre-upload demo songs cho Creator account
+  12. ~~QueueDrawer DnD reorder + SearchPage + Queue~~ ✓ Done (2026-05-18)
+  13. Demo script rehearsal 14 phút
+  14. Pre-upload demo songs cho Creator account
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

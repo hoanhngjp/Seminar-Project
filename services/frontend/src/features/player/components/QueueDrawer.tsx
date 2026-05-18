@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { usePlayerStore } from '../../../store/playerStore';
 
 interface QueueDrawerProps {
@@ -12,6 +13,40 @@ export default function QueueDrawer({ isOpen, onClose }: QueueDrawerProps) {
   const removeFromQueue = usePlayerStore((s) => s.removeFromQueue);
   const clearQueue      = usePlayerStore((s) => s.clearQueue);
   const playFromQueue   = usePlayerStore((s) => s.playFromQueue);
+  const reorderQueue    = usePlayerStore((s) => s.reorderQueue);
+
+  // Drag state — dragIndex: item being dragged, overIndex: insert-before position (0..queue.length)
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+
+  function handleDragStart(index: number) {
+    setDragIndex(index);
+    setOverIndex(null);
+  }
+
+  function handleDragEnter(index: number) {
+    setOverIndex(index);
+  }
+
+  function handleDragEnd() {
+    setDragIndex(null);
+    setOverIndex(null);
+  }
+
+  function handleDrop() {
+    if (dragIndex !== null && overIndex !== null && overIndex !== dragIndex && overIndex !== dragIndex + 1) {
+      const to = dragIndex < overIndex ? overIndex - 1 : overIndex;
+      reorderQueue(dragIndex, to);
+    }
+    setDragIndex(null);
+    setOverIndex(null);
+  }
+
+  // Line indicator is visible when overIndex is not the same effective position as dragIndex
+  function showLine(pos: number): boolean {
+    if (dragIndex === null || overIndex !== pos) return false;
+    return overIndex !== dragIndex && overIndex !== dragIndex + 1;
+  }
 
   return (
     <>
@@ -84,7 +119,10 @@ export default function QueueDrawer({ isOpen, onClose }: QueueDrawerProps) {
           )}
 
           {/* Queue */}
-          <section className="px-3">
+          <section
+            className="px-3"
+            onDragOver={(e) => e.preventDefault()}
+          >
             {queue.length > 0 && (
               <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider px-2 mb-1">
                 Tiếp theo ({queue.length})
@@ -99,15 +137,47 @@ export default function QueueDrawer({ isOpen, onClose }: QueueDrawerProps) {
             {queue.length === 0 && currentSong && (
               <p className="text-sm text-text-secondary px-2 py-3">Không có bài tiếp theo.</p>
             )}
+
             {queue.map((song, index) => (
-              <QueueItem
-                key={`${song.songId}-${index}`}
-                song={song}
-                index={index}
-                onRemove={removeFromQueue}
-                onPlay={playFromQueue}
-              />
+              <div key={`${song.songId}-${index}`}>
+                {/* Drop line — insert before this item */}
+                {showLine(index) && (
+                  <div
+                    data-testid={`drop-line-${index}`}
+                    className="h-0.5 bg-spotify-green mx-2 rounded-full my-0.5"
+                  />
+                )}
+                <QueueItem
+                  song={song}
+                  index={index}
+                  isDragging={dragIndex === index}
+                  onRemove={removeFromQueue}
+                  onPlay={playFromQueue}
+                  onDragStart={() => handleDragStart(index)}
+                  onDragEnter={() => handleDragEnter(index)}
+                  onDragEnd={handleDragEnd}
+                  onDrop={handleDrop}
+                />
+              </div>
             ))}
+
+            {/* Drop zone at end of list */}
+            {queue.length > 0 && (
+              <div
+                data-testid="drop-zone-end"
+                className="h-4"
+                onDragEnter={() => handleDragEnter(queue.length)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}
+              >
+                {showLine(queue.length) && (
+                  <div
+                    data-testid={`drop-line-${queue.length}`}
+                    className="h-0.5 bg-spotify-green mx-2 rounded-full mt-0.5"
+                  />
+                )}
+              </div>
+            )}
           </section>
         </div>
       </aside>
@@ -146,23 +216,40 @@ function QueueSongCover({ coverUrl, title, size }: QueueSongCoverProps) {
 }
 
 interface QueueItemProps {
-  song:     ReturnType<typeof usePlayerStore.getState>['queue'][number];
-  index:    number;
-  onRemove: (index: number) => void;
-  onPlay:   (index: number) => void;
+  song:        ReturnType<typeof usePlayerStore.getState>['queue'][number];
+  index:       number;
+  isDragging:  boolean;
+  onRemove:    (index: number) => void;
+  onPlay:      (index: number) => void;
+  onDragStart: () => void;
+  onDragEnter: () => void;
+  onDragEnd:   () => void;
+  onDrop:      () => void;
 }
 
-function QueueItem({ song, index, onRemove, onPlay }: QueueItemProps) {
+function QueueItem({ song, index, isDragging, onRemove, onPlay, onDragStart, onDragEnter, onDragEnd, onDrop }: QueueItemProps) {
   return (
     <div
       data-testid={`queue-item-${index}`}
       role="button"
       aria-label={`Phát ${song.title}`}
+      draggable
       onClick={() => onPlay(index)}
-      className="flex items-center gap-3 px-2 py-2 rounded-md hover:bg-white/5 group transition-colors cursor-pointer"
+      onDragStart={onDragStart}
+      onDragEnter={(e) => { e.preventDefault(); onDragEnter(); }}
+      onDragOver={(e) => e.preventDefault()}
+      onDragEnd={onDragEnd}
+      onDrop={(e) => { e.preventDefault(); onDrop(); }}
+      className={[
+        'flex items-center gap-3 px-2 py-2 rounded-md hover:bg-white/5 group transition-colors cursor-pointer',
+        isDragging ? 'opacity-40' : 'opacity-100',
+      ].join(' ')}
     >
-      {/* Drag handle — visual only */}
-      <span className="material-symbols-outlined text-[16px] text-border-muted group-hover:text-text-secondary transition-colors flex-shrink-0 cursor-grab">
+      {/* Drag handle */}
+      <span
+        data-testid={`drag-handle-${index}`}
+        className="material-symbols-outlined text-[16px] text-border-muted group-hover:text-text-secondary transition-colors flex-shrink-0 cursor-grab active:cursor-grabbing"
+      >
         drag_indicator
       </span>
 

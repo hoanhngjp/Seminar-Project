@@ -300,6 +300,129 @@ describe('playerStore queue actions', () => {
     usePlayerStore.getState().toggleRepeat();
     expect(usePlayerStore.getState().repeat).toBe('none');
   });
+
+  it('reorderQueue moves item forward: [A,B,C] → reorder(0,1) → [B,A,C]', () => {
+    usePlayerStore.setState({ queue: [SONG_A, SONG_B, SONG_C] });
+    usePlayerStore.getState().reorderQueue(0, 1);
+    const q = usePlayerStore.getState().queue;
+    expect(q[0].songId).toBe(SONG_B.songId);
+    expect(q[1].songId).toBe(SONG_A.songId);
+    expect(q[2].songId).toBe(SONG_C.songId);
+  });
+
+  it('reorderQueue moves item backward: [A,B,C] → reorder(2,0) → [C,A,B]', () => {
+    usePlayerStore.setState({ queue: [SONG_A, SONG_B, SONG_C] });
+    usePlayerStore.getState().reorderQueue(2, 0);
+    const q = usePlayerStore.getState().queue;
+    expect(q[0].songId).toBe(SONG_C.songId);
+    expect(q[1].songId).toBe(SONG_A.songId);
+    expect(q[2].songId).toBe(SONG_B.songId);
+  });
+
+  it('reorderQueue moves item to end: [A,B,C] → reorder(0,2) → [B,C,A]', () => {
+    usePlayerStore.setState({ queue: [SONG_A, SONG_B, SONG_C] });
+    usePlayerStore.getState().reorderQueue(0, 2);
+    const q = usePlayerStore.getState().queue;
+    expect(q[0].songId).toBe(SONG_B.songId);
+    expect(q[1].songId).toBe(SONG_C.songId);
+    expect(q[2].songId).toBe(SONG_A.songId);
+  });
+
+  it('reorderQueue is no-op when from === to', () => {
+    usePlayerStore.setState({ queue: [SONG_A, SONG_B, SONG_C] });
+    usePlayerStore.getState().reorderQueue(1, 1);
+    const q = usePlayerStore.getState().queue;
+    expect(q[0].songId).toBe(SONG_A.songId);
+    expect(q[1].songId).toBe(SONG_B.songId);
+  });
+
+  it('reorderQueue is no-op when index is out of bounds', () => {
+    usePlayerStore.setState({ queue: [SONG_A, SONG_B] });
+    usePlayerStore.getState().reorderQueue(0, 5);
+    expect(usePlayerStore.getState().queue).toHaveLength(2);
+    expect(usePlayerStore.getState().queue[0].songId).toBe(SONG_A.songId);
+  });
+});
+
+// ── QueueDrawer drag-and-drop ──────────────────────────────────────────────
+
+describe('QueueDrawer drag-and-drop', () => {
+  it('each queue item has draggable attribute', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B, SONG_C] });
+    render(<QueueDrawer isOpen={true} onClose={vi.fn()} />);
+    const item0 = screen.getByTestId('queue-item-0');
+    expect(item0).toHaveAttribute('draggable');
+  });
+
+  it('drag handles are rendered for each queue item', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B, SONG_C] });
+    render(<QueueDrawer isOpen={true} onClose={vi.fn()} />);
+    expect(screen.getByTestId('drag-handle-0')).toBeInTheDocument();
+    expect(screen.getByTestId('drag-handle-1')).toBeInTheDocument();
+  });
+
+  it('dragging item applies opacity-40 class while dragging', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B, SONG_C] });
+    render(<QueueDrawer isOpen={true} onClose={vi.fn()} />);
+    const item0 = screen.getByTestId('queue-item-0');
+    fireEvent.dragStart(item0);
+    expect(item0.className).toContain('opacity-40');
+  });
+
+  it('dragEnd restores full opacity', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B, SONG_C] });
+    render(<QueueDrawer isOpen={true} onClose={vi.fn()} />);
+    const item0 = screen.getByTestId('queue-item-0');
+    fireEvent.dragStart(item0);
+    fireEvent.dragEnd(item0);
+    expect(item0.className).toContain('opacity-100');
+  });
+
+  it('drop-zone-end is rendered when queue has items', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B, SONG_C] });
+    render(<QueueDrawer isOpen={true} onClose={vi.fn()} />);
+    expect(screen.getByTestId('drop-zone-end')).toBeInTheDocument();
+  });
+
+  it('drop-zone-end is not rendered when queue is empty', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [] });
+    render(<QueueDrawer isOpen={true} onClose={vi.fn()} />);
+    expect(screen.queryByTestId('drop-zone-end')).not.toBeInTheDocument();
+  });
+
+  it('dragStart + dragEnter item-1 + drop reorders queue correctly', () => {
+    // Drag item 0 (SONG_B) → enter item 1 (SONG_C) → drop inserts before item 1
+    // overIndex=1, dragIndex=0 → same-position guard: overIndex !== dragIndex+1 fails → no-op
+    // So drag item 1 (SONG_C) → enter item 0 (SONG_B) → drop inserts before item 0
+    // overIndex=0, dragIndex=1 → to = overIndex=0 → reorderQueue(1,0) → [SONG_C, SONG_B]
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B, SONG_C] });
+    render(<QueueDrawer isOpen={true} onClose={vi.fn()} />);
+
+    const item1 = screen.getByTestId('queue-item-1');
+    const item0 = screen.getByTestId('queue-item-0');
+
+    fireEvent.dragStart(item1);
+    fireEvent.dragEnter(item0);
+    fireEvent.drop(item0);
+
+    const q = usePlayerStore.getState().queue;
+    expect(q[0].songId).toBe(SONG_C.songId);
+    expect(q[1].songId).toBe(SONG_B.songId);
+  });
+
+  it('drag item onto itself (same position) does not reorder', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B, SONG_C] });
+    render(<QueueDrawer isOpen={true} onClose={vi.fn()} />);
+
+    const item0 = screen.getByTestId('queue-item-0');
+    fireEvent.dragStart(item0);
+    fireEvent.dragEnter(item0);
+    fireEvent.drop(item0);
+
+    const q = usePlayerStore.getState().queue;
+    expect(q[0].songId).toBe(SONG_B.songId);
+    expect(q[1].songId).toBe(SONG_C.songId);
+  });
 });
 
 // ── QueueDrawer click to play ─────────────────────────────────────────────

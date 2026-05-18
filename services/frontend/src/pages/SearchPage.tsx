@@ -203,9 +203,11 @@ function TopResultCard({
 function SongsList({
   songs,
   onPlay,
+  onAddToQueue,
 }: {
   songs: SearchResult[];
   onPlay: (r: SearchResult) => void;
+  onAddToQueue: (r: SearchResult) => void;
 }) {
   return (
     <section className="flex flex-col gap-4">
@@ -241,9 +243,16 @@ function SongsList({
               </span>
               <span className="text-[14px] leading-[1.5] text-text-secondary truncate">{song.artist}</span>
             </div>
-            <div className="text-text-secondary text-[14px] leading-[1.5] pr-4 tabular-nums">
+            <div className="text-text-secondary text-[14px] leading-[1.5] tabular-nums">
               {song.duration ? formatDuration(song.duration) : '—'}
             </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); onAddToQueue(song); }}
+              aria-label={`Thêm ${song.name} vào hàng chờ`}
+              className="opacity-0 group-hover:opacity-100 transition-opacity text-text-secondary hover:text-text-base flex-shrink-0 ml-1"
+            >
+              <span className="material-symbols-outlined text-[18px]">add_to_queue</span>
+            </button>
           </div>
         ))}
       </div>
@@ -272,9 +281,11 @@ function ArtistsRow({ artists }: { artists: SearchResult[] }) {
 function RelatedSongsGrid({
   songs,
   onPlay,
+  onAddToQueue,
 }: {
   songs: SearchResult[];
   onPlay: (r: SearchResult) => void;
+  onAddToQueue: (r: SearchResult) => void;
 }) {
   if (!songs.length) return null;
   return (
@@ -298,6 +309,7 @@ function RelatedSongsGrid({
                   <span className="material-symbols-outlined text-[36px]">music_note</span>
                 </div>
               )}
+              {/* Play button — bottom-right */}
               <button
                 className="absolute bottom-2 right-2 w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center
                   opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0
@@ -308,6 +320,14 @@ function RelatedSongsGrid({
                 <span className="material-symbols-outlined text-near-black text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                   play_arrow
                 </span>
+              </button>
+              {/* Queue button — top-right, same pattern as SongCard */}
+              <button
+                aria-label={`Thêm ${song.name} vào hàng chờ`}
+                onClick={(e) => { e.stopPropagation(); onAddToQueue(song); }}
+                className="absolute top-2 right-2 w-7 h-7 bg-black/70 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/90"
+              >
+                <span className="material-symbols-outlined text-[16px]">add</span>
               </button>
             </div>
             <div className="flex flex-col">
@@ -326,7 +346,8 @@ function RelatedSongsGrid({
 export default function SearchPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const { query, setQuery, results, loading, clearQuery } = useSearch();
-  const playSong = usePlayerStore((s) => s.playSong);
+  const playSong    = usePlayerStore((s) => s.playSong);
+  const addToQueue  = usePlayerStore((s) => s.addToQueue);
 
   const [filterTab, setFilterTab] = useState<FilterTab>('all');
 
@@ -353,6 +374,12 @@ export default function SearchPage() {
         coverUrl: r.coverUrl,
         autoPlay: true,
       });
+    }
+  }
+
+  function handleAddToQueue(r: SearchResult) {
+    if (r.type === 'song') {
+      addToQueue({ songId: r.id, title: r.name, artist: r.artist ?? '', coverUrl: r.coverUrl });
     }
   }
 
@@ -421,7 +448,7 @@ export default function SearchPage() {
                 )}
                 {showSongs && songs.length > 0 && (
                   <div className={showTopResult ? 'lg:col-span-3' : 'lg:col-span-5'}>
-                    <SongsList songs={songs.slice(0, 4)} onPlay={handlePlay} />
+                    <SongsList songs={songs.slice(0, 4)} onPlay={handlePlay} onAddToQueue={handleAddToQueue} />
                   </div>
                 )}
               </div>
@@ -431,7 +458,7 @@ export default function SearchPage() {
             {showArtists && <ArtistsRow artists={artists} />}
 
             {/* Related songs — only in 'all' tab */}
-            {filterTab === 'all' && <RelatedSongsGrid songs={relatedSongs} onPlay={handlePlay} />}
+            {filterTab === 'all' && <RelatedSongsGrid songs={relatedSongs} onPlay={handlePlay} onAddToQueue={handleAddToQueue} />}
           </div>
         )}
       </div>

@@ -1,5 +1,30 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — QueueDrawer drag-and-drop reorder + SearchPage + Queue buttons] [DONE]
+
+**playerStore.ts**
+- Thêm `reorderQueue(from, to)`: splice item ra khỏi `from`, insert vào `to`. Guard: `from === to` hoặc out-of-bounds → no-op.
+
+**QueueDrawer.tsx**
+- State `dragIndex: number | null` + `overIndex: number | null` (insert-before position 0..queue.length).
+- `QueueItem` có `draggable`, `onDragStart/Enter/End/Drop`. `onDragEnter` set `overIndex = index`.
+- Line indicator: `<div class="h-0.5 bg-spotify-green">` render bên trên item tại `overIndex` khi điều kiện `overIndex !== dragIndex && overIndex !== dragIndex + 1` (tránh render khi drop-onto-self).
+- Drop zone ở cuối danh sách (`data-testid="drop-zone-end"`) để support move xuống cuối.
+- Drop handler: `to = dragIndex < overIndex ? overIndex - 1 : overIndex` (compensate for index shift sau khi splice).
+- Item đang kéo: `opacity-40`; drag handle icon: `cursor-grab active:cursor-grabbing`.
+
+**SearchPage.tsx**
+- `SongsList`: prop `onAddToQueue` mới; nút `add_to_queue` icon bên phải duration, `opacity-0 group-hover:opacity-100`, `e.stopPropagation()`.
+- `RelatedSongsGrid`: prop `onAddToQueue` mới; nút `add` icon overlay top-right ảnh bìa (cùng pattern SongCard). `e.stopPropagation()` để không trigger `onPlay`.
+- `handleAddToQueue`: guard `r.type === 'song'` trước khi map → `addToQueue`.
+
+**Tests**
+- `QueueDrawer.test.tsx`: +10 tests — `reorderQueue` store (forward/backward/end/no-op/oob), drag attrs (draggable, drag-handle), opacity khi drag/dragEnd, drop-zone-end visibility, drag item 1 → enter item 0 → drop reorders [SONG_C,SONG_B], drag-onto-self no-op.
+- `SearchPage.test.tsx`: +8 tests — song row queue button aria-label, addToQueue không play (scoped `within(row)`), related card queue button, related card addToQueue không play (scoped `within(card)`).
+- **Lý do dùng `within()`**: song-001 xuất hiện cả ở `SongsList` lẫn `RelatedSongsGrid` → `getByRole` tìm thấy 2 buttons cùng label → phải scope query vào `data-testid` của từng container.
+- 790/790 tests xanh (+18 tests).
+
+---
 [2026-05-18] [FEATURE — Player enhancements: dedup queue, skip prev/next, shuffle/repeat, click-to-play queue] [DONE]
 
 **playerStore.ts — major update**

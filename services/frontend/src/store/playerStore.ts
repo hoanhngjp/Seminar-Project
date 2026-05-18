@@ -50,6 +50,8 @@ interface PlayerState {
   playPrev:         () => void;
   toggleShuffle:    () => void;
   toggleRepeat:     () => void;
+  /** Move item from one queue index to another */
+  reorderQueue:     (from: number, to: number) => void;
 }
 
 export const usePlayerStore = create<PlayerState>((set, get) => ({
@@ -157,5 +159,13 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
       : s.repeat === 'one' ? 'all'
       : 'none';
     return { repeat: next };
+  }),
+
+  reorderQueue: (from, to) => set((s) => {
+    if (from === to || from < 0 || to < 0 || from >= s.queue.length || to >= s.queue.length) return s;
+    const q = [...s.queue];
+    const [moved] = q.splice(from, 1);
+    q.splice(to, 0, moved);
+    return { queue: q };
   }),
 }));

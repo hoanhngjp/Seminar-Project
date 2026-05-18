@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -387,6 +387,90 @@ describe('SearchPage — ArtistCard (upgraded ArtistsRow)', () => {
     await waitFor(() => expect(screen.getByTestId('artists-section')).toBeInTheDocument());
     const labels = screen.getAllByText('Nghệ sĩ');
     expect(labels.length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+// ── + Queue buttons ────────────────────────────────────────────────────────────
+
+describe('SearchPage — add to queue', () => {
+  it('song row has add-to-queue button with correct aria-label', async () => {
+    server.use(resultsSearchHandler, notificationsHandler, profileHandler);
+    renderPage();
+
+    const input = await getSearchInput();
+    fireEvent.change(input, { target: { value: 'lạc' } });
+
+    await waitFor(() => expect(screen.getByTestId('song-row-song-001')).toBeInTheDocument());
+
+    // Scope to the song row to avoid matching the same button in RelatedSongsGrid
+    const row = screen.getByTestId('song-row-song-001');
+    const btn = within(row).getByRole('button', { name: /Thêm Lạc Trôi vào hàng chờ/i });
+    expect(btn).toBeInTheDocument();
+  });
+
+  it('clicking song row add-to-queue button adds song to queue without playing', async () => {
+    server.use(resultsSearchHandler, notificationsHandler, profileHandler);
+    renderPage();
+
+    const input = await getSearchInput();
+    fireEvent.change(input, { target: { value: 'lạc' } });
+
+    await waitFor(() => expect(screen.getByTestId('song-row-song-001')).toBeInTheDocument());
+
+    const row = screen.getByTestId('song-row-song-001');
+    fireEvent.click(within(row).getByRole('button', { name: /Thêm Lạc Trôi vào hàng chờ/i }));
+
+    const { queue, currentSong } = usePlayerStore.getState();
+    expect(queue).toHaveLength(1);
+    expect(queue[0].songId).toBe('song-001');
+    expect(currentSong).toBeNull();
+  });
+
+  it('clicking song row add-to-queue does not trigger onPlay (currentSong stays null)', async () => {
+    server.use(resultsSearchHandler, notificationsHandler, profileHandler);
+    renderPage();
+
+    const input = await getSearchInput();
+    fireEvent.change(input, { target: { value: 'lạc' } });
+
+    await waitFor(() => expect(screen.getByTestId('song-row-song-001')).toBeInTheDocument());
+
+    const row = screen.getByTestId('song-row-song-001');
+    fireEvent.click(within(row).getByRole('button', { name: /Thêm Lạc Trôi vào hàng chờ/i }));
+
+    expect(usePlayerStore.getState().currentSong).toBeNull();
+  });
+
+  it('related card has add-to-queue button with correct aria-label', async () => {
+    server.use(resultsSearchHandler, notificationsHandler, profileHandler);
+    renderPage();
+
+    const input = await getSearchInput();
+    fireEvent.change(input, { target: { value: 'lạc' } });
+
+    await waitFor(() => expect(screen.getByTestId('related-section')).toBeInTheDocument());
+
+    const relatedSection = screen.getByTestId('related-section');
+    const btns = within(relatedSection).getAllByRole('button', { name: /Thêm .* vào hàng chờ/i });
+    expect(btns.length).toBeGreaterThan(0);
+  });
+
+  it('clicking related card add-to-queue button adds song to queue without playing', async () => {
+    server.use(resultsSearchHandler, notificationsHandler, profileHandler);
+    renderPage();
+
+    const input = await getSearchInput();
+    fireEvent.change(input, { target: { value: 'lạc' } });
+
+    // song-001 is in relatedSongs (topResult is artist-1, not song-001)
+    await waitFor(() => expect(screen.getByTestId('related-card-song-001')).toBeInTheDocument());
+
+    const card = screen.getByTestId('related-card-song-001');
+    fireEvent.click(within(card).getByRole('button', { name: /Thêm Lạc Trôi vào hàng chờ/i }));
+
+    const { queue, currentSong } = usePlayerStore.getState();
+    expect(queue.some((s) => s.songId === 'song-001')).toBe(true);
+    expect(currentSong).toBeNull();
   });
 });
 
