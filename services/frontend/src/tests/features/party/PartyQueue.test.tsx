@@ -11,6 +11,10 @@ vi.mock('../../../services/searchService', () => ({
   searchContent: vi.fn(),
 }));
 
+vi.mock('../../../services/musicService', () => ({
+  getSong: vi.fn().mockResolvedValue({ id: 'song-aaa', title: 'Mock Title', artist: 'Mock Artist', duration: 200, coverUrl: null }),
+}));
+
 import { searchContent } from '../../../services/searchService';
 const mockSearch = vi.mocked(searchContent);
 
@@ -195,12 +199,11 @@ describe('PartyQueue', () => {
       expect(screen.getByText('Hàng chờ (2)')).toBeInTheDocument();
     });
 
-    it('renders song ids for each queue item', () => {
+    it('renders loading skeleton while metadata is being fetched', () => {
       renderQueue(QUEUE_ITEMS);
-      const rows = screen.getAllByTestId('queue-row-song-id');
-      expect(rows).toHaveLength(2);
-      expect(rows[0]).toHaveTextContent('song-aaa');
-      expect(rows[1]).toHaveTextContent('song-bbb');
+      // Before getSong resolves, skeleton placeholders are shown (no title text yet)
+      const skeletons = document.querySelectorAll('.animate-pulse');
+      expect(skeletons.length).toBeGreaterThan(0);
     });
 
     it('shows remove button only for songs added by current user', () => {
@@ -225,6 +228,22 @@ describe('PartyQueue', () => {
       renderQueue(QUEUE_ITEMS);
       expect(screen.getByText('1')).toBeInTheDocument();
       expect(screen.getByText('2')).toBeInTheDocument();
+    });
+  });
+
+  describe('Song metadata enrichment (real timers)', () => {
+    beforeEach(() => {
+      vi.useRealTimers();
+    });
+    afterEach(() => {
+      vi.useFakeTimers();
+    });
+
+    it('renders song title after getSong resolves', async () => {
+      renderQueue(QUEUE_ITEMS);
+      await waitFor(() => {
+        expect(screen.getAllByText('Mock Title').length).toBeGreaterThan(0);
+      });
     });
   });
 });

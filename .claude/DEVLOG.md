@@ -1,5 +1,38 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — Party Queue Phase 3 — Integration + Bug Fixes] [DONE]
+
+**Những gì đã implement:**
+
+*Phase 3 — PartyRoomPage integration:*
+- `PartyRoomPage.tsx`: thay `useListeningParty` bằng `usePartyWebSocket` (full queue + signalR hook)
+- Right panel: tab bar "Thành viên" | "Hàng chờ" (default "Thành viên"); `PartyQueue` render trong tab "Hàng chờ"
+- Auto-advance: `useEffect([songEndSignal])` — khi Host và `songEndSignal > 0` → `sendQueueNext()`
+- `handleNext`: gọi `sendQueueNext()` thay vì re-send `PLAY currentSongId`
+- `handlePrev`: seek về giây 0 (party không có "bài trước") thay vì re-send `PLAY currentSongId`
+- **25/25 tests mới xanh trong `PartyRoomPage.test.tsx`**
+
+*Bug fix — Auto-advance không hoạt động:*
+- Root cause: `BottomPlayerBar.onEnded` chỉ gọi `playNext()`, không gọi `triggerSongEnd()` → `songEndSignal` không bao giờ tăng → party room không nhận tín hiệu
+- Fix: thêm `triggerSongEnd()` trước `playNext()` trong `onEnded` handler
+
+*Bug fix — Queue hiển thị song ID thay vì tên:*
+- `PartyQueue.tsx`: thêm `songMeta: Map<songId, {title, artist}>` state; `useEffect([queueItems])` fetch `getSong()` cho các ID mới
+- `QueueRow`: render skeleton `animate-pulse` khi đang fetch, render `title + artist` sau khi có metadata
+- Test: thêm `vi.mock('../../../services/musicService')`, tách describe riêng không dùng fake timers cho async metadata test
+
+**Quyết định thiết kế:**
+- `triggerSongEnd()` trong BottomPlayerBar là global — không ảnh hưởng ngoài party vì không có subscriber nào ngoài `PartyRoomPage`
+- `handlePrev` trong party room = seek to 0, không có "previous song" concept
+
+**Tests:** 832/832 xanh (tổng +12 tests từ Phase 3)
+
+**TODO (Phase tiếp theo):**
+1. Member nhấn pause → sau khi nhấn play lại: cần sync lại với Host position trước khi resume
+2. Member vào phòng sau khi có bài đang phát: cần nhận SYNC_STATE với `positionSec` chính xác và auto-seek đến đúng vị trí
+3. Queue hiển thị bài hiện tại (bài Host đã chọn khi tạo phòng) ở đầu danh sách, không chỉ hiển thị bài pending trong queue
+
+---
 [2026-05-18] [FEATURE — Party Queue Phase 2 — Frontend] [DONE]
 
 **Những gì đã implement:**

@@ -16,6 +16,27 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Party Queue — Phase 3: Integration + Tab UI (2026-05-18)**
+- `PartyRoomPage`: right panel có tab bar "Thành viên" | "Hàng chờ" — default "Thành viên"; switch tab để thấy `PartyQueue` component
+- `PartyRoomPage`: thay `useListeningParty` → `usePartyWebSocket` — queue state (`queueItems`, `sendQueueAdd/Remove/Next`) được wire trực tiếp
+- Auto-advance: Host nghe `songEndSignal` (từ `BottomPlayerBar.onEnded`) → gọi `sendQueueNext()` → server dequeue + broadcast `SYNC_STATE` + `QUEUE_UPDATED` cho tất cả member
+- Nút Next trong `RoomPlayer`: gọi `sendQueueNext()` — dequeue bài kế từ party queue và sync tất cả member
+- Nút Prev trong `RoomPlayer`: seek về giây 0 của bài hiện tại (party không có "bài trước")
+- `PartyQueue`: enrich metadata từ `getSong()` — hiển thị `title + artist` thay vì raw song ID; skeleton loading trong khi fetch
+- **+12 tests mới, 832/832 xanh**
+
+### Fixed
+
+**Party Queue — Auto-advance không hoạt động (2026-05-18)**
+- Root cause: `BottomPlayerBar.onEnded` chỉ gọi `playNext()` mà không gọi `triggerSongEnd()` → `songEndSignal` không bao giờ tăng → `PartyRoomPage` không nhận được tín hiệu để gọi `sendQueueNext`
+- Fix: thêm `triggerSongEnd()` vào `onEnded` handler trong `BottomPlayerBar`
+
+**Party Queue — Forward/Backward buttons sai chức năng (2026-05-18)**
+- Root cause: `handleNext` và `handlePrev` đều re-send `PLAY action` với cùng `currentSongId` — không có tác dụng skip
+- Fix: `handleNext` → `sendQueueNext()`; `handlePrev` → seek to 0 + broadcast `SEEK positionSec=0`
+
+### Added
+
 **Party Queue — Frontend (Phase 2/3) (2026-05-18)**
 - `playerStore`: `songEndSignal: number` + `triggerSongEnd()` — BottomPlayerBar gọi khi bài kết thúc; `PartyRoomPage` (Phase 3) subscribe để trigger `sendQueueNext`
 - `listening-party.ts`: types mới `QueueItem { songId, addedByUserId }` + `QueueUpdated { queue }`

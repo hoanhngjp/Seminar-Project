@@ -3,12 +3,15 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import AppShell from '../../components/layout/AppShell';
 import RoomPlayer from '../../features/party/components/RoomPlayer';
 import MemberList from '../../features/party/components/MemberList';
-import { useListeningParty } from '../../features/party/hooks/useListeningParty';
+import PartyQueue from '../../features/party/components/PartyQueue';
+import { usePartyWebSocket } from '../../hooks/usePartyWebSocket';
 import { useAuthStore } from '../../store/authStore';
 import { usePlayerStore } from '../../store/playerStore';
 import { getSong } from '../../services/musicService';
 import type { Party, PartyMember, Song } from '../../types/domain';
-import type { SyncState, MemberJoin, MemberLeave } from '../../types/listening-party';
+import type { SyncState, MemberJoin, MemberLeave, QueueUpdated } from '../../types/listening-party';
+
+type RightPanelTab = 'members' | 'queue';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -31,6 +34,7 @@ export default function PartyRoomPage() {
   const seekSong      = usePlayerStore((s) => s.seekSong);
   const clearSong     = usePlayerStore((s) => s.clearSong);
   const audioDuration = usePlayerStore((s) => s.audioDuration);
+  const songEndSignal = usePlayerStore((s) => s.songEndSignal);
 
   // ─── Party state ───────────────────────────────────────────────────────────
   const [members, setMembers]         = useState<PartyMember[]>(initialParty?.members ?? []);
@@ -45,6 +49,8 @@ export default function PartyRoomPage() {
   const joinCode = initialParty?.joinCode ?? '';
   const roomName = initialParty?.name ?? 'Phòng nghe nhạc';
   const isHost   = !!currentUserId && currentUserId === hostId;
+
+  const [activeTab, setActiveTab] = useState<RightPanelTab>('members');
 
   // Load song details whenever currentSongId changes
   useEffect(() => {
@@ -102,19 +108,32 @@ export default function PartyRoomPage() {
     setMembers((prev) => prev.filter((m) => m.userId !== data.userId));
   }, []);
 
-  const { status, sendPlayerAction } = useListeningParty({
-    roomId:        roomId ?? '',
-    isHost,
-    onSyncState:   handleSyncState,
-    onMemberJoin:  handleMemberJoin,
-    onMemberLeave: handleMemberLeave,
-  });
+  const handleQueueUpdated = useCallback((_data: QueueUpdated) => {}, []);
+
+  const { status, sendPlayerAction, queueItems, sendQueueAdd, sendQueueRemove, sendQueueNext } =
+    usePartyWebSocket({
+      roomId:         roomId ?? '',
+      isHost,
+      onSyncState:    handleSyncState,
+      onMemberJoin:   handleMemberJoin,
+      onMemberLeave:  handleMemberLeave,
+      onQueueUpdated: handleQueueUpdated,
+    });
+
+  // Auto-advance: Host triggers QueueNext when current song ends
+  useEffect(() => {
+    if (songEndSignal === 0) return;
+    if (!isHost) return;
+    void sendQueueNext();
+  }, [songEndSignal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Player actions (Host only) ────────────────────────────────────────────
   const handlePlay  = () => { setIsPlaying(true);  void sendPlayerAction({ action: 'PLAY',  songId: currentSongId ?? '' }); };
   const handlePause = () => { setIsPlaying(false); void sendPlayerAction({ action: 'PAUSE' }); };
-  const handleNext  = () => void sendPlayerAction({ action: 'PLAY', songId: currentSongId ?? '' });
-  const handlePrev  = () => void sendPlayerAction({ action: 'PLAY', songId: currentSongId ?? '' });
+  // Next: dequeue next song from party queue (same as auto-advance)
+  const handleNext  = () => { void sendQueueNext(); };
+  // Prev: restart current song (party has no "previous" concept)
+  const handlePrev  = () => { setPositionSec(0); seekSong(0); void sendPlayerAction({ action: 'SEEK', positionSec: 0 }); };
   const handleSeek  = (sec: number) => { setPositionSec(sec); seekSong(sec); void sendPlayerAction({ action: 'SEEK', positionSec: sec }); };
 
   const handleLeave = () => navigate('/');
@@ -187,15 +206,53 @@ export default function PartyRoomPage() {
           </div>
         </section>
 
-        {/* ── Right: Members section (40%) ───────────────────────────────── */}
+        {/* ── Right: Members / Queue section (40%) ──────────────────────── */}
         <section
           className="lg:w-[40%] flex flex-col h-full mt-8 lg:mt-0"
-          aria-label="Thành viên"
+          aria-label="Thành viên và Hàng chờ"
         >
-          <MemberList
-            members={members}
-            currentUserId={currentUserId}
-          />
+          {/* Tab bar */}
+          <div className="flex border-b border-border-muted mb-4" role="tablist">
+            <button
+              role="tab"
+              aria-selected={activeTab === 'members'}
+              onClick={() => setActiveTab('members')}
+              className={`flex-1 py-2 font-small-bold text-small-bold transition-colors border-b-2 -mb-[2px] ${
+                activeTab === 'members'
+                  ? 'text-text-emphasis border-spotify-green'
+                  : 'text-text-secondary border-transparent hover:text-text-base'
+              }`}
+            >
+              Thành viên
+            </button>
+            <button
+              role="tab"
+              aria-selected={activeTab === 'queue'}
+              onClick={() => setActiveTab('queue')}
+              className={`flex-1 py-2 font-small-bold text-small-bold transition-colors border-b-2 -mb-[2px] ${
+                activeTab === 'queue'
+                  ? 'text-text-emphasis border-spotify-green'
+                  : 'text-text-secondary border-transparent hover:text-text-base'
+              }`}
+            >
+              Hàng chờ
+            </button>
+          </div>
+
+          {/* Tab content */}
+          {activeTab === 'members' ? (
+            <MemberList
+              members={members}
+              currentUserId={currentUserId}
+            />
+          ) : (
+            <PartyQueue
+              queueItems={queueItems}
+              currentUserId={currentUserId}
+              onAddSong={sendQueueAdd}
+              onRemoveSong={sendQueueRemove}
+            />
+          )}
         </section>
 
       </main>

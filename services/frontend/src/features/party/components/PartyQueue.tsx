@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { searchContent } from '../../../services/searchService';
+import { getSong } from '../../../services/musicService';
 import type { QueueItem } from '../../../types/listening-party';
 import type { SearchResult } from '../../../types/domain';
+
+interface SongMeta { title: string; artist: string; }
 
 interface Props {
   queueItems:      QueueItem[];
@@ -19,7 +22,21 @@ export default function PartyQueue({
   const [query, setQuery]             = useState('');
   const [results, setResults]         = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debounceRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [songMeta, setSongMeta] = useState<Map<string, SongMeta>>(new Map());
+
+  // Fetch metadata for new song IDs in the queue
+  useEffect(() => {
+    const unknownIds = queueItems
+      .map((i) => i.songId)
+      .filter((id) => !songMeta.has(id));
+    if (unknownIds.length === 0) return;
+    unknownIds.forEach((id) => {
+      getSong(id)
+        .then((s) => setSongMeta((prev) => new Map(prev).set(id, { title: s.title, artist: s.artist })))
+        .catch(() => {});
+    });
+  }, [queueItems]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Debounced search
   useEffect(() => {
@@ -134,6 +151,7 @@ export default function PartyQueue({
               key={`${item.songId}-${index}`}
               item={item}
               index={index}
+              meta={songMeta.get(item.songId)}
               isOwner={item.addedByUserId === currentUserId}
               onRemove={onRemoveSong}
             />
@@ -149,11 +167,12 @@ export default function PartyQueue({
 interface QueueRowProps {
   item:     QueueItem;
   index:    number;
+  meta?:    SongMeta;
   isOwner:  boolean;
   onRemove: (songId: string) => void;
 }
 
-function QueueRow({ item, index, isOwner, onRemove }: QueueRowProps) {
+function QueueRow({ item, index, meta, isOwner, onRemove }: QueueRowProps) {
   return (
     <div
       className="flex items-center gap-3 px-2 py-2 rounded-md hover:bg-mid-dark/50 group transition-colors"
@@ -164,15 +183,19 @@ function QueueRow({ item, index, isOwner, onRemove }: QueueRowProps) {
         {index + 1}
       </span>
 
-      {/* Song id as placeholder — PartyRoomPage can enrich with title later */}
       <div className="flex-1 min-w-0">
-        <p
-          className="font-body text-body text-text-base truncate"
-          title={item.songId}
-          data-testid="queue-row-song-id"
-        >
-          {item.songId}
-        </p>
+        {meta ? (
+          <>
+            <p className="font-body-bold text-body-bold text-text-base truncate">{meta.title}</p>
+            <p className="font-caption text-caption text-text-secondary truncate">{meta.artist}</p>
+          </>
+        ) : (
+          /* Loading skeleton while metadata is being fetched */
+          <>
+            <div className="h-3.5 w-32 bg-mid-dark rounded animate-pulse mb-1" />
+            <div className="h-3 w-20 bg-mid-dark rounded animate-pulse" />
+          </>
+        )}
       </div>
 
       {/* Remove button — only visible to the user who added the song */}

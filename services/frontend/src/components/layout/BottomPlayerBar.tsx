@@ -27,6 +27,7 @@ export default function BottomPlayerBar() {
   const setAudioDuration = usePlayerStore((s) => s.setAudioDuration);
   const playNext         = usePlayerStore((s) => s.playNext);
   const playPrev         = usePlayerStore((s) => s.playPrev);
+  const triggerSongEnd   = usePlayerStore((s) => s.triggerSongEnd);
 
   const audioRef        = useRef<HTMLAudioElement>(null);
   const urlFetchedAtRef = useRef<number>(0);
@@ -230,7 +231,7 @@ export default function BottomPlayerBar() {
                 sendPlayAnalytics(currentSong.songId, d, audioRef.current?.currentTime ?? 0);
               }
             }}
-            onEnded={() => { setIsPlaying(false); playNext(); }}
+            onEnded={() => { setIsPlaying(false); triggerSongEnd(); playNext(); }}
             onError={() => fetchStreamUrl(currentSong.songId)}
           />
         )}
