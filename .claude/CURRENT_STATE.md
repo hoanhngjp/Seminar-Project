@@ -239,6 +239,7 @@
 - [X] Bug fix: Auth Service `RefreshAsync` hardcode `role = "Listener"` → thêm `Role` column vào `refresh_tokens`, lưu role khi login, đọc lại khi refresh — migration `AddRoleToRefreshToken` (2026-05-19)
 - [X] Bug fix: `AnalyticsStats` type trong `domain.ts` — cập nhật khớp với backend: `uniqueUsers`→`uniqueListeners`, thêm `totalPlays`/`totalSkips`/`avgListenPercent`; fix `CreatorDashboardPage` tương ứng (2026-05-19)
 - [X] Bug fix: CreatorDashboardPage heatmap không render — `dropOffs`→`heatmap` field fix + empty state (2026-05-19)
+- [X] Feature: UploadPage genre/mood/language inputs — `GET /api/v1/music/genres` endpoint + Cloudinary cover upload + MetadataForm pill multi-select — 852/852 xanh (2026-05-19)
 
 ---
 
@@ -262,7 +263,9 @@
   11. [DONE] Bug fix: Auth refresh token hardcode "Listener" role → lưu + đọc role từ DB (`AddRoleToRefreshToken` migration)
   12. [DONE] Bug fix: `AnalyticsStats` type mismatch (`uniqueUsers`→`uniqueListeners`, thêm `totalPlays`/`avgListenPercent`)
   13. [DONE] Bug fix: CreatorDashboardPage heatmap — `dropOffs`→`heatmap` field fix, empty state, annotation `-top-20`
-  14. [TODO] Demo script rehearsal 14 phút
+  14. [DONE] Feature: UploadPage genre/mood/language + Cloudinary cover upload
+  15. [TODO] Fix: verify Cloudinary env vars trong .env local (503 khi upload cover)
+  16. [TODO] Demo script rehearsal 14 phút
 
 **Party Queue Design Decisions:**
 - Queue stored in Redis (Room JSON), max 50 items

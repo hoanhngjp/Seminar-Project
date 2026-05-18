@@ -52,6 +52,15 @@ public class SongsController : ControllerBase
         if (request.File.Length > 50 * 1024 * 1024)
             return StatusCode(413, ApiResponse<object>.Fail("PAYLOAD_TOO_LARGE", "File exceeds 50MB limit.", requestId));
 
+        if (request.Cover != null)
+        {
+            var allowedImageTypes = new HashSet<string> { "image/jpeg", "image/png", "image/webp" };
+            if (!allowedImageTypes.Contains(request.Cover.ContentType))
+                return BadRequest(ApiResponse<object>.Fail("VALIDATION_ERROR", "Cover image must be JPEG, PNG, or WebP.", requestId));
+            if (request.Cover.Length > 10 * 1024 * 1024)
+                return BadRequest(ApiResponse<object>.Fail("VALIDATION_ERROR", "Cover image must not exceed 10MB.", requestId));
+        }
+
         var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var role = User.FindFirstValue(ClaimTypes.Role);
 
@@ -75,7 +84,10 @@ public class SongsController : ControllerBase
             AudioStream = request.File.OpenReadStream(),
             ContentType = request.File.ContentType,
             Length = request.File.Length,
-            FileName = request.File.FileName
+            FileName = request.File.FileName,
+            CoverStream = request.Cover?.OpenReadStream(),
+            CoverContentType = request.Cover?.ContentType,
+            CoverFileName = request.Cover?.FileName
         };
 
         try
@@ -96,6 +108,10 @@ public class SongsController : ControllerBase
         catch (ArgumentException ex)
         {
             return BadRequest(ApiResponse<object>.Fail("VALIDATION_ERROR", ex.Message, requestId));
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("cover image"))
+        {
+            return StatusCode(503, ApiResponse<object>.Fail("SERVICE_UNAVAILABLE", "Cover image upload failed. Please try again.", requestId));
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("storage service"))
         {
@@ -185,4 +201,5 @@ public class UploadSongRequest
     public string? Mood { get; set; }
     public string? Language { get; set; }
     public bool IsExplicit { get; set; }
+    public IFormFile? Cover { get; set; }
 }

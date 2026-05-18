@@ -16,6 +16,7 @@ public class SongService : ISongService
 {
     private readonly IMusicRepository _repository;
     private readonly IStorageService _storageService;
+    private readonly IImageStorageService _imageStorageService;
     private readonly IEventPublisher _eventPublisher;
     private readonly ISongCache _cache;
     private readonly ILogger<SongService> _logger;
@@ -23,12 +24,14 @@ public class SongService : ISongService
     public SongService(
         IMusicRepository repository,
         IStorageService storageService,
+        IImageStorageService imageStorageService,
         IEventPublisher eventPublisher,
         ISongCache cache,
         ILogger<SongService> logger)
     {
         _repository = repository;
         _storageService = storageService;
+        _imageStorageService = imageStorageService;
         _eventPublisher = eventPublisher;
         _cache = cache;
         _logger = logger;
@@ -49,14 +52,37 @@ public class SongService : ISongService
         var songId = Guid.NewGuid();
         var storageKey = $"songs/{songId}/audio{Path.GetExtension(dto.FileName)}";
 
+        // Upload cover to Cloudinary before committing anything — fail fast if image upload fails
+        string? coverImageUrl = null;
+        if (dto.CoverStream != null && dto.CoverContentType != null)
+        {
+            try
+            {
+                coverImageUrl = await _imageStorageService.UploadImageAsync(
+                    "smart-music/covers",
+                    $"song-{songId}",
+                    dto.CoverStream,
+                    dto.CoverContentType,
+                    cancellationToken);
+                _logger.LogInformation("Cover image uploaded for song {SongId}: {Url}", songId, coverImageUrl);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Cover image upload failed for song {SongId}.", songId);
+                throw new InvalidOperationException("Failed to upload cover image. Please try again.", ex);
+            }
+        }
+
         var song = new Song
         {
             Id = songId,
             ArtistId = artist.Id,
             Title = dto.Title,
             Language = dto.Language,
+            Mood = dto.Mood,
             IsExplicit = dto.IsExplicit,
             S3AudioKey = storageKey,
+            CoverImageUrl = coverImageUrl,
             IsPublished = false,
             DurationSec = 0
         };

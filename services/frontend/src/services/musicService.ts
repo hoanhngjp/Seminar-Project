@@ -2,9 +2,20 @@ import { apiClient } from './api';
 import type { ApiResponse } from '../types/api';
 import type { Song, ArtistDetail, MySong } from '../types/domain';
 
+export interface Genre {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export async function getGenres(): Promise<Genre[]> {
+  const res = await apiClient.get<ApiResponse<Genre[]>>('/api/v1/music/genres');
+  return res.data.data ?? [];
+}
+
 export interface UploadSongRequest {
   title: string;
-  genre: string;
+  genreIds: string[];
   mood: string;
   language: string;
   isExplicit: boolean;
@@ -15,7 +26,7 @@ export interface UploadSongRequest {
 export async function uploadSong(req: UploadSongRequest): Promise<Song> {
   const form = new FormData();
   form.append('title', req.title);
-  form.append('genre', req.genre);
+  form.append('genreIds', req.genreIds.join(','));
   form.append('mood', req.mood);
   form.append('language', req.language);
   form.append('isExplicit', String(req.isExplicit));

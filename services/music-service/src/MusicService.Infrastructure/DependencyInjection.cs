@@ -1,3 +1,4 @@
+using CloudinaryDotNet;
 using Google.Cloud.Storage.V1;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,18 @@ public static class DependencyInjection
         services.AddSingleton<Lazy<StorageClient>>(_ => new Lazy<StorageClient>(() => StorageClient.Create()));
         services.AddSingleton<IStorageService>(sp =>
             new GcsStorageService(sp.GetRequiredService<Lazy<StorageClient>>(), bucketName));
+
+        // Cloudinary Configuration (for cover image upload)
+        var cloudinaryCloudName = configuration["Cloudinary:CloudName"]
+            ?? throw new InvalidOperationException("Cloudinary:CloudName is required.");
+        var cloudinaryApiKey = configuration["Cloudinary:ApiKey"]
+            ?? throw new InvalidOperationException("Cloudinary:ApiKey is required.");
+        var cloudinaryApiSecret = configuration["Cloudinary:ApiSecret"]
+            ?? throw new InvalidOperationException("Cloudinary:ApiSecret is required.");
+
+        var cloudinaryAccount = new Account(cloudinaryCloudName, cloudinaryApiKey, cloudinaryApiSecret);
+        services.AddSingleton(new Cloudinary(cloudinaryAccount) { Api = { Secure = true } });
+        services.AddSingleton<IImageStorageService, CloudinaryImageService>();
 
         services.AddSingleton<IEventPublisher, KafkaEventPublisher>();
         services.AddScoped<IMusicRepository, MusicRepository>();

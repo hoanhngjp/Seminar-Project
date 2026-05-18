@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+import { getGenres } from '../../../services/musicService';
+import type { Genre } from '../../../services/musicService';
 import type { UploadForm } from '../hooks/useUpload';
 
 interface Props {
@@ -7,10 +10,49 @@ interface Props {
   onCoverSelect: (file: File) => void;
 }
 
+const MOOD_OPTIONS = [
+  { value: '', label: 'Chọn tâm trạng' },
+  { value: 'happy', label: 'Vui vẻ' },
+  { value: 'sad', label: 'Buồn' },
+  { value: 'energetic', label: 'Sôi động' },
+  { value: 'calm', label: 'Thư giãn' },
+  { value: 'romantic', label: 'Lãng mạn' },
+  { value: 'morning', label: 'Buổi sáng' },
+];
+
+const LANGUAGE_OPTIONS = [
+  { value: 'vi', label: 'Tiếng Việt' },
+  { value: 'en', label: 'Tiếng Anh' },
+  { value: 'ko', label: 'Tiếng Hàn' },
+  { value: 'ja', label: 'Tiếng Nhật' },
+  { value: 'zh', label: 'Tiếng Trung' },
+  { value: 'fr', label: 'Tiếng Pháp' },
+  { value: 'other', label: 'Khác' },
+];
+
+const SELECT_CLASS =
+  'w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base shadow-input-inset border-none focus:ring-0 focus:outline-none appearance-none cursor-pointer';
+
 export default function MetadataForm({ form, coverPreview, onChange, onCoverSelect }: Props) {
+  const [genres, setGenres] = useState<Genre[]>([]);
+
+  useEffect(() => {
+    getGenres().then(setGenres).catch(() => {});
+  }, []);
+
+  function handleGenreToggle(genreId: string) {
+    const current = form.genreIds;
+    if (current.includes(genreId)) {
+      onChange({ genreIds: current.filter((id) => id !== genreId) });
+    } else {
+      onChange({ genreIds: [...current, genreId] });
+    }
+  }
+
   return (
     <section className="bg-dark-surface rounded-[8px] p-lg flex flex-col gap-lg">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
+        {/* Tên bài hát */}
         <div className="flex flex-col gap-sm">
           <label className="font-small-bold text-small-bold text-text-secondary">Tên bài hát</label>
           <input
@@ -23,43 +65,72 @@ export default function MetadataForm({ form, coverPreview, onChange, onCoverSele
           />
         </div>
 
-        <div className="flex flex-col gap-sm">
-          <label className="font-small-bold text-small-bold text-text-secondary">Thể loại</label>
-          <input
-            type="text"
-            placeholder="VD: Pop, Rock, Rap"
-            value={form.genre}
-            onChange={(e) => onChange({ genre: e.target.value })}
-            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base shadow-input-inset border-none focus:ring-0 focus:outline-none"
-            aria-label="Thể loại"
-          />
-        </div>
-
+        {/* Tâm trạng */}
         <div className="flex flex-col gap-sm">
           <label className="font-small-bold text-small-bold text-text-secondary">Tâm trạng</label>
-          <input
-            type="text"
-            placeholder="Vui vẻ, Buồn, Sôi động"
+          <select
             value={form.mood}
             onChange={(e) => onChange({ mood: e.target.value })}
-            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base shadow-input-inset border-none focus:ring-0 focus:outline-none"
+            className={SELECT_CLASS}
             aria-label="Tâm trạng"
-          />
+          >
+            {MOOD_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value} className="bg-dark-surface text-text-base">
+                {o.label}
+              </option>
+            ))}
+          </select>
         </div>
 
+        {/* Ngôn ngữ */}
         <div className="flex flex-col gap-sm">
           <label className="font-small-bold text-small-bold text-text-secondary">Ngôn ngữ</label>
-          <input
-            type="text"
-            placeholder="Tiếng Việt"
+          <select
             value={form.language}
             onChange={(e) => onChange({ language: e.target.value })}
-            className="w-full bg-mid-dark rounded-full px-md py-sm font-body-regular text-body-regular text-text-base shadow-input-inset border-none focus:ring-0 focus:outline-none"
+            className={SELECT_CLASS}
             aria-label="Ngôn ngữ"
-          />
+          >
+            {LANGUAGE_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value} className="bg-dark-surface text-text-base">
+                {o.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
+      {/* Thể loại — multi-select pill */}
+      {genres.length > 0 && (
+        <div className="flex flex-col gap-sm">
+          <label className="font-small-bold text-small-bold text-text-secondary">
+            Thể loại{' '}
+            <span className="font-caption text-caption text-text-secondary">(chọn nhiều)</span>
+          </label>
+          <div className="flex flex-wrap gap-sm" role="group" aria-label="Thể loại">
+            {genres.map((genre) => {
+              const selected = form.genreIds.includes(genre.id);
+              return (
+                <button
+                  key={genre.id}
+                  type="button"
+                  onClick={() => handleGenreToggle(genre.id)}
+                  aria-pressed={selected}
+                  className={`px-md py-xs rounded-full font-caption text-caption transition-colors ${
+                    selected
+                      ? 'bg-spotify-green text-near-black'
+                      : 'bg-mid-dark text-text-secondary hover:text-text-base border border-border-muted'
+                  }`}
+                >
+                  {genre.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Bìa album + Explicit toggle */}
       <div className="flex items-start gap-lg border-t border-border-muted pt-lg mt-sm">
         <div className="flex flex-col gap-sm w-auto">
           <label className="font-small-bold text-small-bold text-text-secondary">Bìa album</label>
@@ -74,9 +145,12 @@ export default function MetadataForm({ form, coverPreview, onChange, onCoverSele
             )}
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               className="sr-only"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) onCoverSelect(f); }}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) onCoverSelect(f);
+              }}
             />
           </label>
         </div>

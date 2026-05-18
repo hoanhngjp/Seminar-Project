@@ -66,4 +66,7 @@ public class MusicRepository : IMusicRepository
             .Where(s => s.Artist != null && s.Artist.UserId == userId)
             .OrderByDescending(s => s.CreatedAt)
             .ToListAsync(cancellationToken);
+
+    public async Task<List<Genre>> GetAllGenresAsync(CancellationToken cancellationToken = default)
+        => await _context.Genres.OrderBy(g => g.Name).ToListAsync(cancellationToken);
 }

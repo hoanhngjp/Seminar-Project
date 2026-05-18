@@ -159,6 +159,20 @@ const getSongHandler = http.get('*/api/v1/music/songs/:songId', async ({ params 
   return ok(song);
 });
 
+const getGenresHandler = http.get('*/api/v1/music/genres', async () => {
+  return ok([
+    { id: 'd4e5f6a7-b8c9-0123-defa-234567890123', name: 'Pop', slug: 'pop' },
+    { id: 'e5f6a7b8-c9d0-1234-efab-567890123456', name: 'Rock', slug: 'rock' },
+    { id: 'f6a7b8c9-d0e1-2345-fabc-678901234567', name: 'R&B', slug: 'rnb' },
+    { id: 'a7b8c9d0-e1f2-3456-abcd-789012345678', name: 'Jazz', slug: 'jazz' },
+    { id: 'b8c9d0e1-f2a3-4567-bcde-890123456789', name: 'Classical', slug: 'classical' },
+    { id: 'c9d0e1f2-a3b4-5678-cdef-901234567890', name: 'Electronic', slug: 'electronic' },
+    { id: 'd0e1f2a3-b4c5-6789-defa-012345678901', name: 'Hip-Hop', slug: 'hip-hop' },
+    { id: 'e1f2a3b4-c5d6-7890-efab-123456789012', name: 'Acoustic', slug: 'acoustic' },
+    { id: 'f2a3b4c5-d6e7-8901-fabc-234567890123', name: 'Indie', slug: 'indie' },
+  ]);
+});
+
 const uploadSongHandler = http.post('*/api/v1/music/songs', async () => {
   await delay(800);
   return created({ ...MOCK_SONGS[0], id: `song-new-${Date.now()}` });
@@ -288,6 +302,7 @@ export const handlers = [
   streamingUrlHandler,
 
   // Music
+  getGenresHandler,
   getMySongsHandler,
   getArtistHandler,
   getSongHandler,

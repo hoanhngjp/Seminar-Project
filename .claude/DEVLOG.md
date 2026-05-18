@@ -1,5 +1,37 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-19] [UPLOAD PAGE — Genre/Mood/Language inputs + Cloudinary cover upload] [DONE]
+
+**Vấn đề 1 — Genre input gửi free-text thay vì UUID**
+- Root cause: `MetadataForm` dùng `<input type="text">` cho genre, gửi string "Pop" lên BE. BE gọi `Guid.Parse("Pop")` → FormatException → upload fail silently hoặc song không có genre trong `song_genres`.
+- Fix: Tạo `GET /api/v1/music/genres` endpoint (public, no auth). `MetadataForm` fetch genres khi mount → render pill multi-select. `useUpload` đổi `genre: string` → `genreIds: string[]`. `musicService.ts` gửi comma-separated UUID → BE parse đúng.
+
+**Vấn đề 2 — Language gửi display name thay vì ISO code**
+- Root cause: Default value `'Tiếng Việt'`, `<input type="text">` → DB lưu "Tiếng Việt" thay vì `'vi'`.
+- Fix: Đổi sang `<select>` với options map ISO 639-1 code → label. Default `'vi'`.
+
+**Vấn đề 3 — Mood free-text không khớp Recommendation Engine tags**
+- Root cause: `<input type="text">` → user nhập bất kỳ giá trị → Rule Engine không match `mood_tags`.
+- Fix: `<select>` với 6 options cố định: `happy/sad/energetic/calm/romantic/morning`.
+
+**Vấn đề 4 — Cover ảnh bìa chưa có cơ chế upload**
+- Root cause: `selectCoverFile()` chỉ tạo local object URL. BE `UploadSongRequest` không có field `Cover`. `Song.CoverImageUrl` luôn null sau upload.
+- Fix:
+  1. `IImageStorageService` + `CloudinaryImageService` (CloudinaryDotNet 1.26) — upload lên `smart-music/covers/song-{id}`, 640×640 crop fill, quality/format auto.
+  2. `UploadSongDto`: thêm `CoverStream`, `CoverContentType`, `CoverFileName`.
+  3. `SongsController`: nhận `IFormFile? Cover`, validate MIME (JPEG/PNG/WebP ≤ 10MB).
+  4. `SongService.UploadSongAsync`: upload Cloudinary **trước** audio GCS — nếu fail → throw → 503 cho user.
+  5. Cover fail = báo lỗi ngay (không silent fail).
+
+**Các file thay đổi:**
+- BE: `GenresController.cs` (mới), `IMusicRepository`, `MusicRepository`, `IImageStorageService` (mới), `CloudinaryImageService` (mới), `DependencyInjection`, `UploadSongDto`, `SongsController`, `SongService`
+- FE: `MetadataForm.tsx`, `useUpload.ts`, `musicService.ts`, `handlers.ts` (MSW mock genres), `UploadPage.test.tsx`
+- Tests: 852/852 xanh
+
+**Known issue còn lại:**
+- 503 khi upload → nghi vấn Cloudinary env vars chưa được set đúng trong `.env` local (CLOUDINARY_CLOUD_NAME etc.). docker-compose đã có env mapping. Cần verify `.env` có giá trị thật.
+
+---
 [2026-05-19] [CREATOR DASHBOARD — HeatmapChart không render] [DONE]
 
 **Root cause:** Field name mismatch giữa frontend service và backend response.

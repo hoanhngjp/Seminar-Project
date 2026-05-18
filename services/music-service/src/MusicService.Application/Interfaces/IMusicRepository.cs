@@ -19,4 +19,5 @@ public interface IMusicRepository
     Task<Artist?> GetArtistByIdAsync(Guid artistId, CancellationToken cancellationToken = default);
     Task<List<Song>> GetSongsByArtistIdAsync(Guid artistId, CancellationToken cancellationToken = default);
     Task<List<Song>> GetSongsByCreatorUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<List<Genre>> GetAllGenresAsync(CancellationToken cancellationToken = default);
 }

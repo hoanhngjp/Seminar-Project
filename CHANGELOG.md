@@ -16,6 +16,14 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**UploadPage: Genre/Mood/Language inputs + Cloudinary cover upload (2026-05-19)**
+- `GET /api/v1/music/genres` (public): endpoint mới, trả danh sách genres từ DB (no auth required)
+- `IImageStorageService` + `CloudinaryImageService`: upload ảnh bìa lên Cloudinary `smart-music/covers/`, resize 640×640, quality auto
+- `MetadataForm.tsx`: Thể loại → pill multi-select fetch từ API; Tâm trạng → `<select>` 6 options (ISO value); Ngôn ngữ → `<select>` với ISO 639-1 codes
+- `useUpload.ts`: `UploadForm.genre` → `genreIds: string[]`; language default `'vi'`
+- `musicService.ts`: `getGenres()` + `UploadSongRequest.genreIds` gửi comma-separated UUID lên BE
+- Cover upload: fail → 503 trả ngay cho user (không upload audio nếu cover fail)
+
 **Seed script creator@example.com (2026-05-19)**
 - `infra/seed/seed_creator_demo.sh`: 3 demo songs vào `music_db` + ~500 play events lịch sử 30 ngày vào InfluxDB + Redis cache flush — cho phép test Creator Dashboard với dữ liệu thật
 - Account: `creator@example.com / Test1234!`, Artist ID: `aa111111-bbbb-cccc-dddd-eeeeeeeeeeee`

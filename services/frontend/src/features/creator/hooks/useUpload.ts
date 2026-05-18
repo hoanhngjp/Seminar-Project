@@ -7,7 +7,7 @@ const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 
 export interface UploadForm {
   title: string;
-  genre: string;
+  genreIds: string[];
   mood: string;
   language: string;
   isExplicit: boolean;
@@ -22,9 +22,9 @@ export function useUpload() {
   const [fileError, setFileError] = useState<string | null>(null);
   const [form, setForm] = useState<UploadForm>({
     title: '',
-    genre: '',
+    genreIds: [],
     mood: '',
-    language: 'Tiếng Việt',
+    language: 'vi',
     isExplicit: false,
   });
   const [status, setStatus] = useState<UploadStatus>('idle');
@@ -84,7 +84,7 @@ export function useUpload() {
     setCoverFile(null);
     setCoverPreview(null);
     setFileError(null);
-    setForm({ title: '', genre: '', mood: '', language: 'Tiếng Việt', isExplicit: false });
+    setForm({ title: '', genreIds: [], mood: '', language: 'vi', isExplicit: false });
     setStatus('idle');
     setUploadedSong(null);
     setUploadError(null);

@@ -14,4 +14,7 @@ public class UploadSongDto
     public string ContentType { get; set; } = string.Empty;
     public long Length { get; set; }
     public string FileName { get; set; } = string.Empty;
+    public Stream? CoverStream { get; set; }
+    public string? CoverContentType { get; set; }
+    public string? CoverFileName { get; set; }
 }

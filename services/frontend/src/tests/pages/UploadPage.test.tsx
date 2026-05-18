@@ -9,9 +9,14 @@ import { useAuthStore } from '../../store/authStore';
 // ---------------------------------------------------------------------------
 
 const mockUploadSong = vi.fn();
+const mockGetGenres = vi.fn().mockResolvedValue([
+  { id: 'd4e5f6a7-b8c9-0123-defa-234567890123', name: 'Pop', slug: 'pop' },
+  { id: 'e5f6a7b8-c9d0-1234-efab-567890123456', name: 'Rock', slug: 'rock' },
+]);
 
 vi.mock('../../services/musicService', () => ({
   uploadSong: (...args: unknown[]) => mockUploadSong(...args),
+  getGenres: (...args: unknown[]) => mockGetGenres(...args),
   getSong: vi.fn(),
 }));
 
@@ -132,13 +137,16 @@ describe('UploadPage', () => {
   });
 
   // ── Metadata: all fields present ──────────────────────────────────────────
-  it('renders all metadata input fields', () => {
+  it('renders all metadata input fields', async () => {
     renderPage();
     expect(screen.getByLabelText(/tên bài hát/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/thể loại/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/tâm trạng/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/ngôn ngữ/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/nội dung người lớn/i)).toBeInTheDocument();
+    // Genre pills load async after getGenres resolves
+    await waitFor(() => expect(screen.getByRole('group', { name: /thể loại/i })).toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'Pop' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Rock' })).toBeInTheDocument();
   });
 
   // ── Preview: title mirrors input ──────────────────────────────────────────
