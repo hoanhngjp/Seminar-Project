@@ -1,5 +1,26 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — Party Queue Phase 1 — Backend core] [DONE]
+
+**Quyết định thiết kế (confirmed):**
+- Queue stored in separate Redis key `party:queue:{roomId}` (JSON string, không embed vào Room hash)
+- Tất cả members (Host + Member) đều được add vào queue; max 50 items
+- Người add thì được xóa bài của mình; RemoveFromQueue silent ignore nếu không phải owner
+- Auto-advance design (Phase 3): `songEndSignal: number` counter trong `playerStore` — increment khi `<audio onEnded>`; `PartyRoomPage` subscribe và gọi `sendQueueNext`
+- Layout decision (Phase 2): right panel dùng **tabs** — "Thành viên" | "Hàng chờ"
+- No new Kafka topics — SignalR only
+
+**Những gì đã implement:**
+- `QueueItem.cs` domain model, `QueueFullException.cs`
+- `IPartyRepository` + `RedisPartyRepository`: `GetQueueAsync`, `SaveQueueAsync`, `UpdateRoomSongAsync`; `DeleteRoomAsync` xóa luôn `party:queue:{roomId}`
+- `IPartyService` + `PartyService`: `GetQueueAsync`, `AddToQueueAsync` (throws `QueueFullException` khi ≥50), `RemoveFromQueueAsync` (silent ignore nếu không phải owner), `DequeueNextAsync` (pop → `UpdateRoomSongAsync` → return `QueueNextResult`)
+- DTOs: `QueueItemDto`, `GetQueueResponse`, `QueueNextResult` (PartyDtos); `QueueAddMessage`, `QueueRemoveMessage`, `QueueNextMessage`, `QueueUpdatedMessage` (HubDtos)
+- `PartyHub`: `QueueAdd` (all members, catch `QueueFullException` → `QUEUE_ERROR` to caller), `QueueRemove` (any member, service enforces ownership), `QueueNext` (Host only guard → `DequeueNextAsync` → broadcast `SYNC_STATE` + `QUEUE_UPDATED`)
+- `PartiesController`: `GET /api/v1/parties/{roomId}/queue` (150ms timeout)
+- Fix pre-existing `PartyServiceTests` constructor mismatch (`IUserServiceClient` + `IMusicServiceClient` mocks missing)
+- **28/28 unit tests xanh** (11 tests mới trong `PartyServiceQueueTests.cs`)
+
+---
 [2026-05-18] [BUG FIX — Listening Party member names không hiển thị] [DONE]
 
 **Root cause:** `User.DisplayName` defaults to `""` (empty string) trong DB. `??` operator chỉ fallback khi `null`, không fallback cho `""` → member name render trống.

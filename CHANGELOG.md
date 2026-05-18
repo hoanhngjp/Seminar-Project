@@ -14,6 +14,18 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Added
+
+**Party Queue — Backend core (Phase 1/3) (2026-05-18)**
+- `QueueItem` domain model `{SongId, AddedByUserId}`, `QueueFullException` (max 50)
+- Redis key `party:queue:{roomId}` (JSON list, TTL 24h); xóa cùng room khi `DeleteRoomAsync`
+- `IPartyRepository` + `RedisPartyRepository`: `GetQueueAsync`, `SaveQueueAsync`, `UpdateRoomSongAsync`
+- `IPartyService` + `PartyService`: `GetQueue`, `AddToQueue` (throw nếu ≥50), `RemoveFromQueue` (chỉ xóa của chính mình, silent ignore otherwise), `DequeueNext` (pop + UpdateRoomSong + broadcast-ready)
+- `PartyHub`: `QueueAdd` (all members), `QueueRemove` (owner only), `QueueNext` (Host only → SYNC_STATE + QUEUE_UPDATED)
+- `PartiesController`: `GET /api/v1/parties/{roomId}/queue`
+- DTOs: `QueueItemDto`, `QueueAddMessage`, `QueueRemoveMessage`, `QueueNextMessage`, `QueueUpdatedMessage`, `GetQueueResponse`, `QueueNextResult`
+- **28/28 unit tests xanh** (11 tests mới `PartyServiceQueueTests`; fix pre-existing constructor mismatch `PartyServiceTests`)
+
 ### Fixed
 
 **Listening Party — member names không hiển thị (2026-05-18)**

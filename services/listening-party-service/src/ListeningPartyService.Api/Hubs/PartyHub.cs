@@ -1,6 +1,7 @@
 using ListeningPartyService.Application.DTOs;
 using ListeningPartyService.Application.Interfaces;
 using ListeningPartyService.Application.Services;
+using ListeningPartyService.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -145,5 +146,89 @@ public class PartyHub(
 
         logger.LogDebug("Room {RoomId} SYNC_STATE broadcast: action={Action} isPlaying={IsPlaying} pos={Pos}",
             roomId, message.Action, isPlaying, positionSec);
+    }
+
+    // ─── Queue Hub methods ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// QUEUE_ADD — any authenticated member may add a song; max 50 items per room.
+    /// Broadcasts QUEUE_UPDATED to all room members on success.
+    /// Sends QUEUE_ERROR back to caller if queue is full.
+    /// </summary>
+    public async Task QueueAdd(QueueAddMessage message)
+    {
+        var roomId = GetRoomId();
+        var userId = GetUserId();
+
+        if (string.IsNullOrWhiteSpace(message.SongId)) return;
+
+        try
+        {
+            var updatedQueue = await partyService.AddToQueueAsync(roomId, message.SongId, userId);
+            await Clients.Group(roomId).SendAsync("QUEUE_UPDATED", new QueueUpdatedMessage(updatedQueue));
+
+            logger.LogDebug("QUEUE_ADD: user={UserId} song={SongId} room={RoomId}", userId, message.SongId, roomId);
+        }
+        catch (QueueFullException ex)
+        {
+            await Clients.Caller.SendAsync("QUEUE_ERROR", ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// QUEUE_REMOVE — only the member who added the song may remove it.
+    /// Silently ignores if song not found or not owned by caller.
+    /// Broadcasts QUEUE_UPDATED to all room members.
+    /// </summary>
+    public async Task QueueRemove(QueueRemoveMessage message)
+    {
+        var roomId = GetRoomId();
+        var userId = GetUserId();
+
+        if (string.IsNullOrWhiteSpace(message.SongId)) return;
+
+        var updatedQueue = await partyService.RemoveFromQueueAsync(roomId, message.SongId, userId);
+        await Clients.Group(roomId).SendAsync("QUEUE_UPDATED", new QueueUpdatedMessage(updatedQueue));
+
+        logger.LogDebug("QUEUE_REMOVE: user={UserId} song={SongId} room={RoomId}", userId, message.SongId, roomId);
+    }
+
+    /// <summary>
+    /// QUEUE_NEXT — Host only. Dequeues the next song, updates room playback state,
+    /// and broadcasts SYNC_STATE + QUEUE_UPDATED to all room members.
+    /// If queue is empty, broadcasts QUEUE_UPDATED with an empty list (no playback change).
+    /// </summary>
+    public async Task QueueNext(QueueNextMessage message)
+    {
+        var roomId = GetRoomId();
+        var userId = GetUserId();
+
+        var room = await partyService.GetRoomAsync(roomId);
+        if (room is null) return;
+
+        if (room.HostId != userId)
+        {
+            logger.LogWarning("Non-host {UserId} attempted QueueNext in room {RoomId} — ignored", userId, roomId);
+            return;
+        }
+
+        var result = await partyService.DequeueNextAsync(roomId);
+        if (result is null)
+        {
+            // Queue empty — inform all members
+            await Clients.Group(roomId).SendAsync("QUEUE_UPDATED", new QueueUpdatedMessage([]));
+            return;
+        }
+
+        await Clients.Group(roomId).SendAsync("SYNC_STATE", new SyncStateMessage(
+            result.UpdatedRoom.SongId,
+            result.UpdatedRoom.IsPlaying,
+            result.UpdatedRoom.PositionSec,
+            result.UpdatedRoom.HostId,
+            DateTime.UtcNow.ToString("O")));
+
+        await Clients.Group(roomId).SendAsync("QUEUE_UPDATED", new QueueUpdatedMessage(result.UpdatedQueue));
+
+        logger.LogInformation("QUEUE_NEXT: room={RoomId} advanced to song={SongId}", roomId, result.UpdatedRoom.SongId);
     }
 }

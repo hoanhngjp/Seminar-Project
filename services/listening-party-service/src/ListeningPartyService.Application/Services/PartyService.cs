@@ -145,6 +145,69 @@ public class PartyService(
         return isHost;
     }
 
+    // ─── Queue operations ─────────────────────────────────────────────────────
+
+    private const int MaxQueueSize = 50;
+
+    public async Task<List<QueueItemDto>> GetQueueAsync(string roomId, CancellationToken ct = default)
+    {
+        var items = await repository.GetQueueAsync(roomId, ct);
+        return items.Select(i => new QueueItemDto(i.SongId, i.AddedByUserId)).ToList();
+    }
+
+    public async Task<List<QueueItemDto>> AddToQueueAsync(string roomId, string songId, string userId, CancellationToken ct = default)
+    {
+        var queue = await repository.GetQueueAsync(roomId, ct);
+
+        if (queue.Count >= MaxQueueSize)
+            throw new QueueFullException(MaxQueueSize);
+
+        queue.Add(new QueueItem { SongId = songId, AddedByUserId = userId });
+        await repository.SaveQueueAsync(roomId, queue, ct);
+
+        logger.LogDebug("User {UserId} added song {SongId} to queue in room {RoomId} (size={Size})",
+            userId, songId, roomId, queue.Count);
+
+        return queue.Select(i => new QueueItemDto(i.SongId, i.AddedByUserId)).ToList();
+    }
+
+    public async Task<List<QueueItemDto>> RemoveFromQueueAsync(string roomId, string songId, string userId, CancellationToken ct = default)
+    {
+        var queue = await repository.GetQueueAsync(roomId, ct);
+
+        // Only remove the first matching item owned by this user
+        var index = queue.FindIndex(i => i.SongId == songId && i.AddedByUserId == userId);
+        if (index >= 0)
+        {
+            queue.RemoveAt(index);
+            await repository.SaveQueueAsync(roomId, queue, ct);
+            logger.LogDebug("User {UserId} removed song {SongId} from queue in room {RoomId}", userId, songId, roomId);
+        }
+
+        return queue.Select(i => new QueueItemDto(i.SongId, i.AddedByUserId)).ToList();
+    }
+
+    public async Task<QueueNextResult?> DequeueNextAsync(string roomId, CancellationToken ct = default)
+    {
+        var queue = await repository.GetQueueAsync(roomId, ct);
+        if (queue.Count == 0) return null;
+
+        var next = queue[0];
+        queue.RemoveAt(0);
+
+        await repository.UpdateRoomSongAsync(roomId, next.SongId, isPlaying: true, positionSec: 0, ct);
+        await repository.SaveQueueAsync(roomId, queue, ct);
+
+        var room = await repository.GetRoomAsync(roomId, ct)
+            ?? throw new RoomNotFoundException(roomId);
+
+        logger.LogInformation("Room {RoomId} advanced to next queued song {SongId}", roomId, next.SongId);
+
+        return new QueueNextResult(
+            room,
+            queue.Select(i => new QueueItemDto(i.SongId, i.AddedByUserId)).ToList());
+    }
+
     private static string GenerateJoinCode()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

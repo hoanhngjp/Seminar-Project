@@ -17,4 +17,16 @@ public interface IPartyService
 
     /// <summary>Removes member, cleans up room if host. Returns true if the disconnected user was the host.</summary>
     Task<bool> HandleMemberDisconnectAsync(string roomId, string userId, CancellationToken ct = default);
+
+    // Queue operations
+    Task<List<QueueItemDto>> GetQueueAsync(string roomId, CancellationToken ct = default);
+
+    /// <summary>Adds a song to the queue. Throws QueueFullException if queue >= 50.</summary>
+    Task<List<QueueItemDto>> AddToQueueAsync(string roomId, string songId, string userId, CancellationToken ct = default);
+
+    /// <summary>Removes a song added by userId. Returns the updated queue (unchanged if not found or not owned).</summary>
+    Task<List<QueueItemDto>> RemoveFromQueueAsync(string roomId, string songId, string userId, CancellationToken ct = default);
+
+    /// <summary>Dequeues the first item, updates Room.SongId, and returns the result. Returns null if queue is empty.</summary>
+    Task<QueueNextResult?> DequeueNextAsync(string roomId, CancellationToken ct = default);
 }

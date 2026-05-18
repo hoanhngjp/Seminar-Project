@@ -82,4 +82,26 @@ public class PartiesController(IPartyService partyService) : ControllerBase
         var result = await partyService.JoinPartyAsync(joinCode, userId, cts.Token);
         return Ok(ApiResponse<JoinPartyResponse>.Ok(result, requestId));
     }
+
+    // Contract-First Checklist:
+    // [1] GET /api/v1/parties/{roomId}/queue
+    // [2] Path: roomId (UUID string)
+    // [3] 200: { success, data: { roomId, queue: [{ songId, addedByUserId }] }, meta }
+    // [4] 404 ROOM_NOT_FOUND, 401 UNAUTHORIZED
+    // [5] GatewayAuth [Authorize]
+    // [6] 150ms
+    // [7] YES
+    // [8] Returns current queue snapshot; empty array [] when queue is empty
+
+    [HttpGet("{roomId}/queue")]
+    public async Task<IActionResult> GetQueue(string roomId, CancellationToken ct)
+    {
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        cts.CancelAfter(TimeSpan.FromMilliseconds(150));
+
+        var requestId = HttpContext.Items["CorrelationId"]?.ToString() ?? Guid.NewGuid().ToString();
+
+        var queue = await partyService.GetQueueAsync(roomId, cts.Token);
+        return Ok(ApiResponse<GetQueueResponse>.Ok(new GetQueueResponse(roomId, queue), requestId));
+    }
 }

@@ -217,6 +217,7 @@
 - [X] Bug 10: SignalR disconnect sau ~30s — `KeepAliveInterval=15s`/`ClientTimeoutInterval=60s` server + `serverTimeoutInMilliseconds=60000` client (2026-05-18)
 - [X] Bug 11: Pause reset positionSec về 0 — `handleSyncState` guard `sync.positionSec > 0` (2026-05-18)
 - [X] Bug 12: Resume sau pause reset bài về đầu — `resumeSong()` signal thay vì `playSong()` (2026-05-18)
+- [X] Party Queue Phase 1 — Backend core: `QueueItem`, `QueueFullException`, Redis queue key, `IPartyRepository`/`RedisPartyRepository` queue methods, `IPartyService`/`PartyService` queue methods, `PartyHub` (QueueAdd/Remove/Next), `PartiesController` GET queue — 28/28 tests xanh (2026-05-18)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 
@@ -224,25 +225,23 @@
 
 ## Đang làm
 
-- **Service/Task:** Listening Party member names fix ✅ Done. Tiếp theo: Demo prep
+- **Service/Task:** Party Queue feature — thêm nhạc vào hàng chờ trong Listening Party Room
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** QueueDrawer DnD + SearchPage Queue (2026-05-18), 790/790 xanh
+- **Checkpoint gần nhất đã pass:** Listening Party end-to-end 7 bugs fixed (2026-05-18), 790/790 xanh
 - **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
-  1. ~~Fix Bug 8~~ ✓ Done
-  2. [~] Bug A (Bug 9): BottomPlayerBar seek bar không hiển thị — cần verify flex restructure trên browser thật
-  3. ~~Bug B~~ ✓ Done
-  4. ~~Bug C~~ ✓ Done
-  5. ~~Fix Bug 10~~ ✓ Done
-  6. ~~Bug 1~~ ✓ Done
-  7. ~~Bug 2~~ ✓ Done
-  8. ~~Feature 1+2~~ ✓ Done
-  9. ~~Feature 3~~ ✓ Done
-  10. ~~Feature 4~~ ✓ Done — NowPlayingOverlay queue + related tabs
-  11. ~~Player Enhancements~~ ✓ Done — dedup, skip, shuffle, repeat, click-to-play
-  12. ~~QueueDrawer DnD reorder + SearchPage + Queue~~ ✓ Done (2026-05-18)
-  13. Demo script rehearsal 14 phút
-  14. Pre-upload demo songs cho Creator account
+  1. [DONE] Phase 1 — Backend: QueueItem, QueueFullException, IPartyRepository/Redis queue methods, IPartyService/PartyService queue methods, HubDtos, PartyHub (QueueAdd/Remove/Next), PartiesController (GET queue) — 28/28 tests xanh
+  2. [TODO] Phase 2 — Frontend: listening-party.ts types, useListeningParty hook, PartyQueue.tsx component, tests
+  3. [TODO] Phase 3 — Integration: PartyRoomPage queue state + auto-advance (songEndSignal) + render PartyQueue (tab layout), tests
+  4. [TODO] Demo script rehearsal 14 phút
+  5. [TODO] Pre-upload demo songs cho Creator account
+
+**Party Queue Design Decisions:**
+- Queue stored in Redis (Room JSON), max 50 items
+- All members can add; adder can remove their own songs
+- QueueItem = { SongId, AddedByUserId }
+- Auto-advance: Host `onEnded` → `QueueNext` Hub method → server dequeue + broadcast SYNC_STATE + QUEUE_UPDATED
+- No new Kafka topics — SignalR only
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

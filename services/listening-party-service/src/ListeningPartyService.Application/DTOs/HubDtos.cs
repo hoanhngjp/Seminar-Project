@@ -35,3 +35,25 @@ public record MemberLeaveMessage(
 // Broadcast when the room is terminated (host disconnects)
 public record RoomClosedMessage(
     string Reason);       // "host_disconnected" | "manual"
+
+// ── Queue messages (Client → Server) ─────────────────────────────────────────
+
+// Any member may add a song to the room queue.
+public record QueueAddMessage(
+    string SongId,
+    string EventId);      // UUID v4 — for dedup logging
+
+// Only the member who added a song may remove it.
+public record QueueRemoveMessage(
+    string SongId,
+    string EventId);
+
+// Host only: dequeue the next song and advance playback.
+public record QueueNextMessage(
+    string EventId);
+
+// ── Queue messages (Server → All Clients) ────────────────────────────────────
+
+// Broadcast whenever the queue changes (add / remove / next).
+public record QueueUpdatedMessage(
+    List<QueueItemDto> Queue);

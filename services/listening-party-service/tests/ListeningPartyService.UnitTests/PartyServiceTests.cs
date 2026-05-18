@@ -11,11 +11,17 @@ namespace ListeningPartyService.UnitTests;
 public class PartyServiceTests
 {
     private readonly Mock<IPartyRepository> _repoMock = new();
+    private readonly Mock<IUserServiceClient> _userClientMock = new();
+    private readonly Mock<IMusicServiceClient> _musicClientMock = new();
     private readonly PartyService _sut;
 
     public PartyServiceTests()
     {
-        _sut = new PartyService(_repoMock.Object, NullLogger<PartyService>.Instance);
+        _sut = new PartyService(
+            _repoMock.Object,
+            _userClientMock.Object,
+            _musicClientMock.Object,
+            NullLogger<PartyService>.Instance);
     }
 
     // ─── CreatePartyAsync ────────────────────────────────────────────────
@@ -131,6 +137,8 @@ public class PartyServiceTests
             });
         _repoMock.Setup(r => r.AddMemberAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
+        _repoMock.Setup(r => r.GetMembersAsync(roomId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ISet<string>)new HashSet<string> { userId });
 
         var result = await _sut.JoinPartyAsync(joinCode, userId);
 
@@ -186,6 +194,8 @@ public class PartyServiceTests
         _repoMock.Setup(r => r.AddMemberAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Callback<string, string, CancellationToken>((_, uid, _) => capturedMemberId = uid)
             .Returns(Task.CompletedTask);
+        _repoMock.Setup(r => r.GetMembersAsync(roomId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ISet<string>)new HashSet<string> { userId });
 
         await _sut.JoinPartyAsync(joinCode, userId);
 

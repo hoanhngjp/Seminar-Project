@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ListeningPartyService.Application.Interfaces;
 using ListeningPartyService.Domain.Models;
 using Microsoft.Extensions.Logging;
@@ -72,6 +73,19 @@ public class RedisPartyRepository(IDatabase db, ILogger<RedisPartyRepository> lo
             key, isPlaying, positionSec);
     }
 
+    public async Task UpdateRoomSongAsync(string roomId, string songId, bool isPlaying, int positionSec, CancellationToken ct = default)
+    {
+        var key = $"party:room:{roomId}";
+        await db.HashSetAsync(key, new HashEntry[]
+        {
+            new("songId",     songId),
+            new("isPlaying",  isPlaying.ToString().ToLower()),
+            new("positionSec", positionSec),
+        });
+        logger.LogDebug("Room song updated: key={Key} songId={SongId} isPlaying={IsPlaying}",
+            key, songId, isPlaying);
+    }
+
     public async Task RemoveMemberAsync(string roomId, string userId, CancellationToken ct = default)
     {
         await db.SetRemoveAsync($"party:members:{roomId}", userId);
@@ -89,8 +103,23 @@ public class RedisPartyRepository(IDatabase db, ILogger<RedisPartyRepository> lo
         {
             $"party:room:{roomId}",
             $"party:members:{roomId}",
+            $"party:queue:{roomId}",
         });
         logger.LogDebug("Room deleted from Redis: roomId={RoomId}", roomId);
+    }
+
+    public async Task<List<QueueItem>> GetQueueAsync(string roomId, CancellationToken ct = default)
+    {
+        var json = await db.StringGetAsync($"party:queue:{roomId}");
+        if (json.IsNullOrEmpty) return [];
+        return JsonSerializer.Deserialize<List<QueueItem>>(json.ToString()) ?? [];
+    }
+
+    public async Task SaveQueueAsync(string roomId, List<QueueItem> queue, CancellationToken ct = default)
+    {
+        var key  = $"party:queue:{roomId}";
+        var json = JsonSerializer.Serialize(queue);
+        await db.StringSetAsync(key, json, RoomTtl);
     }
 
     public async Task StoreMemberProfileAsync(string roomId, string userId, string displayName, string? avatarUrl, CancellationToken ct = default)

@@ -1,3 +1,5 @@
+using ListeningPartyService.Domain.Models;
+
 namespace ListeningPartyService.Application.DTOs;
 
 public record CreatePartyRequest(string? Name, string? SongId);
@@ -22,3 +24,12 @@ public record PartyPreviewResponse(
     string? CurrentSongTitle,
     string? HostAvatarUrl,
     string HostDisplayName);
+
+// ── Queue DTOs ────────────────────────────────────────────────────────────────
+
+public record QueueItemDto(string SongId, string AddedByUserId);
+
+public record GetQueueResponse(string RoomId, List<QueueItemDto> Queue);
+
+/// Returned by PartyService.DequeueNextAsync when a song is available.
+public record QueueNextResult(Room UpdatedRoom, List<QueueItemDto> UpdatedQueue);

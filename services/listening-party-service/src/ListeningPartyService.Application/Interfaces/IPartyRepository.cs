@@ -11,6 +11,7 @@ public interface IPartyRepository
 
     // Hub state management
     Task UpdateRoomStateAsync(string roomId, bool isPlaying, int positionSec, CancellationToken ct = default);
+    Task UpdateRoomSongAsync(string roomId, string songId, bool isPlaying, int positionSec, CancellationToken ct = default);
     Task RemoveMemberAsync(string roomId, string userId, CancellationToken ct = default);
     Task<ISet<string>> GetMembersAsync(string roomId, CancellationToken ct = default);
     Task DeleteRoomAsync(string roomId, CancellationToken ct = default);
@@ -18,4 +19,8 @@ public interface IPartyRepository
     // Member profile cache (display name + avatar stored at join time)
     Task StoreMemberProfileAsync(string roomId, string userId, string displayName, string? avatarUrl, CancellationToken ct = default);
     Task<(string? DisplayName, string? AvatarUrl)> GetMemberProfileAsync(string roomId, string userId, CancellationToken ct = default);
+
+    // Queue management
+    Task<List<QueueItem>> GetQueueAsync(string roomId, CancellationToken ct = default);
+    Task SaveQueueAsync(string roomId, List<QueueItem> queue, CancellationToken ct = default);
 }
