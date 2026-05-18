@@ -24,7 +24,23 @@
 - Render `GENRE_NAME[g] ?? g` và `ARTIST_NAME[a] ?? a` (fallback về UUID nếu không tìm thấy)
 
 ---
-[2026-05-19] [KNOWN ISSUE — PreferencesPage vẫn dùng mock data] [TODO]
+[2026-05-19] [BUG FIX — PreferencesPage mock data → real API] [DONE]
+
+**Root cause (4 bugs):**
+1. `selectedGenres`/`selectedArtists` seed từ `MOCK_PROFILE` → không phản ánh preferences thật của user
+2. Artist search filter từ `MOCK_ARTIST_RESULTS` (10 tên hardcoded) thay vì `ALL_ARTISTS`
+3. `selectedArtists` lưu name (string) → `updatePreferences` gửi sai data (cần UUID)
+4. `handleSave()` chỉ gọi `toast.show()`, không gọi `userService.updatePreferences()` → mọi thay đổi mất sau reload
+
+**Fixes:**
+- `PreferencesPage.tsx`: `useEffect` mount gọi `userService.getProfile()` → pre-fill `selectedGenres`/`selectedArtists` bằng UUID thật
+- `selectedArtists` đổi từ `string[]` (name) sang `string[]` (ID); chip render `ALL_ARTISTS.find(a => a.id === id)?.name ?? id`
+- Artist search: filter trên `ALL_ARTISTS` (16 artists từ DB) thay vì MOCK_ARTIST_RESULTS
+- `handleSave()` async: gọi `userService.updatePreferences({ preferredGenres, preferredArtists, audioQuality: 'standard' })`, error toast khi fail
+- `PreferencesPage.test.tsx`: mock `userService` + `ALL_ARTISTS`, `waitFor` cho async load, verify `updatePreferences` payload — 852/852 xanh (+4 tests)
+
+---
+[2026-05-19] [KNOWN ISSUE — PreferencesPage vẫn dùng mock data] [SUPERSEDED by fix above]
 
 **Vấn đề:**
 1. `selectedGenres` / `selectedArtists` initial state lấy từ `MOCK_PROFILE` thay vì `userService.getProfile()`

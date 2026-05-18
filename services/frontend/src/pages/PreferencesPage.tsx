@@ -1,24 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppShell from '../components/layout/AppShell';
 import { GenreGrid } from '../features/onboarding/components/GenreGrid';
 import { useToast } from '../contexts/ToastContext';
-import { MOCK_PROFILE } from '../mocks/data';
-
-const MOCK_ARTIST_RESULTS = [
-  'Sơn Tùng M-TP', 'Vũ.', 'Đen Vâu', 'Chillies', 'Ngọt',
-  'Hòa Minzy', 'Bích Phương', 'Mỹ Tâm', 'Dương Triệu Vũ', 'Hoàng Thùy Linh',
-];
+import { userService } from '../services/userService';
+import { ALL_ARTISTS } from '../features/onboarding/data/artistAvatars';
 
 export default function PreferencesPage() {
   const toast = useToast();
 
-  const [selectedGenres, setSelectedGenres] = useState<string[]>(
-    MOCK_PROFILE.preferredGenres ?? []
-  );
-  const [selectedArtists, setSelectedArtists] = useState<string[]>(
-    MOCK_PROFILE.preferredArtists ?? []
-  );
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [selectedArtists, setSelectedArtists] = useState<string[]>([]);
   const [artistSearch, setArtistSearch] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    userService.getProfile().then((profile) => {
+      setSelectedGenres(profile.preferredGenres ?? []);
+      setSelectedArtists(profile.preferredArtists ?? []);
+    }).catch(() => {
+      // silently fail — user starts with empty selection
+    });
+  }, []);
 
   function toggleGenre(id: string) {
     setSelectedGenres((prev) =>
@@ -26,25 +28,37 @@ export default function PreferencesPage() {
     );
   }
 
-  function toggleArtist(name: string) {
+  function toggleArtist(id: string) {
     setSelectedArtists((prev) =>
-      prev.includes(name) ? prev.filter((a) => a !== name) : [...prev, name]
+      prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]
     );
   }
 
-  function removeArtist(name: string) {
-    setSelectedArtists((prev) => prev.filter((a) => a !== name));
+  function removeArtist(id: string) {
+    setSelectedArtists((prev) => prev.filter((a) => a !== id));
   }
 
-  function handleSave() {
-    if (selectedGenres.length < 3) return;
-    toast.show('Đã lưu sở thích thành công', 'success');
+  async function handleSave() {
+    if (selectedGenres.length < 3 || saving) return;
+    setSaving(true);
+    try {
+      await userService.updatePreferences({
+        preferredGenres: selectedGenres,
+        preferredArtists: selectedArtists,
+        audioQuality: 'standard',
+      });
+      toast.show('Đã lưu sở thích thành công', 'success');
+    } catch {
+      toast.show('Không thể lưu sở thích. Vui lòng thử lại.', 'error');
+    } finally {
+      setSaving(false);
+    }
   }
 
-  const filteredArtists = MOCK_ARTIST_RESULTS.filter(
+  const filteredArtists = ALL_ARTISTS.filter(
     (a) =>
-      a.toLowerCase().includes(artistSearch.toLowerCase()) &&
-      !selectedArtists.includes(a)
+      a.name.toLowerCase().includes(artistSearch.toLowerCase()) &&
+      !selectedArtists.includes(a.id)
   );
 
   const canSave = selectedGenres.length >= 3;
@@ -77,7 +91,6 @@ export default function PreferencesPage() {
         <section className="mb-8" data-testid="artist-section">
           <h2 className="text-[16px] font-semibold text-text-base mb-4">Nghệ sĩ yêu thích</h2>
 
-          {/* Search input */}
           <input
             type="text"
             placeholder="Tìm nghệ sĩ..."
@@ -87,42 +100,43 @@ export default function PreferencesPage() {
             data-testid="artist-search-input"
           />
 
-          {/* Filtered results */}
           {artistSearch.length > 0 && filteredArtists.length > 0 && (
             <div className="bg-dark-surface rounded-[8px] border border-border-muted mb-3 overflow-hidden" data-testid="artist-results">
-              {filteredArtists.slice(0, 5).map((name) => (
+              {filteredArtists.slice(0, 5).map((artist) => (
                 <button
-                  key={name}
-                  onClick={() => toggleArtist(name)}
+                  key={artist.id}
+                  onClick={() => toggleArtist(artist.id)}
                   className="w-full text-left px-4 py-2.5 text-sm text-text-base hover:bg-mid-dark transition-colors"
-                  data-testid={`artist-result-${name}`}
+                  data-testid={`artist-result-${artist.name}`}
                 >
-                  {name}
+                  {artist.name}
                 </button>
               ))}
             </div>
           )}
 
-          {/* Selected artists */}
           {selectedArtists.length > 0 && (
             <div className="flex flex-wrap gap-2" data-testid="selected-artists">
-              {selectedArtists.map((name) => (
-                <span
-                  key={name}
-                  className="flex items-center gap-1 bg-spotify-green/20 text-spotify-green text-sm px-3 py-1 rounded-full"
-                  data-testid={`selected-artist-${name}`}
-                >
-                  {name}
-                  <button
-                    onClick={() => removeArtist(name)}
-                    aria-label={`Xóa ${name}`}
-                    data-testid={`remove-artist-${name}`}
-                    className="ml-1 hover:text-white"
+              {selectedArtists.map((id) => {
+                const name = ALL_ARTISTS.find((a) => a.id === id)?.name ?? id;
+                return (
+                  <span
+                    key={id}
+                    className="flex items-center gap-1 bg-spotify-green/20 text-spotify-green text-sm px-3 py-1 rounded-full"
+                    data-testid={`selected-artist-${name}`}
                   >
-                    ×
-                  </button>
-                </span>
-              ))}
+                    {name}
+                    <button
+                      onClick={() => removeArtist(id)}
+                      aria-label={`Xóa ${name}`}
+                      data-testid={`remove-artist-${name}`}
+                      className="ml-1 hover:text-white"
+                    >
+                      ×
+                    </button>
+                  </span>
+                );
+              })}
             </div>
           )}
         </section>
@@ -138,15 +152,15 @@ export default function PreferencesPage() {
         </span>
         <button
           onClick={handleSave}
-          disabled={!canSave}
+          disabled={!canSave || saving}
           className={`px-6 py-2 rounded-full font-medium text-sm transition-colors ${
-            canSave
+            canSave && !saving
               ? 'bg-spotify-green text-near-black hover:scale-105'
               : 'bg-mid-dark text-text-secondary cursor-not-allowed'
           }`}
           data-testid="save-button"
         >
-          Lưu sở thích
+          {saving ? 'Đang lưu...' : 'Lưu sở thích'}
         </button>
       </div>
     </AppShell>

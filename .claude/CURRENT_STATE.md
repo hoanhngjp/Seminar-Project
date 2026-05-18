@@ -232,7 +232,7 @@
 - [X] Feature: Onboarding ArtistGrid — 16 avatars upload Cloudinary smart-music/artists/, ALL_ARTISTS + getOnboardingArtists() random 8 — 848/848 xanh (2026-05-19)
 - [X] Bug fix: POST /users/me/preferences 500 INTERNAL_ERROR — preferred_genres uuid[]→text[] migration + api.ts !isRefreshRequest guard (2026-05-19)
 - [X] Bug fix: ProfilePage preferences hiển thị UUID → lookup GENRE_NAME/ARTIST_NAME maps (2026-05-19)
-- [ ] Bug fix: PreferencesPage (/settings/preferences) — mock data → real API (userService.getProfile + updatePreferences)
+- [X] Bug fix: PreferencesPage (/settings/preferences) — real API: getProfile pre-fill + ALL_ARTISTS search + updatePreferences save — 852/852 xanh (2026-05-19)
 
 ---
 
@@ -240,7 +240,7 @@
 
 - **Service/Task:** Demo prep + Register/Onboarding polish
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** 848/848 xanh (2026-05-19)
+- **Checkpoint gần nhất đã pass:** 852/852 xanh (2026-05-19)
 - **Ngày làm việc gần nhất:** 2026-05-19
 - **Tiếp theo:**
   1. [DONE] Bug fix: RegisterForm `fullname` → `displayName`
@@ -249,7 +249,7 @@
   4. [DONE] Onboarding ArtistGrid — 16 artists thật + Cloudinary avatars
   5. [DONE] Bug fix: POST /preferences 500 INTERNAL_ERROR
   6. [DONE] Bug fix: ProfilePage UUID → tên thật
-  7. [TODO] Bug fix: PreferencesPage mock data → real API
+  7. [DONE] Bug fix: PreferencesPage mock data → real API
   8. [TODO] Demo script rehearsal 14 phút
   9. [TODO] Pre-upload demo songs cho Creator account
 

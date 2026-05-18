@@ -33,11 +33,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `ArtistGrid.tsx`: dùng `ALL_ARTISTS` từ `artistAvatars.ts`, random 8 artists mỗi ngày
 - `useAuth.ts`: auto-login sau đăng ký thành công → redirect `/onboarding`
 
-### Known Issues
-
-**PreferencesPage (`/settings/preferences`) vẫn dùng mock data (2026-05-19)**
-- Initial state seed từ `MOCK_PROFILE` thay vì API
-- Artist search filter từ 10 tên hardcoded, không dùng `ALL_ARTISTS`
+**PreferencesPage real API integration (2026-05-19)**
+- `PreferencesPage.tsx`: load preferences từ `userService.getProfile()` khi mount — pre-fill genres/artists thật
+- `selectedArtists` lưu artist UUID (thay vì name); chip render bằng `ALL_ARTISTS.find(id)?.name`
+- Artist search filter trên `ALL_ARTISTS` (16 artists) thay vì 10 tên hardcoded
+- `handleSave()` gọi `userService.updatePreferences({ preferredGenres, preferredArtists, audioQuality: 'standard' })` + error toast khi fail
+- `PreferencesPage.test.tsx`: +4 tests (852 total) — mock `userService` + `waitFor` async load + verify `updatePreferences` payload
 - Selected artists lưu theo `name` string thay vì `id` UUID → save gửi sai data lên API
 - `handleSave()` không gọi `userService.updatePreferences()` → thay đổi không được persist
 
