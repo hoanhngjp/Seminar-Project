@@ -38,11 +38,14 @@ public class PartyHub(
 
         await Groups.AddToGroupAsync(Context.ConnectionId, roomId);
 
-        // AC7.3.1: Send current playback state to the connecting client
+        // AC7.3.1: Send current playback state to the connecting client.
+        // Adjust positionSec for elapsed time since last update so late-joiners seek to the correct position.
+        var elapsed     = room.IsPlaying ? (DateTime.UtcNow - room.LastUpdatedAt).TotalSeconds : 0.0;
+        var adjustedPos = (int)(room.PositionSec + elapsed);
         await Clients.Caller.SendAsync("SYNC_STATE", new SyncStateMessage(
             room.SongId,
             room.IsPlaying,
-            room.PositionSec,
+            adjustedPos,
             room.HostId,
             DateTime.UtcNow.ToString("O")));
 

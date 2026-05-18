@@ -7,14 +7,17 @@ import type { SearchResult } from '../../../types/domain';
 interface SongMeta { title: string; artist: string; }
 
 interface Props {
-  queueItems:      QueueItem[];
-  currentUserId:   string;
-  onAddSong:       (songId: string) => void;
-  onRemoveSong:    (songId: string) => void;
+  queueItems:     QueueItem[];
+  /** ID of the song currently playing — shown as a pinned "Đang phát" row at the top. */
+  currentSongId?: string;
+  currentUserId:  string;
+  onAddSong:      (songId: string) => void;
+  onRemoveSong:   (songId: string) => void;
 }
 
 export default function PartyQueue({
   queueItems,
+  currentSongId,
   currentUserId,
   onAddSong,
   onRemoveSong,
@@ -25,18 +28,18 @@ export default function PartyQueue({
   const debounceRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [songMeta, setSongMeta] = useState<Map<string, SongMeta>>(new Map());
 
-  // Fetch metadata for new song IDs in the queue
+  // Collect all IDs that need metadata: currentSongId + queueItems
   useEffect(() => {
-    const unknownIds = queueItems
-      .map((i) => i.songId)
-      .filter((id) => !songMeta.has(id));
+    const ids = [...queueItems.map((i) => i.songId)];
+    if (currentSongId) ids.push(currentSongId);
+    const unknownIds = ids.filter((id) => !songMeta.has(id));
     if (unknownIds.length === 0) return;
     unknownIds.forEach((id) => {
       getSong(id)
         .then((s) => setSongMeta((prev) => new Map(prev).set(id, { title: s.title, artist: s.artist })))
         .catch(() => {});
     });
-  }, [queueItems]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [queueItems, currentSongId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Debounced search
   useEffect(() => {
@@ -127,26 +130,35 @@ export default function PartyQueue({
         </div>
       )}
 
-      {/* Queue list */}
+      {/* Queue list header */}
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-small-bold text-small-bold text-text-secondary uppercase tracking-wider">
           Hàng chờ ({queueItems.length})
         </h4>
       </div>
 
-      {queueItems.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-2 text-text-secondary py-8">
-          <span className="material-symbols-outlined text-[32px]" aria-hidden="true">queue_music</span>
-          <p className="font-body text-body text-center">
-            Hàng chờ trống
+      <div className="flex-1 overflow-y-auto space-y-1 pr-1">
+
+        {/* Currently playing row — pinned at the top */}
+        {currentSongId && (
+          <NowPlayingRow
+            songId={currentSongId}
+            meta={songMeta.get(currentSongId)}
+          />
+        )}
+
+        {queueItems.length === 0 && !currentSongId ? (
+          <div className="flex flex-col items-center justify-center gap-2 text-text-secondary py-8">
+            <span className="material-symbols-outlined text-[32px]" aria-hidden="true">queue_music</span>
+            <p className="font-body text-body text-center">Hàng chờ trống</p>
+            <p className="font-caption text-caption text-center">Tìm bài hát bên trên để thêm</p>
+          </div>
+        ) : queueItems.length === 0 ? (
+          <p className="font-caption text-caption text-text-secondary text-center py-4">
+            Tìm bài hát bên trên để thêm vào hàng chờ
           </p>
-          <p className="font-caption text-caption text-center">
-            Tìm bài hát bên trên để thêm
-          </p>
-        </div>
-      ) : (
-        <div className="flex-1 overflow-y-auto space-y-1 pr-1">
-          {queueItems.map((item, index) => (
+        ) : (
+          queueItems.map((item, index) => (
             <QueueRow
               key={`${item.songId}-${index}`}
               item={item}
@@ -155,14 +167,57 @@ export default function PartyQueue({
               isOwner={item.addedByUserId === currentUserId}
               onRemove={onRemoveSong}
             />
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }
 
-// ─── Sub-component ─────────────────────────────────────────────────────────────
+// ─── Now Playing row (pinned) ──────────────────────────────────────────────
+
+interface NowPlayingRowProps {
+  songId: string;
+  meta?:  SongMeta;
+}
+
+function NowPlayingRow({ meta }: NowPlayingRowProps) {
+  return (
+    <div
+      className="flex items-center gap-3 px-2 py-2 rounded-md bg-spotify-green/10 border border-spotify-green/30 mb-2"
+      aria-label="Bài đang phát"
+    >
+      {/* Animated equalizer icon */}
+      <span
+        className="material-symbols-outlined text-[18px] text-spotify-green flex-shrink-0 animate-pulse"
+        aria-hidden="true"
+        style={{ fontVariationSettings: "'FILL' 1" }}
+      >
+        graphic_eq
+      </span>
+
+      <div className="flex-1 min-w-0">
+        {meta ? (
+          <>
+            <p className="font-body-bold text-body-bold text-spotify-green truncate">{meta.title}</p>
+            <p className="font-caption text-caption text-text-secondary truncate">{meta.artist}</p>
+          </>
+        ) : (
+          <>
+            <div className="h-3.5 w-32 bg-mid-dark rounded animate-pulse mb-1" />
+            <div className="h-3 w-20 bg-mid-dark rounded animate-pulse" />
+          </>
+        )}
+      </div>
+
+      <span className="font-caption text-caption text-spotify-green font-semibold flex-shrink-0 text-[11px] uppercase tracking-wide">
+        Đang phát
+      </span>
+    </div>
+  );
+}
+
+// ─── Queue row ─────────────────────────────────────────────────────────────
 
 interface QueueRowProps {
   item:     QueueItem;

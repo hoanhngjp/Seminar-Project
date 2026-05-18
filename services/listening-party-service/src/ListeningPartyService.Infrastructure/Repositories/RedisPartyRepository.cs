@@ -23,6 +23,7 @@ public class RedisPartyRepository(IDatabase db, ILogger<RedisPartyRepository> lo
             new("isPlaying", room.IsPlaying.ToString().ToLower()),
             new("positionSec", room.PositionSec),
             new("joinCode", room.JoinCode),
+            new("lastUpdatedAt", DateTime.UtcNow.ToString("O")),
         };
 
         await db.HashSetAsync(roomKey, hashEntries);
@@ -53,6 +54,7 @@ public class RedisPartyRepository(IDatabase db, ILogger<RedisPartyRepository> lo
             IsPlaying = dict.GetValueOrDefault("isPlaying", "false") == "true",
             PositionSec = int.TryParse(dict.GetValueOrDefault("positionSec"), out var pos) ? pos : 0,
             JoinCode = dict.GetValueOrDefault("joinCode", ""),
+            LastUpdatedAt = DateTime.TryParse(dict.GetValueOrDefault("lastUpdatedAt"), out var ts) ? ts : DateTime.UtcNow,
         };
     }
 
@@ -68,6 +70,7 @@ public class RedisPartyRepository(IDatabase db, ILogger<RedisPartyRepository> lo
         {
             new("isPlaying", isPlaying.ToString().ToLower()),
             new("positionSec", positionSec),
+            new("lastUpdatedAt", DateTime.UtcNow.ToString("O")),
         });
         logger.LogDebug("Room state updated: key={Key} isPlaying={IsPlaying} positionSec={Pos}",
             key, isPlaying, positionSec);
@@ -78,9 +81,10 @@ public class RedisPartyRepository(IDatabase db, ILogger<RedisPartyRepository> lo
         var key = $"party:room:{roomId}";
         await db.HashSetAsync(key, new HashEntry[]
         {
-            new("songId",     songId),
-            new("isPlaying",  isPlaying.ToString().ToLower()),
+            new("songId",      songId),
+            new("isPlaying",   isPlaying.ToString().ToLower()),
             new("positionSec", positionSec),
+            new("lastUpdatedAt", DateTime.UtcNow.ToString("O")),
         });
         logger.LogDebug("Room song updated: key={Key} songId={SongId} isPlaying={IsPlaying}",
             key, songId, isPlaying);

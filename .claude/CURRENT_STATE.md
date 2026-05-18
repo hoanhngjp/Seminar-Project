@@ -220,7 +220,7 @@
 - [X] Party Queue Phase 1 — Backend core: `QueueItem`, `QueueFullException`, Redis queue key, `IPartyRepository`/`RedisPartyRepository` queue methods, `IPartyService`/`PartyService` queue methods, `PartyHub` (QueueAdd/Remove/Next), `PartiesController` GET queue — 28/28 tests xanh (2026-05-18)
 - [X] Party Queue Phase 2 — Frontend: `songEndSignal`+`triggerSongEnd` (playerStore), `QueueItem`/`QueueUpdated` types (listening-party.ts), `usePartyWebSocket` queue state+QUEUE_UPDATED handler+`sendQueueAdd`/`sendQueueRemove`/`sendQueueNext`, `PartyQueue.tsx` (mini search debounce 300ms + queue list + remove button) — 820/820 tests xanh (+30 tests) (2026-05-18)
 - [X] Party Queue Phase 3 — Integration: `PartyRoomPage` tab bar (Thành viên|Hàng chờ), wire `usePartyWebSocket`, auto-advance `songEndSignal→sendQueueNext`, `handleNext→sendQueueNext`, `handlePrev→seek 0`, `PartyQueue` enrich metadata (getSong + skeleton), `BottomPlayerBar.onEnded` thêm `triggerSongEnd()` — 832/832 xanh (+12 tests) (2026-05-18)
-- [ ] Party Queue Phase 4 — Polish: (1) Member pause→play: sync lại position với Host trước khi resume; (2) Late-join sync: member vào phòng sau khi bài đang phát nhận đúng positionSec và auto-seek; (3) Queue hiển thị bài hiện tại (currentSong) ở đầu danh sách
+- [X] Party Queue Phase 4 — Polish: (1) Member pause→play: `preSyncPositionOnPlay` + `estimateCurrentPosition()`; (2) Late-join: `LastUpdatedAt` Redis + `OnConnectedAsync` adjustedPos; (3) Queue `NowPlayingRow` "Đang phát" pinned top; (4) Member close-bar re-sync via `syncTick` — 832/832 xanh (2026-05-18)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 
@@ -228,14 +228,13 @@
 
 ## Đang làm
 
-- **Service/Task:** Party Queue Phase 4 — Polish & late-join sync
+- **Service/Task:** Demo prep — script rehearsal + Creator account song upload
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** Party Queue end-to-end (Phase 1+2+3) + bug fixes, 832/832 xanh (2026-05-18)
+- **Checkpoint gần nhất đã pass:** Party Queue Phase 4 Polish hoàn thành, 832/832 xanh (2026-05-18)
 - **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
-  1. [TODO] Phase 4 — Polish: (1) Member pause→play sync với Host; (2) Late-join member auto-seek đến positionSec đúng; (3) Queue hiển thị currentSong ở đầu
-  2. [TODO] Demo script rehearsal 14 phút
-  3. [TODO] Pre-upload demo songs cho Creator account
+  1. [TODO] Demo script rehearsal 14 phút
+  2. [TODO] Pre-upload demo songs cho Creator account
 
 **Party Queue Design Decisions:**
 - Queue stored in Redis (Room JSON), max 50 items

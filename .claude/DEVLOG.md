@@ -1,5 +1,30 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — Party Queue Phase 4 — Polish (drift correction + late-join + NowPlayingRow)] [DONE]
+
+**Những gì đã implement:**
+
+*Sub-task 1 + BottomPlayerBar close: Member pause→play drift correction*
+- `playerStore.ts`: thêm `preSyncPositionOnPlay: number | null` + `setPreSyncPositionOnPlay()` action
+- `usePartyWebSocket.ts`: thêm `lastSyncRef` (`{positionSec, isPlaying, clientMs}`) — update trên mỗi SYNC_STATE; export `estimateCurrentPosition()` (stable `useCallback`)
+- `PartyRoomPage.tsx`: thêm `syncTick` counter (increment mỗi SYNC_STATE); audio sync `useEffect` deps thêm `syncTick`; với Members: gọi `setPreSyncPositionOnPlay(estimateCurrentPositionRef.current())` trước `resumeSong()`; stable ref `estimateCurrentPositionRef` tránh dep loop
+- `BottomPlayerBar.tsx`: `handlePlay` + `resumeSignal` useEffect đều đọc `preSyncPositionOnPlay` từ store (`getState()` synchronous), seek audio element, clear field trước khi `play()`
+
+*Sub-task 2: Late-join position sync*
+- `Room.cs`: thêm `LastUpdatedAt: DateTime` property
+- `RedisPartyRepository.cs`: `CreateAsync` / `UpdateRoomStateAsync` / `UpdateRoomSongAsync` đều write `lastUpdatedAt` vào Redis hash; `GetRoomAsync` parse field về `DateTime`
+- `PartyHub.OnConnectedAsync`: tính `elapsed = IsPlaying ? (UtcNow - LastUpdatedAt).TotalSeconds : 0`; gửi `adjustedPos = PositionSec + elapsed` về Caller
+
+*Sub-task 3: Queue hiển thị bài đang phát*
+- `PartyQueue.tsx`: thêm `currentSongId?: string` prop; metadata `useEffect` include currentSongId; thêm `NowPlayingRow` component (green accent, animated `graphic_eq` icon, "Đang phát" badge) pinned ở đầu queue list; empty state logic update cho trường hợp có currentSong nhưng queue trống
+- `PartyRoomPage.tsx`: truyền `currentSongId={currentSongId ?? undefined}` xuống `PartyQueue`
+
+*Test fixes:*
+- `PartiesIntegrationTests.cs`: fix 2 compile errors — `CreatePartyResponse` 6-arg, `JoinPartyResponse` 7-arg, `CreatePartyAsync` Setup thêm `It.IsAny<string?>()` cho `name` param
+
+**Test results:** 22/22 integration tests xanh; 832/832 frontend tests xanh
+
+---
 [2026-05-18] [FEATURE — Party Queue Phase 3 — Integration + Bug Fixes] [DONE]
 
 **Những gì đã implement:**

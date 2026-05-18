@@ -44,6 +44,9 @@ export default function PartyRoomPage() {
     initialParty?.currentSongId ?? null,
   );
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
+  // Incremented on every SYNC_STATE — forces the audio sync effect to re-run even
+  // when isPlaying didn't change (e.g. Member closed bar, then Host sends next action).
+  const [syncTick, setSyncTick]       = useState(0);
 
   const hostId   = initialParty?.hostId ?? '';
   const joinCode = initialParty?.joinCode ?? '';
@@ -58,13 +61,20 @@ export default function PartyRoomPage() {
     getSong(currentSongId).then((s) => setCurrentSong(s)).catch(() => {});
   }, [currentSongId]);
 
-  // Sync audio player with party state
+  // Sync audio player with party state.
+  // Re-runs on syncTick so every SYNC_STATE from the server is acted upon,
+  // even if isPlaying hasn't changed (handles Member close-bar + reconnect cases).
   useEffect(() => {
     if (!currentSong) return;
     if (isPlaying) {
       const loadedSongId = usePlayerStore.getState().currentSong?.songId;
       if (loadedSongId === currentSong.id) {
-        // Same song already in BottomPlayerBar — resume without resetting stream
+        // Same song already in BottomPlayerBar.
+        // For Members: seek to estimated Host position before resuming to correct any drift
+        // (pause→play, close bar→reopen, reconnect after network blip).
+        if (!isHost) {
+          usePlayerStore.getState().setPreSyncPositionOnPlay(estimateCurrentPositionRef.current());
+        }
         resumeSong();
       } else {
         playSong({ songId: currentSong.id, title: currentSong.title, artist: currentSong.artist, coverUrl: currentSong.coverUrl, autoPlay: true });
@@ -72,7 +82,8 @@ export default function PartyRoomPage() {
     } else {
       pauseSong();
     }
-  }, [currentSong, isPlaying, playSong, pauseSong, resumeSong]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSong, isPlaying, syncTick, isHost, playSong, pauseSong, resumeSong]);
 
   // Stop audio when leaving the party room
   useEffect(() => {
@@ -91,10 +102,12 @@ export default function PartyRoomPage() {
     setIsPlaying(sync.isPlaying);
     if (sync.songId) setCurrentSongId(sync.songId);
     // Only accept server positionSec when playing or when server has a meaningful position.
-    // Avoids resetting progress to 0 when server broadcasts SYNC_STATE on pause without tracking position.
     if (sync.isPlaying || sync.positionSec > 0) {
       setPositionSec(sync.positionSec);
     }
+    // Force the audio sync effect to re-run regardless of whether isPlaying changed.
+    // This covers: Member closed bar (clearSong), reconnect, resume after pause with drift.
+    setSyncTick((t) => t + 1);
   }, []);
 
   const handleMemberJoin = useCallback((data: MemberJoin) => {
@@ -110,7 +123,7 @@ export default function PartyRoomPage() {
 
   const handleQueueUpdated = useCallback((_data: QueueUpdated) => {}, []);
 
-  const { status, sendPlayerAction, queueItems, sendQueueAdd, sendQueueRemove, sendQueueNext } =
+  const { status, sendPlayerAction, queueItems, sendQueueAdd, sendQueueRemove, sendQueueNext, estimateCurrentPosition } =
     usePartyWebSocket({
       roomId:         roomId ?? '',
       isHost,
@@ -119,6 +132,10 @@ export default function PartyRoomPage() {
       onMemberLeave:  handleMemberLeave,
       onQueueUpdated: handleQueueUpdated,
     });
+
+  // Keep a stable ref to estimateCurrentPosition so the audio sync effect can call it
+  // without adding it to deps (would cause re-render loops via useCallback identity).
+  const estimateCurrentPositionRef = { current: estimateCurrentPosition };
 
   // Auto-advance: Host triggers QueueNext when current song ends
   useEffect(() => {
@@ -248,6 +265,7 @@ export default function PartyRoomPage() {
           ) : (
             <PartyQueue
               queueItems={queueItems}
+              currentSongId={currentSongId ?? undefined}
               currentUserId={currentUserId}
               onAddSong={sendQueueAdd}
               onRemoveSong={sendQueueRemove}

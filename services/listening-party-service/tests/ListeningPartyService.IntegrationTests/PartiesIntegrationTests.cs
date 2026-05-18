@@ -36,12 +36,10 @@ public class PartiesIntegrationTests : IClassFixture<PartyWebApplicationFactory>
     {
         // AC7.1.1: create party → roomId (UUID) + joinCode (6 ký tự)
         var expectedResponse = new CreatePartyResponse(
-            Guid.NewGuid().ToString(),
-            "ABC123",
-            ValidUserId);
+            Guid.NewGuid().ToString(), "ABC123", ValidUserId, "Test Party", "song-001", []);
 
         _serviceMock
-            .Setup(s => s.CreatePartyAsync(ValidUserId, "song-001", It.IsAny<CancellationToken>()))
+            .Setup(s => s.CreatePartyAsync(ValidUserId, It.IsAny<string?>(), "song-001", It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/v1/parties")
@@ -94,8 +92,8 @@ public class PartiesIntegrationTests : IClassFixture<PartyWebApplicationFactory>
     public async Task CreateParty_ResponseHasMetaFields()
     {
         _serviceMock
-            .Setup(s => s.CreatePartyAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new CreatePartyResponse(Guid.NewGuid().ToString(), "XYZ789", ValidUserId));
+            .Setup(s => s.CreatePartyAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CreatePartyResponse(Guid.NewGuid().ToString(), "XYZ789", ValidUserId, "Test Party", "song-001", []));
 
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/v1/parties")
         {
@@ -124,7 +122,7 @@ public class PartiesIntegrationTests : IClassFixture<PartyWebApplicationFactory>
 
         _serviceMock
             .Setup(s => s.JoinPartyAsync(joinCode, ValidUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new JoinPartyResponse(roomId, hostId, "song-001", 30));
+            .ReturnsAsync(new JoinPartyResponse(roomId, joinCode, "Test Party", hostId, "song-001", 30, []));
 
         var request = new HttpRequestMessage(HttpMethod.Post, $"/api/v1/parties/{joinCode}/join");
         AddGatewayHeaders(request);

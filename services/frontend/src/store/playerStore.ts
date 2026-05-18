@@ -29,6 +29,13 @@ interface PlayerState {
   /** Incremented by BottomPlayerBar onEnded — Party room subscribes to trigger QueueNext */
   songEndSignal:    number;
   triggerSongEnd:   () => void;
+  /**
+   * When non-null, BottomPlayerBar will seek to this position before the next play().
+   * Set by PartyRoomPage (Member sync) to correct drift before resuming.
+   * Consumed and cleared by BottomPlayerBar.
+   */
+  preSyncPositionOnPlay: number | null;
+  setPreSyncPositionOnPlay: (pos: number | null) => void;
   setSong:          (song: CurrentSong) => void;
   /** Alias for setSong — preferred in new components */
   playSong:         (song: CurrentSong) => void;
@@ -69,6 +76,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   seekSignal:    0,
   seekPosition:  0,
   songEndSignal: 0,
+  preSyncPositionOnPlay: null,
 
   setSong: (song) => {
     if (!song.songId) return;
@@ -90,7 +98,8 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     }));
   },
 
-  triggerSongEnd:   () => set((s) => ({ songEndSignal: s.songEndSignal + 1 })),
+  triggerSongEnd:            () => set((s) => ({ songEndSignal: s.songEndSignal + 1 })),
+  setPreSyncPositionOnPlay:  (pos) => set({ preSyncPositionOnPlay: pos }),
   pauseSong:        () => set((s) => ({ pauseSignal:  s.pauseSignal  + 1 })),
   resumeSong:       () => set((s) => ({ resumeSignal: s.resumeSignal + 1 })),
   seekSong:         (positionSec) => set((s) => ({ seekSignal: s.seekSignal + 1, seekPosition: positionSec })),

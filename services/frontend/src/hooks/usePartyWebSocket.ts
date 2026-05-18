@@ -31,6 +31,18 @@ export interface UsePartyWebSocketResult {
   sendQueueRemove: (songId: string) => Promise<void>;
   /** Host only — dequeue next song and advance playback */
   sendQueueNext:   () => Promise<void>;
+  /**
+   * Estimate the current Host playback position based on the last received SYNC_STATE.
+   * Accounts for elapsed time since last sync when isPlaying=true.
+   * Used by Member to seek to the correct position before resuming local playback.
+   */
+  estimateCurrentPosition: () => number;
+}
+
+interface LastSync {
+  positionSec: number;
+  isPlaying:   boolean;
+  clientMs:    number; // Date.now() when this SYNC_STATE was received
 }
 
 // Reconnect delays: 1s, 2s, 4s, 8s, 16s, 30s (capped) — AC7.3.2
@@ -48,6 +60,7 @@ export function usePartyWebSocket({
   const displayName  = useAuthStore((s) => s.displayName);
   const avatarUrl    = useAuthStore((s) => s.avatarUrl);
   const connectionRef = useRef<signalR.HubConnection | null>(null);
+  const lastSyncRef   = useRef<LastSync>({ positionSec: 0, isPlaying: false, clientMs: Date.now() });
   const [status, setStatus]         = useState<ConnectionStatus>('connecting');
   const [queueItems, setQueueItems] = useState<QueueItem[]>([]);
 
@@ -74,6 +87,11 @@ export function usePartyWebSocket({
 
     // ─── Server → Client handlers ─────────────────────────────────────────
     connection.on('SYNC_STATE', (data: SyncState) => {
+      lastSyncRef.current = {
+        positionSec: data.positionSec,
+        isPlaying:   data.isPlaying,
+        clientMs:    Date.now(),
+      };
       onSyncState?.(data);
     });
 
@@ -150,5 +168,12 @@ export function usePartyWebSocket({
     await conn.invoke('QueueNext', { eventId: crypto.randomUUID() });
   }, [isHost]);
 
-  return { status, queueItems, sendPlayerAction, sendQueueAdd, sendQueueRemove, sendQueueNext };
+  const estimateCurrentPosition = useCallback((): number => {
+    const { positionSec, isPlaying, clientMs } = lastSyncRef.current;
+    if (!isPlaying) return positionSec;
+    const elapsedSec = (Date.now() - clientMs) / 1000;
+    return positionSec + elapsedSec;
+  }, []);
+
+  return { status, queueItems, sendPlayerAction, sendQueueAdd, sendQueueRemove, sendQueueNext, estimateCurrentPosition };
 }

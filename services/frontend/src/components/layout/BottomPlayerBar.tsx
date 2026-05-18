@@ -112,9 +112,16 @@ export default function BottomPlayerBar() {
     setIsPlaying(false);
   }, [pauseSignal]);
 
-  // Resume command from external caller — resumes without resetting stream URL
+  // Resume command from external caller — resumes without resetting stream URL.
+  // If party room pre-set a sync position, seek to it before resuming (Member drift correction).
   useEffect(() => {
     if (resumeSignal === 0) return;
+    const presync = usePlayerStore.getState().preSyncPositionOnPlay;
+    if (presync != null && audioRef.current) {
+      audioRef.current.currentTime = presync;
+      setCurrentTime(presync);
+      usePlayerStore.getState().setPreSyncPositionOnPlay(null);
+    }
     audioRef.current?.play().then(() => {
       setIsPlaying(true);
       hasStartedRef.current = true;
@@ -165,6 +172,13 @@ export default function BottomPlayerBar() {
   }, []);
 
   const handlePlay = () => {
+    // Seek to Host-estimated position before play if party room requested it (Member sync).
+    const presync = usePlayerStore.getState().preSyncPositionOnPlay;
+    if (presync != null && audioRef.current) {
+      audioRef.current.currentTime = presync;
+      setCurrentTime(presync);
+      usePlayerStore.getState().setPreSyncPositionOnPlay(null);
+    }
     audioRef.current?.play();
     setIsPlaying(true);
     hasStartedRef.current = true;
