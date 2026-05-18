@@ -1,9 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import AppShell from '../components/layout/AppShell';
 import Spinner from '../components/ui/Spinner';
 import EmptyState from '../components/ui/EmptyState';
 import ArtistCard from '../features/search/components/ArtistCard';
 import { useSearch } from '../features/search/hooks/useSearch';
+import { searchContent } from '../services/searchService';
 import { usePlayerStore } from '../store/playerStore';
 import { useToast } from '../contexts/ToastContext';
 import type { SearchResult } from '../types/domain';
@@ -261,7 +262,7 @@ function SongsList({
   );
 }
 
-// ── Artists row — upgraded to ArtistCard ─────────────────────────────────────
+// ── Artists row — horizontal scroll (used in "all" tab) ──────────────────────
 
 function ArtistsRow({ artists }: { artists: SearchResult[] }) {
   if (!artists.length) return null;
@@ -269,6 +270,22 @@ function ArtistsRow({ artists }: { artists: SearchResult[] }) {
     <section data-testid="artists-section">
       <h2 className="font-[600] text-[18px] leading-[1.3] text-text-base mb-4">Nghệ sĩ</h2>
       <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {artists.map((a) => (
+          <ArtistCard key={a.id} artist={a} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ── Artists grid — used in "artists" tab ──────────────────────────────────────
+
+function ArtistsGrid({ artists }: { artists: SearchResult[] }) {
+  if (!artists.length) return null;
+  return (
+    <section data-testid="artists-grid">
+      <h2 className="font-[600] text-[18px] leading-[1.3] text-text-base mb-4">Nghệ sĩ</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {artists.map((a) => (
           <ArtistCard key={a.id} artist={a} />
         ))}
@@ -354,10 +371,26 @@ export default function SearchPage() {
   const { show }    = useToast();
 
   const [filterTab, setFilterTab] = useState<FilterTab>('all');
+  const [artistResults, setArtistResults] = useState<SearchResult[]>([]);
 
   const hasQuery  = query.trim().length > 0;
   const songs     = results.filter((r) => r.type === 'song');
   const artists   = results.filter((r) => r.type === 'artist');
+
+  // Dedicated artist fetch when switching to artists tab
+  useEffect(() => {
+    if (filterTab !== 'artists' || !hasQuery) {
+      setArtistResults([]);
+      return;
+    }
+    let cancelled = false;
+    searchContent(query, 'artist', 20)
+      .then((res) => {
+        if (!cancelled) setArtistResults(res.items.filter((r) => r.type === 'artist'));
+      })
+      .catch(() => { if (!cancelled) setArtistResults([]); });
+    return () => { cancelled = true; };
+  }, [filterTab, query, hasQuery]);
   const topResult = results.reduce<SearchResult | null>(
     (best, r) => (!best || r.score > best.score ? r : best),
     null,
@@ -459,14 +492,19 @@ export default function SearchPage() {
                 )}
                 {showSongs && songs.length > 0 && (
                   <div className={showTopResult ? 'lg:col-span-3' : 'lg:col-span-5'}>
-                    <SongsList songs={songs.slice(0, 4)} onPlay={handlePlay} onAddToQueue={handleAddToQueue} />
+                    <SongsList
+                      songs={filterTab === 'all' ? songs.slice(0, 4) : songs}
+                      onPlay={handlePlay}
+                      onAddToQueue={handleAddToQueue}
+                    />
                   </div>
                 )}
               </div>
             )}
 
             {/* Artists */}
-            {showArtists && <ArtistsRow artists={artists} />}
+            {showArtists && filterTab === 'all'     && <ArtistsRow  artists={artists} />}
+            {showArtists && filterTab === 'artists' && <ArtistsGrid artists={artistResults.length > 0 ? artistResults : artists} />}
 
             {/* Related songs — only in 'all' tab */}
             {filterTab === 'all' && <RelatedSongsGrid songs={relatedSongs} onPlay={handlePlay} onAddToQueue={handleAddToQueue} />}

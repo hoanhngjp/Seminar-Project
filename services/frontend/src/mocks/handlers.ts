@@ -185,18 +185,22 @@ const uploadSongHandler = http.post('*/api/v1/music/songs', async () => {
 const searchHandler = http.get('*/api/v1/search', async ({ request }) => {
   await delay(LATENCY);
   const url = new URL(request.url);
-  const q = url.searchParams.get('q') ?? '';
+  const q    = url.searchParams.get('q') ?? '';
+  const type = url.searchParams.get('type') ?? 'all';
 
   if (!q.trim()) {
-    return ok([], { pagination: { hasMore: false, nextCursor: null } });
+    return ok({ items: [], nextCursor: null, hasMore: false });
   }
 
   const lower = q.toLowerCase();
-  const results = MOCK_SEARCH_RESULTS.filter(
+  let results = MOCK_SEARCH_RESULTS.filter(
     (r) => r.name.toLowerCase().includes(lower) || (r.artist ?? '').toLowerCase().includes(lower),
   );
 
-  return ok(results, { pagination: { hasMore: false, nextCursor: null } });
+  if (type === 'song')   results = results.filter((r) => r.type === 'song');
+  if (type === 'artist') results = results.filter((r) => r.type === 'artist');
+
+  return ok({ items: results, nextCursor: null, hasMore: false });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -314,7 +314,7 @@ describe('SearchPage — filter tabs', () => {
     await waitFor(() => {
       expect(screen.getByTestId('filter-tab-artists')).toHaveAttribute('aria-selected', 'true');
     });
-    expect(screen.getByTestId('artists-section')).toBeInTheDocument();
+    expect(screen.getByTestId('artists-grid')).toBeInTheDocument();
     expect(screen.queryByTestId('song-row-song-001')).not.toBeInTheDocument();
   });
 

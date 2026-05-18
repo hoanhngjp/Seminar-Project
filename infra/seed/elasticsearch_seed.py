@@ -10,7 +10,31 @@ import os
 ES_URL = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
 INDEX = "songs"
 
-SONGS = [
+# artist_name → (artist_id, artist_avatar_url)
+ARTIST_META = {
+    "Vũ.":                    ("a0000001-0000-0000-0000-000000000001", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129421/smart-music/artists/vu.jpg"),
+    "Sơn Tùng M-TP":          ("a0000001-0000-0000-0000-000000000002", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129407/smart-music/artists/son-tung-mtp.jpg"),
+    "Ngọt":                   ("a0000001-0000-0000-0000-000000000003", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129400/smart-music/artists/ngot.jpg"),
+    "TaynguyenSound":         ("a0000001-0000-0000-0000-000000000004", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129408/smart-music/artists/taynguyen-sound.jpg"),
+    "The Aaron Smith Experience": ("a0000001-0000-0000-0000-000000000005", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129411/smart-music/artists/the-aaron-smith-experience.jpg"),
+    "Miki Matsubara":         ("a0000001-0000-0000-0000-000000000006", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129397/smart-music/artists/miki-matsubara.jpg"),
+    "Low G":                  ("a0000001-0000-0000-0000-000000000007", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129394/smart-music/artists/low-g.jpg"),
+    "Thắng":                  ("a0000001-0000-0000-0000-000000000008", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129412/smart-music/artists/thang.jpg"),
+    "Dick":                   ("a0000001-0000-0000-0000-000000000009", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129392/smart-music/artists/dick.jpg"),
+    "Tùng TeA":               ("a0000001-0000-0000-0000-000000000010", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129419/smart-music/artists/tung-tea.jpg"),
+    "PC":                     ("a0000001-0000-0000-0000-000000000011", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129404/smart-music/artists/pc.jpg"),
+    "Trang":                  ("a0000001-0000-0000-0000-000000000012", "https://res.cloudinary.com/dd9umsxtf/image/upload/v1779129416/smart-music/artists/trang.jpg"),
+}
+
+def _enrich(song):
+    """Add artist_id and artist_avatar_url fields from ARTIST_META lookup."""
+    meta = ARTIST_META.get(song["artist"])
+    if meta:
+        song["artist_id"]         = meta[0]
+        song["artist_avatar_url"] = meta[1]
+    return song
+
+SONGS = [_enrich(s) for s in [
     {"id":"b0000001-0000-0000-0000-000000000001","title":"Bước Qua Nhau (Teaser)","artist":"Vũ.","genre":"Indie","mood":"sad","language":"vi","is_explicit":False,"is_published":True,"play_count":1200000,"cover_url":"https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962315/smart-music/covers/buoc-qua-nhau-teaser.jpg","duration_sec":180},
     {"id":"b0000001-0000-0000-0000-000000000002","title":"Anh Nhớ Ra (ft. Trang)","artist":"Vũ.","genre":"Indie","mood":"sad","language":"vi","is_explicit":False,"is_published":True,"play_count":3800000,"cover_url":"https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962336/smart-music/covers/anh-nho-ra.jpg","duration_sec":240},
     {"id":"b0000001-0000-0000-0000-000000000003","title":"Anh Nhớ Ra (Live Solo)","artist":"Vũ.","genre":"Acoustic","mood":"chill","language":"vi","is_explicit":False,"is_published":True,"play_count":2100000,"cover_url":"https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962337/smart-music/covers/anh-nho-ra-solo.jpg","duration_sec":250},
@@ -41,22 +65,24 @@ SONGS = [
     {"id":"b0000001-0000-0000-0000-000000000028","title":"Thôi Trễ Rồi, Chắc Anh Phải Về Đây (Live)","artist":"TaynguyenSound","genre":"Hip-Hop","mood":"chill","language":"vi","is_explicit":False,"is_published":True,"play_count":8400000,"cover_url":"https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962353/smart-music/covers/thoi-tre-roi.jpg","duration_sec":295},
     {"id":"b0000001-0000-0000-0000-000000000029","title":"Âm Thầm Bên Em","artist":"Sơn Tùng M-TP","genre":"Pop","mood":"sad","language":"vi","is_explicit":False,"is_published":True,"play_count":16000000,"cover_url":"https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962353/smart-music/covers/am-tham-ben-em.jpg","duration_sec":252},
     {"id":"b0000001-0000-0000-0000-000000000030","title":"真夜中のドア〜Stay with Me","artist":"Miki Matsubara","genre":"Electronic","mood":"romantic","language":"ja","is_explicit":False,"is_published":True,"play_count":85000000,"cover_url":"https://res.cloudinary.com/dd9umsxtf/image/upload/v1778962354/smart-music/covers/mayonaka-no-door.jpg","duration_sec":248},
-]
+]]
 
 MAPPING = {
     "settings": {"number_of_shards": 1, "number_of_replicas": 0},
     "mappings": {"properties": {
-        "id":           {"type": "keyword"},
-        "title":        {"type": "text", "analyzer": "standard"},
-        "artist":       {"type": "text", "analyzer": "standard"},
-        "genre":        {"type": "keyword"},
-        "mood":         {"type": "keyword"},
-        "language":     {"type": "keyword"},
-        "is_explicit":  {"type": "boolean"},
-        "is_published": {"type": "boolean"},
-        "play_count":   {"type": "long"},
-        "cover_url":    {"type": "keyword"},
-        "duration_sec": {"type": "integer"},
+        "id":                 {"type": "keyword"},
+        "title":              {"type": "text", "analyzer": "standard"},
+        "artist":             {"type": "text", "analyzer": "standard"},
+        "artist_id":          {"type": "keyword"},
+        "artist_avatar_url":  {"type": "keyword"},
+        "genre":              {"type": "keyword"},
+        "mood":               {"type": "keyword"},
+        "language":           {"type": "keyword"},
+        "is_explicit":        {"type": "boolean"},
+        "is_published":       {"type": "boolean"},
+        "play_count":         {"type": "long"},
+        "cover_url":          {"type": "keyword"},
+        "duration_sec":       {"type": "integer"},
     }}
 }
 
@@ -120,7 +146,7 @@ def main():
     count = count_resp.get("count", "?")
     print(f"  Verified: {count} documents in index")
 
-    search = req("POST", f"/{INDEX}/_search", {"query": {"match": {"artist": "Son Tung"}}, "size": 2, "_source": ["title", "artist"]})
+    search = req("POST", f"/{INDEX}/_search", {"query": {"match": {"artist": "Son Tung"}}, "size": 2, "_source": ["title", "artist", "artist_id"]})
     hits = search.get("hits", {}).get("hits", [])
     print(f"  Sample 'Son Tung' hits: {[h['_source']['title'] for h in hits]}")
 
