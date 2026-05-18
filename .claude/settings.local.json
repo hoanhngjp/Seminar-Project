@@ -20,7 +20,8 @@
       "Bash(curl -s -X POST http://localhost:5000/api/v1/auth/register -H \"Content-Type: application/json\" -d '{\"email\":\"listener@example.com\",\"password\":\"Demo1234!\",\"displayName\":\"Listener Demo\",\"role\":\"Listener\"}')",
       "Bash(bash \"c:/Users/User/source/repos/Seminar-Project/infra/seed/demo_accounts.sh\")",
       "PowerShell(dotnet build \"c:\\\\Users\\\\User\\\\source\\\\repos\\\\Seminar-Project\\\\services\\\\user-service\\\\src\\\\UserService.Api\\\\UserService.Api.csproj\" 2>&1)",
-      "Bash(docker-compose ps *)"
+      "Bash(docker-compose ps *)",
+      "Bash(bash infra/seed/seed_lyrics.sh)"
     ]
   }
 }

@@ -221,6 +221,9 @@
 - [X] Party Queue Phase 2 — Frontend: `songEndSignal`+`triggerSongEnd` (playerStore), `QueueItem`/`QueueUpdated` types (listening-party.ts), `usePartyWebSocket` queue state+QUEUE_UPDATED handler+`sendQueueAdd`/`sendQueueRemove`/`sendQueueNext`, `PartyQueue.tsx` (mini search debounce 300ms + queue list + remove button) — 820/820 tests xanh (+30 tests) (2026-05-18)
 - [X] Party Queue Phase 3 — Integration: `PartyRoomPage` tab bar (Thành viên|Hàng chờ), wire `usePartyWebSocket`, auto-advance `songEndSignal→sendQueueNext`, `handleNext→sendQueueNext`, `handlePrev→seek 0`, `PartyQueue` enrich metadata (getSong + skeleton), `BottomPlayerBar.onEnded` thêm `triggerSongEnd()` — 832/832 xanh (+12 tests) (2026-05-18)
 - [X] Party Queue Phase 4 — Polish: (1) Member pause→play: `preSyncPositionOnPlay` + `estimateCurrentPosition()`; (2) Late-join: `LastUpdatedAt` Redis + `OnConnectedAsync` adjustedPos; (3) Queue `NowPlayingRow` "Đang phát" pinned top; (4) Member close-bar re-sync via `syncTick` — 832/832 xanh (2026-05-18)
+- [X] Lyrics Phase 1 — `seed_lyrics.sh` seed 21 bài LRC vào `music_db.songs.Lyrics` + flush Redis cache (2026-05-18)
+- [ ] Lyrics Phase 2 — `LyricsDisplay.tsx` + wire `NowPlayingOverlay` tab "Lời bài hát"
+- [ ] Lyrics Phase 3 — Party Room: button "Hàng chờ" → callback mở tab queue; tab "Hàng chờ" → "Lời bài hát" với `LyricsDisplay` + `positionSec`
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 
@@ -228,13 +231,16 @@
 
 ## Đang làm
 
-- **Service/Task:** Demo prep — script rehearsal + Creator account song upload
+- **Service/Task:** Lyrics Feature — 3 phases (LRC parse → LyricsDisplay → Party room integration)
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
 - **Checkpoint gần nhất đã pass:** Party Queue Phase 4 Polish hoàn thành, 832/832 xanh (2026-05-18)
 - **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
-  1. [TODO] Demo script rehearsal 14 phút
-  2. [TODO] Pre-upload demo songs cho Creator account
+  1. [DONE] Lyrics Phase 1 — seed_lyrics.sh + 21 bài LRC trong DB
+  2. [TODO] Lyrics Phase 2 — SongResponseDto + LyricsDisplay component + wire NowPlayingOverlay
+  3. [TODO] Lyrics Phase 3 — Party Room: tab đổi thành Lyrics với positionSec
+  4. [TODO] Demo script rehearsal 14 phút
+  5. [TODO] Pre-upload demo songs cho Creator account
 
 **Party Queue Design Decisions:**
 - Queue stored in Redis (Room JSON), max 50 items

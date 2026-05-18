@@ -1,5 +1,42 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — Lyrics Phase 1 — Seed LRC → music_db] [DONE]
+
+**Những gì đã implement:**
+- `infra/seed/seed_lyrics.sh`: đọc 22 file `.lrc` từ `tests/lyrics/`, map 21 bài theo song ID, `UPDATE songs SET "Lyrics" = '...'` trong `music_db` qua `docker exec -i smartmusic-postgres psql`; sau đó `DEL song:meta:{id}` trên Redis cho tất cả 21 bài
+- Mapping confirm: 21/30 bài có LRC; 8 bài NULL; "Lạc Trôi (Triple D Remix)" không match DB
+- Verify: `SELECT "Id", "Title", LENGTH("Lyrics")` → 21 rows, LRC format `[mm:ss.xx]` nguyên vẹn
+
+**Quyết định thiết kế:**
+- Option C (Database) thay vì Option A (static bundle): lyrics lưu raw LRC string trong `songs.Lyrics` TEXT nullable; parse phía frontend
+- `run_sql()` dùng `echo "$SQL" | docker exec -i` thay vì `psql` native (không có trên PATH host)
+
+---
+[2026-05-18] [PLAN — Lyrics Feature (3 phases)] [IN PROGRESS]
+
+**Mục tiêu:** Hiển thị lời bài hát đồng bộ theo thời gian thực trong NowPlayingOverlay và PartyRoomPage.
+
+**Phase 1 — LRC Parser + Data Bundle**
+- Tạo `src/features/player/lyrics/lrcParser.ts`: parse `[mm:ss.xx] text` → `{ timeSec: number, text: string }[]`
+- Tạo `src/features/player/lyrics/lyricsData.ts`: map `songTitle → LrcLine[]` bundle tĩnh 21 bài từ `tests/lyrics/*.lrc`
+- LRC mapping: 20/22 exact match, 1 partial (Lạc Trôi remix dùng cho bài gốc), 1 không có LRC
+- Tests: `lrcParser.test.ts`
+
+**Phase 2 — LyricsDisplay Component + NowPlayingOverlay**
+- Tạo `src/features/player/components/LyricsDisplay.tsx`: render lyric list, highlight active line theo `currentTimeSec`, auto-scroll active line vào giữa
+- Sửa `NowPlayingOverlay.tsx`: thay static placeholder tab "Lời bài hát" bằng `<LyricsDisplay currentTimeSec={currentTime} songTitle={currentSong.title} />`
+- Tests: `LyricsDisplay.test.tsx`
+
+**Phase 3 — Party Room: Queue button callback + Lyrics tab**
+- `HostControls.tsx`: thêm `onQueueOpen?: () => void` prop → wire vào button "📋 Hàng chờ"
+- `RoomPlayer.tsx`: thêm `onQueueOpen` prop → pass xuống `HostControls`
+- `PartyRoomPage.tsx`: (1) truyền `onQueueOpen={() => setActiveTab('queue')}` vào `RoomPlayer`; (2) đổi tab thứ 2 từ `'queue'` → `'lyrics'`, render `<LyricsDisplay currentTimeSec={positionSec} songTitle={currentSong?.title} />`
+- Tab "Hàng chờ" (`PartyQueue`) vẫn accessible qua button trong HostControls — không bị xóa
+- Tests: update `HostControls.test.tsx`, `RoomPlayer.test.tsx`, `PartyRoomPage.test.tsx`
+
+**Design decision:** Dùng chung `LyricsDisplay` component cho cả NowPlayingOverlay (clock = audio `currentTime`) và PartyRoomPage (clock = SignalR `positionSec`). Lookup lyrics bằng `songTitle` (lowercase trim match).
+
+---
 [2026-05-18] [FEATURE — Party Queue Phase 4 — Polish (drift correction + late-join + NowPlayingRow)] [DONE]
 
 **Những gì đã implement:**
