@@ -209,7 +209,8 @@ public class SongService : ISongService
             .Where(sa => sa.Role == "featured")
             .OrderBy(sa => sa.DisplayOrder)
             .Select(sa => new FeaturedArtistDto(sa.ArtistId, sa.Artist?.StageName ?? sa.DisplayName ?? string.Empty))
-            .ToList()
+            .ToList(),
+        song.Lyrics
     );
 
     private static void ValidateFile(Stream stream, long length, string contentType)

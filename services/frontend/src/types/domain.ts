@@ -22,6 +22,7 @@ export interface Song {
   isExplicit: boolean;
   genreId?: string;
   mood?: string;
+  lyrics?: string;
 }
 
 export interface RecommendedSong extends Song {

@@ -20,11 +20,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `infra/seed/seed_lyrics.sh`: script seed 21 bài LRC từ `tests/lyrics/` vào cột `Lyrics` (TEXT) trong `music_db.songs`; tự động flush Redis cache `song:meta:{id}` sau khi seed
 - Mapping: 21/30 bài trong DB có LRC; 8 bài không có LRC giữ `NULL`; 1 file "Lạc Trôi (Triple D Remix)" không match bài nào trong DB
 
-**Lyrics Feature — Phase 2–3 (planned)**
-- `SongResponseDto`: thêm `Lyrics?` field — expose qua `GET /api/v1/music/songs/{songId}`
-- `LyricsDisplay.tsx`: component hiển thị lời bài hát đồng bộ theo thời gian, auto-scroll, highlight dòng đang hát
-- `NowPlayingOverlay`: tab "Lời bài hát" wire `LyricsDisplay` với `currentTime` từ audio player
-- `PartyRoomPage`: tab thứ 2 đổi từ "Hàng chờ" → "Lời bài hát" dùng `LyricsDisplay` với `positionSec` từ SignalR
+**Lyrics Feature — Phase 2+3: LyricsDisplay + Integration (2026-05-18)**
+- `SongResponseDto` (Music Service): thêm `string? Lyrics` — expose qua `GET /api/v1/music/songs/{songId}`
+- `LyricsDisplay.tsx`: component parse LRC `[mm:ss.xx]`, highlight dòng active theo `positionSec`, auto-scroll smooth, hiện `...` khi không có lyrics
+- `NowPlayingOverlay`: tab "Lời bài hát" fetch lyrics thật từ `getSong()` → wire `LyricsDisplay` với audio `currentTime`
+- `PartyRoomPage`: tab "Hàng chờ" đổi thành "Lời bài hát"; thêm button **📋 Hàng chờ** dưới RoomPlayer — toggle inline queue panel
+- **+16 tests, 848/848 xanh**
 
 **Party Queue — Phase 3: Integration + Tab UI (2026-05-18)**
 - `PartyRoomPage`: right panel có tab bar "Thành viên" | "Hàng chờ" — default "Thành viên"; switch tab để thấy `PartyQueue` component

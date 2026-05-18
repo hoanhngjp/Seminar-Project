@@ -8,8 +8,15 @@ vi.mock('../../../services/searchService', () => ({
   searchContent: vi.fn(),
 }));
 
+// ── Mock musicService (getSong for lyrics) ────────────────────────────────────
+vi.mock('../../../services/musicService', () => ({
+  getSong: vi.fn(),
+}));
+
 import { searchContent } from '../../../services/searchService';
+import { getSong } from '../../../services/musicService';
 const mockSearchContent = vi.mocked(searchContent);
+const mockGetSong       = vi.mocked(getSong);
 
 // ── Mock song ─────────────────────────────────────────────────────────────────
 
@@ -26,6 +33,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   usePlayerStore.setState({ queue: [], currentSong: null });
   mockSearchContent.mockResolvedValue({ items: [], nextCursor: null, hasMore: false });
+  mockGetSong.mockResolvedValue({ id: 'song-001', title: 'Chuyến Xe', artist: 'Ngọt', duration: 245, isExplicit: false, lyrics: undefined });
 });
 
 // ── Default props ─────────────────────────────────────────────────────────────
@@ -148,10 +156,21 @@ describe('NowPlayingOverlay — tabs', () => {
     expect(screen.getByTestId('tab-content-related')).toBeInTheDocument();
   });
 
-  it('lyrics tab contains mock lyric lines', () => {
+  it('lyrics tab shows empty state when no lyrics available', async () => {
+    mockGetSong.mockResolvedValue({ id: 'song-001', title: 'Chuyến Xe', artist: 'Ngọt', duration: 245, isExplicit: false, lyrics: undefined });
     renderOverlay();
+    await waitFor(() => expect(screen.getByTestId('lyrics-empty')).toBeInTheDocument());
+  });
+
+  it('lyrics tab shows parsed lines when lyrics available', async () => {
+    mockGetSong.mockResolvedValue({
+      id: 'song-001', title: 'Chuyến Xe', artist: 'Ngọt', duration: 245, isExplicit: false,
+      lyrics: '[00:05.00]Tôi đã thấy những ngôi sao\n[00:10.00]Sáng lên trong mắt em',
+    });
+    renderOverlay();
+    await waitFor(() => expect(screen.getByTestId('lyrics-lines')).toBeInTheDocument());
     expect(screen.getByTestId('tab-content-lyrics')).toHaveTextContent('Tôi đã thấy những ngôi sao');
-    expect(screen.getByTestId('tab-content-lyrics')).toHaveTextContent('chuyến xe này sẽ đi về đâu');
+    expect(screen.getByTestId('tab-content-lyrics')).toHaveTextContent('Sáng lên trong mắt em');
   });
 });
 

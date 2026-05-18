@@ -312,11 +312,11 @@ describe('PartyRoomPage', () => {
   // ── Phase 3: Right panel tabs ────────────────────────────────────────────
 
   describe('Right panel tabs', () => {
-    it('renders both "Thành viên" and "Hàng chờ" tabs', async () => {
+    it('renders both "Thành viên" and "Lời bài hát" tabs', async () => {
       renderPage();
       await waitFor(() => {
         expect(screen.getByRole('tab', { name: 'Thành viên' })).toBeInTheDocument();
-        expect(screen.getByRole('tab', { name: 'Hàng chờ' })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: 'Lời bài hát' })).toBeInTheDocument();
       });
     });
 
@@ -328,77 +328,99 @@ describe('PartyRoomPage', () => {
       });
     });
 
-    it('clicking "Hàng chờ" tab shows PartyQueue, hides MemberList', async () => {
+    it('clicking "Lời bài hát" tab shows LyricsDisplay, hides MemberList', async () => {
       renderPage();
-      await waitFor(() => screen.getByRole('tab', { name: 'Hàng chờ' }));
-      fireEvent.click(screen.getByRole('tab', { name: 'Hàng chờ' }));
+      await waitFor(() => screen.getByRole('tab', { name: 'Lời bài hát' }));
+      fireEvent.click(screen.getByRole('tab', { name: 'Lời bài hát' }));
       await waitFor(() => {
-        expect(screen.getByRole('tab', { name: 'Hàng chờ' })).toHaveAttribute('aria-selected', 'true');
-        expect(screen.getByPlaceholderText('Tìm bài để thêm...')).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: 'Lời bài hát' })).toHaveAttribute('aria-selected', 'true');
         expect(screen.queryByText('Thành viên (2)')).not.toBeInTheDocument();
       });
     });
 
     it('clicking "Thành viên" tab again restores MemberList', async () => {
       renderPage();
-      await waitFor(() => screen.getByRole('tab', { name: 'Hàng chờ' }));
-      fireEvent.click(screen.getByRole('tab', { name: 'Hàng chờ' }));
+      await waitFor(() => screen.getByRole('tab', { name: 'Lời bài hát' }));
+      fireEvent.click(screen.getByRole('tab', { name: 'Lời bài hát' }));
       fireEvent.click(screen.getByRole('tab', { name: 'Thành viên' }));
       await waitFor(() => {
         expect(screen.getByText('Thành viên (2)')).toBeInTheDocument();
-        expect(screen.queryByPlaceholderText('Tìm bài để thêm...')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  // ── Queue button (inline queue panel) ───────────────────────────────────────
+
+  describe('Queue button', () => {
+    it('renders queue button in player section', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Hàng chờ' })).toBeInTheDocument();
       });
     });
 
-    it('PartyQueue receives queueItems from usePartyWebSocket', async () => {
+    it('queue panel is hidden by default', async () => {
+      renderPage();
+      await waitFor(() => screen.getByRole('button', { name: 'Hàng chờ' }));
+      expect(screen.queryByTestId('inline-party-queue')).not.toBeInTheDocument();
+    });
+
+    it('clicking queue button shows inline queue panel', async () => {
+      renderPage();
+      await waitFor(() => screen.getByRole('button', { name: 'Hàng chờ' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Hàng chờ' }));
+      await waitFor(() => {
+        expect(screen.getByTestId('inline-party-queue')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText('Tìm bài để thêm...')).toBeInTheDocument();
+      });
+    });
+
+    it('clicking queue button again hides inline queue panel', async () => {
+      renderPage();
+      await waitFor(() => screen.getByRole('button', { name: 'Hàng chờ' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Hàng chờ' }));
+      await waitFor(() => screen.getByTestId('inline-party-queue'));
+      fireEvent.click(screen.getByRole('button', { name: 'Hàng chờ' }));
+      await waitFor(() => {
+        expect(screen.queryByTestId('inline-party-queue')).not.toBeInTheDocument();
+      });
+    });
+
+    it('PartyQueue in queue panel receives queueItems from usePartyWebSocket', async () => {
       _partyWsState.queueItems = [
         { songId: 'song-aaa', addedByUserId: 'user-listener-001' },
       ];
       renderPage();
-      await waitFor(() => screen.getByRole('tab', { name: 'Hàng chờ' }));
-      fireEvent.click(screen.getByRole('tab', { name: 'Hàng chờ' }));
+      await waitFor(() => screen.getByRole('button', { name: 'Hàng chờ' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Hàng chờ' }));
       await waitFor(() => {
         expect(screen.getByText('Hàng chờ (1)')).toBeInTheDocument();
       });
     });
 
-    it('PartyQueue receives currentUserId — non-owner item has no remove button', async () => {
-      // addedByUserId is someone else, so remove button should NOT appear
+    it('PartyQueue in queue panel — non-owner item has no remove button', async () => {
       _partyWsState.queueItems = [
         { songId: 'song-bbb', addedByUserId: 'other-user-999' },
       ];
       renderPage();
-      await waitFor(() => screen.getByRole('tab', { name: 'Hàng chờ' }));
-      fireEvent.click(screen.getByRole('tab', { name: 'Hàng chờ' }));
+      await waitFor(() => screen.getByRole('button', { name: 'Hàng chờ' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Hàng chờ' }));
       await waitFor(() => {
         expect(screen.getByText('Hàng chờ (1)')).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: 'Xóa khỏi hàng chờ' })).not.toBeInTheDocument();
       });
     });
 
-    it('sendQueueAdd is wired to PartyQueue onAddSong', async () => {
+    it('sendQueueAdd and sendQueueRemove are wired to inline PartyQueue', async () => {
       const { usePartyWebSocket } = await import('../../hooks/usePartyWebSocket');
       vi.mocked(usePartyWebSocket).mockReturnValueOnce({
         ..._partyWsState,
         sendQueueAdd: mockSendQueueAdd,
-      });
-      renderPage();
-      await waitFor(() => screen.getByRole('tab', { name: 'Hàng chờ' }));
-      fireEvent.click(screen.getByRole('tab', { name: 'Hàng chờ' }));
-      await waitFor(() => screen.getByPlaceholderText('Tìm bài để thêm...'));
-      // Verify prop is passed by checking the mock was used
-      expect(vi.mocked(usePartyWebSocket)).toHaveBeenCalled();
-    });
-
-    it('sendQueueRemove is wired to PartyQueue onRemoveSong', async () => {
-      const { usePartyWebSocket } = await import('../../hooks/usePartyWebSocket');
-      vi.mocked(usePartyWebSocket).mockReturnValueOnce({
-        ..._partyWsState,
         sendQueueRemove: mockSendQueueRemove,
       });
       renderPage();
-      await waitFor(() => screen.getByRole('tab', { name: 'Hàng chờ' }));
-      fireEvent.click(screen.getByRole('tab', { name: 'Hàng chờ' }));
+      await waitFor(() => screen.getByRole('button', { name: 'Hàng chờ' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Hàng chờ' }));
       await waitFor(() => screen.getByPlaceholderText('Tìm bài để thêm...'));
       expect(vi.mocked(usePartyWebSocket)).toHaveBeenCalled();
     });

@@ -45,6 +45,7 @@ export async function getSong(songId: string): Promise<Song> {
     isExplicit: d.isExplicit ?? false,
     genreId: d.genreId,
     mood: d.mood,
+    lyrics: d.lyrics ?? undefined,
   };
 }
 

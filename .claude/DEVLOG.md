@@ -12,7 +12,44 @@
 - `run_sql()` dùng `echo "$SQL" | docker exec -i` thay vì `psql` native (không có trên PATH host)
 
 ---
-[2026-05-18] [PLAN — Lyrics Feature (3 phases)] [IN PROGRESS]
+[2026-05-18] [FEATURE — Lyrics Phase 2+3 — LyricsDisplay + NowPlayingOverlay + PartyRoomPage] [DONE]
+
+**Những gì đã implement:**
+
+**Backend — Music Service:**
+- `SongResponseDto.cs`: thêm `string? Lyrics` làm tham số cuối
+- `SongService.MapToResponseDto()`: thêm `song.Lyrics` vào constructor call
+
+**Frontend — Phase 2:**
+- `types/domain.ts`: thêm `lyrics?: string` vào `Song` interface
+- `services/musicService.ts`: `getSong()` map `d.lyrics`
+- `features/player/components/LyricsDisplay.tsx`: component mới
+  - Parse LRC format `[mm:ss.xx]` / `[mm:ss]` / `[mm:ss.x]`
+  - Highlight dòng active theo `positionSec` (largest `timeSec ≤ pos`)
+  - Auto-scroll active line: `scrollIntoView?.({ behavior: 'smooth', block: 'center' })` — dùng `?.` để safe với jsdom
+  - Hiện `...` khi `lyrics` undefined hoặc không parse được
+- `NowPlayingOverlay.tsx`: bỏ `MOCK_LYRICS`, thêm `useEffect` fetch `getSong(songId)` khi song thay đổi → lấy `lyrics` → truyền vào `<LyricsDisplay positionSec={currentTime} />`
+
+**Frontend — Phase 3:**
+- `PartyRoomPage.tsx`:
+  - `RightPanelTab`: đổi `'members' | 'queue'` → `'members' | 'lyrics'`
+  - Right panel tab thứ 2: "Hàng chờ" → "Lời bài hát" (render `LyricsDisplay` với `positionSec`)
+  - Thêm state `showQueue` + button **📋 Hàng chờ** bên dưới `RoomPlayer` trong `aria-label="Phát nhạc"` section
+  - Button toggle inline `PartyQueue` panel với `data-testid="inline-party-queue"`
+
+**Tests:**
+- `LyricsDisplay.test.tsx`: 11 tests mới (empty state, LRC parsing, active line highlight, edge cases)
+- `NowPlayingOverlay.test.tsx`: thay 1 test mock lyrics → 2 tests thật (empty + with lyrics)
+- `PartyRoomPage.test.tsx`: update 6 tab tests + thêm 7 queue button tests
+- **848/848 tests xanh (+16 tests)**
+
+**Quyết định thiết kế:**
+- Fetch lyrics trong `NowPlayingOverlay` bằng `getSong()` riêng — không threading lyrics qua playerStore — tránh impact hàng chục callers `playSong()`
+- `scrollIntoView?.()` optional chaining để tránh jsdom crash trong test environment
+- Queue trong PartyRoom: dùng toggle button inline thay vì tab — UX rõ ràng hơn, lyrics và members là nội dung right panel chính
+
+---
+[2026-05-18] [PLAN — Lyrics Feature (3 phases)] [DONE]
 
 **Mục tiêu:** Hiển thị lời bài hát đồng bộ theo thời gian thực trong NowPlayingOverlay và PartyRoomPage.
 

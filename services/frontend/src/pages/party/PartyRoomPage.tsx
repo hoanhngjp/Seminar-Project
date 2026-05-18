@@ -4,6 +4,7 @@ import AppShell from '../../components/layout/AppShell';
 import RoomPlayer from '../../features/party/components/RoomPlayer';
 import MemberList from '../../features/party/components/MemberList';
 import PartyQueue from '../../features/party/components/PartyQueue';
+import LyricsDisplay from '../../features/player/components/LyricsDisplay';
 import { usePartyWebSocket } from '../../hooks/usePartyWebSocket';
 import { useAuthStore } from '../../store/authStore';
 import { usePlayerStore } from '../../store/playerStore';
@@ -11,7 +12,7 @@ import { getSong } from '../../services/musicService';
 import type { Party, PartyMember, Song } from '../../types/domain';
 import type { SyncState, MemberJoin, MemberLeave, QueueUpdated } from '../../types/listening-party';
 
-type RightPanelTab = 'members' | 'queue';
+type RightPanelTab = 'members' | 'lyrics';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -53,7 +54,8 @@ export default function PartyRoomPage() {
   const roomName = initialParty?.name ?? 'Phòng nghe nhạc';
   const isHost   = !!currentUserId && currentUserId === hostId;
 
-  const [activeTab, setActiveTab] = useState<RightPanelTab>('members');
+  const [activeTab, setActiveTab]       = useState<RightPanelTab>('members');
+  const [showQueue, setShowQueue]       = useState(false);
 
   // Load song details whenever currentSongId changes
   useEffect(() => {
@@ -221,12 +223,37 @@ export default function PartyRoomPage() {
               onSeek={isHost ? handleSeek : undefined}
             />
           </div>
+
+          {/* Queue button + inline queue panel */}
+          <div className="mt-4 w-full">
+            <button
+              onClick={() => setShowQueue((v) => !v)}
+              aria-expanded={showQueue}
+              aria-label="Hàng chờ"
+              className="bg-mid-dark hover:bg-dark-card border border-border-pill rounded-full py-2 px-6 font-small-bold text-small-bold flex items-center gap-2 transition-colors text-text-base"
+            >
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">queue_music</span>
+              📋 Hàng chờ
+            </button>
+
+            {showQueue && (
+              <div className="mt-3 bg-dark-card border border-border-muted rounded-[8px] p-3" data-testid="inline-party-queue">
+                <PartyQueue
+                  queueItems={queueItems}
+                  currentSongId={currentSongId ?? undefined}
+                  currentUserId={currentUserId}
+                  onAddSong={sendQueueAdd}
+                  onRemoveSong={sendQueueRemove}
+                />
+              </div>
+            )}
+          </div>
         </section>
 
-        {/* ── Right: Members / Queue section (40%) ──────────────────────── */}
+        {/* ── Right: Members / Lyrics section (40%) ────────────────────── */}
         <section
           className="lg:w-[40%] flex flex-col h-full mt-8 lg:mt-0"
-          aria-label="Thành viên và Hàng chờ"
+          aria-label="Thành viên và Lời bài hát"
         >
           {/* Tab bar */}
           <div className="flex border-b border-border-muted mb-4" role="tablist">
@@ -244,15 +271,15 @@ export default function PartyRoomPage() {
             </button>
             <button
               role="tab"
-              aria-selected={activeTab === 'queue'}
-              onClick={() => setActiveTab('queue')}
+              aria-selected={activeTab === 'lyrics'}
+              onClick={() => setActiveTab('lyrics')}
               className={`flex-1 py-2 font-small-bold text-small-bold transition-colors border-b-2 -mb-[2px] ${
-                activeTab === 'queue'
+                activeTab === 'lyrics'
                   ? 'text-text-emphasis border-spotify-green'
                   : 'text-text-secondary border-transparent hover:text-text-base'
               }`}
             >
-              Hàng chờ
+              Lời bài hát
             </button>
           </div>
 
@@ -263,13 +290,15 @@ export default function PartyRoomPage() {
               currentUserId={currentUserId}
             />
           ) : (
-            <PartyQueue
-              queueItems={queueItems}
-              currentSongId={currentSongId ?? undefined}
-              currentUserId={currentUserId}
-              onAddSong={sendQueueAdd}
-              onRemoveSong={sendQueueRemove}
-            />
+            <div
+              className="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pr-1"
+              style={{ maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)' }}
+            >
+              <LyricsDisplay
+                lyrics={currentSong?.lyrics}
+                positionSec={positionSec}
+              />
+            </div>
           )}
         </section>
 

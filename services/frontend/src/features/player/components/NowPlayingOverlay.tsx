@@ -2,19 +2,9 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import type { CurrentSong } from './NowPlayingOverlay.types';
 import { usePlayerStore } from '../../../store/playerStore';
 import { searchContent } from '../../../services/searchService';
+import { getSong } from '../../../services/musicService';
+import LyricsDisplay from './LyricsDisplay';
 import type { SearchResult } from '../../../types/domain';
-
-// Mock lyrics for demo (no lyrics API in scope)
-const MOCK_LYRICS = [
-  { active: false, text: 'Tôi đã thấy những ngôi sao' },
-  { active: false, text: 'Sáng lên trong mắt em' },
-  { active: true,  text: 'Và chuyến xe này sẽ đi về đâu' },
-  { active: true,  text: 'Khi mà hai ta không còn chung lối' },
-  { active: false, text: 'Chỉ còn những kỉ niệm' },
-  { active: false, text: 'Rơi rớt dọc đường đi' },
-  { active: false, text: 'Xin lỗi em vì những ngày qua' },
-  { active: false, text: 'Không thể nào giữ lại' },
-];
 
 type Tab = 'lyrics' | 'queue' | 'related';
 
@@ -57,6 +47,7 @@ export default function NowPlayingOverlay({
   const toggleRepeat    = usePlayerStore((s) => s.toggleRepeat);
 
   const [activeTab, setActiveTab] = useState<Tab>('lyrics');
+  const [lyrics, setLyrics] = useState<string | undefined>(undefined);
   const [relatedSongs,   setRelatedSongs]   = useState<SearchResult[]>([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
   const [seekHovered,  setSeekHovered]  = useState(false);
@@ -65,6 +56,17 @@ export default function NowPlayingOverlay({
   const [isDragging,   setIsDragging]   = useState(false);
   const [dragValue,    setDragValue]    = useState(0);
   const seekBarRef = useRef<HTMLDivElement>(null);
+
+  // Fetch lyrics when song changes
+  useEffect(() => {
+    if (!currentSong.songId) return;
+    let cancelled = false;
+    setLyrics(undefined);
+    getSong(currentSong.songId)
+      .then((s) => { if (!cancelled) setLyrics(s.lyrics ?? undefined); })
+      .catch(() => { if (!cancelled) setLyrics(undefined); });
+    return () => { cancelled = true; };
+  }, [currentSong.songId]);
 
   // Fetch related songs when related tab is active
   useEffect(() => {
@@ -375,19 +377,8 @@ export default function NowPlayingOverlay({
                 style={{ maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)' }}
               >
                 {activeTab === 'lyrics' && (
-                  <div className="flex flex-col gap-4" data-testid="tab-content-lyrics">
-                    {MOCK_LYRICS.map((line, i) => (
-                      <p
-                        key={i}
-                        className={
-                          line.active
-                            ? 'text-[18px] font-[600] leading-[1.3] text-text-emphasis tracking-tight'
-                            : 'text-[14px] leading-[1.5] text-text-secondary opacity-70'
-                        }
-                      >
-                        {line.text}
-                      </p>
-                    ))}
+                  <div data-testid="tab-content-lyrics">
+                    <LyricsDisplay lyrics={lyrics} positionSec={currentTime} />
                   </div>
                 )}
 

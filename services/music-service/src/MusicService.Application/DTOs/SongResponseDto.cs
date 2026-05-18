@@ -17,7 +17,8 @@ public record SongResponseDto(
     string? Language,
     DateOnly? ReleaseDate,
     long PlayCount,
-    List<FeaturedArtistDto> FeaturedArtists
+    List<FeaturedArtistDto> FeaturedArtists,
+    string? Lyrics
 );
 
 public record ArtistSummaryDto(Guid Id, string StageName);
