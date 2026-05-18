@@ -17,11 +17,11 @@ export interface SongStats {
 }
 
 export async function fetchHeatmap(songId: string, timeRange: TimeRange): Promise<HeatmapDropOff[]> {
-  const res = await apiClient.get<ApiResponse<{ songId: string; dropOffs: HeatmapDropOff[] }>>(
+  const res = await apiClient.get<ApiResponse<{ songId: string; heatmap: HeatmapDropOff[] }>>(
     `/api/v1/analytics/creator/heatmap/${songId}`,
     { params: { timeRange } },
   );
-  return res.data.data?.dropOffs ?? [];
+  return res.data.data?.heatmap ?? [];
 }
 
 export async function fetchSongStats(songId: string, timeRange: TimeRange): Promise<AnalyticsStats> {

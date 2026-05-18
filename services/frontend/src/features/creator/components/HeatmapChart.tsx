@@ -24,7 +24,23 @@ interface HeatmapChartProps {
 }
 
 export default function HeatmapChart({ data, thresholdPct = 0.3 }: HeatmapChartProps) {
-  if (data.length === 0) return null;
+  if (data.length === 0) {
+    return (
+      <div className="bg-dark-surface rounded-[8px] p-lg hover:shadow-level-2 transition-all duration-200">
+        <div className="mb-6">
+          <h2 className="text-[16px] font-bold text-text-base">Heatmap tỷ lệ bỏ qua (skip)</h2>
+          <p className="text-[12px] text-text-secondary mt-1">Điểm người nghe hay bỏ qua nhất</p>
+        </div>
+        <div
+          aria-label="Heatmap bỏ qua theo giây"
+          role="img"
+          className="w-full h-[40px] bg-mid-dark rounded-[4px] flex items-center justify-center"
+        >
+          <span className="text-[12px] text-text-secondary">Chưa có dữ liệu skip</span>
+        </div>
+      </div>
+    );
+  }
 
   const max = Math.max(...data.map((d) => d.count));
   const peakIdx = data.findIndex((d) => d.count === max);
@@ -98,7 +114,7 @@ export default function HeatmapChart({ data, thresholdPct = 0.3 }: HeatmapChartP
             <span key={i} className={isPeakLabel ? 'text-warning font-bold relative' : ''}>
               {label}
               {isPeakLabel && (
-                <div className="absolute -top-14 left-1/2 -translate-x-1/2 whitespace-nowrap text-warning text-[12px] font-bold flex flex-col items-center pointer-events-none">
+                <div className="absolute -top-20 left-1/2 -translate-x-1/2 whitespace-nowrap text-warning text-[12px] font-bold flex flex-col items-center pointer-events-none">
                   <span>⚠️ Đỉnh bỏ qua</span>
                   <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
                 </div>

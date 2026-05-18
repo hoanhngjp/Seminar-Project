@@ -1,5 +1,22 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-19] [CREATOR DASHBOARD — HeatmapChart không render] [DONE]
+
+**Root cause:** Field name mismatch giữa frontend service và backend response.
+- Backend (`AnalyticsController`) trả `{ data: { heatmap: [...] } }`
+- Frontend (`analyticsService.ts`) đọc `res.data.data?.dropOffs` → luôn `undefined` → `[]` → `HeatmapChart` render `null`
+- Đồng thời test mock dùng `dropOffs` + `uniqueUsers`/`completionRate` (stale từ type-fix trước) → 7 tests đỏ
+
+**Fix:**
+1. `analyticsService.ts`: `dropOffs` → `heatmap`
+2. `HeatmapChart.tsx`: `return null` → empty state "Chưa có dữ liệu skip" (giữ đúng layout position)
+3. `HeatmapChart.tsx`: annotation "⚠️ Đỉnh bỏ qua" `-top-14` → `-top-20` (tránh đè lên thanh heatmap)
+4. `CreatorDashboardPage.test.tsx`: mock `MOCK_HEATMAP.dropOffs`→`heatmap`, `MOCK_STATS.uniqueUsers`→`uniqueListeners`, `completionRate: 0.72`→`avgListenPercent: 72`
+
+**Result:** 852/852 xanh.
+
+---
+
 [2026-05-19] [CREATOR DASHBOARD — Seed data + multi-bug fix session] [DONE]
 
 **Mục tiêu:** Seed dữ liệu test cho `creator@example.com / Test1234!` + fix tất cả bugs để Creator Dashboard hoạt động end-to-end.

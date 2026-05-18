@@ -37,9 +37,10 @@ describe('HeatmapChart', () => {
     expect(screen.getByText('Điểm người nghe hay bỏ qua nhất')).toBeInTheDocument();
   });
 
-  it('returns null when data is empty', () => {
-    const { container } = render(<HeatmapChart data={[]} />);
-    expect(container.firstChild).toBeNull();
+  it('renders empty state when data is empty', () => {
+    render(<HeatmapChart data={[]} />);
+    expect(screen.getByText('Chưa có dữ liệu skip')).toBeInTheDocument();
+    expect(screen.getByText('Heatmap tỷ lệ bỏ qua (skip)')).toBeInTheDocument();
   });
 
   it('renders heatmap bar with correct aria-label', () => {

@@ -35,6 +35,12 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Đổi Flux query strategy: dùng `_field` column carry bucket position (string), `_value` carry count — tránh vấn đề group key column không đọc được qua `.NET` InfluxDB SDK
 - Fix Redis cache key prefix: `heatmap:{songId}:{range}` (không phải `analytics:heatmap:...`)
 
+**Frontend: CreatorDashboard HeatmapChart không render (2026-05-19)**
+- `analyticsService.ts`: đổi `dropOffs` → `heatmap` — khớp với backend response field name (root cause: heatmap luôn trả `[]`)
+- `HeatmapChart.tsx`: thay `return null` bằng empty state "Chưa có dữ liệu skip" — giữ đúng vị trí trong layout
+- `HeatmapChart.tsx`: annotation "⚠️ Đỉnh bỏ qua" `-top-14` → `-top-20` — tránh đè lên thanh heatmap
+- `CreatorDashboardPage.test.tsx`: cập nhật mock data: `dropOffs`→`heatmap`, `uniqueUsers`→`uniqueListeners`, `completionRate: 0.72`→`avgListenPercent: 72`
+
 **Frontend: AnalyticsStats type mismatch với backend (2026-05-19)**
 - `domain.ts`: cập nhật `AnalyticsStats` — `uniqueUsers`→`uniqueListeners`, thêm `totalPlays`/`totalSkips`/`avgListenPercent`
 - `analyticsService.ts`: cập nhật fallback value

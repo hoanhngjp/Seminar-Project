@@ -238,7 +238,7 @@
 - [X] Bug fix: InfluxDB heatmap Flux query — đổi strategy `_field` carry bucket value (string) thay vì group key column; `_value` carry count; dùng `record.GetField()` thay `GetValueByKey("bucket")` (2026-05-19)
 - [X] Bug fix: Auth Service `RefreshAsync` hardcode `role = "Listener"` → thêm `Role` column vào `refresh_tokens`, lưu role khi login, đọc lại khi refresh — migration `AddRoleToRefreshToken` (2026-05-19)
 - [X] Bug fix: `AnalyticsStats` type trong `domain.ts` — cập nhật khớp với backend: `uniqueUsers`→`uniqueListeners`, thêm `totalPlays`/`totalSkips`/`avgListenPercent`; fix `CreatorDashboardPage` tương ứng (2026-05-19)
-- [ ] Bug fix: CreatorDashboardPage layout sai — hiển thị DonutChart thay vì HeatmapChart (design bị phá vỡ sau type fix)
+- [X] Bug fix: CreatorDashboardPage heatmap không render — `dropOffs`→`heatmap` field fix + empty state (2026-05-19)
 
 ---
 
@@ -261,7 +261,7 @@
   10. [DONE] Bug fix: InfluxDB Flux query heatmap — đổi strategy dùng `_field` carry bucket value
   11. [DONE] Bug fix: Auth refresh token hardcode "Listener" role → lưu + đọc role từ DB (`AddRoleToRefreshToken` migration)
   12. [DONE] Bug fix: `AnalyticsStats` type mismatch (`uniqueUsers`→`uniqueListeners`, thêm `totalPlays`/`avgListenPercent`)
-  13. [TODO] **Bug fix: CreatorDashboardPage layout sai — đang hiển thị DonutChart thay vì HeatmapChart theo design**
+  13. [DONE] Bug fix: CreatorDashboardPage heatmap — `dropOffs`→`heatmap` field fix, empty state, annotation `-top-20`
   14. [TODO] Demo script rehearsal 14 phút
 
 **Party Queue Design Decisions:**

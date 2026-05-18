@@ -22,8 +22,10 @@ const MOCK_STATS_7D = {
     { date: '2026-05-12', count: 3100 },
     { date: '2026-05-13', count: 2760 },
   ],
-  uniqueUsers: 8420,
-  completionRate: 0.72,
+  uniqueListeners: 8420,
+  totalPlays: 15000,
+  totalSkips: 3000,
+  avgListenPercent: 72,
 };
 
 const MOCK_STATS_30D = {
@@ -37,7 +39,7 @@ const MOCK_STATS_30D = {
 
 const MOCK_HEATMAP = {
   songId: 'song-001',
-  dropOffs: [8,12,18,25,38,52,65,78,88,90,82,68,52,40,32,24,18,14,10,7].map(
+  heatmap: [8,12,18,25,38,52,65,78,88,90,82,68,52,40,32,24,18,14,10,7].map(
     (count, i) => ({ second: i * 12, count }),
   ),
 };
