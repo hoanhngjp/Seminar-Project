@@ -29,5 +29,5 @@ export async function fetchSongStats(songId: string, timeRange: TimeRange): Prom
     `/api/v1/analytics/creator/stats/${songId}`,
     { params: { timeRange } },
   );
-  return res.data.data ?? { songId, dailyListeners: [], uniqueUsers: 0 };
+  return res.data.data ?? { totalPlays: 0, totalSkips: 0, uniqueListeners: 0, avgListenPercent: 0, dailyListeners: [] };
 }

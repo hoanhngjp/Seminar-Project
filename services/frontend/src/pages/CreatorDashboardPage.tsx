@@ -176,9 +176,9 @@ export default function CreatorDashboardPage() {
 
   if (role !== 'Creator' && role !== 'Admin') return null;
 
-  const totalPlays = stats?.dailyListeners.reduce((s, d) => s + d.count, 0) ?? 0;
+  const totalPlays = stats?.totalPlays ?? 0;
   const todayCount = stats?.dailyListeners.at(-1)?.count ?? 0;
-  const completionRate = stats?.completionRate ?? 0;
+  const completionRate = stats ? stats.avgListenPercent / 100 : 0;
 
   const tableRows: CreatorSongRow[] = mySongs.map(mapMySongToCreatorRow);
 
@@ -267,7 +267,7 @@ export default function CreatorDashboardPage() {
               <SongStatsCard
                 icon="headphones"
                 label="Lượt nghe độc nhất"
-                value={stats.uniqueUsers.toLocaleString('vi-VN')}
+                value={stats.uniqueListeners.toLocaleString('vi-VN')}
                 trend={TRENDS.uniqueUsers}
               />
               <SongStatsCard

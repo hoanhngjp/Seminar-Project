@@ -79,10 +79,12 @@ export interface PartyMember {
 }
 
 export interface AnalyticsStats {
-  songId: string;
+  songId?: string;
+  totalPlays: number;
+  totalSkips: number;
+  uniqueListeners: number;
+  avgListenPercent: number;
   dailyListeners: { date: string; count: number }[];
-  uniqueUsers: number;
-  completionRate?: number;  // 0–1, e.g. 0.72 = 72%
 }
 
 export interface HeatmapDropOff {

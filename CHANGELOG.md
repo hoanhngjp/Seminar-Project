@@ -14,7 +14,31 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Added
+
+**Seed script creator@example.com (2026-05-19)**
+- `infra/seed/seed_creator_demo.sh`: 3 demo songs vào `music_db` + ~500 play events lịch sử 30 ngày vào InfluxDB + Redis cache flush — cho phép test Creator Dashboard với dữ liệu thật
+- Account: `creator@example.com / Test1234!`, Artist ID: `aa111111-bbbb-cccc-dddd-eeeeeeeeeeee`
+
 ### Fixed
+
+**Auth Service: refresh token mất role (2026-05-19)**
+- `RefreshToken` domain model: thêm `Role` property (default "Listener")
+- `AuthService.LoginAsync`: lưu `Role = roleStr` vào refresh token row
+- `AuthService.RefreshAsync`: đọc `token.Role` thay vì hardcode `"Listener"` — creator/admin không còn bị downgrade xuống Listener sau mỗi lần refresh token
+- Migration: `AddRoleToRefreshToken` (ALTER TABLE refresh_tokens ADD COLUMN "Role")
+
+**Music Service: InternalSongsController trả sai artistId (2026-05-19)**
+- `GET /internal/songs/{songId}`: đổi từ `song.Artist.Id` (entity UUID) sang `song.Artist.UserId` (user-service UUID) — ownership check của Analytics Service giờ hoạt động đúng
+
+**Analytics Service: heatmap InfluxDB query trả rỗng (2026-05-19)**
+- Đổi Flux query strategy: dùng `_field` column carry bucket position (string), `_value` carry count — tránh vấn đề group key column không đọc được qua `.NET` InfluxDB SDK
+- Fix Redis cache key prefix: `heatmap:{songId}:{range}` (không phải `analytics:heatmap:...`)
+
+**Frontend: AnalyticsStats type mismatch với backend (2026-05-19)**
+- `domain.ts`: cập nhật `AnalyticsStats` — `uniqueUsers`→`uniqueListeners`, thêm `totalPlays`/`totalSkips`/`avgListenPercent`
+- `analyticsService.ts`: cập nhật fallback value
+- `CreatorDashboardPage.tsx`: `stats.uniqueUsers`→`stats.uniqueListeners`, `totalPlays` từ `stats.totalPlays`, `completionRate` từ `stats.avgListenPercent / 100`
 
 **Onboarding preferences 500 INTERNAL_ERROR (2026-05-19)**
 - `UserDbContext.cs`: `preferred_genres` column type `uuid[]` → `text[]` — khớp với domain model `List<string>`

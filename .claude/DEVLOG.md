@@ -1,5 +1,62 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-19] [CREATOR DASHBOARD — Seed data + multi-bug fix session] [DONE]
+
+**Mục tiêu:** Seed dữ liệu test cho `creator@example.com / Test1234!` + fix tất cả bugs để Creator Dashboard hoạt động end-to-end.
+
+**Bug 1 — InternalSongsController trả sai artistId (artist entity UUID thay vì userId)**
+- Root cause: `GET /internal/songs/{songId}` trả `song.Artist.Id` (UUID của Artist entity = `aa111111-...`), trong khi Analytics Service ownership check so sánh với JWT userId (`b2c3d4e5-...`) → luôn mismatch → 403 FORBIDDEN
+- Fix: inject `IMusicRepository` vào `InternalSongsController`, gọi `_repository.GetSongByIdAsync()` lấy domain model, trả `song.Artist.UserId` (UUID link tới user-service)
+- File: `services/music-service/src/MusicService.Api/Controllers/InternalSongsController.cs`
+
+**Bug 2 — InfluxDB Flux query lỗi "cannot aggregate columns that are part of the group key"**
+- Root cause: Query cũ `group(columns: ["_value"]) |> count()` → _value là group key → Flux không cho phép count trên group key column
+- Fix: Đổi sang `map()` tạo field `bucket` (10-second bins), sau đó `group(columns: ["bucket"]) |> count(column: "_value")`
+- File: `services/analytics-service/src/AnalyticsService.Infrastructure/InfluxDb/InfluxAnalyticsRepository.cs`
+
+**Bug 3 — C# raw string literal CS9006 compiler error**
+- Root cause: Dùng `$$"""` với `{{...}}` expecting literal braces — compiler error
+- Fix: Đổi sang `$"""` (single `$`), dùng `{{expr}}` cho interpolation thông thường
+- File: `InfluxAnalyticsRepository.cs` (cùng file)
+
+**Bug 4 — .NET InfluxDB client không đọc được group key column "bucket"**
+- Root cause: Sau `group(columns: ["bucket"]) |> count()`, column `bucket` là group key — `.NET` client SDK không surface được qua `record.GetValueByKey("bucket")` một cách tin cậy
+- Fix: Đổi hoàn toàn Flux query strategy: dùng `_field` để carry bucket value (string), `_value` để carry count. Client đọc qua `record.GetField()` (luôn hoạt động với `_field` column)
+- Flux query mới: `map(fn: (r) => ({..., _field: string(v: int(v: r._value) / 10 * 10), _value: 1})) |> group(columns: ["_field"]) |> sum()`
+- File: `InfluxAnalyticsRepository.cs`
+
+**Bug 5 — Redis cache heatmap trả stale empty result (HIT từ query cũ bị broken)**
+- Root cause: Query cũ đã cache empty heatmap vào Redis. Key format thực tế là `heatmap:{songId}:{range}` (không phải `analytics:heatmap:...` như dự đoán)
+- Fix: Flush đúng key pattern. Cập nhật `seed_creator_demo.sh` để dùng đúng key prefix
+- File: `infra/seed/seed_creator_demo.sh`
+
+**Bug 6 — GET /api/v1/music/songs/my 403 FORBIDDEN "Only Creators can access this endpoint"**
+- Root cause: `RefreshAsync` trong AuthService hardcode `var role = "Listener"` → mỗi lần refresh token (sau page reload), access token mới có role Listener thay vì Creator → gateway forward `X-User-Role: Listener` → music-service từ chối
+- Fix:
+  1. Thêm `Role` property vào `RefreshToken` domain model
+  2. `LoginAsync`: lưu `Role = roleStr` vào refresh token row khi login
+  3. `RefreshAsync`: đọc `token.Role` thay vì hardcode "Listener"
+  4. EF Core migration `AddRoleToRefreshToken`
+  5. `ALTER TABLE refresh_tokens ADD COLUMN "Role" VARCHAR(50) NOT NULL DEFAULT 'Listener'` trực tiếp trên DB
+  6. Insert migration record vào `__EFMigrationsHistory`
+- Files: `services/auth-service/src/AuthService.Domain/Models/RefreshToken.cs`, `AuthService.Application/Services/AuthService.cs`, migration mới
+
+**Bug 7 — TypeError: Cannot read properties of undefined (reading 'toLocaleString') tại CreatorDashboardPage line 270**
+- Root cause: `AnalyticsStats` type trong `domain.ts` có field `uniqueUsers` nhưng backend trả `uniqueListeners`. Ngoài ra type thiếu `totalPlays`, `totalSkips`, `avgListenPercent` — page dùng cả 3 field này
+- Fix:
+  1. `domain.ts`: cập nhật `AnalyticsStats` khớp với backend response (`totalPlays`, `totalSkips`, `uniqueListeners`, `avgListenPercent`, `dailyListeners`)
+  2. `analyticsService.ts`: cập nhật fallback value
+  3. `CreatorDashboardPage.tsx`:
+     - `stats.uniqueUsers` → `stats.uniqueListeners`
+     - `totalPlays`: tính từ `stats.totalPlays` trực tiếp (thay vì sum `dailyListeners`)
+     - `completionRate`: đọc `stats.avgListenPercent / 100` (thay vì `stats.completionRate` không tồn tại)
+
+**KNOWN ISSUE còn lại — CreatorDashboardPage design bị phá vỡ**
+- Vấn đề: Trang hiển thị biểu đồ tròn (DonutChart) nhưng theo design phải hiển thị heatmap
+- Nguyên nhân: Chưa review lại layout sau khi fix type mismatch
+- Status: **CHƯA FIX** — cần review và restore đúng design
+
+---
 [2026-05-19] [BUG FIX — POST /users/me/preferences 500 INTERNAL_ERROR] [DONE]
 
 **Root cause:** `preferred_genres` column trong PostgreSQL `user_db` có type `uuid[]` nhưng domain model `UserPreferences.PreferredGenres` khai báo `List<string>`. Npgsql không thể coerce `string[]` vào `uuid[]` → throw unhandled exception → `GlobalExceptionMiddleware` catch generic `Exception` → 500 `INTERNAL_ERROR`.

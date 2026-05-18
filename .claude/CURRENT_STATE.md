@@ -233,12 +233,18 @@
 - [X] Bug fix: POST /users/me/preferences 500 INTERNAL_ERROR — preferred_genres uuid[]→text[] migration + api.ts !isRefreshRequest guard (2026-05-19)
 - [X] Bug fix: ProfilePage preferences hiển thị UUID → lookup GENRE_NAME/ARTIST_NAME maps (2026-05-19)
 - [X] Bug fix: PreferencesPage (/settings/preferences) — real API: getProfile pre-fill + ALL_ARTISTS search + updatePreferences save — 852/852 xanh (2026-05-19)
+- [X] Seed script: `infra/seed/seed_creator_demo.sh` — 3 demo songs trong music_db + ~500 InfluxDB play events (30 ngày) + Redis cache flush cho creator@example.com (2026-05-19)
+- [X] Bug fix: Music Service `InternalSongsController.GetSongMeta` — trả `Artist.UserId` thay vì `Artist.Id` để ownership check Analytics Service hoạt động đúng (2026-05-19)
+- [X] Bug fix: InfluxDB heatmap Flux query — đổi strategy `_field` carry bucket value (string) thay vì group key column; `_value` carry count; dùng `record.GetField()` thay `GetValueByKey("bucket")` (2026-05-19)
+- [X] Bug fix: Auth Service `RefreshAsync` hardcode `role = "Listener"` → thêm `Role` column vào `refresh_tokens`, lưu role khi login, đọc lại khi refresh — migration `AddRoleToRefreshToken` (2026-05-19)
+- [X] Bug fix: `AnalyticsStats` type trong `domain.ts` — cập nhật khớp với backend: `uniqueUsers`→`uniqueListeners`, thêm `totalPlays`/`totalSkips`/`avgListenPercent`; fix `CreatorDashboardPage` tương ứng (2026-05-19)
+- [ ] Bug fix: CreatorDashboardPage layout sai — hiển thị DonutChart thay vì HeatmapChart (design bị phá vỡ sau type fix)
 
 ---
 
 ## Đang làm
 
-- **Service/Task:** Demo prep + Register/Onboarding polish
+- **Service/Task:** Creator Dashboard bug fixes + demo prep
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
 - **Checkpoint gần nhất đã pass:** 852/852 xanh (2026-05-19)
 - **Ngày làm việc gần nhất:** 2026-05-19
@@ -250,8 +256,13 @@
   5. [DONE] Bug fix: POST /preferences 500 INTERNAL_ERROR
   6. [DONE] Bug fix: ProfilePage UUID → tên thật
   7. [DONE] Bug fix: PreferencesPage mock data → real API
-  8. [TODO] Demo script rehearsal 14 phút
-  9. [TODO] Pre-upload demo songs cho Creator account
+  8. [DONE] Seed data: `infra/seed/seed_creator_demo.sh` — 3 demo songs + ~500 InfluxDB play events cho creator@example.com
+  9. [DONE] Bug fix: InternalSongsController trả `Artist.UserId` thay vì `Artist.Id` (ownership check 403)
+  10. [DONE] Bug fix: InfluxDB Flux query heatmap — đổi strategy dùng `_field` carry bucket value
+  11. [DONE] Bug fix: Auth refresh token hardcode "Listener" role → lưu + đọc role từ DB (`AddRoleToRefreshToken` migration)
+  12. [DONE] Bug fix: `AnalyticsStats` type mismatch (`uniqueUsers`→`uniqueListeners`, thêm `totalPlays`/`avgListenPercent`)
+  13. [TODO] **Bug fix: CreatorDashboardPage layout sai — đang hiển thị DonutChart thay vì HeatmapChart theo design**
+  14. [TODO] Demo script rehearsal 14 phút
 
 **Party Queue Design Decisions:**
 - Queue stored in Redis (Room JSON), max 50 items

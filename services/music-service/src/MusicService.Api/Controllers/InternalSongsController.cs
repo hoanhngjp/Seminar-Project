@@ -17,10 +17,12 @@ namespace MusicService.Api.Controllers;
 public class InternalSongsController : ControllerBase
 {
     private readonly ISongService _songService;
+    private readonly IMusicRepository _repository;
 
-    public InternalSongsController(ISongService songService)
+    public InternalSongsController(ISongService songService, IMusicRepository repository)
     {
         _songService = songService;
+        _repository = repository;
     }
 
     // ----------------------------------------------------------------
@@ -60,12 +62,12 @@ public class InternalSongsController : ControllerBase
     {
         try
         {
-            var (song, _) = await _songService.GetSongAsync(songId, HttpContext.RequestAborted);
-            return Ok(new { id = song.Id, artistId = song.Artist.Id, title = song.Title });
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound(new { error = "SONG_NOT_FOUND" });
+            // Use domain model directly — SongResponseDto.Artist is ArtistSummaryDto (no UserId)
+            // artistId = Artist.UserId so Analytics Service ownership check correctly compares
+            // against the creator's JWT userId
+            var song = await _repository.GetSongByIdAsync(songId, HttpContext.RequestAborted);
+            if (song is null) return NotFound(new { error = "SONG_NOT_FOUND" });
+            return Ok(new { id = song.Id, artistId = song.Artist?.UserId, title = song.Title });
         }
         catch (Exception)
         {

@@ -40,7 +40,12 @@
       "Bash(E:/Python311/python.exe infra/seed/upload_artist_avatars.py)",
       "Bash(docker-compose up *)",
       "Bash(docker-compose -f infra/docker-compose.yml up -d --build user-service)",
-      "Bash(docker-compose -f \"C:\\\\\\\\Users\\\\\\\\User\\\\\\\\source\\\\\\\\repos\\\\\\\\Seminar-Project\\\\\\\\infra\\\\\\\\docker-compose.yml\" up -d --build user-service)"
+      "Bash(docker-compose -f \"C:\\\\\\\\Users\\\\\\\\User\\\\\\\\source\\\\\\\\repos\\\\\\\\Seminar-Project\\\\\\\\infra\\\\\\\\docker-compose.yml\" up -d --build user-service)",
+      "Bash(docker-compose -f infra/docker-compose.yml up -d --build music-service)",
+      "Bash(docker-compose -f infra/docker-compose.yml ps postgres)",
+      "Bash(bash infra/seed/seed_creator_demo.sh)",
+      "Bash(curl -s -X POST 'http://localhost:8086/api/v2/query?org=smartmusic' -H 'Authorization: Token my-super-secret-token-change-this-in-production' -H 'Content-Type: application/vnd.flux' --data 'from\\(bucket:\"analytics\"\\) *)",
+      "Bash(docker-compose -f infra/docker-compose.yml up -d --build analytics-service music-service)"
     ]
   }
 }

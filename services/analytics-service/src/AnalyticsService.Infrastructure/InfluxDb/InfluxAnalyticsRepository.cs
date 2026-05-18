@@ -48,13 +48,23 @@ public class InfluxAnalyticsRepository(
     public async Task<HeatmapResponse> GetHeatmapAsync(Guid songId, string timeRange, CancellationToken ct = default)
     {
         var range = timeRange == "30d" ? "-30d" : "-7d";
-        var flux = $"""
-            from(bucket: "{_bucket}")
-              |> range(start: {range})
-              |> filter(fn: (r) => r._measurement == "song_played" and r.song_id == "{songId}")
+        // Group listened_sec into 10-second buckets, count plays per bucket.
+        // Use _field to carry the bucket position (string) so the .NET client can read it
+        // reliably — group key columns are not surfaced by GetValueByKey() in this SDK.
+        var flux = $$"""
+            from(bucket: "{{_bucket}}")
+              |> range(start: {{range}})
+              |> filter(fn: (r) => r._measurement == "song_played" and r.song_id == "{{songId}}")
               |> filter(fn: (r) => r._field == "listened_sec")
-              |> group(columns: ["_value"])
-              |> count()
+              |> group()
+              |> map(fn: (r) => ({
+                   _time: r._time,
+                   _measurement: r._measurement,
+                   _field: string(v: int(v: r._value) / 10 * 10),
+                   _value: 1
+                 }))
+              |> group(columns: ["_field"])
+              |> sum()
               |> yield(name: "heatmap")
             """;
 
@@ -63,14 +73,13 @@ public class InfluxAnalyticsRepository(
             var queryApi = client.GetQueryApi();
             var tables = await queryApi.QueryAsync(flux, _org, ct);
 
-            // Build heatmap: group play events by listened_sec bucket → compute skip rate
-            // skip = listened_sec < 30% of duration → skipRate per second bucket
             var points = new List<HeatmapPoint>();
             foreach (var table in tables)
             {
                 foreach (var record in table.Records)
                 {
-                    var second = Convert.ToInt32(record.GetValueByKey("_value") ?? 0);
+                    // _field holds the bucket start (seconds as string); _value holds the count
+                    var second = Convert.ToInt32(record.GetField() ?? "0");
                     var count = Convert.ToInt32(record.GetValue() ?? 0L);
                     points.Add(new HeatmapPoint(second, count));
                 }

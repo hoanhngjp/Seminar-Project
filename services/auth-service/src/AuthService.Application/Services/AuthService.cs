@@ -41,6 +41,7 @@ public class AuthService(
         {
             Jti = Guid.NewGuid(),
             UserId = userId,
+            Role = roleStr,
             IpAddress = ipAddress,
             UserAgent = userAgent,
             ExpiresAt = DateTime.UtcNow.AddDays(tokenGenerator.RefreshTokenExpiryDays)
@@ -92,19 +93,15 @@ public class AuthService(
         await blacklistRepo.AddAsync(blacklist, ct);
         await cache.RevokeTokenInCacheAsync(jti.ToString(), token.ExpiresAt - DateTime.UtcNow);
 
-        // We assume role is "Listener" for refresh if we don't query User Service,
-        // but according to architecture, should we query user service?
-        // Let's just default to "Listener" or we can store role in Token.
-        // Actually, token doesn't have role. We can just use "Listener" as default,
-        // or we could add a gRPC call GetUserProfile here to get the role.
-        var role = "Listener"; 
+        var role = token.Role;
 
         var accessToken = tokenGenerator.GenerateAccessToken(token.UserId, role, tokenGenerator.AccessTokenExpiryMinutes);
-        
+
         var newRefreshToken = new RefreshToken
         {
             Jti = Guid.NewGuid(),
             UserId = token.UserId,
+            Role = role,
             IpAddress = ipAddress,
             UserAgent = userAgent,
             ExpiresAt = DateTime.UtcNow.AddDays(tokenGenerator.RefreshTokenExpiryDays)

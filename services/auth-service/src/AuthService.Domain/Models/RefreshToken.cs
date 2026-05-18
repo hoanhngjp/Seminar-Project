@@ -9,6 +9,7 @@ public class RefreshToken
     public string? IpAddress { get; set; }
     public string? UserAgent { get; set; }
     public DateTime ExpiresAt { get; set; }
+    public string Role { get; set; } = "Listener";
     public bool Revoked { get; set; } = false;
     public DateTime? RevokedAt { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
