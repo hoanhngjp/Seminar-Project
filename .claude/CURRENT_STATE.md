@@ -226,18 +226,32 @@
 - [X] Lyrics Phase 3 — Party Room: tab "Lời bài hát" + button "📋 Hàng chờ" inline toggle — 848/848 xanh (2026-05-18)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
+- [X] Bug fix: Register 400 (field `fullname` → `displayName`) — RegisterForm.tsx line 28 ✅ (2026-05-19)
+- [X] Feature: Auto-login sau khi đăng ký thành công — useAuth.ts register() gọi login() tự động → redirect /onboarding (2026-05-19)
+- [X] Feature: Onboarding GenreGrid — đổi slug IDs → real UUIDs từ DB (2026-05-19)
+- [X] Feature: Onboarding ArtistGrid — 16 avatars upload Cloudinary smart-music/artists/, ALL_ARTISTS + getOnboardingArtists() random 8 — 848/848 xanh (2026-05-19)
+- [X] Bug fix: POST /users/me/preferences 500 INTERNAL_ERROR — preferred_genres uuid[]→text[] migration + api.ts !isRefreshRequest guard (2026-05-19)
+- [X] Bug fix: ProfilePage preferences hiển thị UUID → lookup GENRE_NAME/ARTIST_NAME maps (2026-05-19)
+- [ ] Bug fix: PreferencesPage (/settings/preferences) — mock data → real API (userService.getProfile + updatePreferences)
 
 ---
 
 ## Đang làm
 
-- **Service/Task:** Demo prep — script rehearsal + pre-upload songs
+- **Service/Task:** Demo prep + Register/Onboarding polish
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** Lyrics Phase 2+3 hoàn thành, 848/848 xanh (2026-05-18)
-- **Ngày làm việc gần nhất:** 2026-05-18
+- **Checkpoint gần nhất đã pass:** 848/848 xanh (2026-05-19)
+- **Ngày làm việc gần nhất:** 2026-05-19
 - **Tiếp theo:**
-  1. [TODO] Demo script rehearsal 14 phút
-  2. [TODO] Pre-upload demo songs cho Creator account
+  1. [DONE] Bug fix: RegisterForm `fullname` → `displayName`
+  2. [DONE] Auto-login sau register (useAuth.ts)
+  3. [DONE] Onboarding GenreGrid — real UUIDs
+  4. [DONE] Onboarding ArtistGrid — 16 artists thật + Cloudinary avatars
+  5. [DONE] Bug fix: POST /preferences 500 INTERNAL_ERROR
+  6. [DONE] Bug fix: ProfilePage UUID → tên thật
+  7. [TODO] Bug fix: PreferencesPage mock data → real API
+  8. [TODO] Demo script rehearsal 14 phút
+  9. [TODO] Pre-upload demo songs cho Creator account
 
 **Party Queue Design Decisions:**
 - Queue stored in Redis (Room JSON), max 50 items

@@ -33,7 +33,14 @@
       "Bash(python3 -m json.tool)",
       "Bash(python3 -c ' *)",
       "Bash(xargs -r docker exec -i smartmusic-redis redis-cli -a changeme_local --no-auth-warning DEL)",
-      "Bash(xargs cat *)"
+      "Bash(xargs cat *)",
+      "Bash(pip show *)",
+      "Bash(python infra/seed/upload_artist_avatars.py)",
+      "Bash(pip install *)",
+      "Bash(E:/Python311/python.exe infra/seed/upload_artist_avatars.py)",
+      "Bash(docker-compose up *)",
+      "Bash(docker-compose -f infra/docker-compose.yml up -d --build user-service)",
+      "Bash(docker-compose -f \"C:\\\\\\\\Users\\\\\\\\User\\\\\\\\source\\\\\\\\repos\\\\\\\\Seminar-Project\\\\\\\\infra\\\\\\\\docker-compose.yml\" up -d --build user-service)"
     ]
   }
 }

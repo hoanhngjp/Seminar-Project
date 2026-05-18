@@ -41,7 +41,7 @@ public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(
             e.Property(p => p.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
             e.Property(p => p.UserId).HasColumnName("user_id").IsRequired();
             e.Property(p => p.PreferredGenres).HasColumnName("preferred_genres")
-                .HasColumnType("uuid[]").HasDefaultValueSql("'{}'");
+                .HasColumnType("text[]").HasDefaultValueSql("'{}'");
             e.Property(p => p.PreferredArtists).HasColumnName("preferred_artists")
                 .HasColumnType("text[]").HasDefaultValueSql("'{}'");
             e.Property(p => p.AudioQuality).HasColumnName("audio_quality").HasMaxLength(20)

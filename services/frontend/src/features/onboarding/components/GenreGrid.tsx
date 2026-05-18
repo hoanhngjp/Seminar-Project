@@ -6,15 +6,15 @@ export interface GenreOption {
 }
 
 export const GENRE_OPTIONS: GenreOption[] = [
-  { id: 'pop', name: 'Pop', gradient: 'from-pink-600 to-purple-800' },
-  { id: 'rock', name: 'Rock', gradient: 'from-red-700 to-red-900' },
-  { id: 'rb', name: 'R&B', gradient: 'from-blue-600 to-indigo-900' },
-  { id: 'jazz', name: 'Jazz', gradient: 'from-yellow-700 to-amber-900' },
-  { id: 'classical', name: 'Classical', gradient: 'from-emerald-700 to-teal-900' },
-  { id: 'electronic', name: 'Electronic', gradient: 'from-cyan-600 to-blue-800' },
-  { id: 'hiphop', name: 'Hip-Hop', gradient: 'from-orange-600 to-red-800' },
-  { id: 'acoustic', name: 'Acoustic', gradient: 'from-green-700 to-lime-900' },
-  { id: 'indie', name: 'Indie', gradient: 'from-indigo-600 to-purple-800' },
+  { id: 'd4e5f6a7-b8c9-0123-defa-234567890123', name: 'Pop',       gradient: 'from-pink-600 to-purple-800' },
+  { id: 'e5f6a7b8-c9d0-1234-efab-567890123456', name: 'Rock',      gradient: 'from-red-700 to-red-900' },
+  { id: 'f6a7b8c9-d0e1-2345-fabc-678901234567', name: 'R&B',       gradient: 'from-blue-600 to-indigo-900' },
+  { id: 'a7b8c9d0-e1f2-3456-abcd-789012345678', name: 'Jazz',      gradient: 'from-yellow-700 to-amber-900' },
+  { id: 'b8c9d0e1-f2a3-4567-bcde-890123456789', name: 'Classical', gradient: 'from-emerald-700 to-teal-900' },
+  { id: 'c9d0e1f2-a3b4-5678-cdef-901234567890', name: 'Electronic',gradient: 'from-cyan-600 to-blue-800' },
+  { id: 'd0e1f2a3-b4c5-6789-defa-012345678901', name: 'Hip-Hop',   gradient: 'from-orange-600 to-red-800' },
+  { id: 'e1f2a3b4-c5d6-7890-efab-123456789012', name: 'Acoustic',  gradient: 'from-green-700 to-lime-900' },
+  { id: 'f2a3b4c5-d6e7-8901-fabc-234567890123', name: 'Indie',     gradient: 'from-indigo-600 to-purple-800' },
 ];
 
 interface GenreGridProps {

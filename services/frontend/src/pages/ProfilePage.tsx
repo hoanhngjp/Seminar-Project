@@ -3,6 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import AppShell from '../components/layout/AppShell';
 import { useAuthStore } from '../store/authStore';
 import { userService, type UserProfile } from '../services/userService';
+import { GENRE_OPTIONS } from '../features/onboarding/components/GenreGrid';
+import { ALL_ARTISTS } from '../features/onboarding/data/artistAvatars';
+
+const GENRE_NAME: Record<string, string> = Object.fromEntries(GENRE_OPTIONS.map((g) => [g.id, g.name]));
+const ARTIST_NAME: Record<string, string> = Object.fromEntries(ALL_ARTISTS.map((a) => [a.id, a.name]));
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -129,7 +134,7 @@ export default function ProfilePage() {
               <div className="flex flex-wrap gap-2">
                 {profile.preferredGenres.map((g) => (
                   <span key={g} className="bg-mid-dark text-text-base text-sm px-3 py-1 rounded-full">
-                    {g}
+                    {GENRE_NAME[g] ?? g}
                   </span>
                 ))}
               </div>
@@ -141,7 +146,7 @@ export default function ProfilePage() {
               <div className="flex flex-wrap gap-2">
                 {profile.preferredArtists.map((a) => (
                   <span key={a} className="bg-mid-dark text-text-base text-sm px-3 py-1 rounded-full">
-                    {a}
+                    {ARTIST_NAME[a] ?? a}
                   </span>
                 ))}
               </div>

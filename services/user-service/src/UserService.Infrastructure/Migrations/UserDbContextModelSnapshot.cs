@@ -190,10 +190,10 @@ namespace UserService.Infrastructure.Migrations
                         .HasColumnName("preferred_artists")
                         .HasDefaultValueSql("'{}'");
 
-                    b.Property<List<Guid>>("PreferredGenres")
+                    b.Property<List<string>>("PreferredGenres")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid[]")
+                        .HasColumnType("text[]")
                         .HasColumnName("preferred_genres")
                         .HasDefaultValueSql("'{}'");
 

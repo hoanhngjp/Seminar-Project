@@ -14,6 +14,7 @@ export default function OnboardingPage() {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedArtists, setSelectedArtists] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Protection: redirect if not logged in or already completed onboarding
   useEffect(() => {
@@ -42,19 +43,18 @@ export default function OnboardingPage() {
 
   const handleFinishStep2 = async () => {
     if (selectedArtists.length < 3) return;
-    
+
     setLoading(true);
+    setSaveError(null);
     try {
       await userService.updatePreferences({
         preferredGenres: selectedGenres,
         preferredArtists: selectedArtists,
         audioQuality: "standard"
       });
-      // Move to step 3 completion screen
       setStep(3);
-    } catch (error) {
-      console.error("Failed to update preferences:", error);
-      // In a real app, we might show a toast error here.
+    } catch {
+      setSaveError('Không thể lưu sở thích. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -222,12 +222,16 @@ export default function OnboardingPage() {
           {/* Controls */}
           <div className="max-w-screen-md mx-auto px-lg py-md flex items-center justify-between gap-md">
             <div className="flex items-center gap-sm">
-              <span className={`font-body-bold text-body-bold ${selectedArtists.length >= 3 ? 'text-spotify-green' : 'text-text-secondary'}`}>
-                Đã chọn: {selectedArtists.length}/3
-              </span>
+              {saveError ? (
+                <span className="font-caption text-caption text-negative">{saveError}</span>
+              ) : (
+                <span className={`font-body-bold text-body-bold ${selectedArtists.length >= 3 ? 'text-spotify-green' : 'text-text-secondary'}`}>
+                  Đã chọn: {selectedArtists.length}/3
+                </span>
+              )}
             </div>
-            
-            <button 
+
+            <button
               onClick={handleFinishStep2}
               disabled={selectedArtists.length < 3 || loading}
               className={`px-lg py-sm rounded-full font-button-uppercase text-button-uppercase transition-transform shadow-level-2 flex items-center gap-xs ${

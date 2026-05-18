@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { useAuthStore } from '../store/authStore';
-import { apiClient, setAccessToken } from '../services/api';
+import { apiClient, setAccessToken, registerTokenGetter } from '../services/api';
 
 interface MeData {
   id: string;
@@ -18,6 +18,10 @@ export default function AuthInitializer({ children }: { children: ReactNode }) {
   const hasRun = useRef(false);
 
   useEffect(() => {
+    // Register store-backed token fallback so the Axios interceptor can recover
+    // the token from zustand when the module-level variable is null (Vite HMR, etc.)
+    registerTokenGetter(() => useAuthStore.getState().accessToken);
+
     if (hasRun.current) return;
     hasRun.current = true;
 
@@ -36,7 +40,12 @@ export default function AuthInitializer({ children }: { children: ReactNode }) {
         setAuth(token, me.id, me.role, me.hasCompletedOnboarding, displayName, me.avatarUrl ?? null);
       })
       .catch(() => {
-        clearAuth();
+        // Only clear if the user hasn't authenticated via login/register in the meantime.
+        // This prevents the race condition where auto-login sets the token after
+        // AuthInitializer's refresh request was already sent (no cookie yet).
+        if (!useAuthStore.getState().accessToken) {
+          clearAuth();
+        }
       })
       .finally(() => {
         setInitialized();

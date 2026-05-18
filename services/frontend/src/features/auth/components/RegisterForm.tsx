@@ -25,7 +25,7 @@ export const RegisterForm: React.FC = () => {
       setValidationError('Bạn phải đồng ý với Điều khoản dịch vụ.');
       return;
     }
-    register({ fullname, email, password, role });
+    register({ displayName: fullname, email, password, role });
   };
 
   const passwordsMatch = password && confirmPassword && password === confirmPassword;

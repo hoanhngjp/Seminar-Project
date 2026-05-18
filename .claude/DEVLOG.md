@@ -1,5 +1,69 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-19] [BUG FIX — POST /users/me/preferences 500 INTERNAL_ERROR] [DONE]
+
+**Root cause:** `preferred_genres` column trong PostgreSQL `user_db` có type `uuid[]` nhưng domain model `UserPreferences.PreferredGenres` khai báo `List<string>`. Npgsql không thể coerce `string[]` vào `uuid[]` → throw unhandled exception → `GlobalExceptionMiddleware` catch generic `Exception` → 500 `INTERNAL_ERROR`.
+
+**Chuỗi lỗi ban đầu (session trước):** Response interceptor trong `api.ts` không exclude refresh requests → khi `AuthInitializer` gửi `POST /auth/refresh` lúc app load (chưa có cookie) → 401 → interceptor coi là request cần refresh → deadlock (`_isRefreshing=true`) → browser timeout → `setAccessToken(null)` xóa token vừa set bởi auto-login → mọi request tiếp theo bị 401 UNAUTHORIZED.
+
+**Fixes:**
+1. `services/frontend/src/services/api.ts`: thêm `!isRefreshRequest` vào điều kiện `shouldRefresh` — refresh requests thất bại bị reject ngay, không trigger vòng lặp re-refresh
+2. `services/user-service/src/UserService.Infrastructure/Data/UserDbContext.cs`: `HasColumnType("uuid[]")` → `HasColumnType("text[]")` cho `PreferredGenres`
+3. `services/user-service/src/UserService.Infrastructure/Migrations/20260519000000_FixPreferredGenresType.cs`: migration mới `ALTER COLUMN preferred_genres TYPE text[] USING preferred_genres::text[]`
+4. `services/user-service/src/UserService.Infrastructure/Migrations/UserDbContextModelSnapshot.cs`: cập nhật snapshot `List<Guid>/uuid[]` → `List<string>/text[]`
+5. Apply migration trực tiếp lên live DB + rebuild user-service container
+
+---
+[2026-05-19] [BUG FIX — ProfilePage preferences hiển thị UUID thay vì tên] [DONE]
+
+**Root cause:** `ProfilePage.tsx` render `profile.preferredGenres` và `profile.preferredArtists` trực tiếp — đây là UUID strings từ API, không phải human-readable names.
+
+**Fix:** `services/frontend/src/pages/ProfilePage.tsx`:
+- Import `GENRE_OPTIONS` từ `GenreGrid.tsx` + `ALL_ARTISTS` từ `artistAvatars.ts`
+- Build lookup maps `GENRE_NAME: Record<id, name>` và `ARTIST_NAME: Record<id, name>`
+- Render `GENRE_NAME[g] ?? g` và `ARTIST_NAME[a] ?? a` (fallback về UUID nếu không tìm thấy)
+
+---
+[2026-05-19] [KNOWN ISSUE — PreferencesPage vẫn dùng mock data] [TODO]
+
+**Vấn đề:**
+1. `selectedGenres` / `selectedArtists` initial state lấy từ `MOCK_PROFILE` thay vì `userService.getProfile()`
+2. Artist search filter từ `MOCK_ARTIST_RESULTS` (10 tên hardcoded) thay vì `ALL_ARTISTS` thực tế
+3. Selected artists lưu theo `name` (string) nhưng API cần `id` (UUID) → save sẽ gửi sai data
+4. `handleSave()` chỉ `toast.show(...)`, không gọi `userService.updatePreferences()` → mọi thay đổi bị mất sau reload
+
+**Cần fix:**
+- Load từ `userService.getProfile()` khi mount để pre-fill genres/artists (IDs)
+- Thay `MOCK_ARTIST_RESULTS` bằng `ALL_ARTISTS`, search theo `name`, store `id`
+- `handleSave()` gọi `userService.updatePreferences({ preferredGenres, preferredArtists, audioQuality: 'standard' })`
+- Render selected artists bằng `ARTIST_NAME[id]`
+
+---
+[2026-05-19] [BUG FIX — Register 400 Bad Request] [DONE]
+
+**Root cause:** `RegisterForm.tsx` gọi `register({ fullname, email, password, role })` nhưng BE `RegisterRequest.cs` expect field `displayName`, không phải `fullname`. `authService.ts` forward nguyên object → BE nhận `displayName: undefined` → throw `ValidationException` → 400.
+
+**Fix:** `RegisterForm.tsx` line 28: `register({ fullname, ... })` → `register({ displayName: fullname, ... })`. Không sửa BE, không sửa tests.
+
+---
+[2026-05-19] [PLAN — Register/Onboarding Polish] [TODO]
+
+**Task 1 — Auto-login sau đăng ký:**
+- `useAuth.ts`: hàm `register()` sau khi `authService.register()` thành công → gọi `authService.login({ email, password })` → `handleAuthSuccess()` → redirect `/onboarding` (cho Listener) hoặc `/dashboard` (cho Creator)
+- File sửa: `services/frontend/src/features/auth/hooks/useAuth.ts`
+
+**Task 2 — Onboarding GenreGrid real UUIDs:**
+- `GenreGrid.tsx` GENRE_OPTIONS IDs hiện là slugs (`'pop'`, `'rock'`); BE lưu `List<Guid>` → cần UUIDs thật từ DB
+- Mapping (từ SeedData.sql): Pop=`d4e5f6a7-b8c9-0123-defa-234567890123`, Rock=`e5f6a7b8-c9d0-1234-efab-567890123456`, R&B=`f6a7b8c9-d0e1-2345-fabc-678901234567`, Jazz=`a7b8c9d0-e1f2-3456-abcd-789012345678`, Classical=`b8c9d0e1-f2a3-4567-bcde-890123456789`, Electronic=`c9d0e1f2-a3b4-5678-cdef-901234567890`, Hip-Hop=`d0e1f2a3-b4c5-6789-defa-012345678901`, Acoustic=`e1f2a3b4-c5d6-7890-efab-123456789012`, Indie=`f2a3b4c5-d6e7-8901-fabc-234567890123`
+- File sửa: `services/frontend/src/features/onboarding/components/GenreGrid.tsx`
+
+**Task 3 — Onboarding ArtistGrid real data:**
+- `ArtistGrid.tsx` ARTIST_OPTIONS dùng IDs giả (`'sontung'`) + ảnh Google — không match DB; BE lưu `List<string>` (artist ID strings)
+- Tạo file placeholder: `services/frontend/src/features/onboarding/data/artistAvatars.ts` — 8 artists với IDs thật, imageUrl để trống chờ team cung cấp
+- File sửa: `services/frontend/src/features/onboarding/components/ArtistGrid.tsx` (import từ artistAvatars.ts sau khi có URLs)
+- **BLOCKED:** chờ team cung cấp avatar URLs
+
+---
 [2026-05-18] [FEATURE — Lyrics Phase 1 — Seed LRC → music_db] [DONE]
 
 **Những gì đã implement:**

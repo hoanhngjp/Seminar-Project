@@ -63,12 +63,14 @@ export function useAuth() {
     }
   };
 
-  const register = async (data: any) => {
+  const register = async (data: { email: string; password: string; displayName: string; role?: string }) => {
     setLoading(true);
     setErrorMsg(null);
     try {
       await authService.register(data);
-      navigate('/login');
+      const { accessToken, userId, role, hasCompletedOnboarding, displayName, avatarUrl } =
+        await authService.login({ email: data.email, password: data.password });
+      handleAuthSuccess(accessToken, userId, role, hasCompletedOnboarding, displayName, avatarUrl);
     } catch (err: any) {
       const code = err?.response?.data?.error?.code;
       setErrorMsg(getErrorMessage(code));

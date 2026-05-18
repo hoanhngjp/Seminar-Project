@@ -14,7 +14,34 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Fixed
+
+**Onboarding preferences 500 INTERNAL_ERROR (2026-05-19)**
+- `UserDbContext.cs`: `preferred_genres` column type `uuid[]` → `text[]` — khớp với domain model `List<string>`
+- Migration `20260519000000_FixPreferredGenresType`: `ALTER COLUMN preferred_genres TYPE text[]` trên live DB
+- `ModelSnapshot`: cập nhật `List<Guid>/uuid[]` → `List<string>/text[]`
+- `api.ts`: thêm `!isRefreshRequest` guard trong response interceptor — ngăn deadlock khi `AuthInitializer` refresh thất bại (no cookie) xóa access token của auto-login
+
+**ProfilePage hiển thị UUID thay vì tên thể loại/nghệ sĩ (2026-05-19)**
+- `ProfilePage.tsx`: import `GENRE_OPTIONS` + `ALL_ARTISTS`, build lookup maps `id → name`, render tên thật thay vì UUID
+
 ### Added
+
+**Onboarding Polish (2026-05-19)**
+- `artistAvatars.ts`: 16 artists thật với IDs match `music_db.artists` + avatar URLs Cloudinary
+- `GenreGrid.tsx`: UUID thật từ `music_db.genres` thay cho slugs cũ
+- `ArtistGrid.tsx`: dùng `ALL_ARTISTS` từ `artistAvatars.ts`, random 8 artists mỗi ngày
+- `useAuth.ts`: auto-login sau đăng ký thành công → redirect `/onboarding`
+
+### Known Issues
+
+**PreferencesPage (`/settings/preferences`) vẫn dùng mock data (2026-05-19)**
+- Initial state seed từ `MOCK_PROFILE` thay vì API
+- Artist search filter từ 10 tên hardcoded, không dùng `ALL_ARTISTS`
+- Selected artists lưu theo `name` string thay vì `id` UUID → save gửi sai data lên API
+- `handleSave()` không gọi `userService.updatePreferences()` → thay đổi không được persist
+
+---
 
 **Lyrics Feature — Phase 1: Seed LRC → Database (2026-05-18)**
 - `infra/seed/seed_lyrics.sh`: script seed 21 bài LRC từ `tests/lyrics/` vào cột `Lyrics` (TEXT) trong `music_db.songs`; tự động flush Redis cache `song:meta:{id}` sau khi seed
