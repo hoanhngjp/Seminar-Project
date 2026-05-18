@@ -16,6 +16,18 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**Bug 0 — Duration 0:00 trong Recommendation Feed (2026-05-18)**
+- `Music Service` (`BatchSongDto`): thêm `DurationSec` vào record → batch endpoint giờ trả `durationSec` trong JSON
+- `Music Service` (`SongService`): `GetSongsBatchAsync` pass `s.DurationSec` khi build `BatchSongDto`
+- `Recommendation Service` (`MusicBatchSong`): thêm `duration_sec: int = 0`, map từ `durationSec` trong response JSON
+- `Recommendation Service` (`SongCandidate`, `SongItem`): thêm `duration_sec` qua toàn bộ pipeline Rule Engine → response
+- `Recommendation Service` (`recommendation_service.py`): pass `duration_sec` khi build `SongCandidate` và `SongItem`
+- Frontend (`recommendationService.ts`): map `durationSec` từ API response, hiển thị `—` thay `0:00` khi duration = 0
+- Frontend (`RecommendationFeedRow.tsx`): dùng `formatDuration` giống SearchPage, hiển thị `—` khi duration = 0
+- Frontend (`mocks/`): thêm `durationSec` vào mock data + normalize `song_id→songId` trong handler
+- Tests: fix pre-existing test `test_cache_miss_runs_rule_engine_and_caches_result` thiếu mock music client (42/42 Python ✅)
+- Runtime fix: rebuild `music-service` container + flush `rec:cache:*` trong Redis để apply pipeline changes
+
 **W11 Seek Bar UX — Sync thumb/fill + Duration từ audio thật (2026-05-18)**
 - `NowPlayingOverlay`: fill transition `'width 0.1s linear'` tắt khi `isDragging` → fill không còn lag 100ms sau thumb
 - `playerStore`: thêm `audioDuration: number` + `setAudioDuration()` — reset về 0 mỗi khi song thay đổi

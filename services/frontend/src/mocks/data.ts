@@ -156,6 +156,7 @@ export const MOCK_RECOMMENDATIONS = [
     title: 'Chuyến Xe',
     artist: 'Ngọt',
     thumbnail: 'https://picsum.photos/seed/chuyenxe/300/300',
+    durationSec: 210,
     reason: { type: 'CONTEXT', text: 'Phù hợp buổi sáng' },
   },
   {
@@ -163,6 +164,7 @@ export const MOCK_RECOMMENDATIONS = [
     title: 'Là Ai',
     artist: 'Chillies',
     thumbnail: 'https://picsum.photos/seed/laai/300/300',
+    durationSec: 220,
     reason: { type: 'CONTEXT', text: 'Nhạc indie buổi sáng' },
   },
   {
@@ -170,6 +172,7 @@ export const MOCK_RECOMMENDATIONS = [
     title: 'Từ Hôm Nay',
     artist: 'Vũ.',
     thumbnail: 'https://picsum.photos/seed/tuhomnay/300/300',
+    durationSec: 255,
     reason: { type: 'CONTEXT', text: 'Giai điệu nhẹ nhàng' },
   },
   // TRENDING — Section 2 "Đang thịnh hành"
@@ -178,6 +181,7 @@ export const MOCK_RECOMMENDATIONS = [
     title: 'Lạc Trôi',
     artist: 'Sơn Tùng M-TP',
     thumbnail: 'https://picsum.photos/seed/lactroi/300/300',
+    durationSec: 245,
     reason: { type: 'TRENDING', text: 'Top 1 tuần này' },
   },
   {
@@ -185,6 +189,7 @@ export const MOCK_RECOMMENDATIONS = [
     title: 'Có Chắc Yêu Là Đây',
     artist: 'Sơn Tùng M-TP',
     thumbnail: 'https://picsum.photos/seed/cochac/300/300',
+    durationSec: 228,
     reason: { type: 'TRENDING', text: 'Trending Việt Nam' },
   },
   {
@@ -192,6 +197,7 @@ export const MOCK_RECOMMENDATIONS = [
     title: 'Mang Tiền Về Cho Mẹ',
     artist: 'Đen Vâu',
     thumbnail: 'https://picsum.photos/seed/mangtienvemee/300/300',
+    durationSec: 290,
     reason: { type: 'TRENDING', text: 'Hot trên mạng xã hội' },
   },
   // PREFERENCE — Section 3 "Vì bạn nghe Indie"
@@ -200,6 +206,7 @@ export const MOCK_RECOMMENDATIONS = [
     title: 'Ngày Mai',
     artist: 'Vũ.',
     thumbnail: 'https://picsum.photos/seed/ngaymai/300/300',
+    durationSec: 198,
     reason: { type: 'PREFERENCE', text: '' },
   },
   {
@@ -207,6 +214,7 @@ export const MOCK_RECOMMENDATIONS = [
     title: 'Đưa Nhau Đi Trốn',
     artist: 'Đen Vâu ft. Linh Cáo',
     thumbnail: 'https://picsum.photos/seed/ditrong/300/300',
+    durationSec: 267,
     reason: { type: 'PREFERENCE', text: '' },
   },
 ];

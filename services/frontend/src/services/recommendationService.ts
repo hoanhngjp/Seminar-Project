@@ -7,6 +7,7 @@ interface RawRecommendedSong {
   title: string;
   artist: string;
   thumbnail: string;
+  durationSec?: number;
   reason: { type: string; text: string };
 }
 
@@ -23,7 +24,7 @@ export async function fetchRecommendations(
     title:      item.title,
     artist:     item.artist,
     coverUrl:   item.thumbnail,
-    duration:   0,
+    duration:   item.durationSec ?? 0,
     isExplicit: false,
     reason: {
       type: item.reason?.type as RecommendedSong['reason']['type'] ?? 'TRENDING',

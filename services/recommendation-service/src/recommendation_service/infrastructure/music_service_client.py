@@ -22,6 +22,7 @@ class MusicBatchSong:
     genre_id: str | None
     mood_tags: list[str]
     cover_image_url: str = ""
+    duration_sec: int = 0
 
 
 class MusicServiceClient:
@@ -59,6 +60,7 @@ class MusicServiceClient:
                     genre_id=str(s["genreId"]) if s.get("genreId") else None,
                     mood_tags=s.get("moodTags", []),
                     cover_image_url=s.get("coverImageUrl") or "",
+                    duration_sec=int(s.get("durationSec", 0)),
                 )
                 for s in songs
             ]

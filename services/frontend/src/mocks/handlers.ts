@@ -86,7 +86,16 @@ const updatePreferencesHandler = http.post('*/api/v1/users/me/preferences', asyn
 
 const recommendationsHandler = http.get('*/api/v1/recommendations', async () => {
   await delay(LATENCY);
-  return ok({ items: MOCK_RECOMMENDATIONS });
+  return ok({
+    items: MOCK_RECOMMENDATIONS.map((r) => ({
+      songId:      (r as any).song_id ?? (r as any).songId,
+      title:       r.title,
+      artist:      r.artist,
+      thumbnail:   r.thumbnail,
+      durationSec: (r as any).durationSec ?? 0,
+      reason:      r.reason,
+    })),
+  });
 });
 
 const feedbackHandler = http.post('*/api/v1/recommendations/feedback', async () => {

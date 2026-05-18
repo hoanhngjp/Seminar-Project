@@ -34,6 +34,7 @@ class SongCandidate:
     genre_name: str
     mood_tags: list[str]
     base_popularity: float  # 0.0–1.0
+    duration_sec: int = 0
 
 
 @dataclass

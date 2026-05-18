@@ -73,7 +73,7 @@ export default function RecommendationFeedRow({ song, index, onPlay }: Recommend
 
       {/* Duration */}
       <span className="text-text-secondary text-sm flex-shrink-0 tabular-nums">
-        {formatDuration(song.duration)}
+        {song.duration ? formatDuration(song.duration) : '—'}
       </span>
     </div>
   );

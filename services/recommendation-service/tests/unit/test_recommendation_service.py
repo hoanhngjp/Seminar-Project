@@ -62,11 +62,19 @@ async def test_cache_hit_returns_cached_and_skips_rule_engine():
 
 @pytest.mark.asyncio
 async def test_cache_miss_runs_rule_engine_and_caches_result():
+    from unittest.mock import AsyncMock
+    from recommendation_service.infrastructure.music_service_client import MusicBatchSong
+
     repo = _make_repo(
         cached=None,
         trending=["song-A", "song-B", "song-C"],
     )
-    service = RecommendationService(repo)
+    music_client = AsyncMock()
+    music_client.get_songs_batch = AsyncMock(return_value=[
+        MusicBatchSong(id="song-A", title="Song A", artist_name="Artist A",
+                       genre_id="genre-1", mood_tags=[], cover_image_url="", duration_sec=180),
+    ])
+    service = RecommendationService(repo, music_client)
 
     items, cache_status = await service.get_recommendations(USER_ID, "morning", 2, CORR_ID)
 

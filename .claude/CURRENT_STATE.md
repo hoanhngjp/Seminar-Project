@@ -201,6 +201,7 @@
 - [X] Rebuild frontend container — confirmed: negotiate 200, WebSocket 101, user ở trong phòng, không bị kick (2026-05-18)
 - [X] Listening Party end-to-end: tất cả 7 bugs đã fix và xác nhận (2026-05-18)
 - [X] Bug 8: BottomPlayerBar không auto-play / pause khi party room sync — `autoPlay?` flag + `pauseSignal` (2026-05-18)
+- [X] Bug 0: Duration 0:00 trong Recommendation Feed — pipeline fix (BatchSongDto → MusicBatchSong → SongCandidate → SongItem) + frontend map + flush Redis cache (2026-05-18)
 - [~] Bug A (= Bug 9): BottomPlayerBar seek bar không hiển thị — đã thử flex restructure (`flex items-center` + non-absolute track), cần verify browser thật
 - [X] Bug B: NowPlayingOverlay fill lag sau thumb — `isDragging` check trên transition (2026-05-18)
 - [X] Bug C: RoomPlayer duration mismatch — `audioDuration` store, BottomPlayerBar write, RoomPlayer dùng `effectiveDuration` (2026-05-18)
@@ -214,7 +215,7 @@
 
 ## Đang làm
 
-- **Service/Task:** Fix Bug A (BottomPlayerBar seek bar CSS) + Demo Prep
+- **Service/Task:** Bug 0 ✅ Done. Tiếp theo: Bug 1 (song mất khi navigate) + Bug 2 (phải bấm play 2 lần) + Features 1–4
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
 - **Checkpoint gần nhất đã pass:** Bug B + Bug C fixed (2026-05-18), 701/701 xanh
 - **Ngày làm việc gần nhất:** 2026-05-18

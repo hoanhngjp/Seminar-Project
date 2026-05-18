@@ -112,6 +112,7 @@ class RecommendationService:
                 title=s.candidate.title,
                 artist=s.candidate.artist,
                 thumbnail=s.candidate.thumbnail,
+                duration_sec=s.candidate.duration_sec,
                 reason=ReasonItem(type=s.reason_type, text=s.reason_text),
             )
             for s in scored[:limit]
@@ -141,6 +142,7 @@ class RecommendationService:
                     genre_name="",
                     mood_tags=meta.mood_tags,
                     base_popularity=0.5,
+                    duration_sec=meta.duration_sec,
                 ))
             else:
                 # Music Service unavailable or song not found — use ID as genre proxy

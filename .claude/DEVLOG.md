@@ -1,5 +1,22 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [BUG FIX — Bug 0: Duration 0:00 trong Recommendation Feed] [DONE]
+
+**Bug 0 — `durationSec: 0` trong API response dù DB có giá trị đúng**
+- Root cause: `BatchSongDto` (C#) không có field `DurationSec` → Music Service batch endpoint trả JSON thiếu key → Python client `s.get("durationSec", 0)` trả 0. Pipeline: DB (đúng) → BatchSongDto (thiếu field) → MusicBatchSong → SongCandidate → SongItem (0).
+- Fix: Thêm `DurationSec` vào `BatchSongDto` record + pass `s.DurationSec` trong `SongService.GetSongsBatchAsync` → thêm `duration_sec` qua `MusicBatchSong` → `SongCandidate` → `SongItem` → `schemas/response.py`.
+- Frontend: map `item.durationSec ?? 0` trong `recommendationService.ts`, hiển thị `—` thay `0:00` trong `RecommendationFeedRow`.
+- Runtime: cần rebuild `music-service` container + flush `rec:cache:*` trong Redis để clear stale cache.
+- Stale cache là lý do durationSec vẫn = 0 sau rebuild — cached `SongItem` không có `durationSec` key, Pydantic dùng default = 0.
+
+**Bugs còn lại (chờ implement — theo thứ tự ưu tiên):**
+- Bug 1: Song mất khi navigate → `<BottomPlayerBar>` trong `AppShell` bị unmount mỗi lần chuyển trang. Fix: move ra `App.tsx` ngoài `<Routes>`.
+- Bug 2: Phải bấm play 2 lần → `playSong()` không set `autoPlay: true`. Fix: thêm flag vào `HomePage`, `SongDetailPage`, `SearchPage`.
+- Feature 1+2: URL slug + tách click navigate/play → `slugify()` helper + `SongDetailPage` dùng `useSearchParams`.
+- Feature 3: Nút + Queue → thêm button vào `SongCard` + `RecommendationFeedRow`, gọi `addToQueue()`.
+- Feature 4: `NowPlayingOverlay` tabs → wire real queue, lazy-fetch related songs, bỏ MOCK_LYRICS.
+
+---
 [2026-05-18] [BUG FIX — Bug B: NowPlayingOverlay fill lag + Bug C: RoomPlayer duration mismatch] [DONE]
 
 **Bug B — NowPlayingOverlay: fill chạy chậm hơn thumb khi kéo**

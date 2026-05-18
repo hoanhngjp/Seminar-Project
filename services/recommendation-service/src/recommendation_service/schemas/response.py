@@ -63,6 +63,7 @@ class SongItem(BaseModel):
     title: str
     artist: str
     thumbnail: str
+    duration_sec: int = 0
     reason: ReasonItem
 
 
