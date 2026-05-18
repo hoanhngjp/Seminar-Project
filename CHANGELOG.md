@@ -16,6 +16,15 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Player Enhancements — Skip, Shuffle, Repeat, Click-to-play Queue (2026-05-18)**
+- **Queue deduplication**: `addToQueue` bỏ qua nếu bài đã trong queue hoặc đang phát
+- **Skip prev/next**: BottomPlayerBar và NowPlayingOverlay có nút bài trước/tiếp thật sự; khi hết bài tự chuyển sang bài tiếp trong queue
+- **Shuffle**: toggle ngẫu nhiên thứ tự queue, active indicator (dot + green color) trên NowPlayingOverlay
+- **Repeat**: cycle 3 chế độ — tắt / lặp 1 bài (`repeat_one` icon) / lặp toàn bộ queue; active indicator
+- **Click-to-play queue**: click vào bài trong QueueDrawer hoặc tab Hàng chờ của NowPlayingOverlay để phát ngay — bài được remove khỏi queue, bài hiện tại vào history
+- **Lịch sử phát**: `playPrev` pop history → bài cũ trở lại; bài hiện tại push về đầu queue để có thể đi xuôi lại
+- 772/772 tests xanh (+22 tests)
+
 **Feature 3 — Nút + Queue trong SongCard + RecommendationFeedRow (2026-05-18)**
 - `SongCard.tsx`: thêm button `+` (icon `add`) ở góc trên-phải ảnh bìa, xuất hiện khi hover. Click gọi `addToQueue()` từ `playerStore` với `e.stopPropagation()` — không trigger navigate hay play
 - `RecommendationFeedRow.tsx`: thêm button `add_to_queue` ở bên phải (trước cột duration), chỉ render khi `hovered === true`. Click gọi `addToQueue()` — không ảnh hưởng `onPlay`

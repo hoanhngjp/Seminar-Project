@@ -1,5 +1,35 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — Player enhancements: dedup queue, skip prev/next, shuffle/repeat, click-to-play queue] [DONE]
+
+**playerStore.ts — major update**
+- `addToQueue`: dedup — bỏ qua nếu song đã trong queue hoặc đang phát (check `currentSong.songId`)
+- Thêm `history: CurrentSong[]` — mỗi lần `playSong`/`setSong` push currentSong vào history
+- Thêm `shuffle: boolean`, `repeat: 'none' | 'one' | 'all'`
+- Thêm `playFromQueue(index)`: phát bài tại index, remove khỏi queue, push current vào history
+- Thêm `playNext()`: repeat='one' → replay; shuffle → random queue item; else → pop first queue item
+- Thêm `playPrev()`: history.length > 0 → pop history, push current về front of queue; else → seek(0)
+- Thêm `toggleShuffle()`, `toggleRepeat()` (cycle none→one→all→none)
+
+**BottomPlayerBar.tsx**
+- Skip_previous → `playPrev()`, skip_next → `playNext()` (data-testid `btn-prev`/`btn-next`)
+- `onEnded` → `playNext()` — tự chuyển bài khi hết nhạc
+
+**NowPlayingOverlay.tsx**
+- Shuffle button: `aria-pressed`, active color (spotify-green), dot indicator khi bật
+- Repeat button: cycle repeat_one icon khi `repeat='one'`, dot indicator khi active
+- Skip_previous/skip_next buttons → `playPrev()`/`playNext()`
+- Queue tab: click item → `playFromQueue(idx)` (thay vì `playSong`), remove button dùng `e.stopPropagation()`
+
+**QueueDrawer.tsx**
+- Queue item: `role="button"`, click → `playFromQueue(index)`, remove button dùng `e.stopPropagation()`
+
+**Tests**
+- Sửa 2 tests cũ (SongCard + RecommendationFeedRow) từ "twice → 2 entries" → "twice → deduped 1 entry"
+- +22 tests mới: playerStore (dedup, history, playFromQueue, playNext/playPrev, shuffle/repeat) + QueueDrawer (click-to-play) + NowPlayingOverlay (shuffle/repeat buttons, skip buttons, queue click-to-play)
+- 772/772 tests xanh (+22)
+
+---
 [2026-05-18] [FEATURE — Feature 3: Nút + Queue trong SongCard + RecommendationFeedRow] [DONE]
 
 **SongCard**

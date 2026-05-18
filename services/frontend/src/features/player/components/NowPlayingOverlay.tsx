@@ -1,5 +1,8 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type { CurrentSong } from './NowPlayingOverlay.types';
+import { usePlayerStore } from '../../../store/playerStore';
+import { searchContent } from '../../../services/searchService';
+import type { SearchResult } from '../../../types/domain';
 
 // Mock lyrics for demo (no lyrics API in scope)
 const MOCK_LYRICS = [
@@ -42,13 +45,42 @@ export default function NowPlayingOverlay({
   onSeek,
   onClose,
 }: NowPlayingOverlayProps) {
+  const queue           = usePlayerStore((s) => s.queue);
+  const removeFromQueue = usePlayerStore((s) => s.removeFromQueue);
+  const playSong        = usePlayerStore((s) => s.playSong);
+  const playFromQueue   = usePlayerStore((s) => s.playFromQueue);
+  const playNext        = usePlayerStore((s) => s.playNext);
+  const playPrev        = usePlayerStore((s) => s.playPrev);
+  const shuffle         = usePlayerStore((s) => s.shuffle);
+  const repeat          = usePlayerStore((s) => s.repeat);
+  const toggleShuffle   = usePlayerStore((s) => s.toggleShuffle);
+  const toggleRepeat    = usePlayerStore((s) => s.toggleRepeat);
+
   const [activeTab, setActiveTab] = useState<Tab>('lyrics');
+  const [relatedSongs,   setRelatedSongs]   = useState<SearchResult[]>([]);
+  const [relatedLoading, setRelatedLoading] = useState(false);
   const [seekHovered,  setSeekHovered]  = useState(false);
   const [hoverPercent, setHoverPercent] = useState(0);
   const [hoverTime,    setHoverTime]    = useState(0);
   const [isDragging,   setIsDragging]   = useState(false);
   const [dragValue,    setDragValue]    = useState(0);
   const seekBarRef = useRef<HTMLDivElement>(null);
+
+  // Fetch related songs when related tab is active
+  useEffect(() => {
+    if (activeTab !== 'related' || !currentSong.artist) return;
+    let cancelled = false;
+    setRelatedLoading(true);
+    setRelatedSongs([]);
+    searchContent(currentSong.artist, 'song', 20)
+      .then((res) => {
+        if (cancelled) return;
+        setRelatedSongs(res.items.filter((s) => s.id !== currentSong.songId));
+      })
+      .catch(() => { if (!cancelled) setRelatedSongs([]); })
+      .finally(() => { if (!cancelled) setRelatedLoading(false); });
+    return () => { cancelled = true; };
+  }, [activeTab, currentSong.songId, currentSong.artist]);
 
   // During drag use local dragValue for instant visual feedback; otherwise use prop
   const displayTime = isDragging ? dragValue : currentTime;
@@ -242,13 +274,21 @@ export default function NowPlayingOverlay({
             {/* Playback controls */}
             <div className="flex items-center justify-center gap-6 lg:gap-8 mb-10">
               <button
+                onClick={toggleShuffle}
                 aria-label="Trộn bài"
-                className="text-text-secondary hover:text-text-emphasis transition-colors"
+                aria-pressed={shuffle}
+                data-testid="overlay-shuffle-btn"
+                className={`transition-colors relative ${shuffle ? 'text-spotify-green' : 'text-text-secondary hover:text-text-emphasis'}`}
               >
                 <span className="material-symbols-outlined text-[24px]">shuffle</span>
+                {shuffle && (
+                  <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-spotify-green" />
+                )}
               </button>
               <button
+                onClick={playPrev}
                 aria-label="Bài trước"
+                data-testid="overlay-prev-btn"
                 className="text-text-base hover:text-text-emphasis transition-colors"
               >
                 <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -276,7 +316,9 @@ export default function NowPlayingOverlay({
                 )}
               </button>
               <button
+                onClick={playNext}
                 aria-label="Bài tiếp"
+                data-testid="overlay-next-btn"
                 className="text-text-base hover:text-text-emphasis transition-colors"
               >
                 <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -284,10 +326,18 @@ export default function NowPlayingOverlay({
                 </span>
               </button>
               <button
+                onClick={toggleRepeat}
                 aria-label="Lặp lại"
-                className="text-text-secondary hover:text-text-emphasis transition-colors"
+                aria-pressed={repeat !== 'none'}
+                data-testid="overlay-repeat-btn"
+                className={`transition-colors relative ${repeat !== 'none' ? 'text-spotify-green' : 'text-text-secondary hover:text-text-emphasis'}`}
               >
-                <span className="material-symbols-outlined text-[24px]">repeat</span>
+                <span className="material-symbols-outlined text-[24px]">
+                  {repeat === 'one' ? 'repeat_one' : 'repeat'}
+                </span>
+                {repeat !== 'none' && (
+                  <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-spotify-green" />
+                )}
               </button>
             </div>
 
@@ -342,16 +392,93 @@ export default function NowPlayingOverlay({
                 )}
 
                 {activeTab === 'queue' && (
-                  <div className="flex flex-col items-center py-8 gap-2 text-text-secondary" data-testid="tab-content-queue">
-                    <span className="material-symbols-outlined text-[40px]">queue_music</span>
-                    <p className="text-[14px] leading-[1.5]">Hàng chờ trống</p>
+                  <div data-testid="tab-content-queue" className="flex flex-col gap-1">
+                    {queue.length === 0 ? (
+                      <div className="flex flex-col items-center py-8 gap-2 text-text-secondary">
+                        <span className="material-symbols-outlined text-[40px]">queue_music</span>
+                        <p className="text-[14px] leading-[1.5]">Hàng chờ trống</p>
+                      </div>
+                    ) : (
+                      queue.map((song, idx) => (
+                        <div
+                          key={`${song.songId}-${idx}`}
+                          className="flex items-center gap-3 px-2 py-2 rounded-[6px] hover:bg-mid-dark group transition-colors cursor-pointer"
+                          data-testid={`queue-item-${idx}`}
+                          onClick={() => playFromQueue(idx)}
+                          role="button"
+                          aria-label={`Phát ${song.title}`}
+                        >
+                          {song.coverUrl ? (
+                            <img
+                              src={song.coverUrl}
+                              alt={song.title}
+                              className="w-10 h-10 rounded-[4px] object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-[4px] bg-mid-dark flex-shrink-0 flex items-center justify-center">
+                              <span className="material-symbols-outlined text-[18px] text-text-secondary">music_note</span>
+                            </div>
+                          )}
+                          <div className="flex flex-col min-w-0 flex-1">
+                            <span className="text-[14px] font-[600] leading-[1.3] text-text-emphasis truncate">{song.title}</span>
+                            <span className="text-[12px] leading-[1.5] text-text-secondary truncate">{song.artist}</span>
+                          </div>
+                          <button
+                            aria-label={`Xóa ${song.title} khỏi hàng chờ`}
+                            data-testid={`queue-remove-${idx}`}
+                            onClick={(e) => { e.stopPropagation(); removeFromQueue(idx); }}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-text-secondary hover:text-negative flex items-center justify-center w-8 h-8 flex-shrink-0"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">close</span>
+                          </button>
+                        </div>
+                      ))
+                    )}
                   </div>
                 )}
 
                 {activeTab === 'related' && (
-                  <div className="flex flex-col items-center py-8 gap-2 text-text-secondary" data-testid="tab-content-related">
-                    <span className="material-symbols-outlined text-[40px]">library_music</span>
-                    <p className="text-[14px] leading-[1.5]">Không có bài hát liên quan</p>
+                  <div data-testid="tab-content-related" className="flex flex-col gap-1">
+                    {relatedLoading ? (
+                      <div className="flex flex-col items-center py-8 gap-2 text-text-secondary" data-testid="related-loading">
+                        <span className="material-symbols-outlined text-[32px] animate-spin">progress_activity</span>
+                      </div>
+                    ) : relatedSongs.length === 0 ? (
+                      <div className="flex flex-col items-center py-8 gap-2 text-text-secondary">
+                        <span className="material-symbols-outlined text-[40px]">library_music</span>
+                        <p className="text-[14px] leading-[1.5]">Không có bài hát liên quan</p>
+                      </div>
+                    ) : (
+                      relatedSongs.map((song) => (
+                        <button
+                          key={song.id}
+                          data-testid={`related-item-${song.id}`}
+                          onClick={() => playSong({ songId: song.id, title: song.name, artist: song.artist ?? '', coverUrl: song.coverUrl })}
+                          className="flex items-center gap-3 px-2 py-2 rounded-[6px] hover:bg-mid-dark group transition-colors text-left w-full"
+                        >
+                          {song.coverUrl ? (
+                            <img
+                              src={song.coverUrl}
+                              alt={song.name}
+                              className="w-10 h-10 rounded-[4px] object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-[4px] bg-mid-dark flex-shrink-0 flex items-center justify-center">
+                              <span className="material-symbols-outlined text-[18px] text-text-secondary">music_note</span>
+                            </div>
+                          )}
+                          <div className="flex flex-col min-w-0 flex-1">
+                            <span className="text-[14px] font-[600] leading-[1.3] text-text-emphasis truncate">{song.name}</span>
+                            <span className="text-[12px] leading-[1.5] text-text-secondary truncate">{song.artist}</span>
+                          </div>
+                          {song.duration != null && song.duration > 0 && (
+                            <span className="text-[12px] text-text-secondary flex-shrink-0 tabular-nums">
+                              {formatTime(song.duration)}
+                            </span>
+                          )}
+                        </button>
+                      ))
+                    )}
                   </div>
                 )}
               </div>

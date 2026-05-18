@@ -11,6 +11,7 @@ export default function QueueDrawer({ isOpen, onClose }: QueueDrawerProps) {
   const queue           = usePlayerStore((s) => s.queue) ?? [];
   const removeFromQueue = usePlayerStore((s) => s.removeFromQueue);
   const clearQueue      = usePlayerStore((s) => s.clearQueue);
+  const playFromQueue   = usePlayerStore((s) => s.playFromQueue);
 
   return (
     <>
@@ -104,6 +105,7 @@ export default function QueueDrawer({ isOpen, onClose }: QueueDrawerProps) {
                 song={song}
                 index={index}
                 onRemove={removeFromQueue}
+                onPlay={playFromQueue}
               />
             ))}
           </section>
@@ -147,13 +149,17 @@ interface QueueItemProps {
   song:     ReturnType<typeof usePlayerStore.getState>['queue'][number];
   index:    number;
   onRemove: (index: number) => void;
+  onPlay:   (index: number) => void;
 }
 
-function QueueItem({ song, index, onRemove }: QueueItemProps) {
+function QueueItem({ song, index, onRemove, onPlay }: QueueItemProps) {
   return (
     <div
       data-testid={`queue-item-${index}`}
-      className="flex items-center gap-3 px-2 py-2 rounded-md hover:bg-white/5 group transition-colors"
+      role="button"
+      aria-label={`Phát ${song.title}`}
+      onClick={() => onPlay(index)}
+      className="flex items-center gap-3 px-2 py-2 rounded-md hover:bg-white/5 group transition-colors cursor-pointer"
     >
       {/* Drag handle — visual only */}
       <span className="material-symbols-outlined text-[16px] text-border-muted group-hover:text-text-secondary transition-colors flex-shrink-0 cursor-grab">
@@ -168,7 +174,7 @@ function QueueItem({ song, index, onRemove }: QueueItemProps) {
       </div>
 
       <button
-        onClick={() => onRemove(index)}
+        onClick={(e) => { e.stopPropagation(); onRemove(index); }}
         aria-label={`Xóa ${song.title} khỏi hàng chờ`}
         className="opacity-0 group-hover:opacity-100 transition-opacity text-text-secondary hover:text-negative ml-1 flex-shrink-0"
       >

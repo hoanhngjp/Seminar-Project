@@ -196,6 +196,18 @@ describe('playerStore queue actions', () => {
     expect(usePlayerStore.getState().queue[1].songId).toBe(SONG_B.songId);
   });
 
+  it('addToQueue deduplicates — same songId is not added twice', () => {
+    usePlayerStore.getState().addToQueue(SONG_A);
+    usePlayerStore.getState().addToQueue(SONG_A);
+    expect(usePlayerStore.getState().queue).toHaveLength(1);
+  });
+
+  it('addToQueue ignores song that is currently playing', () => {
+    usePlayerStore.setState({ currentSong: SONG_A });
+    usePlayerStore.getState().addToQueue(SONG_A);
+    expect(usePlayerStore.getState().queue).toHaveLength(0);
+  });
+
   it('removeFromQueue removes by index without mutating other items', () => {
     usePlayerStore.setState({ queue: [SONG_A, SONG_B, SONG_C] });
     usePlayerStore.getState().removeFromQueue(1);
@@ -221,6 +233,94 @@ describe('playerStore queue actions', () => {
     usePlayerStore.getState().playSong(SONG_A);
     expect(usePlayerStore.getState().queue).toHaveLength(1);
     expect(usePlayerStore.getState().currentSong?.songId).toBe(SONG_A.songId);
+  });
+
+  it('playSong pushes previous currentSong to history', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, history: [] });
+    usePlayerStore.getState().playSong(SONG_B);
+    expect(usePlayerStore.getState().history).toHaveLength(1);
+    expect(usePlayerStore.getState().history[0].songId).toBe(SONG_A.songId);
+  });
+
+  it('playFromQueue moves song from queue to currentSong and adds current to history', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B, SONG_C], history: [] });
+    usePlayerStore.getState().playFromQueue(0);
+    const s = usePlayerStore.getState();
+    expect(s.currentSong?.songId).toBe(SONG_B.songId);
+    expect(s.currentSong?.autoPlay).toBe(true);
+    expect(s.queue).toHaveLength(1);
+    expect(s.queue[0].songId).toBe(SONG_C.songId);
+    expect(s.history[0].songId).toBe(SONG_A.songId);
+  });
+
+  it('playNext pops first queue item when shuffle is off', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B, SONG_C], shuffle: false, repeat: 'none' });
+    usePlayerStore.getState().playNext();
+    expect(usePlayerStore.getState().currentSong?.songId).toBe(SONG_B.songId);
+    expect(usePlayerStore.getState().queue).toHaveLength(1);
+  });
+
+  it('playNext does nothing when queue is empty and repeat is none', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [], repeat: 'none' });
+    usePlayerStore.getState().playNext();
+    expect(usePlayerStore.getState().currentSong?.songId).toBe(SONG_A.songId);
+  });
+
+  it('playNext replays current song when repeat is one', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B], repeat: 'one' });
+    usePlayerStore.getState().playNext();
+    expect(usePlayerStore.getState().currentSong?.songId).toBe(SONG_A.songId);
+    expect(usePlayerStore.getState().currentSong?.autoPlay).toBe(true);
+    expect(usePlayerStore.getState().queue).toHaveLength(1);
+  });
+
+  it('playPrev restores previous song from history', () => {
+    usePlayerStore.setState({ currentSong: SONG_B, history: [SONG_A], queue: [] });
+    usePlayerStore.getState().playPrev();
+    const s = usePlayerStore.getState();
+    expect(s.currentSong?.songId).toBe(SONG_A.songId);
+    expect(s.history).toHaveLength(0);
+    expect(s.queue[0].songId).toBe(SONG_B.songId);
+  });
+
+  it('toggleShuffle flips shuffle state', () => {
+    usePlayerStore.setState({ shuffle: false });
+    usePlayerStore.getState().toggleShuffle();
+    expect(usePlayerStore.getState().shuffle).toBe(true);
+    usePlayerStore.getState().toggleShuffle();
+    expect(usePlayerStore.getState().shuffle).toBe(false);
+  });
+
+  it('toggleRepeat cycles none → one → all → none', () => {
+    usePlayerStore.setState({ repeat: 'none' });
+    usePlayerStore.getState().toggleRepeat();
+    expect(usePlayerStore.getState().repeat).toBe('one');
+    usePlayerStore.getState().toggleRepeat();
+    expect(usePlayerStore.getState().repeat).toBe('all');
+    usePlayerStore.getState().toggleRepeat();
+    expect(usePlayerStore.getState().repeat).toBe('none');
+  });
+});
+
+// ── QueueDrawer click to play ─────────────────────────────────────────────
+
+describe('QueueDrawer click to play', () => {
+  it('clicking a queue item plays it and removes from queue', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B, SONG_C] });
+    render(<QueueDrawer isOpen={true} onClose={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: `Phát ${SONG_B.title}` }));
+    const s = usePlayerStore.getState();
+    expect(s.currentSong?.songId).toBe(SONG_B.songId);
+    expect(s.queue).toHaveLength(1);
+    expect(s.queue[0].songId).toBe(SONG_C.songId);
+  });
+
+  it('clicking remove button does NOT trigger play', () => {
+    usePlayerStore.setState({ currentSong: SONG_A, queue: [SONG_B] });
+    render(<QueueDrawer isOpen={true} onClose={vi.fn()} />);
+    fireEvent.click(screen.getByLabelText(`Xóa ${SONG_B.title} khỏi hàng chờ`));
+    expect(usePlayerStore.getState().currentSong?.songId).toBe(SONG_A.songId);
+    expect(usePlayerStore.getState().queue).toHaveLength(0);
   });
 });
 

@@ -25,6 +25,8 @@ export default function BottomPlayerBar() {
   const seekSignal       = usePlayerStore((s) => s.seekSignal);
   const seekPosition     = usePlayerStore((s) => s.seekPosition);
   const setAudioDuration = usePlayerStore((s) => s.setAudioDuration);
+  const playNext         = usePlayerStore((s) => s.playNext);
+  const playPrev         = usePlayerStore((s) => s.playPrev);
 
   const audioRef        = useRef<HTMLAudioElement>(null);
   const urlFetchedAtRef = useRef<number>(0);
@@ -228,7 +230,7 @@ export default function BottomPlayerBar() {
                 sendPlayAnalytics(currentSong.songId, d, audioRef.current?.currentTime ?? 0);
               }
             }}
-            onEnded={() => setIsPlaying(false)}
+            onEnded={() => { setIsPlaying(false); playNext(); }}
             onError={() => fetchStreamUrl(currentSong.songId)}
           />
         )}
@@ -264,8 +266,10 @@ export default function BottomPlayerBar() {
         <div className="flex flex-col items-center max-w-[40%] w-full gap-1">
           <div className="flex items-center gap-4">
             <button
+              onClick={playPrev}
               className="text-text-secondary hover:text-text-base transition-colors"
               aria-label="Bài trước"
+              data-testid="btn-prev"
             >
               <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                 skip_previous
@@ -288,8 +292,10 @@ export default function BottomPlayerBar() {
             </button>
 
             <button
+              onClick={playNext}
               className="text-text-secondary hover:text-text-base transition-colors"
               aria-label="Bài tiếp"
+              data-testid="btn-next"
             >
               <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                 skip_next

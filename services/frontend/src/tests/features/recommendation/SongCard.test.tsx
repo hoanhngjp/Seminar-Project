@@ -161,11 +161,11 @@ describe('SongCard', () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  it('clicking queue button twice adds two entries to queue', () => {
+  it('clicking queue button twice is deduped — queue stays at 1 entry', () => {
     renderCard();
     fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
     fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
-    expect(usePlayerStore.getState().queue).toHaveLength(2);
+    expect(usePlayerStore.getState().queue).toHaveLength(1);
   });
 
   it('queue button propagation does not trigger cover navigation', () => {

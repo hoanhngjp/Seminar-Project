@@ -198,6 +198,8 @@
 - [X] Feature: CreateRoomModal — thay 8 mock songs bằng real API: recommendations (4 bài theo timeContext) khi default + search infinite scroll (IntersectionObserver + cursor pagination) khi gõ query — 18/18 tests xanh (2026-05-18)
 - [X] Feature 1+2: URL slug (`slugify.ts` + `songUrl()`) + tách click navigate/play trong SongCard — 726/726 tests xanh (+25 tests) (2026-05-18)
 - [X] Feature 3: Nút + Queue trong SongCard + RecommendationFeedRow — 737/737 tests xanh (+11 tests) (2026-05-18)
+- [X] Feature 4: NowPlayingOverlay tabs — queue tab wire real playerStore queue + related tab fetch by artist (searchContent) — 750/750 tests xanh (+13 tests) (2026-05-18)
+- [X] Player Enhancements: dedup queue, skip prev/next, shuffle/repeat, click-to-play queue (QueueDrawer + NowPlayingOverlay), history-based playPrev, onEnded auto-advance — 772/772 tests xanh (+22 tests) (2026-05-18)
 - [X] Bug fix: POST /api/v1/parties 400 — BE accept Name?+SongId? optional, FE đổi firstSongId→songId (2026-05-18)
 - [X] Bug fix (Bug 7): SignalR "connection was stopped during negotiation" — bỏ React StrictMode khỏi main.tsx (2026-05-18)
 - [X] Rebuild frontend container — confirmed: negotiate 200, WebSocket 101, user ở trong phòng, không bị kick (2026-05-18)
@@ -219,23 +221,24 @@
 
 ## Đang làm
 
-- **Service/Task:** Feature 3 ✅ Done. Tiếp theo: Feature 4
+- **Service/Task:** Player Enhancements ✅ Done. Tiếp theo: Demo prep
 - **File plan cần đọc:** `.claude/plan/week10_12_polish_demo.md`
-- **Checkpoint gần nhất đã pass:** Feature 3 (2026-05-18), 737/737 xanh
+- **Checkpoint gần nhất đã pass:** Player Enhancements (2026-05-18), 772/772 xanh
 - **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
   1. ~~Fix Bug 8~~ ✓ Done
   2. [~] Bug A (Bug 9): BottomPlayerBar seek bar không hiển thị — cần verify flex restructure trên browser thật
-  3. ~~Bug B~~ ✓ Done — NowPlayingOverlay fill sync với thumb
-  4. ~~Bug C~~ ✓ Done — RoomPlayer dùng `effectiveDuration` từ audio thật
+  3. ~~Bug B~~ ✓ Done
+  4. ~~Bug C~~ ✓ Done
   5. ~~Fix Bug 10~~ ✓ Done
-  6. ~~Bug 1~~ ✓ Done — BottomPlayerBar move ra App.tsx, không unmount khi navigate
-  7. ~~Bug 2~~ ✓ Done — `autoPlay: true` trong HomePage + SearchPage
-  8. ~~Feature 1+2~~ ✓ Done — URL slug (`slugify.ts` + `songUrl()`) + tách click navigate/play trong SongCard
-  9. ~~Feature 3~~ ✓ Done — Nút + Queue trong SongCard + RecommendationFeedRow
-  10. Feature 4: NowPlayingOverlay tabs wire real queue + related songs
-  11. Demo script rehearsal 14 phút
-  12. Pre-upload demo songs cho Creator account
+  6. ~~Bug 1~~ ✓ Done
+  7. ~~Bug 2~~ ✓ Done
+  8. ~~Feature 1+2~~ ✓ Done
+  9. ~~Feature 3~~ ✓ Done
+  10. ~~Feature 4~~ ✓ Done — NowPlayingOverlay queue + related tabs
+  11. ~~Player Enhancements~~ ✓ Done — dedup, skip, shuffle, repeat, click-to-play
+  12. Demo script rehearsal 14 phút
+  13. Pre-upload demo songs cho Creator account
 
 ### CSS Audit Phase 1 — 6 Confirmed Violations (HOÀN THÀNH 2026-05-14)
 | # | File | Fix | Status |

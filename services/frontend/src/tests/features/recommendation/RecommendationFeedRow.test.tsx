@@ -250,12 +250,12 @@ describe('RecommendationFeedRow', () => {
     expect(onPlay).not.toHaveBeenCalled();
   });
 
-  it('adding same song twice results in two queue entries', () => {
+  it('adding same song twice is deduped — queue stays at 1 entry', () => {
     renderRow();
     fireEvent.mouseEnter(screen.getByRole('row'));
     fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
     fireEvent.click(screen.getByLabelText('Thêm Lạc Trôi vào hàng chờ'));
-    expect(usePlayerStore.getState().queue).toHaveLength(2);
+    expect(usePlayerStore.getState().queue).toHaveLength(1);
   });
 
   // ── Reason badge variants ─────────────────────────────────────────────
