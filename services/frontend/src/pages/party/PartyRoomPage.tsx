@@ -30,6 +30,7 @@ export default function PartyRoomPage() {
   const resumeSong    = usePlayerStore((s) => s.resumeSong);
   const seekSong      = usePlayerStore((s) => s.seekSong);
   const clearSong     = usePlayerStore((s) => s.clearSong);
+  const audioDuration = usePlayerStore((s) => s.audioDuration);
 
   // ─── Party state ───────────────────────────────────────────────────────────
   const [members, setMembers]         = useState<PartyMember[]>(initialParty?.members ?? []);
@@ -176,6 +177,7 @@ export default function PartyRoomPage() {
               isPlaying={isPlaying}
               positionSec={positionSec}
               isHost={isHost}
+              audioDuration={audioDuration > 0 ? audioDuration : undefined}
               onPlay={handlePlay}
               onPause={handlePause}
               onNext={handleNext}

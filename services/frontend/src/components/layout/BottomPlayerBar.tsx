@@ -20,10 +20,11 @@ function formatTime(sec: number): string {
 export default function BottomPlayerBar() {
   const currentSong  = usePlayerStore((s) => s.currentSong);
   const clearSong    = usePlayerStore((s) => s.clearSong);
-  const pauseSignal  = usePlayerStore((s) => s.pauseSignal);
-  const resumeSignal = usePlayerStore((s) => s.resumeSignal);
-  const seekSignal   = usePlayerStore((s) => s.seekSignal);
-  const seekPosition = usePlayerStore((s) => s.seekPosition);
+  const pauseSignal      = usePlayerStore((s) => s.pauseSignal);
+  const resumeSignal     = usePlayerStore((s) => s.resumeSignal);
+  const seekSignal       = usePlayerStore((s) => s.seekSignal);
+  const seekPosition     = usePlayerStore((s) => s.seekPosition);
+  const setAudioDuration = usePlayerStore((s) => s.setAudioDuration);
 
   const audioRef        = useRef<HTMLAudioElement>(null);
   const urlFetchedAtRef = useRef<number>(0);
@@ -42,6 +43,11 @@ export default function BottomPlayerBar() {
   const [urlError,     setUrlError]     = useState<string | null>(null);
   const [showOverlay,  setShowOverlay]  = useState(false);
   const [showQueue,    setShowQueue]    = useState(false);
+  const [isDragging,   setIsDragging]   = useState(false);
+  const [dragValue,    setDragValue]    = useState(0);
+
+  // During drag use local dragValue for instant visual; otherwise follow audio element
+  const displayTime = isDragging ? dragValue : currentTime;
 
   const fetchStreamUrl = useCallback(async (songId: string) => {
     setUrlError(null);
@@ -174,8 +180,13 @@ export default function BottomPlayerBar() {
   }, []);
 
   const handleSeekInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleSeek(Number(e.target.value));
+    const val = Number(e.target.value);
+    setDragValue(val);
+    setIsDragging(true);
+    handleSeek(val);
   };
+
+  const handleSeekCommit = () => setIsDragging(false);
 
   if (!currentSong) return null;
 
@@ -188,7 +199,7 @@ export default function BottomPlayerBar() {
         <NowPlayingOverlay
           currentSong={currentSong}
           isPlaying={isPlaying}
-          currentTime={currentTime}
+          currentTime={displayTime}
           duration={duration}
           loading={loading}
           onTogglePlay={handleToggle}
@@ -211,6 +222,7 @@ export default function BottomPlayerBar() {
             onDurationChange={(e) => {
               const d = e.currentTarget.duration;
               setDuration(d);
+              setAudioDuration(d);
               // Send analytics once we have real duration and user has already pressed play
               if (hasStartedRef.current && currentSong) {
                 sendPlayAnalytics(currentSong.songId, d, audioRef.current?.currentTime ?? 0);
@@ -288,26 +300,47 @@ export default function BottomPlayerBar() {
           {/* Seek bar */}
           <div className="flex items-center gap-2 w-full max-w-md">
             <span className="text-[10px] text-text-secondary w-7 text-right tabular-nums">
-              {formatTime(currentTime)}
+              {formatTime(displayTime)}
             </span>
-            {/* Expanded click/drag area */}
-            <div className="relative flex-1 h-4 cursor-pointer">
-              {/* Visual track — absolutely centered, below the input in z-order */}
-              <div className="absolute top-1/2 left-0 right-0 h-1 -translate-y-1/2 bg-border-muted rounded-full overflow-hidden pointer-events-none">
+            {/* Expanded click/drag area — flex items-center so track is centered without absolute */}
+            <div className="relative flex-1 h-4 flex items-center cursor-pointer">
+              {/* Visual track — non-absolute, centered by parent flex */}
+              <div
+                className="w-full bg-border-muted rounded-full overflow-hidden pointer-events-none"
+                style={{ height: isDragging ? '5px' : '3px', transition: 'height 0.15s' }}
+              >
                 <div
                   className="h-full bg-spotify-green rounded-full"
-                  style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
+                  style={{ width: duration ? `${(displayTime / duration) * 100}%` : '0%', transition: isDragging ? 'none' : 'width 0.05s linear' }}
                 />
               </div>
+              {/* Thumb circle — visible when dragging */}
+              {isDragging && duration > 0 && (
+                <div
+                  className="absolute pointer-events-none z-10"
+                  style={{
+                    left: `${(displayTime / duration) * 100}%`,
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    backgroundColor: '#ffffff',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.5)',
+                  }}
+                />
+              )}
               {/* Transparent input on top to capture drag events */}
               <input
                 type="range"
                 min={0}
                 max={duration || 0}
                 step={0.5}
-                value={currentTime}
+                value={displayTime}
                 onChange={handleSeekInput}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 appearance-none"
+                onPointerUp={handleSeekCommit}
+                onMouseUp={handleSeekCommit}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20 appearance-none"
                 aria-label="Seek"
               />
             </div>

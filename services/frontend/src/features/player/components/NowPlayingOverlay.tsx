@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import type { CurrentSong } from './NowPlayingOverlay.types';
 
 // Mock lyrics for demo (no lyrics API in scope)
@@ -43,7 +43,35 @@ export default function NowPlayingOverlay({
   onClose,
 }: NowPlayingOverlayProps) {
   const [activeTab, setActiveTab] = useState<Tab>('lyrics');
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const [seekHovered,  setSeekHovered]  = useState(false);
+  const [hoverPercent, setHoverPercent] = useState(0);
+  const [hoverTime,    setHoverTime]    = useState(0);
+  const [isDragging,   setIsDragging]   = useState(false);
+  const [dragValue,    setDragValue]    = useState(0);
+  const seekBarRef = useRef<HTMLDivElement>(null);
+
+  // During drag use local dragValue for instant visual feedback; otherwise use prop
+  const displayTime = isDragging ? dragValue : currentTime;
+  const progress    = duration > 0 ? (displayTime / duration) * 100 : 0;
+
+  const handleSeekBarMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!seekBarRef.current || duration <= 0) return;
+    const rect = seekBarRef.current.getBoundingClientRect();
+    const pct  = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    setHoverPercent(pct * 100);
+    setHoverTime(pct * duration);
+  }, [duration]);
+
+  const handleSeekChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value);
+    setDragValue(val);
+    setIsDragging(true);
+    onSeek(val);
+  }, [onSeek]);
+
+  const handleSeekCommit = useCallback(() => {
+    setIsDragging(false);
+  }, []);
 
   return (
     <div
@@ -126,26 +154,87 @@ export default function NowPlayingOverlay({
             </div>
 
             {/* Seek bar */}
-            <div className="flex flex-col gap-2 mb-8 group">
-              <div className="w-full h-1 bg-border-muted rounded-full overflow-hidden relative cursor-pointer">
+            <div className="flex flex-col gap-2 mb-8">
+              {/* Track + thumb + tooltip */}
+              <div
+                ref={seekBarRef}
+                className="relative w-full cursor-pointer"
+                style={{ height: seekHovered ? '20px' : '16px', transition: 'height 0.15s' }}
+                onMouseEnter={() => setSeekHovered(true)}
+                onMouseLeave={() => setSeekHovered(false)}
+                onMouseMove={handleSeekBarMouseMove}
+              >
+                {/* Tooltip time preview */}
+                {seekHovered && duration > 0 && (
+                  <div
+                    className="absolute -top-7 z-20 pointer-events-none"
+                    style={{
+                      left: `${hoverPercent}%`,
+                      transform: 'translateX(-50%)',
+                    }}
+                  >
+                    <span className="bg-mid-dark text-text-emphasis text-[11px] font-bold px-1.5 py-0.5 rounded shadow-level-2 whitespace-nowrap">
+                      {formatTime(hoverTime)}
+                    </span>
+                  </div>
+                )}
+
+                {/* Visual track */}
+                <div
+                  className="absolute left-0 right-0 rounded-full bg-border-muted overflow-hidden pointer-events-none"
+                  style={{
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    height: seekHovered ? '5px' : '3px',
+                    transition: 'height 0.15s',
+                  }}
+                >
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${progress}%`,
+                      backgroundColor: seekHovered ? '#1db954' : '#e0e0e0',
+                      transition: isDragging ? 'none' : 'width 0.1s linear, background-color 0.15s',
+                    }}
+                  />
+                </div>
+
+                {/* Thumb circle — visible when hovered */}
+                {seekHovered && (
+                  <div
+                    className="absolute z-10 pointer-events-none"
+                    style={{
+                      left: `${progress}%`,
+                      top: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: '14px',
+                      height: '14px',
+                      borderRadius: '50%',
+                      backgroundColor: '#ffffff',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
+                    }}
+                  />
+                )}
+
+                {/* Transparent input on top — captures drag */}
                 <input
                   type="range"
                   min={0}
                   max={duration || 0}
                   step={0.5}
-                  value={currentTime}
-                  onChange={(e) => onSeek(Number(e.target.value))}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  value={displayTime}
+                  onChange={handleSeekChange}
+                  onPointerUp={handleSeekCommit}
+                  onMouseUp={handleSeekCommit}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20 appearance-none"
                   aria-label="Tua bài hát"
                   data-testid="overlay-seekbar"
                 />
-                <div
-                  className="absolute left-0 top-0 h-full bg-text-emphasis rounded-full group-hover:bg-spotify-green transition-colors pointer-events-none"
-                  style={{ width: `${progress}%` }}
-                />
               </div>
+
+              {/* Time labels */}
               <div className="flex justify-between items-center text-[12px] font-bold leading-[1.5] text-text-secondary">
-                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(displayTime)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
             </div>

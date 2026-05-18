@@ -1,5 +1,26 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [BUG FIX — Bug B: NowPlayingOverlay fill lag + Bug C: RoomPlayer duration mismatch] [DONE]
+
+**Bug B — NowPlayingOverlay: fill chạy chậm hơn thumb khi kéo**
+- Root cause: fill div có `transition: 'width 0.1s linear, background-color 0.15s'` hardcoded — không tắt khi `isDragging`. 100ms transition tạo visual lag rõ ràng so với native browser thumb.
+- Fix (`NowPlayingOverlay.tsx`): đổi sang `isDragging ? 'none' : 'width 0.1s linear, background-color 0.15s'` — tắt hoàn toàn transition khi kéo, bật lại khi thả.
+
+**Bug C — RoomPlayer hiển thị duration sai (DB metadata, không phải audio thật)**
+- Root cause: `RoomPlayer` dùng `song.duration` từ DB. Một số bài có metadata sai (ví dụ 真夜中のドア: DB=4:08, audio thật=5:10).
+- Fix:
+  - `playerStore.ts`: thêm `audioDuration: number` + `setAudioDuration(d: number)`. `playSong()`/`setSong()`/`clearSong()` reset `audioDuration=0`.
+  - `BottomPlayerBar.tsx`: subscribe `setAudioDuration`, gọi `setAudioDuration(d)` trong `onDurationChange` — ghi duration thật từ `<audio>` element vào global store.
+  - `PartyRoomPage.tsx`: subscribe `audioDuration`, pass `audioDuration > 0 ? audioDuration : undefined` xuống RoomPlayer.
+  - `RoomPlayer.tsx`: nhận prop `audioDuration?`, tính `effectiveDuration = (audioDuration && audioDuration > 0) ? audioDuration : song.duration`. Dùng `effectiveDuration` cho display, progress, seek range, tooltip.
+  - `PartyRoomPage.test.tsx`: thêm `audioDuration: 0` và `setAudioDuration: vi.fn()` vào mock store.
+- 701/701 tests xanh
+
+**Bug A — BottomPlayerBar seek bar vẫn không hiển thị [ONGOING]**
+- Đã thử: đổi track từ `absolute top-1/2 -translate-y-1/2` sang non-absolute div trong `flex items-center` container (mirror volume bar pattern).
+- Kết quả: chưa xác nhận fix — cần verify trực tiếp trên browser.
+
+---
 [2026-05-18] [BUG FIX — Bug 9 (partial) + Bug 11 + Bug 12: Listening Party progress bar + pause reset] [DONE]
 
 **Bug 11 — Bấm Pause trong PartyRoom → thanh tiến trình reset về đầu**

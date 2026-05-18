@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import type { Song } from '../../../types/domain';
 import HostControls from './HostControls';
 
@@ -6,6 +7,8 @@ interface Props {
   isPlaying: boolean;
   positionSec: number;
   isHost: boolean;
+  /** Actual audio duration from BottomPlayerBar — overrides potentially-wrong DB metadata */
+  audioDuration?: number;
   onPlay:  () => void;
   onPause: () => void;
   onNext:  () => void;
@@ -24,12 +27,41 @@ export default function RoomPlayer({
   isPlaying,
   positionSec,
   isHost,
+  audioDuration,
   onPlay,
   onPause,
   onNext,
   onPrev,
   onSeek,
 }: Props) {
+  const [isDragging, setIsDragging]     = useState(false);
+  const [dragValue,  setDragValue]      = useState(0);
+  const [seekHovered, setSeekHovered]   = useState(false);
+  const [hoverPercent, setHoverPercent] = useState(0);
+  const [hoverTime,    setHoverTime]    = useState(0);
+
+  // During drag show dragValue instantly; otherwise follow server positionSec
+  const displaySec = isDragging ? dragValue : positionSec;
+  // Use actual audio duration when available — DB metadata can be wrong
+  const effectiveDuration = (audioDuration && audioDuration > 0) ? audioDuration : (song?.duration ?? 0);
+
+  const handleSeekChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value);
+    setDragValue(val);
+    setIsDragging(true);
+    onSeek?.(val);
+  }, [onSeek]);
+
+  const handleSeekCommit = useCallback(() => setIsDragging(false), []);
+
+  const handleTrackMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>, dur: number) => {
+    if (dur <= 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct  = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    setHoverPercent(pct * 100);
+    setHoverTime(pct * dur);
+  }, []);
+
   if (!song) {
     return (
       <div className="flex flex-col items-center text-center w-full py-16">
@@ -40,7 +72,7 @@ export default function RoomPlayer({
     );
   }
 
-  const progress = song.duration > 0 ? (positionSec / song.duration) * 100 : 0;
+  const progress = effectiveDuration > 0 ? (displaySec / effectiveDuration) * 100 : 0;
 
   return (
     <div className="flex flex-col items-center text-center w-full">
@@ -79,27 +111,70 @@ export default function RoomPlayer({
       {/* Progress bar */}
       <div className="w-full mb-8 relative" aria-label="Thanh tiến trình bài hát">
         <div className="flex justify-between text-text-secondary font-micro text-micro mb-2">
-          <span>{formatTime(positionSec)}</span>
-          <span>{formatTime(song.duration)}</span>
+          <span>{formatTime(displaySec)}</span>
+          <span>{formatTime(effectiveDuration)}</span>
         </div>
 
         {isHost && onSeek ? (
           /* Host: interactive seek bar */
-          <div className="relative h-5 cursor-pointer">
-            <div className="absolute top-1/2 left-0 right-0 h-1.5 -translate-y-1/2 bg-border-muted rounded-full overflow-hidden pointer-events-none">
+          <div
+            className="relative cursor-pointer"
+            style={{ height: seekHovered || isDragging ? '20px' : '16px', transition: 'height 0.15s' }}
+            onMouseEnter={() => setSeekHovered(true)}
+            onMouseLeave={() => { setSeekHovered(false); }}
+            onMouseMove={(e) => handleTrackMouseMove(e, effectiveDuration)}
+          >
+            {/* Tooltip */}
+            {(seekHovered || isDragging) && effectiveDuration > 0 && (
               <div
-                className="h-full bg-spotify-green rounded-full transition-all duration-1000"
-                style={{ width: `${progress}%` }}
+                className="absolute -top-7 z-20 pointer-events-none"
+                style={{ left: `${isDragging ? progress : hoverPercent}%`, transform: 'translateX(-50%)' }}
+              >
+                <span className="bg-mid-dark text-text-emphasis text-[11px] font-bold px-1.5 py-0.5 rounded shadow-level-2 whitespace-nowrap">
+                  {formatTime(isDragging ? displaySec : hoverTime)}
+                </span>
+              </div>
+            )}
+
+            {/* Visual track */}
+            <div
+              className="absolute left-0 right-0 rounded-full bg-border-muted overflow-hidden pointer-events-none"
+              style={{
+                top: '50%', transform: 'translateY(-50%)',
+                height: seekHovered || isDragging ? '5px' : '3px',
+                transition: 'height 0.15s',
+              }}
+            >
+              <div
+                className="h-full bg-spotify-green rounded-full"
+                style={{ width: `${progress}%`, transition: isDragging ? 'none' : 'width 0.1s linear' }}
               />
             </div>
+
+            {/* Thumb circle */}
+            {(seekHovered || isDragging) && (
+              <div
+                className="absolute z-10 pointer-events-none"
+                style={{
+                  left: `${progress}%`, top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '14px', height: '14px',
+                  borderRadius: '50%', backgroundColor: '#ffffff',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
+                }}
+              />
+            )}
+
             <input
               type="range"
               min={0}
-              max={song.duration || 0}
+              max={effectiveDuration || 0}
               step={1}
-              value={positionSec}
-              onChange={(e) => onSeek(Number(e.target.value))}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 appearance-none"
+              value={displaySec}
+              onChange={handleSeekChange}
+              onPointerUp={handleSeekCommit}
+              onMouseUp={handleSeekCommit}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20 appearance-none"
               aria-label="Tua nhạc"
             />
           </div>
@@ -107,8 +182,8 @@ export default function RoomPlayer({
           /* Member: read-only bar */
           <div className="h-1.5 bg-border-muted rounded-full overflow-hidden">
             <div
-              className="h-full bg-spotify-green rounded-full transition-all duration-1000"
-              style={{ width: `${progress}%` }}
+              className="h-full bg-spotify-green rounded-full"
+              style={{ width: `${progress}%`, transition: 'width 0.1s linear' }}
             />
           </div>
         )}

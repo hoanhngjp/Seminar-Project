@@ -16,6 +16,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Fixed
 
+**W11 Seek Bar UX — Sync thumb/fill + Duration từ audio thật (2026-05-18)**
+- `NowPlayingOverlay`: fill transition `'width 0.1s linear'` tắt khi `isDragging` → fill không còn lag 100ms sau thumb
+- `playerStore`: thêm `audioDuration: number` + `setAudioDuration()` — reset về 0 mỗi khi song thay đổi
+- `BottomPlayerBar`: gọi `setAudioDuration(d)` trong `onDurationChange` — ghi duration thật từ `<audio>` element vào store
+- `PartyRoomPage` + `RoomPlayer`: `RoomPlayer` nhận `audioDuration?` prop, dùng `effectiveDuration = audioDuration ?? song.duration` → duration hiển thị trong Party Room khớp với thực tế bài hát (không còn dùng DB metadata có thể sai)
+- 701/701 tests xanh
+
 **W11 Listening Party — Pause giữ vị trí + Resume không reset bài (2026-05-18)**
 - `PartyRoomPage`: `handleSyncState` không còn reset `positionSec` về 0 khi server broadcast PAUSE với positionSec=0
 - `playerStore`: thêm `resumeSong()` / `resumeSignal` — resume audio mà không tạo lại `currentSong` object
