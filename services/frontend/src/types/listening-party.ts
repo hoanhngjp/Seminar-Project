@@ -57,3 +57,16 @@ export interface RoomClosed {
   type: 'ROOM_CLOSED';
   reason: 'host_disconnected' | 'manual';
 }
+
+// ── Queue types ───────────────────────────────────────────────────────────────
+
+// One item in the party queue — mirrors backend QueueItemDto
+export interface QueueItem {
+  songId: string;
+  addedByUserId: string;
+}
+
+// Server → All Clients (broadcast whenever queue changes: add / remove / next)
+export interface QueueUpdated {
+  queue: QueueItem[];
+}

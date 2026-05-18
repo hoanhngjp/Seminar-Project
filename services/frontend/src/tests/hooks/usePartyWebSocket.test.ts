@@ -234,6 +234,152 @@ describe('usePartyWebSocket', () => {
     });
   });
 
+  describe('Queue — QUEUE_UPDATED event', () => {
+    it('registers QUEUE_UPDATED handler on connection', async () => {
+      renderPartyHook({ roomId: 'room-123', isHost: false });
+      await act(async () => {});
+      const registeredEvents = mockOn.mock.calls.map((c) => c[0]);
+      expect(registeredEvents).toContain('QUEUE_UPDATED');
+    });
+
+    it('updates queueItems state when QUEUE_UPDATED received', async () => {
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: false });
+      await act(async () => {});
+
+      const handler = mockOn.mock.calls.find((c) => c[0] === 'QUEUE_UPDATED')![1];
+      act(() => {
+        handler({ queue: [{ songId: 'song-a', addedByUserId: 'user-1' }] });
+      });
+
+      expect(result.current.queueItems).toHaveLength(1);
+      expect(result.current.queueItems[0].songId).toBe('song-a');
+    });
+
+    it('calls onQueueUpdated callback when QUEUE_UPDATED received', async () => {
+      const onQueueUpdated = vi.fn();
+      renderPartyHook({ roomId: 'room-123', isHost: false, onQueueUpdated });
+      await act(async () => {});
+
+      const handler = mockOn.mock.calls.find((c) => c[0] === 'QUEUE_UPDATED')![1];
+      const payload = { queue: [{ songId: 'song-b', addedByUserId: 'user-2' }] };
+      act(() => { handler(payload); });
+
+      expect(onQueueUpdated).toHaveBeenCalledWith(payload);
+    });
+
+    it('replaces entire queueItems on each QUEUE_UPDATED', async () => {
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: false });
+      await act(async () => {});
+
+      const handler = mockOn.mock.calls.find((c) => c[0] === 'QUEUE_UPDATED')![1];
+      act(() => { handler({ queue: [{ songId: 'song-a', addedByUserId: 'u1' }, { songId: 'song-b', addedByUserId: 'u2' }] }); });
+      act(() => { handler({ queue: [{ songId: 'song-c', addedByUserId: 'u3' }] }); });
+
+      expect(result.current.queueItems).toHaveLength(1);
+      expect(result.current.queueItems[0].songId).toBe('song-c');
+    });
+
+    it('handles null/missing queue field gracefully', async () => {
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: false });
+      await act(async () => {});
+
+      const handler = mockOn.mock.calls.find((c) => c[0] === 'QUEUE_UPDATED')![1];
+      act(() => { handler({ queue: null }); });
+
+      expect(result.current.queueItems).toEqual([]);
+    });
+  });
+
+  describe('Queue — sendQueueAdd', () => {
+    it('invokes QueueAdd with songId and eventId', async () => {
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: false });
+      await act(async () => {});
+
+      await act(async () => { await result.current.sendQueueAdd('song-xyz'); });
+
+      expect(mockInvoke).toHaveBeenCalledWith(
+        'QueueAdd',
+        expect.objectContaining({ songId: 'song-xyz', eventId: expect.any(String) }),
+      );
+    });
+
+    it('does not invoke QueueAdd when disconnected', async () => {
+      mockConnection.state = 4; // Disconnected
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: false });
+      await act(async () => {});
+
+      await act(async () => { await result.current.sendQueueAdd('song-xyz'); });
+
+      expect(mockInvoke).not.toHaveBeenCalled();
+    });
+
+    it('any member (non-host) can sendQueueAdd', async () => {
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: false });
+      await act(async () => {});
+
+      await act(async () => { await result.current.sendQueueAdd('song-a'); });
+
+      expect(mockInvoke).toHaveBeenCalledWith('QueueAdd', expect.any(Object));
+    });
+  });
+
+  describe('Queue — sendQueueRemove', () => {
+    it('invokes QueueRemove with songId and eventId', async () => {
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: false });
+      await act(async () => {});
+
+      await act(async () => { await result.current.sendQueueRemove('song-xyz'); });
+
+      expect(mockInvoke).toHaveBeenCalledWith(
+        'QueueRemove',
+        expect.objectContaining({ songId: 'song-xyz', eventId: expect.any(String) }),
+      );
+    });
+
+    it('does not invoke QueueRemove when disconnected', async () => {
+      mockConnection.state = 4;
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: false });
+      await act(async () => {});
+
+      await act(async () => { await result.current.sendQueueRemove('song-xyz'); });
+
+      expect(mockInvoke).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Queue — sendQueueNext', () => {
+    it('Host can invoke QueueNext', async () => {
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: true });
+      await act(async () => {});
+
+      await act(async () => { await result.current.sendQueueNext(); });
+
+      expect(mockInvoke).toHaveBeenCalledWith(
+        'QueueNext',
+        expect.objectContaining({ eventId: expect.any(String) }),
+      );
+    });
+
+    it('Member cannot invoke QueueNext', async () => {
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: false });
+      await act(async () => {});
+
+      await act(async () => { await result.current.sendQueueNext(); });
+
+      expect(mockInvoke).not.toHaveBeenCalled();
+    });
+
+    it('does not invoke QueueNext when disconnected', async () => {
+      mockConnection.state = 4;
+      const { result } = renderPartyHook({ roomId: 'room-123', isHost: true });
+      await act(async () => {});
+
+      await act(async () => { await result.current.sendQueueNext(); });
+
+      expect(mockInvoke).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Connection status', () => {
     it('starts as "connecting" before start() resolves', () => {
       mockStart.mockImplementation(() => new Promise(() => {})); // never resolves

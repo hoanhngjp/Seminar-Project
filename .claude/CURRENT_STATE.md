@@ -218,6 +218,7 @@
 - [X] Bug 11: Pause reset positionSec về 0 — `handleSyncState` guard `sync.positionSec > 0` (2026-05-18)
 - [X] Bug 12: Resume sau pause reset bài về đầu — `resumeSong()` signal thay vì `playSong()` (2026-05-18)
 - [X] Party Queue Phase 1 — Backend core: `QueueItem`, `QueueFullException`, Redis queue key, `IPartyRepository`/`RedisPartyRepository` queue methods, `IPartyService`/`PartyService` queue methods, `PartyHub` (QueueAdd/Remove/Next), `PartiesController` GET queue — 28/28 tests xanh (2026-05-18)
+- [X] Party Queue Phase 2 — Frontend: `songEndSignal`+`triggerSongEnd` (playerStore), `QueueItem`/`QueueUpdated` types (listening-party.ts), `usePartyWebSocket` queue state+QUEUE_UPDATED handler+`sendQueueAdd`/`sendQueueRemove`/`sendQueueNext`, `PartyQueue.tsx` (mini search debounce 300ms + queue list + remove button) — 820/820 tests xanh (+30 tests) (2026-05-18)
 - [ ] Demo script rehearsal: 14 phút, đủ tất cả tính năng
 - [ ] Pre-upload demo songs cho Creator account
 
@@ -231,8 +232,8 @@
 - **Ngày làm việc gần nhất:** 2026-05-18
 - **Tiếp theo:**
   1. [DONE] Phase 1 — Backend: QueueItem, QueueFullException, IPartyRepository/Redis queue methods, IPartyService/PartyService queue methods, HubDtos, PartyHub (QueueAdd/Remove/Next), PartiesController (GET queue) — 28/28 tests xanh
-  2. [TODO] Phase 2 — Frontend: listening-party.ts types, useListeningParty hook, PartyQueue.tsx component, tests
-  3. [TODO] Phase 3 — Integration: PartyRoomPage queue state + auto-advance (songEndSignal) + render PartyQueue (tab layout), tests
+  2. [DONE] Phase 2 — Frontend: songEndSignal+triggerSongEnd (playerStore), QueueItem/QueueUpdated types, usePartyWebSocket queue state+handlers+sendMethods, PartyQueue.tsx (mini search + queue list) — 820/820 tests xanh (+30 tests)
+  3. [TODO] Phase 3 — Integration: PartyRoomPage right panel → tabs ("Thành viên" default | "Hàng chờ"), subscribe songEndSignal → sendQueueNext (Host auto-advance), render PartyQueue, tests
   4. [TODO] Demo script rehearsal 14 phút
   5. [TODO] Pre-upload demo songs cho Creator account
 

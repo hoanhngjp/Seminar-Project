@@ -1,5 +1,29 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [FEATURE — Party Queue Phase 2 — Frontend] [DONE]
+
+**Những gì đã implement:**
+- `playerStore.ts`: thêm `songEndSignal: number` + `triggerSongEnd()` — counter pattern giống `pauseSignal`/`resumeSignal`; Phase 3 dùng để trigger auto-advance
+- `listening-party.ts`: `QueueItem { songId, addedByUserId }`, `QueueUpdated { queue }` — mirror backend `QueueItemDto` + `QueueUpdatedMessage`
+- `usePartyWebSocket.ts`:
+  - State `queueItems: QueueItem[]` — reset khi nhận `QUEUE_UPDATED` (replace toàn bộ, không merge)
+  - `QUEUE_UPDATED` handler: `setQueueItems(data.queue ?? [])` + gọi `onQueueUpdated?.(data)` callback
+  - `sendQueueAdd(songId)`: invoke `QueueAdd { songId, eventId }` — không guard isHost (any member)
+  - `sendQueueRemove(songId)`: invoke `QueueRemove { songId, eventId }` — server enforce ownership
+  - `sendQueueNext()`: guard `isHost` trước, invoke `QueueNext { eventId }` — Host only
+- `PartyQueue.tsx` (component mới):
+  - Search: `searchContent(query, 'song', 5)` với debounce 300ms; kết quả max 5 items; sau khi add → clear input + results
+  - Queue list: `QueueRow` sub-component với position badge; remove button chỉ render khi `addedByUserId === currentUserId`
+  - Empty state: icon + hint "Tìm bài hát bên trên để thêm"
+
+**Quyết định thiết kế:**
+- `PartyQueue` nhận `queueItems` chỉ có `songId` (không có title/artist) — Phase 3 có thể enrich nếu cần, giữ component đơn giản
+- `sendQueueAdd/Remove` không guard isHost — backend đã enforce; FE chỉ guard `sendQueueNext`
+- Phương án B cho "thêm bài": mini search trong panel (không navigate ra ngoài phòng)
+
+**Tests:** 820/820 xanh (+30 tests mới)
+
+---
 [2026-05-18] [FEATURE — Party Queue Phase 1 — Backend core] [DONE]
 
 **Quyết định thiết kế (confirmed):**

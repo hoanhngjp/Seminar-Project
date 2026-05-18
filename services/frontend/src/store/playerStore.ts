@@ -26,6 +26,9 @@ interface PlayerState {
   /** Incremented + position updated each time an external caller (e.g. Listening Party host) seeks */
   seekSignal:       number;
   seekPosition:     number;
+  /** Incremented by BottomPlayerBar onEnded — Party room subscribes to trigger QueueNext */
+  songEndSignal:    number;
+  triggerSongEnd:   () => void;
   setSong:          (song: CurrentSong) => void;
   /** Alias for setSong — preferred in new components */
   playSong:         (song: CurrentSong) => void;
@@ -65,6 +68,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   resumeSignal:  0,
   seekSignal:    0,
   seekPosition:  0,
+  songEndSignal: 0,
 
   setSong: (song) => {
     if (!song.songId) return;
@@ -86,6 +90,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     }));
   },
 
+  triggerSongEnd:   () => set((s) => ({ songEndSignal: s.songEndSignal + 1 })),
   pauseSong:        () => set((s) => ({ pauseSignal:  s.pauseSignal  + 1 })),
   resumeSong:       () => set((s) => ({ resumeSignal: s.resumeSignal + 1 })),
   seekSong:         (positionSec) => set((s) => ({ seekSignal: s.seekSignal + 1, seekPosition: positionSec })),

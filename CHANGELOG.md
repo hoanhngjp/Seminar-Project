@@ -16,6 +16,13 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+**Party Queue — Frontend (Phase 2/3) (2026-05-18)**
+- `playerStore`: `songEndSignal: number` + `triggerSongEnd()` — BottomPlayerBar gọi khi bài kết thúc; `PartyRoomPage` (Phase 3) subscribe để trigger `sendQueueNext`
+- `listening-party.ts`: types mới `QueueItem { songId, addedByUserId }` + `QueueUpdated { queue }`
+- `usePartyWebSocket`: `queueItems` state (cập nhật qua `QUEUE_UPDATED` SignalR event); 3 methods mới: `sendQueueAdd` (any member), `sendQueueRemove` (any member — server enforces ownership), `sendQueueNext` (Host only)
+- `PartyQueue.tsx`: component mới — search bar debounce 300ms (gọi `searchContent` max 5 kết quả dạng song); danh sách queue hiện tại với số thứ tự; nút xóa chỉ hiện cho bài do current user thêm; empty state với gợi ý tìm kiếm
+- **+30 tests mới, 820/820 xanh** (16 tests `usePartyWebSocket`, 14 tests `PartyQueue`)
+
 **Party Queue — Backend core (Phase 1/3) (2026-05-18)**
 - `QueueItem` domain model `{SongId, AddedByUserId}`, `QueueFullException` (max 50)
 - Redis key `party:queue:{roomId}` (JSON list, TTL 24h); xóa cùng room khi `DeleteRoomAsync`

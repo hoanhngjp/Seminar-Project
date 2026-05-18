@@ -8,6 +8,8 @@ import type {
   MemberJoin,
   MemberLeave,
   PlayerAction,
+  QueueItem,
+  QueueUpdated,
 } from '../types/listening-party';
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'reconnecting' | 'disconnected';
@@ -18,11 +20,17 @@ export interface UsePartyWebSocketOptions {
   onSyncState?: (state: SyncState) => void;
   onMemberJoin?: (data: MemberJoin) => void;
   onMemberLeave?: (data: MemberLeave) => void;
+  onQueueUpdated?: (data: QueueUpdated) => void;
 }
 
 export interface UsePartyWebSocketResult {
   status: ConnectionStatus;
+  queueItems: QueueItem[];
   sendPlayerAction: (action: Omit<PlayerAction, 'type' | 'eventId' | 'timestamp'>) => Promise<void>;
+  sendQueueAdd:    (songId: string) => Promise<void>;
+  sendQueueRemove: (songId: string) => Promise<void>;
+  /** Host only — dequeue next song and advance playback */
+  sendQueueNext:   () => Promise<void>;
 }
 
 // Reconnect delays: 1s, 2s, 4s, 8s, 16s, 30s (capped) — AC7.3.2
@@ -34,12 +42,14 @@ export function usePartyWebSocket({
   onSyncState,
   onMemberJoin,
   onMemberLeave,
+  onQueueUpdated,
 }: UsePartyWebSocketOptions): UsePartyWebSocketResult {
   const navigate     = useNavigate();
   const displayName  = useAuthStore((s) => s.displayName);
   const avatarUrl    = useAuthStore((s) => s.avatarUrl);
   const connectionRef = useRef<signalR.HubConnection | null>(null);
-  const [status, setStatus] = useState<ConnectionStatus>('connecting');
+  const [status, setStatus]         = useState<ConnectionStatus>('connecting');
+  const [queueItems, setQueueItems] = useState<QueueItem[]>([]);
 
   useEffect(() => {
     const params = new URLSearchParams({ roomId });
@@ -80,6 +90,11 @@ export function usePartyWebSocket({
       navigate('/');
     });
 
+    connection.on('QUEUE_UPDATED', (data: QueueUpdated) => {
+      setQueueItems(data.queue ?? []);
+      onQueueUpdated?.(data);
+    });
+
     // ─── Lifecycle ────────────────────────────────────────────────────────
     connection.onreconnecting(() => setStatus('reconnecting'));
     connection.onreconnected(() => setStatus('connected'));
@@ -116,5 +131,24 @@ export function usePartyWebSocket({
     [isHost],
   );
 
-  return { status, sendPlayerAction };
+  const sendQueueAdd = useCallback(async (songId: string) => {
+    const conn = connectionRef.current;
+    if (!conn || conn.state !== signalR.HubConnectionState.Connected) return;
+    await conn.invoke('QueueAdd', { songId, eventId: crypto.randomUUID() });
+  }, []);
+
+  const sendQueueRemove = useCallback(async (songId: string) => {
+    const conn = connectionRef.current;
+    if (!conn || conn.state !== signalR.HubConnectionState.Connected) return;
+    await conn.invoke('QueueRemove', { songId, eventId: crypto.randomUUID() });
+  }, []);
+
+  const sendQueueNext = useCallback(async () => {
+    if (!isHost) return; // only Host advances queue
+    const conn = connectionRef.current;
+    if (!conn || conn.state !== signalR.HubConnectionState.Connected) return;
+    await conn.invoke('QueueNext', { eventId: crypto.randomUUID() });
+  }, [isHost]);
+
+  return { status, queueItems, sendPlayerAction, sendQueueAdd, sendQueueRemove, sendQueueNext };
 }
