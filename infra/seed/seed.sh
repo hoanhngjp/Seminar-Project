@@ -1,154 +1,168 @@
 #!/usr/bin/env bash
 # ============================================================
-# Smart Music Platform — Master Seed Script
+# Smart Music Platform — Master Seed Entrypoint
 # ============================================================
-# Chạy từ repo root:
-#   bash infra/seed/seed.sh
 #
-# Yêu cầu:
-#   - Docker Compose đang up (infra containers healthy)
-#   - dotnet CLI có trên PATH (để chạy EF migrations)
-#   - psql CLI có trên PATH hoặc chạy qua docker exec
-#   - Phase 2A+2B (Auth/User) và Phase 3 (Music) đã build xong
-#     (các migrations mới phải được compile vào dll trước khi chạy)
+# Script này giải thích toàn bộ quy trình seed từ đầu đến cuối,
+# và có thể chạy cả 2 phase tự động (nếu truyền --all).
 #
-# Thứ tự:
-#   1. Wait for PostgreSQL healthy
-#   2. Run EF migrations (auth, user, music)
-#      — bao gồm: FixOAuthAndPreferencesSchema (Phase 2B)
-#                  AddMoodToSongs (Phase 3)
-#   3. Seed music_db + user_db data (SeedData.sql)
-#   4. Seed GCS audio files (placeholder mp3 for 8 songs)
-#   5. Seed Elasticsearch index + documents
-#   6. Seed Redis trending data
+# ┌─────────────────────────────────────────────────────────┐
+# │                  QUICK START                            │
+# │                                                         │
+# │  1. Copy & điền .env:                                   │
+# │     cp infra/.env.example infra/.env                    │
+# │     # Điền GCP_BUCKET_NAME, GOOGLE_APPLICATION_CRED...  │
+# │                                                         │
+# │  2. Start infra containers:                             │
+# │     docker compose -f infra/docker-compose.yml up -d \  │
+# │       postgres redis elasticsearch kafka zookeeper \    │
+# │       influxdb mongodb                                  │
+# │                                                         │
+# │  3. Build C# services (để dotnet ef có migrations):     │
+# │     dotnet build SmartMusic.sln --configuration Release │
+# │                                                         │
+# │  4. Chạy Phase A (infra seed):                          │
+# │     bash infra/seed/1_seed_infra.sh                     │
+# │                                                         │
+# │  5. Start tất cả services:                              │
+# │     docker compose -f infra/docker-compose.yml up -d \  │
+# │       --build                                           │
+# │                                                         │
+# │  6. Chạy Phase B (demo accounts):                       │
+# │     bash infra/seed/2_seed_accounts.sh                  │
+# │                                                         │
+# │  HOẶC: Chạy cả 2 phases tự động (sau khi services up): │
+# │     bash infra/seed/seed.sh --all                       │
+# └─────────────────────────────────────────────────────────┘
+#
+# Usage:
+#   bash infra/seed/seed.sh           # hiển thị hướng dẫn này
+#   bash infra/seed/seed.sh --all     # chạy Phase A + B tự động
+#   bash infra/seed/seed.sh --phase-a # chỉ Phase A
+#   bash infra/seed/seed.sh --phase-b # chỉ Phase B
 # ============================================================
 
-set -e
+set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-INFRA_DIR="$REPO_ROOT/infra"
-SEED_DIR="$INFRA_DIR/seed"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+SEED_DIR="$REPO_ROOT/infra/seed"
 
-# Read .env (docker-compose style)
-if [[ -f "$INFRA_DIR/.env" ]]; then
-  set -a
-  source "$INFRA_DIR/.env"
-  set +a
-fi
+BOLD="\033[1m"; CYAN="\033[0;36m"; GREEN="\033[0;32m"; NC="\033[0m"
 
-PG_HOST="${POSTGRES_HOST:-localhost}"
-PG_PORT="${POSTGRES_PORT:-5432}"
-PG_USER="${POSTGRES_USER:-smartmusic}"
-PG_PASS="${POSTGRES_PASSWORD:-changeme_local}"
+MODE="${1:-help}"
 
-echo "============================================"
-echo " Smart Music — Master Seed Script"
-echo "============================================"
-
-# ---- 1. Wait for PostgreSQL ----
-echo ""
-echo "[1/5] Waiting for PostgreSQL to be ready..."
-for i in $(seq 1 30); do
-  if PGPASSWORD="$PG_PASS" psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d postgres -c "SELECT 1" > /dev/null 2>&1; then
-    echo "  PostgreSQL ready."
-    break
-  fi
-  echo "  Attempt $i/30 — waiting 3s..."
-  sleep 3
-done
-
-# ---- 2. EF Core Migrations ----
-echo ""
-echo "[2/5] Running EF Core migrations..."
-
-run_migration() {
-  local svc_name="$1"
-  local project_path="$2"
-  local startup_path="$3"
-
-  echo "  → $svc_name..."
-  dotnet ef database update \
-    --project "$REPO_ROOT/$project_path" \
-    --startup-project "$REPO_ROOT/$startup_path" \
-    --no-build 2>&1 | tail -3
+print_help() {
+  echo ""
+  echo -e "${BOLD}╔══════════════════════════════════════════════════════════════╗${NC}"
+  echo -e "${BOLD}║         Smart Music Platform — Seed Guide                   ║${NC}"
+  echo -e "${BOLD}╚══════════════════════════════════════════════════════════════╝${NC}"
+  echo ""
+  echo -e "${BOLD}Prerequisites (cài đặt một lần):${NC}"
+  echo "  - Docker Desktop đang chạy"
+  echo "  - dotnet SDK 8.0+ và dotnet-ef tool:"
+  echo "      dotnet tool install --global dotnet-ef"
+  echo "  - psql CLI: apt install postgresql-client  (hoặc qua brew/choco)"
+  echo "  - Google Cloud SDK (gsutil):"
+  echo "      https://cloud.google.com/sdk/docs/install"
+  echo "  - File tests/fixtures/test-audio.mp3 (bất kỳ .mp3 hợp lệ)"
+  echo ""
+  echo -e "${BOLD}Bước 1 — Cấu hình .env:${NC}"
+  echo "  cp infra/.env.example infra/.env"
+  echo "  # Mở infra/.env và điền:"
+  echo "  #   GCP_BUCKET_NAME=<tên bucket GCS của bạn>"
+  echo "  #   GOOGLE_APPLICATION_CREDENTIALS=infra/secrets/google-cloud-key.json"
+  echo "  #   (Các giá trị mặc định khác thường dùng được cho local dev)"
+  echo ""
+  echo -e "${BOLD}Bước 2 — Start infra containers:${NC}"
+  echo "  docker compose -f infra/docker-compose.yml up -d \\"
+  echo "    postgres redis elasticsearch kafka zookeeper influxdb mongodb"
+  echo "  # Đợi ~15s cho tất cả containers healthy"
+  echo ""
+  echo -e "${BOLD}Bước 3 — Build C# solution:${NC}"
+  echo "  dotnet build SmartMusic.sln --configuration Release"
+  echo "  # Cần thiết để dotnet ef database update tìm được migrations"
+  echo ""
+  echo -e "${BOLD}Bước 4 — Chạy Phase A (Infrastructure Seed):${NC}"
+  echo "  bash infra/seed/1_seed_infra.sh"
+  echo ""
+  echo "  Phase A thực hiện:"
+  echo "    [1] Wait PostgreSQL healthy"
+  echo "    [2] EF Core migrations (auth_db, user_db, music_db)"
+  echo "    [3] Seed PostgreSQL: 30 songs + 16 artists + genres + preferences"
+  echo "    [4] Seed Elasticsearch: index 30 songs (fuzzy search)"
+  echo "    [5] Seed Redis: rec:trending:global (30 songs, scored by play_count)"
+  echo "    [6] Seed Lyrics: 21 bài LRC → music_db.songs.Lyrics"
+  echo "    [7] Upload GCS audio: 30 placeholder mp3 → gs://BUCKET/songs/{id}/audio.mp3"
+  echo ""
+  echo -e "${BOLD}Bước 5 — Start tất cả services:${NC}"
+  echo "  docker compose -f infra/docker-compose.yml up -d --build"
+  echo "  # Build và start api-gateway, auth-service, music-service, v.v."
+  echo "  # Đợi ~30s cho tất cả services healthy"
+  echo ""
+  echo -e "${BOLD}Bước 6 — Chạy Phase B (Demo Accounts):${NC}"
+  echo "  bash infra/seed/2_seed_accounts.sh"
+  echo ""
+  echo "  Phase B thực hiện:"
+  echo "    [1] Wait API Gateway healthy"
+  echo "    [2] Đăng ký 3 demo accounts qua POST /api/v1/auth/register"
+  echo "    [3] Set preferences cho listener accounts"
+  echo ""
+  echo -e "${BOLD}Demo accounts sau khi seed:${NC}"
+  echo "  Listener  : listener@example.com   / Demo1234!"
+  echo "  Creator   : creator@example.com    / Demo1234!"
+  echo "  Listener2 : listener2@example.com  / Demo1234!"
+  echo ""
+  echo -e "${BOLD}Verify sau khi seed:${NC}"
+  echo "  bash infra/verify-infra.sh"
+  echo "  bash infra/verify_ac.sh"
+  echo ""
+  echo -e "${BOLD}Chạy tự động (Phase A + B):${NC}"
+  echo "  bash infra/seed/seed.sh --all"
+  echo "  # Lưu ý: --all giả định infra containers đã up."
+  echo "  # Bạn vẫn cần chạy 'docker compose up -d --build' cho services"
+  echo "  # TRƯỚC khi Phase B bắt đầu — script sẽ wait tự động."
+  echo ""
+  echo -e "${BOLD}Individual scripts (dùng khi cần seed lại 1 phần):${NC}"
+  echo "  bash infra/seed/1_seed_infra.sh          # toàn bộ Phase A"
+  echo "  bash infra/seed/2_seed_accounts.sh       # demo accounts"
+  echo "  bash infra/seed/elasticsearch_seed.sh    # chỉ Elasticsearch"
+  echo "  bash infra/seed/redis_seed.sh            # chỉ Redis trending"
+  echo "  bash infra/seed/seed_lyrics.sh           # chỉ lyrics"
+  echo "  bash infra/seed/gcs_seed.sh              # chỉ GCS audio"
+  echo ""
 }
 
-# Auth Service — auth_db
-run_migration "auth-service" \
-  "services/auth-service/src/AuthService.Infrastructure" \
-  "services/auth-service/src/AuthService.Api"
+run_phase_a() {
+  echo -e "${CYAN}${BOLD}▶ Running Phase A: Infrastructure Seed...${NC}"
+  bash "$SEED_DIR/1_seed_infra.sh"
+}
 
-# User Service — user_db (auto-migrates at startup too via DbInitializer,
-# but we run here to ensure tables exist before seeding)
-run_migration "user-service" \
-  "services/user-service/src/UserService.Infrastructure" \
-  "services/user-service/src/UserService.Api"
+run_phase_b() {
+  echo -e "${CYAN}${BOLD}▶ Running Phase B: Demo Accounts Seed...${NC}"
+  bash "$SEED_DIR/2_seed_accounts.sh"
+}
 
-# Music Service — music_db
-run_migration "music-service" \
-  "services/music-service/src/MusicService.Infrastructure" \
-  "services/music-service/src/MusicService.Api"
-
-# Notification Service (MongoDB — no EF migration; skip)
-echo "  → notification-service: MongoDB (no EF migration)"
-
-# Listening Party Service — no DB migration needed (uses Redis)
-echo "  → listening-party-service: Redis (no EF migration)"
-
-# Analytics Service — InfluxDB (no EF migration)
-echo "  → analytics-service: InfluxDB (no EF migration)"
-
-# Search Service — Elasticsearch (no EF migration)
-echo "  → search-service: Elasticsearch (no EF migration)"
-
-echo "  Migrations done."
-
-# ---- 3. Seed PostgreSQL data ----
-echo ""
-echo "[3/5] Seeding PostgreSQL data (genres, artist, songs, preferences)..."
-
-PGPASSWORD="$PG_PASS" psql \
-  -h "$PG_HOST" -p "$PG_PORT" \
-  -U "$PG_USER" \
-  -d postgres \
-  -f "$SEED_DIR/SeedData.sql" \
-  -v ON_ERROR_STOP=0 2>&1 | grep -E "(ERROR|INSERT|DO|WARNING)" || true
-
-echo "  PostgreSQL seed done."
-
-# ---- 4. Seed GCS audio files ----
-echo ""
-echo "[4/6] Seeding GCS audio files (placeholder mp3 for 8 songs)..."
-if command -v gsutil &> /dev/null && [[ -n "${GCP_BUCKET_NAME:-}" ]]; then
-  bash "$SEED_DIR/gcs_seed.sh"
-else
-  echo "  ⚠️  gsutil not found or GCP_BUCKET_NAME not set — skipping GCS seed."
-  echo "      Run manually: bash infra/seed/gcs_seed.sh"
-fi
-
-# ---- 5. Seed Elasticsearch ----
-echo ""
-echo "[5/6] Seeding Elasticsearch..."
-bash "$SEED_DIR/elasticsearch_seed.sh"
-
-# ---- 6. Seed Redis trending ----
-echo ""
-echo "[6/6] Seeding Redis trending data..."
-bash "$SEED_DIR/redis_seed.sh"
-
-echo ""
-echo "============================================"
-echo " Seed complete!"
-echo ""
-echo " Test accounts:"
-echo "   listener@example.com / Test1234!"
-echo "   creator@example.com  / Test1234!"
-echo "   admin@example.com    / Test1234!"
-echo ""
-echo " Song IDs (for testing):"
-echo "   11111111-0000-0000-0000-000000000001  Noi Nay Co Anh"
-echo "   11111111-0000-0000-0000-000000000002  Lac Troi"
-echo "   11111111-0000-0000-0000-000000000003  Dai Lo Mat Troi"
-echo ""
-echo " Next: docker compose up --build"
-echo "============================================"
+case "$MODE" in
+  --all)
+    echo ""
+    echo -e "${BOLD}Running full seed: Phase A + Phase B${NC}"
+    echo -e "  Note: Phase B will wait for API Gateway — ensure services are started."
+    echo ""
+    run_phase_a
+    echo ""
+    echo -e "${BOLD}If services are not running yet, start them now:${NC}"
+    echo "  docker compose -f infra/docker-compose.yml up -d --build"
+    echo -e "  (Phase B will wait up to 100s for the gateway to be ready)"
+    echo ""
+    run_phase_b
+    ;;
+  --phase-a)
+    run_phase_a
+    ;;
+  --phase-b)
+    run_phase_b
+    ;;
+  help|--help|-h|*)
+    print_help
+    ;;
+esac
