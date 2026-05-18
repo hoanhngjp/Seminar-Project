@@ -27,6 +27,7 @@ export default function PartyRoomPage() {
   const initialParty  = state.party;
   const playSong      = usePlayerStore((s) => s.playSong);
   const pauseSong     = usePlayerStore((s) => s.pauseSong);
+  const resumeSong    = usePlayerStore((s) => s.resumeSong);
   const seekSong      = usePlayerStore((s) => s.seekSong);
   const clearSong     = usePlayerStore((s) => s.clearSong);
 
@@ -54,11 +55,17 @@ export default function PartyRoomPage() {
   useEffect(() => {
     if (!currentSong) return;
     if (isPlaying) {
-      playSong({ songId: currentSong.id, title: currentSong.title, artist: currentSong.artist, coverUrl: currentSong.coverUrl, autoPlay: true });
+      const loadedSongId = usePlayerStore.getState().currentSong?.songId;
+      if (loadedSongId === currentSong.id) {
+        // Same song already in BottomPlayerBar — resume without resetting stream
+        resumeSong();
+      } else {
+        playSong({ songId: currentSong.id, title: currentSong.title, artist: currentSong.artist, coverUrl: currentSong.coverUrl, autoPlay: true });
+      }
     } else {
       pauseSong();
     }
-  }, [currentSong, isPlaying, playSong, pauseSong]);
+  }, [currentSong, isPlaying, playSong, pauseSong, resumeSong]);
 
   // Stop audio when leaving the party room
   useEffect(() => {
@@ -75,8 +82,12 @@ export default function PartyRoomPage() {
   // ─── SignalR handlers ──────────────────────────────────────────────────────
   const handleSyncState = useCallback((sync: SyncState) => {
     setIsPlaying(sync.isPlaying);
-    setPositionSec(sync.positionSec);
     if (sync.songId) setCurrentSongId(sync.songId);
+    // Only accept server positionSec when playing or when server has a meaningful position.
+    // Avoids resetting progress to 0 when server broadcasts SYNC_STATE on pause without tracking position.
+    if (sync.isPlaying || sync.positionSec > 0) {
+      setPositionSec(sync.positionSec);
+    }
   }, []);
 
   const handleMemberJoin = useCallback((data: MemberJoin) => {

@@ -1,5 +1,27 @@
 # DEVLOG — Smart Music Streaming Platform
 ---
+[2026-05-18] [BUG FIX — Bug 9 (partial) + Bug 11 + Bug 12: Listening Party progress bar + pause reset] [DONE]
+
+**Bug 11 — Bấm Pause trong PartyRoom → thanh tiến trình reset về đầu**
+- Symptom: Host bấm Pause → nhạc dừng đúng nhưng `positionSec` trong RoomPlayer reset về 0.
+- Root cause: Server broadcast `SYNC_STATE` sau khi nhận PAUSE action, với `positionSec = 0` (server không track current position). `handleSyncState` nhận và gọi `setPositionSec(0)`.
+- Fix (`PartyRoomPage.tsx`): trong `handleSyncState`, chỉ cập nhật `positionSec` khi `sync.isPlaying === true` hoặc `sync.positionSec > 0`. Bỏ qua positionSec=0 từ server khi pause.
+
+**Bug 12 — Sau khi Pause rồi Play lại, nhạc reset về đầu bài**
+- Symptom: Host bấm Pause → bấm Play lại → audio seek về 0:00, fetch lại stream URL.
+- Root cause: Sync effect trong `PartyRoomPage` luôn gọi `playSong({ ..., autoPlay: true })` khi `isPlaying=true`, tạo object mới trong store → `BottomPlayerBar` detect `currentSong` changed → reset `currentTime=0`, re-fetch URL.
+- Fix:
+  - `playerStore.ts`: thêm `resumeSignal` + `resumeSong()` — increment signal mà không thay đổi `currentSong`.
+  - `BottomPlayerBar.tsx`: subscribe `resumeSignal` → `audioRef.current.play()` mà không reset state.
+  - `PartyRoomPage.tsx` sync effect: nếu `loadedSongId === currentSong.id`, gọi `resumeSong()` thay vì `playSong()`.
+
+**Bug 9 (partial — CSS BottomPlayerBar progress track) — ongoing:**
+- RoomPlayer thumb đã bỏ (clean up).
+- BottomPlayerBar seek bar restructure: container `h-4`, track `absolute top-1/2 -translate-y-1/2`, input `z-10 opacity-0`. Cải thiện visibility nhưng cần verify trên browser thật.
+
+- Verification: 701/701 tests xanh
+
+---
 [2026-05-18] [BUG FIX — Bug 8: Listening Party play/pause không trigger audio] [DONE]
 
 **Context:** Sau khi fix Bugs 1–7, test tiếp phát hiện 3 bugs mới. Bug 8 fix trong session này.

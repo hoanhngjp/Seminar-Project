@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Song } from '../../../types/domain';
 import HostControls from './HostControls';
 
@@ -31,8 +30,6 @@ export default function RoomPlayer({
   onPrev,
   onSeek,
 }: Props) {
-  const [seekHovered, setSeekHovered] = useState(false);
-
   if (!song) {
     return (
       <div className="flex flex-col items-center text-center w-full py-16">
@@ -87,22 +84,14 @@ export default function RoomPlayer({
         </div>
 
         {isHost && onSeek ? (
-          /* Host: interactive seek bar with thumb */
-          <div
-            className="relative py-2 cursor-pointer"
-            onMouseEnter={() => setSeekHovered(true)}
-            onMouseLeave={() => setSeekHovered(false)}
-          >
-            <div className="relative z-10 pointer-events-none h-1.5 w-full bg-border-muted rounded-full overflow-hidden">
+          /* Host: interactive seek bar */
+          <div className="relative h-5 cursor-pointer">
+            <div className="absolute top-1/2 left-0 right-0 h-1.5 -translate-y-1/2 bg-border-muted rounded-full overflow-hidden pointer-events-none">
               <div
                 className="h-full bg-spotify-green rounded-full transition-all duration-1000"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <div
-              className={`absolute z-10 top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white rounded-full shadow transition-opacity pointer-events-none ${seekHovered ? 'opacity-100' : 'opacity-0'}`}
-              style={{ left: `${progress}%` }}
-            />
             <input
               type="range"
               min={0}
@@ -110,7 +99,7 @@ export default function RoomPlayer({
               step={1}
               value={positionSec}
               onChange={(e) => onSeek(Number(e.target.value))}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 appearance-none"
               aria-label="Tua nhạc"
             />
           </div>

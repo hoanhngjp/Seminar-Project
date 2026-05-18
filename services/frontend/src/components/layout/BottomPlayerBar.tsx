@@ -21,6 +21,7 @@ export default function BottomPlayerBar() {
   const currentSong  = usePlayerStore((s) => s.currentSong);
   const clearSong    = usePlayerStore((s) => s.clearSong);
   const pauseSignal  = usePlayerStore((s) => s.pauseSignal);
+  const resumeSignal = usePlayerStore((s) => s.resumeSignal);
   const seekSignal   = usePlayerStore((s) => s.seekSignal);
   const seekPosition = usePlayerStore((s) => s.seekPosition);
 
@@ -41,7 +42,6 @@ export default function BottomPlayerBar() {
   const [urlError,     setUrlError]     = useState<string | null>(null);
   const [showOverlay,  setShowOverlay]  = useState(false);
   const [showQueue,    setShowQueue]    = useState(false);
-  const [seekHovered,  setSeekHovered]  = useState(false);
 
   const fetchStreamUrl = useCallback(async (songId: string) => {
     setUrlError(null);
@@ -102,6 +102,15 @@ export default function BottomPlayerBar() {
     audioRef.current?.pause();
     setIsPlaying(false);
   }, [pauseSignal]);
+
+  // Resume command from external caller — resumes without resetting stream URL
+  useEffect(() => {
+    if (resumeSignal === 0) return;
+    audioRef.current?.play().then(() => {
+      setIsPlaying(true);
+      hasStartedRef.current = true;
+    }).catch(() => {});
+  }, [resumeSignal]);
 
   // Seek command from external caller (e.g. Listening Party host seeks)
   useEffect(() => {
@@ -281,25 +290,16 @@ export default function BottomPlayerBar() {
             <span className="text-[10px] text-text-secondary w-7 text-right tabular-nums">
               {formatTime(currentTime)}
             </span>
-            {/* Outer wrapper: py-2 expands hover/click area without changing visual height */}
-            <div
-              className="relative flex-1 py-2 cursor-pointer"
-              onMouseEnter={() => setSeekHovered(true)}
-              onMouseLeave={() => setSeekHovered(false)}
-            >
-              {/* Visual track — rendered before input so input doesn't obscure it */}
-              <div className="relative z-10 pointer-events-none h-1 w-full bg-border-muted rounded-full overflow-hidden">
+            {/* Expanded click/drag area */}
+            <div className="relative flex-1 h-4 cursor-pointer">
+              {/* Visual track — absolutely centered, below the input in z-order */}
+              <div className="absolute top-1/2 left-0 right-0 h-1 -translate-y-1/2 bg-border-muted rounded-full overflow-hidden pointer-events-none">
                 <div
                   className="h-full bg-spotify-green rounded-full"
                   style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
                 />
               </div>
-              {/* Thumb — centered on track, visible on hover */}
-              <div
-                className={`absolute z-10 top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full shadow transition-opacity pointer-events-none ${seekHovered ? 'opacity-100' : 'opacity-0'}`}
-                style={{ left: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
-              />
-              {/* Invisible input — on top for drag events, appearance-none removes native browser track */}
+              {/* Transparent input on top to capture drag events */}
               <input
                 type="range"
                 min={0}
@@ -307,7 +307,7 @@ export default function BottomPlayerBar() {
                 step={0.5}
                 value={currentTime}
                 onChange={handleSeekInput}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 appearance-none"
                 aria-label="Seek"
               />
             </div>

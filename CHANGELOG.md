@@ -14,6 +14,16 @@ Format chuẩn: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Fixed
+
+**W11 Listening Party — Pause giữ vị trí + Resume không reset bài (2026-05-18)**
+- `PartyRoomPage`: `handleSyncState` không còn reset `positionSec` về 0 khi server broadcast PAUSE với positionSec=0
+- `playerStore`: thêm `resumeSong()` / `resumeSignal` — resume audio mà không tạo lại `currentSong` object
+- `BottomPlayerBar`: subscribe `resumeSignal` → `audio.play()` tại chỗ đang dừng
+- `PartyRoomPage`: sync effect dùng `resumeSong()` thay vì `playSong()` khi cùng bài đã load
+- `RoomPlayer`: bỏ thumb hover (không sync với progress bar)
+- `BottomPlayerBar`: restructure seek bar CSS (`h-4` container, track `absolute top-1/2`, input `z-10`)
+
 ### Added
 
 **W11 CreateRoomModal — Real API + Infinite Scroll (2026-05-18)**
