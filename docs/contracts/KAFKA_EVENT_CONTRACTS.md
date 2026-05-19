@@ -383,12 +383,23 @@ User Service PHẢI:
 
 ### Producer Contract (Notification Service)
 
-**Khi nào publish**: Sau **mỗi** fan-out attempt — kể cả thành công và thất bại.
+**Khi nào publish**: Sau khi **MongoDB insert thành công** cho một batch recipient — không phải sau mỗi retry attempt, và không phải sau toàn bộ fan-out hoàn thành.
+
+Cụ thể theo implementation (`NotificationService.FanOutNewReleaseAsync`):
+1. Notification Service thu thập recipients từ `GET /internal/artists/{artist_id}/followers` (pagination cursor loop).
+2. Cứ mỗi 500 recipients, gọi `InsertManyAsync` để insert batch vào MongoDB.
+3. **Sau khi `InsertManyAsync` thành công**, publish một `NotificationSentEvent` cho **mỗi recipient** trong batch đó.
+4. Nếu publish `Notification_Sent` thất bại (Kafka down) → log WARNING, bỏ qua, **không** fail fan-out. Topic này là best-effort.
+
+**Điều này có nghĩa là:**
+- `delivery_status = "DELIVERED"` phản ánh MongoDB insert thành công — không có nghĩa là user đã thực sự đọc notification.
+- Nếu `InsertManyAsync` throw exception, batch đó không có `NotificationSentEvent` nào được publish. Consumer (Analytics) sẽ thiếu data cho batch đó — chấp nhận được vì topic là best-effort.
+- Event **không** được publish per-retry (không có retry loop per-recipient trong implementation hiện tại).
 
 Notification Service PHẢI:
-- Publish một event cho mỗi recipient (không batch)
-- Set `delivery_status = "DELIVERED"` nếu MongoDB insert thành công
-- Set `delivery_status = "FAILED"` và `retry_count = 3` nếu tất cả retries thất bại
+- Publish một event cho mỗi recipient (không batch trong Kafka message)
+- Set `delivery_status = "DELIVERED"` nếu MongoDB insert của batch thành công
+- Set `delivery_status = "FAILED"` và `retry_count = 3` nếu tất cả retries thất bại (reserved for future per-recipient retry logic)
 - Giữ nguyên `correlation_id` từ `NewReleaseEvent` gốc để trace toàn bộ fan-out flow
 
 ### Consumer Contracts
@@ -544,4 +555,87 @@ var skipTrigger = payload.SkipTrigger switch
 skip_trigger = payload.get("skip_trigger", "unknown")
 if skip_trigger not in KNOWN_SKIP_TRIGGERS:
     logger.warning(f"Unknown skip_trigger value: {skip_trigger} — ignoring")
+```
+
+---
+
+## DLQ Recovery Process
+
+Áp dụng cho tất cả DLQ topics (`{original-topic}.DLQ`). Topic `Notification_Sent` không có DLQ (best-effort).
+
+### DLQ Topic Pattern
+
+```
+{original-topic}.DLQ
+```
+
+Ví dụ: `Song_Played.DLQ`, `Song_Skipped.DLQ`, `New_Release.DLQ`, `User_Preferences_Updated.DLQ`
+
+### Bước 1 — Xác định nguyên nhân gốc
+
+Trước khi replay, **bắt buộc phải fix nguyên nhân gốc**. Replay message vào broken consumer chỉ tạo thêm DLQ entries.
+
+Kiểm tra log theo format:
+```
+ERROR [DLQ] topic={topic} event_id={event_id} consumer_group={group}
+      attempt=4 failure_reason={exception_message} timestamp={iso8601}
+```
+
+Nguyên nhân phổ biến:
+
+| Failure reason | Hành động |
+|---|---|
+| `InfluxDB connection refused` | Restart InfluxDB container, verify `INFLUXDB_URL` env var |
+| `Redis connection refused` | Restart Redis, verify `REDIS_CONNECTION_STRING` |
+| `Schema validation error` | Fix schema mismatch — producer đã thay đổi payload format |
+| `PostgreSQL connection refused` | Restart Postgres, verify connection string |
+| `Deserialization failed` | Inspect raw message — payload có thể bị corrupt |
+
+### Bước 2 — Manual Replay via Kafka UI
+
+Truy cập Kafka UI tại `http://localhost:8080`:
+
+```
+Topics → {topic}.DLQ → Messages → chọn message → Re-publish to original topic
+```
+
+Hoặc dùng Kafka UI's "Copy to topic" feature để replay toàn bộ DLQ partition sang original topic.
+
+### Bước 3 — CLI Replay
+
+```bash
+# Replay toàn bộ DLQ của Song_Played
+kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic Song_Played.DLQ \
+  --from-beginning \
+  --timeout-ms 5000 \
+| kafka-console-producer \
+  --bootstrap-server localhost:9092 \
+  --topic Song_Played
+```
+
+Replay cho các topic khác — thay `Song_Played` bằng `Song_Skipped`, `New_Release`, hoặc `User_Preferences_Updated`.
+
+### Idempotency — An Toàn Khi Replay Nhiều Lần
+
+Mọi consumer đều check idempotency trước khi xử lý:
+
+```
+SETNX {service}:idempotency:{event_id} 1 EX 86400
+```
+
+Nếu `event_id` đã có trong Redis (từ lần xử lý thành công trước đó) → consumer **skip** event, commit Kafka offset. Replay an toàn dù chạy nhiều lần.
+
+**Lưu ý:** Nếu replay xảy ra sau 24 giờ (sau khi idempotency key hết TTL), consumer sẽ xử lý lại event như mới. Đây là hành vi chấp nhận được — xem Section "DLQ Behavior" → "DLQ Recovery".
+
+### Checklist Trước Khi Replay
+
+```
+□ Đã xác định và fix nguyên nhân gốc?
+□ Consumer đã được redeploy với fix?
+□ Consumer healthy (health check OK)?
+□ DLQ messages còn trong retention window (7 ngày)?
+□ Idempotency keys trong Redis còn hợp lệ (< 24 giờ)?
+  → Nếu không: replay vẫn an toàn nhưng có thể gây double-count trong Analytics
 ```

@@ -1,12 +1,22 @@
 # API Design V2 — Smart Music Streaming Platform
 
-> Version 2.0 (Aligned to PRD V5 / Backlog V7)
+> Version 2.1 — Last updated: 2026-05-19 (Aligned to PRD V5 / Backlog V7)
 
 ## Sheet 1: API Design
 
 | Router | Endpoint | Method | Description | Input (req.body / params) | Output (res.body sample) | Middleware | Errors (Unhappy path) | Notes & Constraints | Packages / Libraries | Test Types | Priority | Budget (ms) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | **── EPIC 0 & 1: Authentication & Session Management ──** | | | | | | | | | | | | |
+| Auth | /api/v1/auth/register | POST | As a new User, I want to register an account with email and password. | {"email":"user@example.com","password":"pwd123","displayName":"Nghiep","role":"Listener"} | {"success":true,"data":{"userId":"u1","email":"user@example.com","displayName":"Nghiep","role":"Listener"},"meta":{...},"error":null} | None (public) | 400 VALIDATION_ERROR (missing fields, email taken)
+500 INTERNAL_ERROR | Budget: 3000ms | Safe to retry: YES (idempotent — same email → 400)
+Admin role not creatable via API
+bcrypt hash in User Service | ASP.NET Core Identity | Unit, Integration | High | 3000 |
+| Auth | /api/v1/auth/google | POST | As a User, I want to sign in with Google OAuth. | {"idToken":"google-id-token-string"} | {"success":true,"data":{"accessToken":"jwt...","expiresIn":3600},"meta":{...},"error":null}
+Cookie: refreshToken (HTTP-only) | None (public) | 400 VALIDATION_ERROR (idToken missing)
+401 UNAUTHORIZED (Google token invalid/expired)
+500 INTERNAL_ERROR | Budget: 500ms | Safe to retry: YES
+Auto-registers new users (no password stored)
+Verifies idToken via Google TokenValidator | Google.Apis.Auth | Unit, Integration | Medium | 500 |
 | Auth | /api/v1/auth/login | POST | As a User, I want to login to get access tokens and have my role recognized. | {"username":"user@example.com","password":"pwd"} | {"success":true,"data":{"accessToken":"jwt...","expiresIn":3600},"meta":{"apiVersion":"v1","requestId":"uuid","timestamp":"ISO8601"},"error":null}
 Cookie: refreshToken (HTTP-only) | Rate Limit (IP+User 10/min) | 400 AUTH_INVALID_CREDENTIALS
 429 RATE_LIMIT_EXCEEDED
@@ -128,6 +138,17 @@ Aggregation from Time-series DB
 Cache: Redis TTL 1h (Key: stats:{songId}:{timeRange})
 Data updated daily via Kafka event pipeline | InfluxDB Client / MongoDB Driver | Integration | High | 500 |
 | **── Music Service (Creator Upload) ──** | | | | | | | | | | | | |
+| Music | /api/v1/music/songs/my | GET | As a Creator, I want to see all my uploaded songs. | — | {"success":true,"data":[{"id":"s1","title":"My Song","coverUrl":"...","createdAt":"ISO8601"}],"meta":{...},"error":null} | Auth (JWT)
+RBAC (Creator or Admin only) | 401 UNAUTHORIZED
+403 FORBIDDEN
+500 INTERNAL_ERROR | Budget: 300ms | Safe to retry: YES
+Returns songs ordered by CreatedAt desc | Npgsql | Integration | Medium | 300 |
+| Music | /api/v1/music/artists/{artistId} | GET | As a Listener, I want to view an artist's profile and their top songs. | Path param: artistId (UUID) | {"success":true,"data":{"artistId":"a1","displayName":"Sơn Tùng","avatarUrl":"...","topSongs":[{"id":"s1","title":"Hãy trao cho anh","playCount":12000}]},"meta":{...},"error":null} | Auth (JWT) | 401 UNAUTHORIZED
+404 SONG_NOT_FOUND
+500 INTERNAL_ERROR | Budget: 200ms | Safe to retry: YES
+Returns top songs ordered by PlayCount desc | Npgsql | Integration | Medium | 200 |
+| Music | /api/v1/music/genres | GET | As a User, I want to list all available genres for preferences and upload. | — | {"success":true,"data":[{"id":"g1","name":"Pop","slug":"pop"}],"meta":{...},"error":null} | None (public) | 500 INTERNAL_ERROR | Budget: 200ms | Safe to retry: YES
+Returns all genres ordered by name | Npgsql | Integration | Low | 200 |
 | Music | /api/v1/music/songs | POST | As a Creator, I want to upload an audio file and song metadata so my music is available on the platform. | multipart/form-data:
 - file: audio (MP3/WAV/OGG, max 50MB)
 - title: string
@@ -192,6 +213,10 @@ Idempotency-Key (Header) | 400 VALIDATION_ERROR
 Ephemeral state on Redis cluster
 Trade-off: room state LOST if Redis crashes — documented in PRD V5
 Metrics: room creation rate | StackExchange.Redis | Unit | High | 200 |
+| Party | /api/v1/parties/{joinCode} | GET | As a Listener, I want to preview a party room (name, host, current song) before deciding to join. | Path param: joinCode (6 chars) | {"success":true,"data":{"roomId":"r1","name":"Chill Session","memberCount":3,"currentSongTitle":"Hãy trao cho anh","hostDisplayName":"Nghiep","hostAvatarUrl":"..."},"meta":{...},"error":null} | Auth (JWT) | 401 UNAUTHORIZED
+404 ROOM_NOT_FOUND
+500 INTERNAL_ERROR | Budget: 300ms | Safe to retry: YES
+Enriches room data by calling User Service + Music Service internally | StackExchange.Redis | Unit | Medium | 300 |
 | Party | /api/v1/parties/{joinCode}/join | POST | As a Listener, I want to join a party using a join code and immediately get the current playback state. | null (path param: joinCode) | {"success":true,"data":{"roomId":"r1","hostId":"u1","currentSongId":"s1","playbackPositionSec":45},"meta":{...},"error":null} | Auth (JWT)
 Rate Limit (Token 30/min) | 400 VALIDATION_ERROR
 401 UNAUTHORIZED
@@ -200,6 +225,10 @@ Rate Limit (Token 30/min) | 400 VALIDATION_ERROR
 500 INTERNAL_ERROR | Budget: 150ms | Safe to retry: YES
 Sync initial state from Redis (Host is Source of Truth)
 Max members per room: configurable (default 50) | StackExchange.Redis | Unit, Integration | High | 150 |
+| Party | /api/v1/parties/{roomId}/queue | GET | As a Party Member, I want to see the current song queue. | Path param: roomId (UUID string) | {"success":true,"data":{"roomId":"r1","queue":[{"songId":"s1","addedByUserId":"u2"}]},"meta":{...},"error":null} | Auth (JWT) | 401 UNAUTHORIZED
+404 ROOM_NOT_FOUND
+500 INTERNAL_ERROR | Budget: 150ms | Safe to retry: YES
+Returns current queue snapshot; empty array [] when queue is empty | StackExchange.Redis | Unit | Medium | 150 |
 | Party | /ws/v1/parties/{roomId} | WS | As a Party Member, I want realtime sync of Play/Pause/Seek from the Host so we all hear the same music at the same time. | Send: {"eventId":"uuid","type":"PLAYER_ACTION","senderId":"u2","payload":{"action":"pause"},"timestamp":123456} | Receive: {"eventId":"uuid","type":"SYNC_STATE","senderId":"system","payload":{"status":"paused","positionSec":45},"timestamp":123457} | Auth (JWT via query param on WS handshake) | WS 1008 POLICY_VIOLATION (unauthorized)
 WS 1011 INTERNAL_ERROR
 WS 1001 GOING_AWAY (server shutdown) | Safe to retry: YES (dedup via eventId)
@@ -235,6 +264,11 @@ Fan-out partial fail: async retry per follower | Medium |
 
 | Protocol | Caller Service | Target Service | Method / Channel | Description | Request | Response | Timeout | Fallback / Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| REST | Recommendation Service | User Service | GET /internal/users/{id}/preferences | Recommendation Service fetches user genre/artist preference weights. | Path param: userId (UUID) | {"genres":["Pop","Acoustic"],"artists":["a1"],"audioQuality":"standard"} | 200ms | Returns empty preferences ([], [], "standard") if user not found — never 404. Internal network only. |
+| REST | Notification Service | User Service | GET /internal/artists/{artistId}/followers?limit=1000&cursor=... | Notification Service paginates through artist followers for fan-out on New_Release event. | Path param: artistId; query: limit (1–1000), cursor | {"FollowerIds":["u1","u2"],"NextCursor":"cursor-string","HasMore":true} | 200ms | Cursor-based pagination. limit max 1000. Internal network only. |
+| REST | Listening Party Service | User Service | GET /internal/users/{id}/profile | Listening Party Service fetches mini profile (displayName, avatarUrl) for party preview card and member list. | Path param: userId (UUID) | {"id":"u1","displayName":"Nghiep","avatarUrl":"..."} | 150ms | Returns displayName fallback to Username if DisplayName empty. Internal network only. |
+| REST | Auth Service | User Service | POST /internal/users/verify-credentials | Auth Service verifies email+password during login flow before issuing tokens. | {"Email":"user@example.com","Password":"plaintext"} | {"userId":"u1","email":"...","role":"Listener","displayName":"Nghiep"} OR 401 | 200ms | Password hash comparison done in User Service. Returns null (401) if invalid. Internal network only. |
+| REST | Analytics Service | Music Service | GET /internal/songs/{songId} | Analytics Service fetches song ownership (artistId) for RBAC check on creator analytics endpoints. | Path param: songId (UUID) | {"id":"s1","artistId":"u1","title":"My Song"} | 150ms | Minimal shape for auth check only. 404 if song not found. Internal network only. |
 | gRPC | API Gateway | Auth Service | ValidateToken(token: string) | Gateway calls Auth Service to verify JWT on every protected request. Hot path — must be fastest call in system. | {"token":"Bearer jwt..."} | {"valid":true,"userId":"u1","role":"Listener","expiresAt":1714000000} | 100ms | Fallback: if Auth Service down, Gateway uses cached public keys (RSA) to verify JWT locally. Circuit Breaker triggers after 3 consecutive failures. |
 | gRPC | Auth Service | User Service | GetUserProfile(userId: string) | Auth Service fetches full user profile and role from User Service after token validation. | {"userId":"u1"} | {"userId":"u1","name":"Nghiep","email":"...","role":"Listener","createdAt":"ISO8601"} | 100ms | Route to Read-Replica DB. Fallback: return cached profile from Redis (TTL 15m). Circuit Breaker on consecutive failures. |
 | REST | Music Service | Streaming Service | GET /internal/songs/{songId}/storage-key | Music Service provides S3 storage key to Streaming Service for generating Pre-signed URLs. | Path param: songId | {"storageKey":"songs/s1/audio.mp3","bucket":"smart-music-dev"} | 150ms | Internal network only — not exposed via API Gateway. Cache result in Streaming Service for 30m. 404 if song not found or not published yet. |
@@ -250,6 +284,11 @@ Fan-out partial fail: async retry per follower | Medium |
 | Version | Date | Change Summary | Impact | Author |
 | --- | --- | --- | --- | --- |
 | v1.0 | 2026-04-15 | Initial API Design (V1): Auth, User, Recommendation (ML-based), Streaming, Analytics, Party, Search, Notification. | Baseline | Team |
+| v2.1 | 2026-05-19 | Added missing endpoints discovered during codebase audit:
+1. Auth: POST /auth/register, POST /auth/google
+2. Music: GET /music/songs/my, GET /music/artists/{artistId}, GET /music/genres
+3. Party: GET /parties/{joinCode} (preview), GET /parties/{roomId}/queue
+4. Internal REST: 5 endpoints (User Service preferences/followers/profile/verify-credentials, Music Service song meta for ownership check) | Additive (no breaking changes) | Team |
 | v2.0 | 2026-04-24 | Revised to align with PRD V5 / Backlog V7:
 1. Recommendation: replaced ML/Vector DB with Rule-based Context Engine. Removed PyTorch dependency.
 2. Added /recommendations/feedback endpoint for realtime weight update.

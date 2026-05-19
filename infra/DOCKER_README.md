@@ -44,17 +44,29 @@ docker exec smartmusic-minio mc mb local/smartmusic-audio
 
 ### 4. Run database migrations
 
-Run EF Core migrations for each C# service (from the repo root):
+Three services use EF Core migrations backed by PostgreSQL. Run them from the repo root:
 
 ```bash
-dotnet ef database update --project services/auth-service
-dotnet ef database update --project services/user-service
-dotnet ef database update --project services/music-service
-dotnet ef database update --project services/streaming-service
-dotnet ef database update --project services/listening-party-service
-dotnet ef database update --project services/analytics-service
-dotnet ef database update --project services/notification-service
+# Startup context: --project points to the Infrastructure project containing the DbContext
+dotnet ef database update \
+  --project services/auth-service/src/AuthService.Infrastructure \
+  --startup-project services/auth-service/src/AuthService.Api
+
+dotnet ef database update \
+  --project services/user-service/src/UserService.Infrastructure \
+  --startup-project services/user-service/src/UserService.Api
+
+dotnet ef database update \
+  --project services/music-service/src/MusicService.Infrastructure \
+  --startup-project services/music-service/src/MusicService.Api
 ```
+
+> **Other services do not need EF Core migrations:**
+> - `streaming-service` — no relational DB; uses GCS pre-signed URLs only.
+> - `listening-party-service` — state is ephemeral in Redis; no persistent schema.
+> - `analytics-service` — writes to InfluxDB (time-series) and MongoDB; neither uses EF Core.
+> - `notification-service` — uses MongoDB; no EF Core.
+> - `search-service` — index managed by Elasticsearch; no EF Core.
 
 ### 5. Seed sample data (optional)
 
@@ -210,3 +222,127 @@ The bucket must be created manually after first start (see First-time setup step
 The default credentials for the Mongo Express UI are:
 - Username: `admin`
 - Password: whatever you set for `MONGO_PASSWORD` in `.env`
+
+### PostgreSQL port conflict (5432 already in use)
+
+Stop and wipe all volumes, then restart cleanly:
+
+```bash
+docker-compose down -v
+docker-compose up -d
+```
+
+If a system PostgreSQL process owns port 5432, either stop it (`sudo systemctl stop postgresql` on Linux) or remap the host port in `docker-compose.yml` (e.g. `"5433:5432"`) and update `*_DB_CONNECTION_STRING` in `.env` accordingly.
+
+### Google OAuth credentials fail
+
+The auth-service supports optional Google OAuth login. To enable it:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials.
+2. Create an **OAuth 2.0 Client ID** (Web application type).
+3. Add `http://localhost:5001/signin-google` as an authorised redirect URI.
+4. Copy the Client ID and Client Secret into `.env`:
+
+```dotenv
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+```
+
+If these values are absent the service starts normally; the Google login button will be hidden on the frontend.
+
+### Kafka topic not found
+
+The five required topics are created automatically by the `kafka-init` container on first start. If they are missing (e.g. after `docker-compose down -v`), recreate them manually:
+
+```bash
+docker exec smartmusic-kafka kafka-topics.sh \
+  --bootstrap-server localhost:9092 \
+  --create --if-not-exists --topic Song_Played \
+  --partitions 3 --replication-factor 1
+
+docker exec smartmusic-kafka kafka-topics.sh \
+  --bootstrap-server localhost:9092 \
+  --create --if-not-exists --topic Song_Skipped \
+  --partitions 3 --replication-factor 1
+
+docker exec smartmusic-kafka kafka-topics.sh \
+  --bootstrap-server localhost:9092 \
+  --create --if-not-exists --topic New_Release \
+  --partitions 1 --replication-factor 1
+
+docker exec smartmusic-kafka kafka-topics.sh \
+  --bootstrap-server localhost:9092 \
+  --create --if-not-exists --topic User_Preferences_Updated \
+  --partitions 1 --replication-factor 1
+
+docker exec smartmusic-kafka kafka-topics.sh \
+  --bootstrap-server localhost:9092 \
+  --create --if-not-exists --topic Notification_Sent \
+  --partitions 1 --replication-factor 1
+```
+
+Verify all five topics exist:
+
+```bash
+docker exec smartmusic-kafka kafka-topics.sh \
+  --bootstrap-server localhost:9092 --list
+```
+
+### Elasticsearch not ready
+
+Elasticsearch typically takes 20–30 seconds after the container starts before it accepts connections. Wait and then check the health endpoint:
+
+```bash
+curl http://localhost:9200/_cluster/health?pretty
+```
+
+Expected: `"status": "green"` or `"yellow"`. If you see a connection-refused error, wait another 30 seconds and retry. A status of `"red"` usually means the JVM heap is too small — see the OOM section above.
+
+### InfluxDB and MongoDB are placeholder services for Phase 2
+
+Both `influxdb` and `mongodb` are included in `docker-compose.yml` and will start with the stack, but **no application service currently writes to them** in the MVP codebase. They are reserved for:
+- `analytics-service` → InfluxDB (time-series play events) — Phase 2
+- `notification-service` → MongoDB (fan-out store) — Phase 2
+
+You can safely ignore connection-refused logs from these services during local development.
+
+---
+
+## External Credentials
+
+Some features require credentials obtained outside this repository. The table below lists every external dependency, whether it is mandatory, and which service consumes it.
+
+| Credential | Required | Used by |
+|---|---|---|
+| GCS (Google Cloud Storage) service-account JSON | Mandatory | Music Service (audio upload), Streaming Service (pre-signed URLs) |
+| Cloudinary API key / secret / cloud name | Mandatory | Music Service (cover-image upload) |
+| Google OAuth Client ID / Secret | Optional | Auth Service (Google login) |
+| MinIO (built-in Docker) | Available locally | Alternative to GCS for local development |
+
+### Configuring GCS
+
+1. Create a service account in [Google Cloud Console](https://console.cloud.google.com/) with the **Storage Object Admin** role on your bucket.
+2. Download the JSON key file.
+3. Set the path in `.env`:
+
+```dotenv
+GCS_BUCKET_NAME=your-bucket-name
+GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/gcs-key.json
+```
+
+4. Mount the key file into the Music Service and Streaming Service containers in `docker-compose.yml` (or export `GOOGLE_APPLICATION_CREDENTIALS` in your shell when running services natively).
+
+### Configuring Cloudinary
+
+1. Sign up at [cloudinary.com](https://cloudinary.com/) (free tier is sufficient for development).
+2. Copy the three values from the Cloudinary dashboard into `.env`:
+
+```dotenv
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+```
+
+### Using MinIO as a local GCS alternative
+
+MinIO is already running at `http://localhost:9000` (console at `http://localhost:9001`). The Music Service and Streaming Service can target MinIO instead of GCS by setting the appropriate S3-compatible endpoint variables in `.env`. See `.env.example` for the exact variable names.

@@ -152,7 +152,7 @@ flowchart TB
 
   subgraph GRPC["gRPC — Internal Hot Path (low latency)"]
     direction LR
-    AUTH["Auth Service"]
+    AUTH["Auth Service\nGET /internal/jwks"]
     USER["User Service"]
   end
 
@@ -161,6 +161,10 @@ flowchart TB
     MUSIC["Music Service"]
     STREAM["Streaming Service"]
     REC["Recommendation Service"]
+    USER_REST["User Service"]
+    ANL_REST["Analytics Service"]
+    PARTY_REST["Listening Party Service"]
+    NS_REST["Notification Service"]
   end
 
   subgraph ASYNC["Kafka — Async Event Bus (decoupled)"]
@@ -185,6 +189,10 @@ flowchart TB
 
   MUSIC -->|"REST /internal/storage-key"| STREAM
   REC -->|"REST /internal/songs/batch"| MUSIC
+  USER_REST -->|"REST /internal/users/{id}/preferences"| REC
+  USER_REST -->|"REST /internal/artists/{artistId}/followers"| NS_REST
+  USER_REST -->|"REST /internal/users/{id}/profile"| PARTY_REST
+  MUSIC -->|"REST /internal/songs/{songId}"| ANL_REST
 
   STREAM -->|"Song_Played / Song_Skipped"| KF
   MUSIC -->|"New_Release"| KF
@@ -246,8 +254,8 @@ flowchart TB
     direction LR
     S3_M[("S3\nObject Storage")]
     PG_M[("PostgreSQL\nRDS")]
-    MDB_M[("MongoDB\nAtlas")]
-    IDB_M[("InfluxDB\nCloud")]
+    MDB_M[("MongoDB\nAtlas\n(Notification Service)")]
+    IDB_M[("InfluxDB\nCloud\n(Analytics Service)")]
   end
 
   subgraph OBS["Observability Stack"]

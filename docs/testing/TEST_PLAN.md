@@ -1621,6 +1621,71 @@ export default function () {
 }
 ```
 
+### 5.6 Listening Party — WebSocket Sync Latency (LP-01)
+
+**File**: `tests/load/listening_party_ws.js` *(not yet created — see Implementation Status Section 10)*
+
+**Scenario LP-01**: 50 concurrent party members connected to the same room. Host sends a `PLAYER_ACTION` event every 2 seconds. All members must receive the corresponding `SYNC_STATE` broadcast within 500ms (AC7.2.1).
+
+```javascript
+import ws from 'k6/ws';
+import { check } from 'k6';
+import { Trend } from 'k6/metrics';
+
+const syncLatency = new Trend('sync_latency_ms');
+
+export const options = {
+    scenarios: {
+        party_members: {
+            executor: 'constant-vus',
+            vus: 50,
+            duration: '2m',
+        },
+    },
+    thresholds: {
+        'sync_latency_ms': ['p(95)<500'],   // AC7.2.1: SYNC_STATE broadcast < 500ms
+        'http_req_failed': ['rate<0.01'],
+    },
+};
+
+export default function () {
+    const roomId = __ENV.TEST_ROOM_ID;
+    const token  = __ENV.TEST_TOKEN;
+    const url    = `ws://localhost:5010/ws/v1/parties/${roomId}?access_token=${token}`;
+
+    ws.connect(url, {}, function (socket) {
+        socket.on('open', () => {
+            socket.setInterval(() => {
+                const sent = Date.now();
+                socket.send(JSON.stringify({ type: 'PING' }));
+
+                socket.on('message', (msg) => {
+                    const data = JSON.parse(msg);
+                    if (data.type === 'SYNC_STATE') {
+                        syncLatency.add(Date.now() - sent);
+                        check(data, {
+                            'has currentSongId': (d) => d.current_song_id !== undefined,
+                            'has positionSec':   (d) => d.position_sec >= 0,
+                        });
+                    }
+                });
+            }, 2000);
+        });
+
+        socket.setTimeout(() => { socket.close(); }, 30000);
+    });
+}
+```
+
+**Run command** (after creating the file):
+```bash
+export TEST_TOKEN=...
+export TEST_ROOM_ID=...   # pre-created room with host playing
+k6 run -e TEST_TOKEN=$TEST_TOKEN -e TEST_ROOM_ID=$TEST_ROOM_ID tests/load/listening_party_ws.js
+```
+
+**Pass criteria**: p95 sync latency < 500ms with 50 concurrent members.
+
 ---
 
 ## 6. Chaos Tests
@@ -2096,3 +2161,60 @@ Every Acceptance Criteria mapped to at least one test.
 | Not Covered | 0 | — |
 
 **AC7.2.4 — Special Note**: WebSocket idle detection requires a 40-second wait (`Thread.Sleep(35_000)` + 5s buffer). This makes the test slow for regular CI. Recommended approach: inject a `ISystemClock` abstraction into the heartbeat handler and mock time advancement in the test, avoiding the real sleep entirely.
+
+---
+
+## 10. Implementation Status (as of 2026-05-19)
+
+### C# Services
+
+| Service | Unit Tests | Integration Tests | Status |
+|---------|-----------|------------------|--------|
+| API Gateway | `ApiGateway.UnitTests` — 5 files (JwtValidationService, RateLimitingService, JwtValidationMiddleware, RateLimitingMiddleware, CircuitBreakerMiddleware) | No integration test files | ⚠️ Unit only |
+| Auth Service | `AuthService.UnitTests/AuthServiceTests.cs` | `AuthService.IntegrationTests/AuthIntegrationTests.cs` | ✅ |
+| User Service | `UserService.UnitTests/UserProfileServiceTests.cs` | `UserService.IntegrationTests/UsersControllerTests.cs` | ✅ |
+| Music Service | `MusicService.UnitTests` — 3 files (SongServiceGet, SongServiceArtist, GcsStorageService) | `MusicService.IntegrationTests` — 2 files (SongsController, InternalSongsController) | ✅ |
+| Streaming Service | `StreamingService.UnitTests` — 2 files (StreamingService, GcsStoragePresigner) | `StreamingService.IntegrationTests/StreamingIntegrationTests.cs` | ✅ |
+| Listening Party Service | `ListeningPartyService.UnitTests` — 2 files (PartyService, PartyServiceQueue) | `ListeningPartyService.IntegrationTests` — 3 files (PartiesIntegration, PartyHubIntegration, PartyHubUnit) | ✅ |
+| Analytics Service | `AnalyticsService.UnitTests` — 3 files (AnalyticsService, AnalyticsController, KafkaHandler) | No integration test files | ⚠️ Unit only |
+| Notification Service | `NotificationService.UnitTests` — 2 files (NotificationService, NewReleaseHandler) | `NotificationService.IntegrationTests/NotificationsIntegrationTests.cs` | ✅ |
+| Search Service | `SearchService.UnitTests` — 2 files (SearchService, SearchController) | No integration test files | ⚠️ Unit only |
+
+### Python Service
+
+| Service | Unit Tests | Integration Tests | Status |
+|---------|-----------|------------------|--------|
+| Recommendation Service | `tests/unit/` — 3 files (test_rule_engine, test_handlers, test_recommendation_service) | `tests/integration/test_recommendations_api.py` | ✅ |
+
+### Load Tests
+
+| File | Endpoint | Status |
+|------|----------|--------|
+| `tests/load/streaming_url.js` | `GET /streaming/{id}/url` — p95 < 300ms | ✅ Exists |
+| `tests/load/search.js` | `GET /search` — p95 < 200ms | ✅ Exists |
+| `tests/load/recommendation.js` | `GET /recommendations` — p95 < 300ms | ✅ Exists |
+| `tests/load/gateway_routing.js` | `GET /health` — p95 < 50ms | ❌ Missing |
+| `tests/load/analytics_heatmap.js` | `GET /analytics/creator/heatmap/{id}` — p95 < 500ms | ❌ Missing |
+| `tests/load/listening_party_ws.js` | WebSocket sync latency — p95 < 500ms | ❌ Missing |
+
+### Gap Summary
+
+| Gap | Priority | Notes |
+|-----|----------|-------|
+| Analytics Service integration tests | High | AC4.1 and AC4.2 currently covered only by unit tests; integration coverage against real InfluxDB + Kafka needed |
+| Search Service integration tests | High | AC5.1.1–5.1.4 fuzzy search + Elasticsearch must be validated end-to-end |
+| API Gateway integration tests | Medium | Circuit breaker and rate-limit behavior require real HTTP round-trips; unit mocks are insufficient for full confidence |
+| `gateway_routing.js` load test | Medium | Needed before sprint demo for AC0.1.1 latency budget |
+| `analytics_heatmap.js` load test | Medium | Needed before sprint demo for AC4.2.4 latency budget |
+| `listening_party_ws.js` load test | Low | WebSocket scenario; requires k6 websocket extension |
+
+---
+
+## 11. Test Data Cleanup
+
+- **Unit tests**: no cleanup needed — all dependencies are mocked (Mock\<T\>, fakeredis, respx).
+- **Integration tests**: Testcontainers lifecycle — each `IClassFixture<TFactory>` spins up a fresh container and destroys it after the test class completes. No manual teardown required.
+- **Python integration tests**: `fake_redis` fixture (`fakeredis.aioredis.FakeRedis`) is scoped per test; state does not leak between tests.
+- **Shared test DB** (if any): truncate tables in `IAsyncLifetime.DisposeAsync` or use a transaction that is rolled back after each test.
+- **Load tests**: run against a dedicated test environment (`TEST_TOKEN`, `CREATOR_TOKEN` scoped to test users); reset InfluxDB and Redis trending keys after each load run to prevent stale metrics from affecting subsequent runs.
+- **Chaos tests**: restore docker-compose services after each scenario (`docker-compose start <service>`) before running the next scenario.

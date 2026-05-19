@@ -2,7 +2,7 @@
 
 Smart Music Streaming Platform — Database Schema Reference  
 Architecture: Microservices | C# ASP.NET Core + Python FastAPI  
-Last updated: 2026-05-01
+Last updated: 2026-05-19
 
 ---
 
@@ -647,28 +647,30 @@ Timestamp precision: nanoseconds (`ns`) for all writes.
 
 Written every time a user completes listening to a meaningful portion of a song (threshold defined by product: e.g., listened to at least 30 seconds or 30% of the track — whichever comes first).
 
+> **Implementation note (`InfluxAnalyticsRepository.WritePlayEventAsync`):** The following tags and fields reflect what is **currently written** by `POST /analytics/events/play`. Tags marked _(planned)_ are defined in the schema but not yet populated by the write path — they require enrichment from upstream services (Music Service metadata join) before they can be added.
+
 **Tags** (indexed, low-cardinality, used in GROUP BY / WHERE):
 
-| Tag | Type | Description |
-|---|---|---|
-| `song_id` | string (UUID) | Identifies the song being played |
-| `artist_id` | string (UUID) | Denormalized from song metadata to enable per-artist aggregation without a join |
-| `genre_id` | string (UUID) | Primary genre of the song at time of play (snapshot, not live) |
-| `user_id` | string (UUID) | Anonymized user identifier — no name or email |
-| `platform` | string | Client platform: `web`, `android`, `ios`, `desktop` |
-| `audio_quality` | string | Bitrate tier streamed: `low`, `standard`, `high`, `lossless` |
-| `country_code` | string | ISO 3166-1 alpha-2 — derived from IP geolocation, not stored PII |
+| Tag | Type | Status | Description |
+|---|---|---|---|
+| `song_id` | string (UUID) | **Implemented** | Identifies the song being played |
+| `user_id` | string (UUID) | **Implemented** | Anonymized user identifier — no name or email |
+| `platform` | string | **Implemented** | Client platform: `web`, `android`, `ios`, `desktop` |
+| `artist_id` | string (UUID) | _(planned)_ | Denormalized from song metadata to enable per-artist aggregation without a join |
+| `genre_id` | string (UUID) | _(planned)_ | Primary genre of the song at time of play (snapshot, not live) |
+| `audio_quality` | string | _(planned)_ | Bitrate tier streamed: `low`, `standard`, `high`, `lossless` |
+| `country_code` | string | _(planned)_ | ISO 3166-1 alpha-2 — derived from IP geolocation, not stored PII |
 
 **Fields** (numeric measurements, not indexed):
 
-| Field | Type | Description |
-|---|---|---|
-| `duration_sec` | integer | Total duration of the song in seconds |
-| `listened_sec` | integer | Number of seconds the user actually listened |
-| `duration_percent` | float | `listened_sec / duration_sec * 100`, rounded to 2 decimal places |
-| `session_id` | string | Client-side session UUID (for funnel/session analytics; treated as a field, not a tag, to avoid cardinality explosion) |
+| Field | Type | Status | Description |
+|---|---|---|---|
+| `duration_sec` | integer | **Implemented** | Total duration of the song in seconds |
+| `listened_sec` | integer | **Implemented** | Number of seconds the user actually listened |
+| `duration_percent` | float | **Implemented** | `listened_sec / duration_sec * 100`, rounded to 2 decimal places |
+| `session_id` | string | _(planned)_ | Client-side session UUID (for funnel/session analytics; treated as a field, not a tag, to avoid cardinality explosion) |
 
-**Timestamp:** Nanosecond precision UTC. Written at the moment the play event is emitted by the client (buffered and flushed server-side within 5 seconds).
+**Timestamp:** Millisecond precision UTC (`WritePrecision.Ms`). Written at the moment the play event is processed server-side.
 
 **Retention policy recommendation:**
 
@@ -706,28 +708,30 @@ from(bucket: "analytics_raw")
 
 Written when a user skips a song before reaching the play-completion threshold. Skips are a negative engagement signal used by the Recommendation Service to down-weight songs.
 
+> **Implementation note (`SongSkippedHandler.HandleAsync`):** The following tags and fields reflect what is **currently written** by the `Song_Skipped` Kafka consumer. Tags marked _(planned)_ are defined in the schema but not yet populated — they require enrichment from upstream services before they can be added.
+
 **Tags** (indexed, low-cardinality):
 
-| Tag | Type | Description |
-|---|---|---|
-| `song_id` | string (UUID) | The song that was skipped |
-| `artist_id` | string (UUID) | Denormalized from song metadata |
-| `genre_id` | string (UUID) | Primary genre of the skipped song |
-| `user_id` | string (UUID) | Anonymized user identifier |
-| `platform` | string | Client platform: `web`, `android`, `ios`, `desktop` |
-| `skip_trigger` | string | How the skip was initiated: `next_button`, `prev_button`, `seek_forward`, `autoplay_end`, `queue_jump` |
-| `country_code` | string | ISO 3166-1 alpha-2 geolocation |
+| Tag | Type | Status | Description |
+|---|---|---|---|
+| `song_id` | string (UUID) | **Implemented** | The song that was skipped |
+| `user_id` | string (UUID) | **Implemented** | Anonymized user identifier — no name or email |
+| `skip_trigger` | string | **Implemented** | How the skip was initiated: `next_button`, `prev_button`, `seek_forward`, `autoplay_end`, `queue_jump`; defaults to `unknown` if absent |
+| `artist_id` | string (UUID) | _(planned)_ | Denormalized from song metadata to enable per-artist skip aggregation without a join |
+| `genre_id` | string (UUID) | _(planned)_ | Primary genre of the skipped song (snapshot, not live) |
+| `platform` | string | _(planned)_ | Client platform: `web`, `android`, `ios`, `desktop` |
+| `country_code` | string | _(planned)_ | ISO 3166-1 alpha-2 — derived from IP geolocation, not stored PII |
 
-**Fields** (numeric measurements):
+**Fields** (numeric measurements, not indexed):
 
-| Field | Type | Description |
-|---|---|---|
-| `duration_sec` | integer | Total duration of the song in seconds |
-| `skip_at_sec` | integer | Number of seconds into the song when skip was triggered |
-| `duration_percent` | float | `skip_at_sec / duration_sec * 100`, rounded to 2 decimal places |
-| `session_id` | string | Client-side session UUID |
+| Field | Type | Status | Description |
+|---|---|---|---|
+| `duration_sec` | integer | **Implemented** | Total duration of the song in seconds |
+| `skip_at_sec` | integer | **Implemented** | Number of seconds into the song when skip was triggered |
+| `duration_percent` | float | **Implemented** | `skip_at_sec / duration_sec * 100`, rounded to 2 decimal places |
+| `session_id` | string | _(planned)_ | Client-side session UUID (treated as a field, not a tag, to avoid cardinality explosion) |
 
-**Timestamp:** Nanosecond precision UTC, written at the moment the skip event fires.
+**Timestamp:** Millisecond precision UTC (`WritePrecision.Ms`), written at the moment the skip event is processed server-side.
 
 **Retention policy recommendation:**
 
@@ -760,7 +764,7 @@ from(bucket: "analytics_raw")
 
 ## Cross-Service Relationships
 
-Each service owns its database exclusively. There are no cross-database foreign keys. Services integrate through two mechanisms: **synchronous REST/gRPC calls** for reads that must be consistent, and **asynchronous domain events** (published to a message broker — Kafka or RabbitMQ) for writes that can be eventually consistent.
+Each service owns its database exclusively. There are no cross-database foreign keys. Services integrate through two mechanisms: **synchronous REST/gRPC calls** for reads that must be consistent, and **asynchronous domain events** (published to Kafka) for writes that can be eventually consistent.
 
 ### Identity Propagation
 
@@ -842,12 +846,12 @@ The Recommendation Service is intentionally stateless at the database layer. It 
 - **Rebuild-ability.** If Redis is flushed or a key expires, the Recommendation Service rebuilds the score set from Analytics data (replaying recent `song_played` and `song_skipped` events). This makes Redis a cache rather than a database of record, which is an intentional architectural choice.
 - **Latency.** Recommendation results are served on the critical path of the app's home screen. Redis sub-millisecond read latency is essential; PostgreSQL query latency (even with indexes) would add unacceptable overhead at this fan-out point.
 
-Redis key conventions used by the Recommendation Service:
+Redis key conventions used by the Recommendation Service (canonical source: `.github/REDIS_KEY_DESIGN.md`):
 
 | Key pattern | Data structure | TTL | Description |
 |---|---|---|---|
-| `rec:user:{user_id}:scores` | Sorted Set | 7 days | Song scores for a user (member = song_id, score = relevance float) |
-| `rec:user:{user_id}:recs` | List | 1 hour | Cached final recommendation list (song UUIDs, ordered) |
-| `rec:trending:global` | Sorted Set | 1 hour | Global trending songs (refreshed by batch job) |
-| `rec:trending:genre:{genre_id}` | Sorted Set | 6 hours | Trending songs per genre |
-| `rec:user:{user_id}:history` | Set | 30 days | Song UUIDs the user has heard (used to filter already-heard songs from recs) |
+| `rec:weights:{userId}` | Hash | 7 days | Per-genre preference weights for a user (`HSET`/`HGET` per genre UUID); refreshed on every feedback event |
+| `rec:cache:{userId}:{context}` | String (JSON) | 1 hour | Cached final recommendation list keyed by user + time-of-day context (`morning`, `afternoon`, `evening`, `night`); invalidated when weights change |
+| `rec:trending:global` | Sorted Set | 1 hour | Global trending songs (member = song_id, score = play count); rebuilt atomically via `rec:trending:global:tmp` → `RENAME` |
+| `rec:idempotency:{eventId}` | String | 24 hours | Dedup token for feedback POST requests; `SET NX EX 86400` — if exists, event already processed |
+| `rec:onboarding:{userId}` | String (JSON) | 7 days | Seed genre selection from onboarding flow; fallback for users without enough listening history |

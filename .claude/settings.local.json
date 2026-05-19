@@ -46,7 +46,13 @@
       "Bash(bash infra/seed/seed_creator_demo.sh)",
       "Bash(curl -s -X POST 'http://localhost:8086/api/v2/query?org=smartmusic' -H 'Authorization: Token my-super-secret-token-change-this-in-production' -H 'Content-Type: application/vnd.flux' --data 'from\\(bucket:\"analytics\"\\) *)",
       "Bash(docker-compose -f infra/docker-compose.yml up -d --build analytics-service music-service)",
-      "Bash(dotnet add *)"
+      "Bash(dotnet add *)",
+      "Bash(python3)"
+    ],
+    "additionalDirectories": [
+      "\\tmp",
+      "c:\\tmp",
+      "C:\\Users\\User\\AppData\\Local\\Temp"
     ]
   }
 }

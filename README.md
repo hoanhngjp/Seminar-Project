@@ -6,6 +6,33 @@ Ba bài toán cốt lõi: **Filter Bubble** → Rule Engine; **Weak Social** →
 
 ---
 
+## Project Status
+
+| Phase | Status | Tiến độ |
+|-------|--------|---------|
+| Phase 1 MVP | In Progress | ~95% |
+| Phase 2 | Chưa bắt đầu | — |
+
+### Phase 1 Features
+
+| Feature | Status |
+|---------|--------|
+| Authentication & RBAC (login, register, Google OAuth, refresh token) | ✅ Done |
+| Music Upload & Metadata (GCS audio + Cloudinary cover) | ✅ Done |
+| Audio Streaming (Pre-signed URL, 206 Partial Content) | ✅ Done |
+| Rule-based Recommendation Engine | ✅ Done |
+| Creator Analytics Dashboard (heatmap, stats, daily listeners) | ✅ Done |
+| Search (Elasticsearch fuzzy — 30 songs indexed) | ✅ Done |
+| Notification Service (fan-out + Kafka New_Release) | ✅ Done |
+| Listening Party (SignalR, party queue, lyrics tab) | ✅ Done |
+| API Gateway (YARP + JWT middleware + rate limiting) | ✅ Done |
+| Frontend React SPA (Spotify-style design, MSW mock mode) | ✅ Done |
+| Prometheus metrics + Grafana dashboard | ✅ Done |
+
+> Các hạng mục còn lại: demo script rehearsal, verify Cloudinary env vars local.
+
+---
+
 ## Services
 
 | Service                 | Port | Tech                                             |
@@ -51,6 +78,8 @@ Project dùng các dịch vụ cloud bên ngoài. Bạn cần tạo tài khoản
 | Google OAuth         | Đăng nhập bằng Google         | [console.cloud.google.com](https://console.cloud.google.com) → APIs & Services → Credentials |
 
 Sau khi có credentials, điền vào `infra/.env` (xem Bước 2 bên dưới).
+
+> **Lưu ý quan trọng:** GCS và Cloudinary là **bắt buộc** để chạy Music Service và Streaming Service. Nếu thiếu credentials, các tính năng upload nhạc, stream audio, và hiển thị ảnh bìa sẽ không hoạt động. Xem đầy đủ danh sách biến môi trường tại `infra/.env.example`.
 
 ---
 
@@ -294,6 +323,20 @@ services/<service-name>/
 │   └── <Name>.IntegrationTests/
 └── Dockerfile
 ```
+
+---
+
+## Quick Troubleshooting
+
+Xem hướng dẫn đầy đủ tại `infra/DOCKER_README.md`. Dưới đây là 5 vấn đề phổ biến nhất:
+
+| Vấn đề | Nguyên nhân | Fix |
+|--------|-------------|-----|
+| EF Core migration lỗi "connection refused" | PostgreSQL container chưa healthy | Chạy `bash infra/verify-infra.sh`, đợi ✅ postgres rồi chạy lại seed |
+| `music-service` / `streaming-service` trả 500 khi upload / stream | Thiếu GCS credentials hoặc sai bucket name | Kiểm tra `GCP_BUCKET_NAME`, `GOOGLE_APPLICATION_CREDENTIALS` trong `infra/.env`; đảm bảo file `infra/secrets/google-cloud-key.json` tồn tại |
+| Ảnh bìa không hiển thị / Cloudinary 503 | `CLOUDINARY_CLOUD_NAME` / `API_KEY` / `API_SECRET` chưa điền | Kiểm tra 3 biến Cloudinary trong `infra/.env` |
+| Kafka consumer không nhận event | Topic chưa tạo hoặc consumer group sai offset | Chạy `bash infra/seed/1_seed_infra.sh` — script tự tạo 5 Kafka topics; kiểm tra `bash infra/verify-infra.sh` mục Kafka |
+| Frontend trắng / 401 sau page refresh | `VITE_MOCK=false` nhưng services chưa chạy | Chạy `docker compose -f infra/docker-compose.yml up -d --build`, hoặc đổi `VITE_MOCK=true` để dùng MSW mock |
 
 ---
 
